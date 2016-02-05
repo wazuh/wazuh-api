@@ -1,0 +1,12 @@
+{
+    "name": "ossec_api",
+    "version": "1.0.0",
+    "description": "Wazuh OSSEC API.",
+    "main": "app.js",
+    "author": "Wazuh",
+    "license": "GPL",
+    "dependencies": {
+        "express": "~4.0.0",
+        "body-parser": "~1.0.1"
+    }
+}
