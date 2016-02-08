@@ -23,8 +23,12 @@ var validator = require('../helpers/input_validation');
  *
  * PUT /agents/:agent_name - Add Agent
  * PUT /agents/:agent_id/restart - Restart Agent
- * PUT /agents/sysrootcheck/restart - Restart syscheck/rootcheck in all agents:
- * PUT /agents/:agent_id/sysrootcheck/restart - Restart syscheck/rootcheck in a agents
+ * PUT /agents/syscheck - Run syscheck in all agents.
+ * PUT /agents/:agent_id/syscheck - Run syscheck in the agent.
+ * PUT /agents/rootcheck - Run rootcheck in all agents:
+ * PUT /agents/:agent_id/rootcheck - Run rootcheck in the agent.
+ *
+ * DELETE /agents/:agent_id - Remove Agent
  *
 **/
 
@@ -73,6 +77,64 @@ router.get('/:agent_id', function(req, res) {
 /* PUT
 /********************************************/
 
+// Restart Agent: /agents/:agent_id/restart
+router.put('/:agent_id/restart', function(req, res) {
+    logger.log(req.host + " PUT /agents/:agent_id/restart");
+    
+    if (validator.numbers(req.params.agent_id)){
+        agent.restart(req.params.agent_id, function (data) {
+            rh.cmd(data, res);
+        });
+    }
+    else{
+        rh.bad_request("600", "agent_id", res);
+    }
+})
+
+// Run syscheck in all agents: /agents/syscheck
+router.put('/syscheck', function(req, res) {
+    logger.log(req.host + " PUT /agents/syscheck");
+    agent.run_syscheck("ALL", function (data) {
+        rh.cmd(data, res);
+    });
+})
+
+// Run syscheck in a agents: /agents/:agent_id/syscheck
+router.put('/:agent_id/syscheck', function(req, res) {
+    logger.log(req.host + " PUT /agents/:agent_id/syscheck");
+
+    if (validator.numbers(req.params.agent_id)){
+        agent.run_syscheck(req.params.agent_id, function (data) {
+            rh.cmd(data, res);
+        });
+    }
+    else{
+        rh.bad_request("600", "agent_id", res);
+    }
+})
+
+// Run rootcheck in all agents: /agents/rootcheck
+router.put('/rootcheck', function(req, res) {
+    logger.log(req.host + " PUT /agents/rootcheck");
+    agent.run_syscheck("ALL", function (data) {
+        rh.cmd(data, res);
+    });
+})
+
+// Run rootcheck in a agents: /agents/:agent_id/rootcheck
+router.put('/:agent_id/rootcheck', function(req, res) {
+    logger.log(req.host + " PUT /agents/:agent_id/rootcheck");
+
+    if (validator.numbers(req.params.agent_id)){
+        agent.run_rootcheck(req.params.agent_id, function (data) {
+            rh.cmd(data, res);
+        });
+    }
+    else{
+        rh.bad_request("600", "agent_id", res);
+    }
+})
+
 // Add Agent: /agents/:agent_name
 router.put('/:agent_name', function(req, res) {
     logger.log(req.host + " PUT /agents/:agent_name");
@@ -88,46 +150,23 @@ router.put('/:agent_name', function(req, res) {
 
 })
 
-// Restart Agent: /agents/:agent_id/restart
-router.put('/:agent_id/restart', function(req, res) {
-    logger.log(req.host + " PUT /agents/:agent_id/restart");
-    
-    if (validator.numbers(req.params.agent_id)){
-        agent.restart(req.params.agent_id, function (data) {
-            rh.cmd(data, res);
-        });
-    }
-    else{
-        rh.bad_request("600", "agent_id", res);
-    }
-})
-
-// Restart syscheck/rootcheck in all agents: /agents/sysrootcheck/restart
-router.put('/sysrootcheck/restart', function(req, res) {
-    logger.log(req.host + " PUT /agents/sysrootcheck/restart");
-    agent.restart_sysrootcheck("ALL", function (data) {
-        rh.cmd(data, res);
-    });
-})
-
-// Restart syscheck/rootcheck in a agents: /agents/:agent_id/sysrootcheck/restart
-router.put('/:agent_id/sysrootcheck/restart', function(req, res) {
-    logger.log(req.host + " PUT /agents/:agent_id/sysrootcheck/restart");
-
-    if (validator.restart_sysrootcheck(req.params.agent_id)){
-        agent.restart_sysrootcheck(req.params.agent_id, function (data) {
-            rh.cmd(data, res);
-        });
-    }
-    else{
-        rh.bad_request("600", "agent_id", res);
-    }
-})
-
 /********************************************/
 /* DELETE
 /********************************************/
+// Remove Agent: /agents/:agent_id
+router.delete('/:agent_id', function(req, res) {
+    logger.log(req.host + " DELETE /agents/:agent_id");
+    
+    if (validator.numbers(req.params.agent_id)){
+        agent.remove(req.params.agent_id, function (data) {
+            rh.cmd(data, res);
+        });
+    }
+    else{
+        rh.bad_request("600", "agent_id", res);
+    }
 
+})
 
 /********************************************/
 /* PATCH

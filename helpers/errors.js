@@ -15,6 +15,7 @@ var errors = {};
 // 20 - 29 OSSEC Control
 // 30 - 39 Syscheck control
 // 40 - 49 Agent control
+// 50 - 59 remove_agent.py
 
 // 500 - 509 CMD
 errors['500'] = "Error executing internal command";

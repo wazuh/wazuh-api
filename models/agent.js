@@ -17,7 +17,7 @@ exports.all = function(callback){
 }
 
 exports.get_key = function(id, callback){
-    var cmd = "sh /var/ossec/api/bin/api_getkey_agent.sh " + id;
+    var cmd = "sh /var/ossec/api/scripts/api_getkey_agent.sh " + id;
     result = execute.exec(cmd, callback);
 }
 
@@ -27,8 +27,7 @@ exports.info = function(id, callback){
 }
 
 exports.add = function(name, callback){
-    // filter name
-    var cmd = "sh /var/ossec/api/bin/api_add_agent.sh " + name;
+    var cmd = "sh /var/ossec/api/scripts/api_add_agent.sh " + name;
     result = execute.exec(cmd, callback);
 }
 
@@ -38,10 +37,10 @@ exports.restart = function(id, callback){
 }
 
 /**
- * Restart syscheck / rootcheck in an agent.
- * If id is ALL, restart syscheck / rootcheck for all agents.
+ * Run syscheck / rootcheck in an agent.
+ * If id is ALL, run syscheck / rootcheck for all agents.
  */
-exports.restart_sysrootcheck = function(id, callback){
+exports.run_syscheck = function(id, callback){
     var cmd = "";
     if (id == "ALL"){
         cmd = "/var/ossec/bin/agent_control -j -r -a";
@@ -50,5 +49,14 @@ exports.restart_sysrootcheck = function(id, callback){
         cmd = "/var/ossec/bin/agent_control -j -r -u " + id;
     }
 
+    result = execute.exec(cmd, callback);
+}
+
+exports.run_rootcheck = function(id, callback){
+    this.run_syscheck(id, callback)
+}
+
+exports.remove = function(id, callback){
+    var cmd = "python /var/ossec/api/scripts/remove_agent.py -i " + id;
     result = execute.exec(cmd, callback);
 }
