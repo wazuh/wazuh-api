@@ -39,11 +39,6 @@ router.get('/status', function(req, res) {
         rh.cmd(data, res);
     });
     
-    if (!isEmptyObject(req.query))
-        console.log("llen");
-    else
-        console.log("vac");
-    
 })
 
 // GET /manager/settings - Get manager settings
