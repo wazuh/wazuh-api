@@ -26,16 +26,15 @@ var logger = require('../helpers/logger');
 exports.cmd = function(json_cmd_output, res){
     var status = 200;
     var json_res;
+
     
-    json_data = JSON.parse(json_cmd_output);
-    
-    if (json_data.error != 0){
+    if (json_cmd_output.error != 0){
         status = 500;
-        json_res = {'error': json_data.error, 'response': null, 'message': json_data.description};
+        json_res = {'error': json_cmd_output.error, 'response': null, 'message': json_cmd_output.description};
     }
     else{
         status = 200;
-        json_res = {'error': '0', 'response': json_data.response, 'message': null};
+        json_res = {'error': '0', 'response': json_cmd_output.response, 'message': null};
     }
     
     logger.log("Response: " + JSON.stringify(json_res) + " HTTP Status: " + status);

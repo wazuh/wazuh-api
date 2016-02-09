@@ -10,6 +10,8 @@
  */
 
 var execute = require('../helpers/execute');
+var errors = require('../helpers/errors');
+var jsutils = require('../helpers/js_utils');
 
 exports.status = function(callback){
     var cmd = "/var/ossec/bin/ossec-control -j status"
@@ -26,7 +28,23 @@ exports.stop = function(callback){
     result = execute.exec(cmd, callback);
 }
 
-exports.settings = function(callback){
+exports.settings = function(filter, callback){
     var cmd = "python /home/repos/wazuh-API/scripts/get_conf.py"
-    result = execute.exec(cmd, callback);
+    result = execute.exec(cmd, function (data) {
+
+        if (data.error == 0 && !jsutils.isEmptyObject(filter)){
+            data_filtered = data.response.ossec_config[filter.section];
+            
+            if (data_filtered)
+                r_data_filtered = {'error': 0, 'response': data_filtered};
+            else{
+                r_data_filtered = {'error': 0, 'response': null};
+            }
+
+            callback(r_data_filtered);
+        }
+        else{
+            callback(data);
+        }
+    });
 }

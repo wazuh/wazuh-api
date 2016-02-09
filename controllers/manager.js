@@ -15,31 +15,54 @@ var manager = require('../models/manager');
 var rh = require('../helpers/response_handler');
 var logger = require('../helpers/logger');
 var validator = require('../helpers/input_validation');
+var jsutils = require('../helpers/js_utils');
 
 /**
  * GET /manager/status - Get manager status
+ * GET /manager/settings - Get manager settings
+ *   GET /manager/settings?section=rules - Get rules in ossec.conf
  *
  * PUT /manager/start - Start manager
- * PUT /manager/stop - sTOP manager
+ * PUT /manager/stop - Stop manager
  *
 **/
+
 
 /********************************************/
 /* GET
 /********************************************/
 
-// Get manager status: /status
+// GET /manager/status - Get manager status
 router.get('/status', function(req, res) {
     logger.log(req.host + " GET /manager/status");
     manager.status(function (data) {
         rh.cmd(data, res);
     });
+    
+    if (!isEmptyObject(req.query))
+        console.log("llen");
+    else
+        console.log("vac");
+    
 })
 
-// Get manager settings: /settings
+// GET /manager/settings - Get manager settings
 router.get('/settings', function(req, res) {
     logger.log(req.host + " GET /manager/settings");
-    manager.settings(function (data) {
+    
+    // Filter
+    json_filter = {};
+    if (!jsutils.isEmptyObject(req.query)){
+
+        if(req.query.hasOwnProperty('section') && Object.keys(req.query).length == 1){
+            json_filter = {'section': req.query.section};
+        }
+        else{
+            rh.bad_request("604", "Just 'section' filter", res);
+        }
+    }
+
+    manager.settings(json_filter, function (data) {
         rh.cmd(data, res);
     });
 })
@@ -48,7 +71,7 @@ router.get('/settings', function(req, res) {
 /********************************************/
 /* PUT
 /********************************************/
-// Start manager: /start
+// PUT /manager/start - Start manager
 router.put('/start', function(req, res) {
     logger.log(req.host + " PUT /manager/start");
     manager.start(function (data) {
@@ -56,7 +79,7 @@ router.put('/start', function(req, res) {
     });
 })
 
-// Stop manager: /stop
+// PUT /manager/stop - Stop manager
 router.put('/stop', function(req, res) {
     logger.log(req.host + " PUT /manager/stop");
     manager.stop(function (data) {

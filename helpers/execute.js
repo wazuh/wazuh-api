@@ -25,21 +25,21 @@ exports.exec = function(cmd, callback) {
     var child = exec(cmd, function(error, stdout, stderr) {
         logger.logCommand(error, stdout, stderr);
         
-        var result = "";
+        var json_result = "";
 
         if ( stdout ) {
             try {
-                JSON.parse(stdout);
-                result = stdout;  // stdout could has: "error, response" or "error, description".
+                // String -> JSON
+                json_result = JSON.parse(stdout);  // stdout could has: "error, response" or "error, description".
             } catch (e) {
-                result = JSON.stringify({ "error": "501", "description": errors.description(501) });
+                json_result = {"error": "501", "description": errors.description(501)};
             }
         }
         else{
             //if ( error != null || stderr != "")
-            result = JSON.stringify({ "error": "500", "description": errors.description(500) });
+            json_result = {"error": "500", "description": errors.description(500)};
         }
         
-        callback(result);
+        callback(json_result);
     });
 }
