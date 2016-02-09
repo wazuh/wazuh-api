@@ -25,3 +25,8 @@ exports.stop = function(callback){
     var cmd = "/var/ossec/bin/ossec-control -j stop"
     result = execute.exec(cmd, callback);
 }
+
+exports.settings = function(callback){
+    var cmd = "python /home/repos/wazuh-API/scripts/get_conf.py"
+    result = execute.exec(cmd, callback);
+}

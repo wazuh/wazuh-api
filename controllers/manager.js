@@ -36,6 +36,14 @@ router.get('/status', function(req, res) {
     });
 })
 
+// Get manager settings: /settings
+router.get('/settings', function(req, res) {
+    logger.log(req.host + " GET /manager/settings");
+    manager.settings(function (data) {
+        rh.cmd(data, res);
+    });
+})
+
 
 /********************************************/
 /* PUT
