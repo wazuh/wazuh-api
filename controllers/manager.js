@@ -49,11 +49,15 @@ router.get('/settings', function(req, res) {
     json_filter = {};
     if (!jsutils.isEmptyObject(req.query)){
 
-        if(req.query.hasOwnProperty('section') && Object.keys(req.query).length == 1){
-            json_filter = {'section': req.query.section};
+        if((req.query.hasOwnProperty('section') || req.query.hasOwnProperty('field'))&& Object.keys(req.query).length <= 2){
+            json_filter = {}
+            if (req.query.hasOwnProperty('section'))
+                json_filter['section'] = req.query.section;
+            if (req.query.hasOwnProperty('field'))
+                json_filter['field'] = req.query.field;
         }
         else{
-            rh.bad_request("604", "Just 'section' filter", res);
+            rh.bad_request("604", "Just 'section and field' filter", res);
         }
     }
 

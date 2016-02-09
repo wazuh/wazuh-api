@@ -33,7 +33,13 @@ exports.settings = function(filter, callback){
     result = execute.exec(cmd, function (data) {
 
         if (data.error == 0 && !jsutils.isEmptyObject(filter)){
-            data_filtered = data.response.ossec_config[filter.section];
+            console.log(filter.section);
+            console.log(filter.field);
+            
+            if(filter.section && filter.field)
+                data_filtered = data.response[filter.section][filter.field];
+            else
+                data_filtered = data.response[filter.section];
             
             if (data_filtered)
                 r_data_filtered = {'error': 0, 'response': data_filtered};

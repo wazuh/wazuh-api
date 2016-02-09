@@ -22,7 +22,9 @@ if __name__ == "__main__":
         r_error = 0
         
         with open(ossec_conf) as f_ossec:
-            r_response = xml_json.data(fromstring(f_ossec.read()))
+            json_conf = xml_json.data(fromstring(f_ossec.read()))
+    
+        r_response = json_conf['ossec_config']
 
     except Exception as e:
         r_error = 71
