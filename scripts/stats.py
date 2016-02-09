@@ -36,6 +36,22 @@ ERRORS = {1: {"error": 60, "description": "Invalid parameters"}, \
           4: {"error": 63, "description": "Bad given arguments"}, \
           5: {"error": 64, "description": "Low permissions"} }
 
+def usage():
+    '''Prints help message'''
+    print('''
+Query statistical data from OSSEC-Wazuh in JSON format.
+
+stats.py -t -y <year> -m <month> -d <day>
+    Query totals file.
+    year:   Year in YYYY format, e.g. 2016
+    month:  Month in number or 3 first letters, e.g. Feb or 2
+    day:    Day, e.g. 9
+stats.py -h
+    Print hourly averages.
+stats.py -w
+    Print weekly-hourly averages.
+''')
+
 def totals(year, month, day):
     '''Returns the totals file in JSON-exportable format'''
 
@@ -167,7 +183,11 @@ if __name__ == '__main__':
         print(dumps(ERRORS[5]))
         exit()
 
-    options, args = getopt(argv[1:], "ty:m:d:wh")
+    try:
+        options, args = getopt(argv[1:], "ty:m:d:wh")
+    except GetoptError:
+        usage()
+        exit()
 
     for (option, value) in options:
         if option == '-t':
@@ -182,6 +202,9 @@ if __name__ == '__main__':
             query = 'hourly'
         elif option == '-w':
             query = 'weekly'
+        else:
+            usage();
+            exit()
 
     if 'query' not in locals():
         output = ERRORS[4]
