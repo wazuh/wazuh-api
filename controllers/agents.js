@@ -212,7 +212,7 @@ router.delete('/:agent_id', function(req, res) {
     logger.log(req.host + " DELETE /agents/:agent_id");
     
     if (validator.numbers(req.params.agent_id)){
-        agent.clear_syscheck(req.params.agent_id, function (data) {
+        agent.remove(req.params.agent_id, function (data) {
             rh.cmd(data, res);
         });
     }
