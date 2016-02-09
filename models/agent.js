@@ -11,13 +11,13 @@
 
 var execute = require('../helpers/execute');
 
+
+/********************************************/
+/* Agent
+/********************************************/
+
 exports.all = function(callback){
     var cmd = "/var/ossec/bin/agent_control -lj";
-    result = execute.exec(cmd, callback);
-}
-
-exports.get_key = function(id, callback){
-    var cmd = "sh /var/ossec/api/scripts/api_getkey_agent.sh " + id;
     result = execute.exec(cmd, callback);
 }
 
@@ -26,15 +26,30 @@ exports.info = function(id, callback){
     result = execute.exec(cmd, callback);
 }
 
+exports.restart = function(id, callback){
+    var cmd = "/var/ossec/bin/agent_control -j -R " + id;
+    result = execute.exec(cmd, callback);
+}
+
+exports.get_key = function(id, callback){
+    var cmd = "sh /var/ossec/api/scripts/api_getkey_agent.sh " + id;
+    result = execute.exec(cmd, callback);
+}
+
 exports.add = function(name, callback){
     var cmd = "sh /var/ossec/api/scripts/api_add_agent.sh " + name;
     result = execute.exec(cmd, callback);
 }
 
-exports.restart = function(id, callback){
-    var cmd = "/var/ossec/bin/agent_control -j -R " + id;
+exports.remove = function(id, callback){
+    var cmd = "python /var/ossec/api/scripts/remove_agent.py -i " + id;
     result = execute.exec(cmd, callback);
 }
+
+
+/********************************************/
+/* Agent - Syscheck
+/********************************************/
 
 /**
  * Run syscheck / rootcheck in an agent.
@@ -52,11 +67,42 @@ exports.run_syscheck = function(id, callback){
     result = execute.exec(cmd, callback);
 }
 
+/**
+ * Clear syscheck database for all/the agent.
+ * If id is ALL, clear the database for all agent.
+ */
+exports.clear_syscheck = function(id, callback){
+    var cmd = "";
+    if (id == "ALL"){
+        cmd = "/var/ossec/bin/syscheck_control -j -u all";
+    }
+    else{
+        cmd = "/var/ossec/bin/syscheck_control -j -u " + id;
+    }
+
+    result = execute.exec(cmd, callback);
+}
+
+
+/********************************************/
+/* Agent - Rootcheck
+/********************************************/
 exports.run_rootcheck = function(id, callback){
     this.run_syscheck(id, callback)
 }
 
-exports.remove = function(id, callback){
-    var cmd = "python /var/ossec/api/scripts/remove_agent.py -i " + id;
+/**
+ * Clear rootcheck database for all/the agent.
+ * If id is ALL, clear the database for all agent.
+ */
+exports.clear_rootcheck = function(id, callback){
+    var cmd = "";
+    if (id == "ALL"){
+        cmd = "/var/ossec/bin/rootcheck_control -j -u all";
+    }
+    else{
+        cmd = "/var/ossec/bin/rootcheck_control -j -u " + id;
+    }
+
     result = execute.exec(cmd, callback);
 }

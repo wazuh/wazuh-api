@@ -28,6 +28,10 @@ var validator = require('../helpers/input_validation');
  * PUT /agents/rootcheck - Run rootcheck in all agents:
  * PUT /agents/:agent_id/rootcheck - Run rootcheck in the agent.
  *
+ * DELETE /agents/syscheck - Clear the database for all agent.
+ * DELETE /agents/:agent_id/syscheck - Clear the database for the agent.
+ * DELETE /agents/rootcheck - Clear the database for all agent.
+ * DELETE /agents/:agent_id/rootcheck - Clear the database for the agent.
  * DELETE /agents/:agent_id - Remove Agent
  *
 **/
@@ -36,7 +40,7 @@ var validator = require('../helpers/input_validation');
 /* GET
 /********************************************/
 
-// Get agents List: /agents
+// GET /agents - Get agents list
 router.get('/', function(req, res) {
     logger.log(req.host + " GET /agents");
     agent.all(function (data) {
@@ -44,7 +48,7 @@ router.get('/', function(req, res) {
     });
 })
 
-// Get Agent Key: /agents/:agent_id/key
+// GET /agents/:agent_id/key - Get Agent Key
 router.get('/:agent_id/key', function(req, res) {
     logger.log(req.host + " GET /agents/:agent_id/key");
 
@@ -58,7 +62,7 @@ router.get('/:agent_id/key', function(req, res) {
     }
 })
 
-// Get Agent Info: /agents/:agent_id
+// GET /agents/:agent_id - Get Agent Info
 router.get('/:agent_id', function(req, res) {
     logger.log(req.host + " GET /agents/:agent_id");
     
@@ -77,7 +81,7 @@ router.get('/:agent_id', function(req, res) {
 /* PUT
 /********************************************/
 
-// Restart Agent: /agents/:agent_id/restart
+// PUT /agents/:agent_id/restart - Restart Agent
 router.put('/:agent_id/restart', function(req, res) {
     logger.log(req.host + " PUT /agents/:agent_id/restart");
     
@@ -91,7 +95,7 @@ router.put('/:agent_id/restart', function(req, res) {
     }
 })
 
-// Run syscheck in all agents: /agents/syscheck
+// PUT /agents/syscheck - Run syscheck in all agents.
 router.put('/syscheck', function(req, res) {
     logger.log(req.host + " PUT /agents/syscheck");
     agent.run_syscheck("ALL", function (data) {
@@ -99,7 +103,7 @@ router.put('/syscheck', function(req, res) {
     });
 })
 
-// Run syscheck in a agents: /agents/:agent_id/syscheck
+// PUT /agents/:agent_id/syscheck - Run syscheck in the agent.
 router.put('/:agent_id/syscheck', function(req, res) {
     logger.log(req.host + " PUT /agents/:agent_id/syscheck");
 
@@ -113,7 +117,7 @@ router.put('/:agent_id/syscheck', function(req, res) {
     }
 })
 
-// Run rootcheck in all agents: /agents/rootcheck
+// PUT /agents/rootcheck - Run rootcheck in all agents:
 router.put('/rootcheck', function(req, res) {
     logger.log(req.host + " PUT /agents/rootcheck");
     agent.run_syscheck("ALL", function (data) {
@@ -121,7 +125,7 @@ router.put('/rootcheck', function(req, res) {
     });
 })
 
-// Run rootcheck in a agents: /agents/:agent_id/rootcheck
+// PUT /agents/:agent_id/rootcheck - Run rootcheck in the agent.
 router.put('/:agent_id/rootcheck', function(req, res) {
     logger.log(req.host + " PUT /agents/:agent_id/rootcheck");
 
@@ -135,7 +139,7 @@ router.put('/:agent_id/rootcheck', function(req, res) {
     }
 })
 
-// Add Agent: /agents/:agent_name
+// PUT /agents/:agent_name - Add Agent
 router.put('/:agent_name', function(req, res) {
     logger.log(req.host + " PUT /agents/:agent_name");
     
@@ -150,15 +154,26 @@ router.put('/:agent_name', function(req, res) {
 
 })
 
+
 /********************************************/
 /* DELETE
 /********************************************/
-// Remove Agent: /agents/:agent_id
-router.delete('/:agent_id', function(req, res) {
-    logger.log(req.host + " DELETE /agents/:agent_id");
+
+// DELETE /agents/syscheck - Clear the database for all agent.
+router.delete('/syscheck', function(req, res) {
+    logger.log(req.host + " DELETE /agents/syscheck");
+        agent.clear_syscheck("ALL", function (data) {
+            rh.cmd(data, res);
+        });
+
+})
+
+// DELETE /agents/:agent_id/syscheck - Clear the database for the agent.
+router.delete('/:agent_id/syscheck', function(req, res) {
+    logger.log(req.host + " DELETE /agents/:agent_id/syscheck");
     
     if (validator.numbers(req.params.agent_id)){
-        agent.remove(req.params.agent_id, function (data) {
+        agent.clear_syscheck(req.params.agent_id, function (data) {
             rh.cmd(data, res);
         });
     }
@@ -167,6 +182,46 @@ router.delete('/:agent_id', function(req, res) {
     }
 
 })
+
+// DELETE /agents/rootcheck - Clear the database for all agent.
+router.delete('/rootcheck', function(req, res) {
+    logger.log(req.host + " DELETE /agents/rootcheck");
+        agent.clear_rootcheck("ALL", function (data) {
+            rh.cmd(data, res);
+        });
+
+})
+
+// DELETE /agents/:agent_id/rootcheck - Clear the database for the agent.
+router.delete('/:agent_id/rootcheck', function(req, res) {
+    logger.log(req.host + " DELETE /agents/:agent_id/rootcheck");
+    
+    if (validator.numbers(req.params.agent_id)){
+        agent.clear_rootcheck(req.params.agent_id, function (data) {
+            rh.cmd(data, res);
+        });
+    }
+    else{
+        rh.bad_request("600", "agent_id", res);
+    }
+
+})
+
+// DELETE /agents/:agent_id - Remove Agent
+router.delete('/:agent_id', function(req, res) {
+    logger.log(req.host + " DELETE /agents/:agent_id");
+    
+    if (validator.numbers(req.params.agent_id)){
+        agent.clear_syscheck(req.params.agent_id, function (data) {
+            rh.cmd(data, res);
+        });
+    }
+    else{
+        rh.bad_request("600", "agent_id", res);
+    }
+
+})
+
 
 /********************************************/
 /* PATCH
