@@ -34,7 +34,7 @@ var jsutils = require('../helpers/js_utils');
 
 // GET /manager/status - Get manager status
 router.get('/status', function(req, res) {
-    logger.log(req.host + " GET /manager/status");
+    logger.log(req.connection.remoteAddress + " GET /manager/status");
     manager.status(function (data) {
         rh.cmd(data, res);
     });
@@ -43,7 +43,7 @@ router.get('/status', function(req, res) {
 
 // GET /manager/settings - Get manager settings
 router.get('/settings', function(req, res) {
-    logger.log(req.host + " GET /manager/settings");
+    logger.log(req.connection.remoteAddress + " GET /manager/settings");
     
     // Filter
     json_filter = {};
@@ -72,7 +72,7 @@ router.get('/settings', function(req, res) {
 /********************************************/
 // PUT /manager/start - Start manager
 router.put('/start', function(req, res) {
-    logger.log(req.host + " PUT /manager/start");
+    logger.log(req.connection.remoteAddress + " PUT /manager/start");
     manager.start(function (data) {
         rh.cmd(data, res);
     });
@@ -80,7 +80,7 @@ router.put('/start', function(req, res) {
 
 // PUT /manager/stop - Stop manager
 router.put('/stop', function(req, res) {
-    logger.log(req.host + " PUT /manager/stop");
+    logger.log(req.connection.remoteAddress + " PUT /manager/stop");
     manager.stop(function (data) {
         rh.cmd(data, res);
     });

@@ -10,15 +10,35 @@
  */
 
 var moment = require('moment');
+var config = require('../config.js');
 
 var tag = "WazuhAPI";
+var LEVEL_DISABLED = 0;
 var LEVEL_INFO = 1;
 var LEVEL_WARNING = 2;
 var LEVEL_ERROR = 3;
 var LEVEL_DEBUG = 4;
 
-// ToDo: Move debug var to app.js ?
-var logger_level = LEVEL_DEBUG;
+var logger_level = LEVEL_INFO;
+switch(config.logs) {
+    case "INFO", "info":
+        logger_level = LEVEL_INFO;
+        break;
+    case "WARNING", "warning":
+        logger_level = LEVEL_WARNING;
+        break;
+    case "ERROR", "error":
+        logger_level = LEVEL_ERROR;
+        break;
+    case "DEBUG", "debug":
+        logger_level = LEVEL_DEBUG;
+        break;
+    case "DISABLED", "disabled":
+        logger_level = LEVEL_DISABLED;
+        break;
+    default:
+        logger_level = LEVEL_INFO;
+}
 
 function header(){
     return tag + " " + moment().format('YYYY-MM-DD HH:mm:ss') + ": ";

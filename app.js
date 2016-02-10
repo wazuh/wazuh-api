@@ -15,10 +15,11 @@ var bodyParser = require('body-parser');
 var auth = require("http-auth");
 var fs = require('fs');
 var https = require('https');
-var logger = require('./helpers/logger')
+var logger = require('./helpers/logger');
+var config = require('./config.js');
 
 // Settings
-port = process.env.PORT || 55000;
+port = process.env.PORT || config.port;
 
 /********************************************/
 /* Config APP
@@ -46,5 +47,5 @@ var options = {
 
 // Create server
 var server = https.createServer(options, app).listen(port, function(){
-    logger.log("Listening on port " + port);
+    logger.log("Listening on: https://" + server.address().address + ":" + port);
 });

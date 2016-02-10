@@ -10,10 +10,11 @@
  */
 
 var execute = require('../helpers/execute');
+var config = require('../config.js');
 
-var cmd_agent_control = "/var/ossec/bin/agent_control";
-var cmd_syscheck_control = "/var/ossec/bin/syscheck_control";
-var cmd_rootcheck_control = "/var/ossec/bin/rootcheck_control";
+var cmd_agent_control = config.ossec_path + "/bin/agent_control";
+var cmd_syscheck_control = config.ossec_path + "/bin/syscheck_control";
+var cmd_rootcheck_control = config.ossec_path + "/bin/rootcheck_control";
 
 
 /********************************************/

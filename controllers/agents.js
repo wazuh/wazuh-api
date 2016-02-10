@@ -45,7 +45,7 @@ var validator = require('../helpers/input_validation');
 
 // GET /agents - Get agents list
 router.get('/', function(req, res) {
-    logger.log(req.host + " GET /agents");
+    logger.log(req.connection.remoteAddress + " GET /agents");
     agent.all(function (data) {
         rh.cmd(data, res);
     });
@@ -53,7 +53,7 @@ router.get('/', function(req, res) {
 
 // GET /agents/:agent_id/key - Get Agent Key
 router.get('/:agent_id/key', function(req, res) {
-    logger.log(req.host + " GET /agents/:agent_id/key");
+    logger.log(req.connection.remoteAddress + " GET /agents/:agent_id/key");
 
     if (validator.numbers(req.params.agent_id)){
         agent.get_key(req.params.agent_id, function (data) {
@@ -67,7 +67,7 @@ router.get('/:agent_id/key', function(req, res) {
 
 // GET /agents/:agent_id/syscheck/modified_files - List modified files for the agent.
 router.get('/:agent_id/syscheck/modified_files', function(req, res) {
-    logger.log(req.host + " GET /agents/:agent_id/syscheck/modified_files");
+    logger.log(req.connection.remoteAddress + " GET /agents/:agent_id/syscheck/modified_files");
 
     if (validator.numbers(req.params.agent_id)){
         agent.syscheck_modified_files(req.params.agent_id, function (data) {
@@ -81,7 +81,7 @@ router.get('/:agent_id/syscheck/modified_files', function(req, res) {
 
 // GET /agents/:agent_id/syscheck/modified_files/:filename - Prints information about a modified file.
 router.get('/:agent_id/syscheck/modified_files/:filename', function(req, res) {
-    logger.log(req.host + " GET /agents/:agent_id/syscheck/modified_files/:filename");
+    logger.log(req.connection.remoteAddress + " GET /agents/:agent_id/syscheck/modified_files/:filename");
 
     var ok_id = validator.numbers(req.params.agent_id);
     var ok_filename = validator.names(req.params.filename);
@@ -101,7 +101,7 @@ router.get('/:agent_id/syscheck/modified_files/:filename', function(req, res) {
 
 // GET /agents/:agent_id/rootcheck - Get rootcheck database
 router.get('/:agent_id/rootcheck', function(req, res) {
-    logger.log(req.host + " GET /agents/:agent_id/rootcheck");
+    logger.log(req.connection.remoteAddress + " GET /agents/:agent_id/rootcheck");
 
     if (validator.numbers(req.params.agent_id)){
         agent.print_rootcheck_db(req.params.agent_id, function (data) {
@@ -115,7 +115,7 @@ router.get('/:agent_id/rootcheck', function(req, res) {
 
 // GET /agents/:agent_id - Get Agent Info
 router.get('/:agent_id', function(req, res) {
-    logger.log(req.host + " GET /agents/:agent_id");
+    logger.log(req.connection.remoteAddress + " GET /agents/:agent_id");
     
     if (validator.numbers(req.params.agent_id)){
         agent.info(req.params.agent_id, function (data) {
@@ -134,7 +134,7 @@ router.get('/:agent_id', function(req, res) {
 
 // PUT /agents/:agent_id/restart - Restart Agent
 router.put('/:agent_id/restart', function(req, res) {
-    logger.log(req.host + " PUT /agents/:agent_id/restart");
+    logger.log(req.connection.remoteAddress + " PUT /agents/:agent_id/restart");
     
     if (validator.numbers(req.params.agent_id)){
         agent.restart(req.params.agent_id, function (data) {
@@ -148,7 +148,7 @@ router.put('/:agent_id/restart', function(req, res) {
 
 // PUT /agents/syscheck - Run syscheck in all agents.
 router.put('/syscheck', function(req, res) {
-    logger.log(req.host + " PUT /agents/syscheck");
+    logger.log(req.connection.remoteAddress + " PUT /agents/syscheck");
     agent.run_syscheck("ALL", function (data) {
         rh.cmd(data, res);
     });
@@ -156,7 +156,7 @@ router.put('/syscheck', function(req, res) {
 
 // PUT /agents/:agent_id/syscheck - Run syscheck in the agent.
 router.put('/:agent_id/syscheck', function(req, res) {
-    logger.log(req.host + " PUT /agents/:agent_id/syscheck");
+    logger.log(req.connection.remoteAddress + " PUT /agents/:agent_id/syscheck");
 
     if (validator.numbers(req.params.agent_id)){
         agent.run_syscheck(req.params.agent_id, function (data) {
@@ -170,7 +170,7 @@ router.put('/:agent_id/syscheck', function(req, res) {
 
 // PUT /agents/rootcheck - Run rootcheck in all agents:
 router.put('/rootcheck', function(req, res) {
-    logger.log(req.host + " PUT /agents/rootcheck");
+    logger.log(req.connection.remoteAddress + " PUT /agents/rootcheck");
     agent.run_syscheck("ALL", function (data) {
         rh.cmd(data, res);
     });
@@ -178,7 +178,7 @@ router.put('/rootcheck', function(req, res) {
 
 // PUT /agents/:agent_id/rootcheck - Run rootcheck in the agent.
 router.put('/:agent_id/rootcheck', function(req, res) {
-    logger.log(req.host + " PUT /agents/:agent_id/rootcheck");
+    logger.log(req.connection.remoteAddress + " PUT /agents/:agent_id/rootcheck");
 
     if (validator.numbers(req.params.agent_id)){
         agent.run_rootcheck(req.params.agent_id, function (data) {
@@ -192,7 +192,7 @@ router.put('/:agent_id/rootcheck', function(req, res) {
 
 // PUT /agents/:agent_name - Add Agent
 router.put('/:agent_name', function(req, res) {
-    logger.log(req.host + " PUT /agents/:agent_name");
+    logger.log(req.connection.remoteAddress + " PUT /agents/:agent_name");
     
     if (validator.names(req.params.agent_name)){
         agent.add(req.params.agent_name, function (data) {
@@ -212,7 +212,7 @@ router.put('/:agent_name', function(req, res) {
 
 // DELETE /agents/syscheck - Clear the database for all agent.
 router.delete('/syscheck', function(req, res) {
-    logger.log(req.host + " DELETE /agents/syscheck");
+    logger.log(req.connection.remoteAddress + " DELETE /agents/syscheck");
         agent.clear_syscheck("ALL", function (data) {
             rh.cmd(data, res);
         });
@@ -221,7 +221,7 @@ router.delete('/syscheck', function(req, res) {
 
 // DELETE /agents/:agent_id/syscheck - Clear the database for the agent.
 router.delete('/:agent_id/syscheck', function(req, res) {
-    logger.log(req.host + " DELETE /agents/:agent_id/syscheck");
+    logger.log(req.connection.remoteAddress + " DELETE /agents/:agent_id/syscheck");
     
     if (validator.numbers(req.params.agent_id)){
         agent.clear_syscheck(req.params.agent_id, function (data) {
@@ -236,7 +236,7 @@ router.delete('/:agent_id/syscheck', function(req, res) {
 
 // DELETE /agents/rootcheck - Clear the database for all agent.
 router.delete('/rootcheck', function(req, res) {
-    logger.log(req.host + " DELETE /agents/rootcheck");
+    logger.log(req.connection.remoteAddress + " DELETE /agents/rootcheck");
         agent.clear_rootcheck("ALL", function (data) {
             rh.cmd(data, res);
         });
@@ -245,7 +245,7 @@ router.delete('/rootcheck', function(req, res) {
 
 // DELETE /agents/:agent_id/rootcheck - Clear the database for the agent.
 router.delete('/:agent_id/rootcheck', function(req, res) {
-    logger.log(req.host + " DELETE /agents/:agent_id/rootcheck");
+    logger.log(req.connection.remoteAddress + " DELETE /agents/:agent_id/rootcheck");
     
     if (validator.numbers(req.params.agent_id)){
         agent.clear_rootcheck(req.params.agent_id, function (data) {
@@ -260,7 +260,7 @@ router.delete('/:agent_id/rootcheck', function(req, res) {
 
 // DELETE /agents/:agent_id - Remove Agent
 router.delete('/:agent_id', function(req, res) {
-    logger.log(req.host + " DELETE /agents/:agent_id");
+    logger.log(req.connection.remoteAddress + " DELETE /agents/:agent_id");
     
     if (validator.numbers(req.params.agent_id)){
         agent.remove(req.params.agent_id, function (data) {
