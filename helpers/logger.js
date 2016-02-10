@@ -10,31 +10,38 @@
  */
 
 var moment = require('moment');
+
 var tag = "WazuhAPI";
+var LEVEL_INFO = 1;
+var LEVEL_WARNING = 2;
+var LEVEL_ERROR = 3;
+var LEVEL_DEBUG = 4;
 
 // ToDo: Move debug var to app.js ?
-var debug = true;
+var logger_level = LEVEL_INFO;
 
 function header(){
     return tag + " " + moment().format('YYYY-MM-DD HH:mm:ss') + ": ";
 }
 
-exports.logCommand = function(error, stdout, stderr) {
+exports.logCommand = function(cmd, error, stdout, stderr) {
     var head = header() + "CMD -";
 
-    if(error != null && error > 1)
-        console.error(head + " error:" + error);
+    if(logger_level >= LEVEL_DEBUG)
+        console.log(head + cmd);
 
-    if(stderr != "")
-        console.error(head + " stderr:" + stderr);
+    if (logger_level >= LEVEL_ERROR){
+        if(error != null)
+            console.error(head + " error:" + error);
 
-    if(debug)
+        if(stderr != "")
+            console.error(head + " stderr:" + stderr);
+    }
+    if(logger_level >= LEVEL_DEBUG)
         console.log(head + " stdout:" + stdout);
 }
 
 exports.log = function(message) {
-    if(debug)
+    if(logger_level >= LEVEL_INFO)
         console.log(header() + message);
 }
-
-exports.debug = debug;

@@ -23,7 +23,7 @@ exports.exec = function(cmd, callback) {
     const exec = require('child_process').exec;
 
     var child = exec(cmd, function(error, stdout, stderr) {
-        logger.logCommand(error, stdout, stderr);
+        logger.logCommand(cmd, error, stdout, stderr);
         
         var json_result = "";
 

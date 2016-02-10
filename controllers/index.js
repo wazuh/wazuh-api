@@ -11,6 +11,7 @@
 
 var express = require('express');
 var errors = require('../helpers/errors');
+var logger = require('../helpers/logger');
 var router = express.Router();
 var api_version = "v1";
 
@@ -49,12 +50,18 @@ router.use('/manager', require('./manager'));
 
 // Index
 router.get('/',function(req, res) {
-    res.json({'error': "0", 'response': "OSSEC-API'", 'message': "wazuh.com"});
+    logger.log(req.host + " GET /");
+    json_res = {'error': "0", 'response': "OSSEC-API'", 'message': "wazuh.com"};
+    res.json(json_res);
+    logger.log("Response: " + JSON.stringify(json_res) + " HTTP Status: 200");
 });
 
 // ALWAYS Keep this as the last route
 router.all('*',function(req, res) {
-  res.status(404).json({ 'error': "603", 'response': null, 'message': errors.description(603)});
+    logger.log(req.host + " GET " + JSON.stringify(req.params));
+    json_res = { 'error': "603", 'response': null, 'message': errors.description(603)};
+    res.status(404).json(json_res);
+    logger.log("Response: " + JSON.stringify(json_res) + " HTTP Status: 404");
 });
 
 module.exports = router

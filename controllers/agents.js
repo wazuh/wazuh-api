@@ -78,6 +78,26 @@ router.get('/:agent_id/syscheck/modified_files', function(req, res) {
     }
 })
 
+// GET /agents/:agent_id/syscheck/modified_files/:filename - Prints information about a modified file.
+router.get('/:agent_id/syscheck/modified_files/:filename', function(req, res) {
+    logger.log(req.host + " GET /agents/:agent_id/syscheck/modified_files/:filename");
+
+    var ok_id = validator.numbers(req.params.agent_id);
+    var ok_filename = validator.names(req.params.filename);
+    
+    if (ok_id && ok_filename){
+        agent.syscheck_modified_file(req.params.agent_id, req.params.filename, function (data) {
+            rh.cmd(data, res);
+        });
+    }
+    else{
+        if (!ok_id)
+            rh.bad_request("600", "agent_id", res);
+        else (!ok_filename)
+            rh.bad_request("601", "filename", res);
+    }
+})
+
 // GET /agents/:agent_id/rootcheck - Get rootcheck database
 router.get('/:agent_id/rootcheck', function(req, res) {
     logger.log(req.host + " GET /agents/:agent_id/rootcheck");

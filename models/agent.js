@@ -88,6 +88,11 @@ exports.syscheck_modified_files = function(id, callback){
     result = execute.exec(cmd, callback);
 }
 
+exports.syscheck_modified_file = function(id, filename, callback){
+    var cmd = "/var/ossec/bin/syscheck_control -j -i " + id + " -f " + filename;
+    result = execute.exec(cmd, callback);
+}
+
 
 /********************************************/
 /* Agent - Rootcheck
