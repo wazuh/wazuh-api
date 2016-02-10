@@ -13,24 +13,26 @@ var execute = require('../helpers/execute');
 var errors = require('../helpers/errors');
 var jsutils = require('../helpers/js_utils');
 
+var cmd_ossec_control = "/var/ossec/bin/ossec-control";
+
 exports.status = function(callback){
-    var cmd = "/var/ossec/bin/ossec-control -j status"
-    result = execute.exec(cmd, callback);
+    var args = ['-j', 'status'];
+    execute.exec(cmd_ossec_control, args, callback);
 }
 
 exports.start = function(callback){
-    var cmd = "/var/ossec/bin/ossec-control -j start"
-    result = execute.exec(cmd, callback);
+    var args = ['-j', 'start'];
+    execute.exec(cmd_ossec_control, args, callback);
 }
 
 exports.stop = function(callback){
-    var cmd = "/var/ossec/bin/ossec-control -j stop"
-    result = execute.exec(cmd, callback);
+    var args = ['-j', 'stop'];
+    execute.exec(cmd_ossec_control, args, callback);
 }
 
 exports.settings = function(filter, callback){
-    var cmd = "python /home/repos/wazuh-API/scripts/get_conf.py"
-    result = execute.exec(cmd, function (data) {
+    var cmd = "/home/repos/wazuh-API/scripts/get_conf.py";
+    execute.exec(cmd, [], function (data) {
 
         if (data.error == 0 && !jsutils.isEmptyObject(filter)){
             

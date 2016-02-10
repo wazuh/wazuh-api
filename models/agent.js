@@ -11,39 +11,46 @@
 
 var execute = require('../helpers/execute');
 
+var cmd_agent_control = "/var/ossec/bin/agent_control";
+var cmd_syscheck_control = "/var/ossec/bin/syscheck_control";
+var cmd_rootcheck_control = "/var/ossec/bin/rootcheck_control";
+
 
 /********************************************/
 /* Agent
 /********************************************/
 
 exports.all = function(callback){
-    var cmd = "/var/ossec/bin/agent_control -lj";
-    result = execute.exec(cmd, callback);
+    var args = ['-j', '-l'];
+    execute.exec(cmd_agent_control, args, callback);
 }
 
 exports.info = function(id, callback){
-    var cmd = "/var/ossec/bin/agent_control -j -e -i " + id;
-    result = execute.exec(cmd, callback);
+    var args = ['-j', '-e', '-i', id];
+    execute.exec(cmd_agent_control, args, callback);
 }
 
 exports.restart = function(id, callback){
-    var cmd = "/var/ossec/bin/agent_control -j -R " + id;
-    result = execute.exec(cmd, callback);
+    var args = ['-j', '-R', id];
+    execute.exec(cmd_agent_control, args, callback);
 }
 
 exports.get_key = function(id, callback){
-    var cmd = "sh /var/ossec/api/scripts/api_getkey_agent.sh " + id;
-    result = execute.exec(cmd, callback);
+    var cmd = "/var/ossec/api/scripts/api_getkey_agent.sh";
+    var args = [id];
+    execute.exec(cmd, args, callback);
 }
 
 exports.add = function(name, callback){
-    var cmd = "sh /var/ossec/api/scripts/api_add_agent.sh " + name;
-    result = execute.exec(cmd, callback);
+    var cmd = "/var/ossec/api/scripts/api_add_agent.sh";
+    var args = [name];
+    execute.exec(cmd, args, callback);
 }
 
 exports.remove = function(id, callback){
-    var cmd = "python /var/ossec/api/scripts/remove_agent.py -i " + id;
-    result = execute.exec(cmd, callback);
+    var cmd = "/var/ossec/api/scripts/remove_agent.py";
+    var args = ['-i', id];
+    execute.exec(cmd, args, callback);
 }
 
 
@@ -56,15 +63,12 @@ exports.remove = function(id, callback){
  * If id is ALL, run syscheck / rootcheck for all agents.
  */
 exports.run_syscheck = function(id, callback){
-    var cmd = "";
-    if (id == "ALL"){
-        cmd = "/var/ossec/bin/agent_control -j -r -a";
-    }
-    else{
-        cmd = "/var/ossec/bin/agent_control -j -r -u " + id;
-    }
-
-    result = execute.exec(cmd, callback);
+    var args = [];
+    if (id == "ALL")
+        args = ['-j', '-r', '-a'];
+    else
+        args = ['-j', '-r', '-u', id];
+    execute.exec(cmd_agent_control, args, callback);
 }
 
 /**
@@ -72,25 +76,22 @@ exports.run_syscheck = function(id, callback){
  * If id is ALL, clear the database for all agent.
  */
 exports.clear_syscheck = function(id, callback){
-    var cmd = "";
-    if (id == "ALL"){
-        cmd = "/var/ossec/bin/syscheck_control -j -u all";
-    }
-    else{
-        cmd = "/var/ossec/bin/syscheck_control -j -u " + id;
-    }
-
-    result = execute.exec(cmd, callback);
+    var args = [];
+    if (id == "ALL")
+        args = ['-j', '-u', 'all'];
+    else
+        args = ['-j', '-u', id];
+    execute.exec(cmd_syscheck_control, args, callback);
 }
 
 exports.syscheck_modified_files = function(id, callback){
-    var cmd = "/var/ossec/bin/syscheck_control -j -i " + id;
-    result = execute.exec(cmd, callback);
+    var args = ['-j', '-i', id];
+    execute.exec(cmd_syscheck_control, args, callback);
 }
 
 exports.syscheck_modified_file = function(id, filename, callback){
-    var cmd = "/var/ossec/bin/syscheck_control -j -i " + id + " -f " + filename;
-    result = execute.exec(cmd, callback);
+    var args = ['-j', '-i', id, '-f', filename];
+    execute.exec(cmd_syscheck_control, args, callback);
 }
 
 
@@ -106,18 +107,15 @@ exports.run_rootcheck = function(id, callback){
  * If id is ALL, clear the database for all agent.
  */
 exports.clear_rootcheck = function(id, callback){
-    var cmd = "";
-    if (id == "ALL"){
-        cmd = "/var/ossec/bin/rootcheck_control -j -u all";
-    }
-    else{
-        cmd = "/var/ossec/bin/rootcheck_control -j -u " + id;
-    }
-
-    result = execute.exec(cmd, callback);
+    var cmd = [];
+    if (id == "ALL")
+        args = ['-j', '-u', 'all'];
+    else
+        args = ['-j', '-u', id];
+    execute.exec(cmd_rootcheck_control, args, callback);
 }
 
 exports.print_rootcheck_db = function(id, callback){
-    var cmd = "/var/ossec/bin/rootcheck_control -j -i " + id;
-    result = execute.exec(cmd, callback);
+    var args = ['-j', '-i', id];
+    execute.exec(cmd_rootcheck_control, args, callback);
 }

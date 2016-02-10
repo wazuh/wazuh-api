@@ -18,7 +18,7 @@ var LEVEL_ERROR = 3;
 var LEVEL_DEBUG = 4;
 
 // ToDo: Move debug var to app.js ?
-var logger_level = LEVEL_INFO;
+var logger_level = LEVEL_DEBUG;
 
 function header(){
     return tag + " " + moment().format('YYYY-MM-DD HH:mm:ss') + ": ";

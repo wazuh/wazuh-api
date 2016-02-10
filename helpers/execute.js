@@ -19,11 +19,15 @@ var errors = require('../helpers/errors');
  *   Error: {'error': !=0, 'description': 'Error description'}
  *   OK: {'error': 0, 'response' = 'cmd output'}
  */
-exports.exec = function(cmd, callback) {
-    const exec = require('child_process').exec;
+exports.exec = function(cmd, args, callback) {
+    const child_process  = require('child_process');
 
-    var child = exec(cmd, function(error, stdout, stderr) {
-        logger.logCommand(cmd, error, stdout, stderr);
+    child_process.execFile(cmd, args, function(error, stdout, stderr) {
+        if (args != null)
+            full_cmd = cmd + " " + args.toString();
+        else
+            full_cmd = cmd;
+        logger.logCommand(full_cmd, error, stdout, stderr);
         
         var json_result = "";
 

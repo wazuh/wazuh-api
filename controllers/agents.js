@@ -20,6 +20,7 @@ var validator = require('../helpers/input_validation');
  * GET /agents - Get agents list
  * GET /agents/:agent_id/key - Get Agent Key
  * GET /agents/:agent_id/syscheck/modified_files - List modified files for the agent.
+ * GET /agents/:agent_id/syscheck/modified_files/:filename - Prints information about a modified file.
  * GET /agents/:agent_id/rootcheck - Get rootcheck database
  * GET /agents/:agent_id - Get Agent Info
  *

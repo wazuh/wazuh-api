@@ -20,7 +20,7 @@ var jsutils = require('../helpers/js_utils');
 /**
  * GET /manager/status - Get manager status
  * GET /manager/settings - Get manager settings
- *   GET /manager/settings?section=rules - Get rules in ossec.conf
+ * GET /manager/settings?section=rules - Get rules in ossec.conf
  *
  * PUT /manager/start - Start manager
  * PUT /manager/stop - Stop manager
