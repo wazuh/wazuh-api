@@ -33,8 +33,6 @@ exports.settings = function(filter, callback){
     result = execute.exec(cmd, function (data) {
 
         if (data.error == 0 && !jsutils.isEmptyObject(filter)){
-            console.log(filter.section);
-            console.log(filter.field);
             
             if(filter.section && filter.field)
                 data_filtered = data.response[filter.section][filter.field];

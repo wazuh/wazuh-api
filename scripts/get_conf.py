@@ -10,7 +10,25 @@ try:
 except Exception as e:
         r_error = 70
         r_description = "Problem with import modules in command: {0}".format(e)
-        
+
+def remove_json_array(json_array):
+    new_json = {}
+    for element in json_array:
+        for item in element:
+            new_json[item] = element[item]
+
+    return new_json
+
+def process_ossecconf(json_conf):
+    new_json = {}
+    
+    for element in json_conf:
+        if element == "global":
+            new_json["global"] = remove_json_array(json_conf['global'])
+        else:   
+            new_json[element] = json_conf[element]
+    return new_json
+
 if __name__ == "__main__":
     ossec_path = "/var/ossec"
     ossec_conf = "{0}/etc/ossec.conf".format(ossec_path)
@@ -24,7 +42,7 @@ if __name__ == "__main__":
         with open(ossec_conf) as f_ossec:
             json_conf = xml_json.data(fromstring(f_ossec.read()))
     
-        r_response = json_conf['ossec_config']
+        r_response = process_ossecconf(json_conf['ossec_config'])
 
     except Exception as e:
         r_error = 71

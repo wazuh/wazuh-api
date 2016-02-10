@@ -83,6 +83,11 @@ exports.clear_syscheck = function(id, callback){
     result = execute.exec(cmd, callback);
 }
 
+exports.syscheck_modified_files = function(id, callback){
+    var cmd = "/var/ossec/bin/syscheck_control -j -i " + id;
+    result = execute.exec(cmd, callback);
+}
+
 
 /********************************************/
 /* Agent - Rootcheck
@@ -104,5 +109,10 @@ exports.clear_rootcheck = function(id, callback){
         cmd = "/var/ossec/bin/rootcheck_control -j -u " + id;
     }
 
+    result = execute.exec(cmd, callback);
+}
+
+exports.print_rootcheck_db = function(id, callback){
+    var cmd = "/var/ossec/bin/rootcheck_control -j -i " + id;
     result = execute.exec(cmd, callback);
 }

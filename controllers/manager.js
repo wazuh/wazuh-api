@@ -49,7 +49,7 @@ router.get('/settings', function(req, res) {
     json_filter = {};
     if (!jsutils.isEmptyObject(req.query)){
 
-        if((req.query.hasOwnProperty('section') || req.query.hasOwnProperty('field'))&& Object.keys(req.query).length <= 2){
+        if((req.query.hasOwnProperty('section') || req.query.hasOwnProperty('field')) && Object.keys(req.query).length <= 2){
             json_filter = {}
             if (req.query.hasOwnProperty('section'))
                 json_filter['section'] = req.query.section;
