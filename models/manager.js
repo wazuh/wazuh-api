@@ -54,3 +54,8 @@ exports.settings = function(filter, callback){
         }
     });
 }
+
+exports.testconfig = function(callback){
+    var cmd = "/home/repos/wazuh-API/scripts/check_config.py";
+    execute.exec(cmd, [], callback);
+}

@@ -21,6 +21,7 @@ var jsutils = require('../helpers/js_utils');
  * GET /manager/status - Get manager status
  * GET /manager/settings - Get manager settings
  * GET /manager/settings?section=rules - Get rules in ossec.conf
+ * GET /manager/testconfig - Test config
  *
  * PUT /manager/start - Start manager
  * PUT /manager/stop - Stop manager
@@ -64,6 +65,15 @@ router.get('/settings', function(req, res) {
     manager.settings(json_filter, function (data) {
         rh.cmd(data, res);
     });
+})
+
+// GET /manager/testconfig - Test config
+router.get('/testconfig', function(req, res) {
+    logger.log(req.connection.remoteAddress + " GET /manager/testconfig");
+    manager.testconfig(function (data) {
+        rh.cmd(data, res);
+    });
+    
 })
 
 
