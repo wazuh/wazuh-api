@@ -36,12 +36,12 @@ exports.exec = function(cmd, args, callback) {
                 // String -> JSON
                 json_result = JSON.parse(stdout);  // stdout could has: "error, response" or "error, description".
             } catch (e) {
-                json_result = {"error": "501", "description": errors.description(501)};
+                json_result = {"error": "02", "description": errors.description(501)};
             }
         }
         else{
             //if ( error != null || stderr != "")
-            json_result = {"error": "500", "description": errors.description(500)};
+            json_result = {"error": "01", "description": errors.description(500)};
         }
         
         callback(json_result);

@@ -13,6 +13,7 @@ var execute = require('../helpers/execute');
 var config = require('../config.js');
 
 var cmd_agent_control = config.ossec_path + "/bin/agent_control";
+var cmd_manage_agents = config.ossec_path + "/bin/manage_agents";
 var cmd_syscheck_control = config.ossec_path + "/bin/syscheck_control";
 var cmd_rootcheck_control = config.ossec_path + "/bin/rootcheck_control";
 
@@ -37,21 +38,18 @@ exports.restart = function(id, callback){
 }
 
 exports.get_key = function(id, callback){
-    var cmd = "/var/ossec/api/scripts/api_getkey_agent.sh";
-    var args = [id];
-    execute.exec(cmd, args, callback);
+    var args = ['-j', '-e', id];
+    execute.exec(cmd_manage_agents, args, callback);
 }
 
 exports.add = function(name, callback){
-    var cmd = "/var/ossec/api/scripts/api_add_agent.sh";
-    var args = [name];
-    execute.exec(cmd, args, callback);
+    var args = ['-j', '-a', 'any', '-n', name];
+    execute.exec(cmd_manage_agents, args, callback);
 }
 
 exports.remove = function(id, callback){
-    var cmd = "/var/ossec/api/scripts/remove_agent.py";
-    var args = ['-i', id];
-    execute.exec(cmd, args, callback);
+    var args = ['-j', '-r', id];
+    execute.exec(cmd_manage_agents, args, callback);
 }
 
 
@@ -108,7 +106,6 @@ exports.run_rootcheck = function(id, callback){
  * If id is ALL, clear the database for all agent.
  */
 exports.clear_rootcheck = function(id, callback){
-    var cmd = [];
     if (id == "ALL")
         args = ['-j', '-u', 'all'];
     else

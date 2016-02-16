@@ -8,7 +8,7 @@ try:
     from xml.etree.ElementTree import fromstring
     import json
 except Exception as e:
-        r_error = 70
+        r_error = 50
         r_description = "Problem with import modules in command: {0}".format(e)
 
 def remove_json_array(json_array):
@@ -45,7 +45,7 @@ if __name__ == "__main__":
         r_response = process_ossecconf(json_conf['ossec_config'])
 
     except Exception as e:
-        r_error = 71
+        r_error = 51
         r_description = "Problem running command: {0}".format(e)
 
     # Response

@@ -25,6 +25,7 @@ var jsutils = require('../helpers/js_utils');
  *
  * PUT /manager/start - Start manager
  * PUT /manager/stop - Stop manager
+ * PUT /manager/restart - Restart manager
  *
 **/
 
@@ -76,7 +77,6 @@ router.get('/testconfig', function(req, res) {
     
 })
 
-
 /********************************************/
 /* PUT
 /********************************************/
@@ -92,6 +92,14 @@ router.put('/start', function(req, res) {
 router.put('/stop', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /manager/stop");
     manager.stop(function (data) {
+        rh.cmd(data, res);
+    });
+})
+
+// PUT /manager/restart - Restart manager
+router.put('/restart', function(req, res) {
+    logger.log(req.connection.remoteAddress + " PUT /manager/restart");
+    manager.restart(function (data) {
         rh.cmd(data, res);
     });
 })

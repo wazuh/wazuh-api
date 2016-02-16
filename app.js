@@ -18,12 +18,11 @@ var https = require('https');
 var logger = require('./helpers/logger');
 var config = require('./config.js');
 
-// Settings
-port = process.env.PORT || config.port;
-
 /********************************************/
 /* Config APP
 /********************************************/
+port = process.env.PORT || config.port;
+
 var app = express();
 
 // Basic authentication

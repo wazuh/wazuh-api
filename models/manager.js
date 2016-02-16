@@ -30,6 +30,11 @@ exports.stop = function(callback){
     execute.exec(cmd_ossec_control, args, callback);
 }
 
+exports.restart = function(callback){
+    var args = ['-j', 'restart'];
+    execute.exec(cmd_ossec_control, args, callback);
+}
+
 exports.settings = function(filter, callback){
     var cmd = "/home/repos/wazuh-API/scripts/get_conf.py";
     execute.exec(cmd, [], function (data) {
