@@ -18,3 +18,8 @@ exports.names = function(name) {
     var regex = /^[a-zA-Z0-9\-\_\.]+$/;
     return regex.test(name);
 }
+
+exports.dates = function(date) {
+    var regex = /^\d{8}$/;
+    return regex.test(date);
+}

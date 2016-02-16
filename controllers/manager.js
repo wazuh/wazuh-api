@@ -22,6 +22,10 @@ var jsutils = require('../helpers/js_utils');
  * GET /manager/settings - Get manager settings
  * GET /manager/settings?section=rules - Get rules in ossec.conf
  * GET /manager/testconfig - Test config
+ * GET /manager/stats - Stats Today
+ * GET /manager/stats/hourly - Stats hourly averages.
+ * GET /manager/stats/weekly - Stats weekly-hourly averages
+ * GET /manager/stats/YYYYMMDD - Stats YYYYMMDD
  *
  * PUT /manager/start - Start manager
  * PUT /manager/stop - Stop manager
@@ -75,6 +79,44 @@ router.get('/testconfig', function(req, res) {
         rh.cmd(data, res);
     });
     
+})
+
+// GET /manager/stats - Stats Today
+router.get('/stats', function(req, res) {
+    logger.log(req.connection.remoteAddress + " GET /manager/stats");
+    manager.stats("today", function (data) {
+        rh.cmd(data, res);
+    });
+})
+
+// GET /manager/stats/hourly - Stats hourly averages.
+router.get('/stats/hourly', function(req, res) {
+    logger.log(req.connection.remoteAddress + " GET /manager/stats/hourly");
+    manager.stats("hourly", function (data) {
+        rh.cmd(data, res);
+    });
+})
+
+// GET /manager/stats/weekly - Stats weekly-hourly averages
+router.get('/stats/weekly', function(req, res) {
+    logger.log(req.connection.remoteAddress + " GET /manager/stats/weekly");
+    manager.stats("weekly", function (data) {
+        rh.cmd(data, res);
+    });
+})
+
+// GET /manager/stats/YYYYMMDD - Stats YYYYMMDD
+router.get('/stats/:date', function(req, res) {
+    logger.log(req.connection.remoteAddress + " GET /manager/stats/YYYYMMDD");
+    
+    if (validator.dates(req.params.date)){
+        manager.stats(req.params.date, function (data) {
+            rh.cmd(data, res);
+        });
+    }
+    else{
+        rh.bad_request("605", "date", res);
+    }
 })
 
 /********************************************/

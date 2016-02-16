@@ -64,3 +64,26 @@ exports.testconfig = function(callback){
     var cmd = "/home/repos/wazuh-API/scripts/check_config.py";
     execute.exec(cmd, [], callback);
 }
+
+exports.stats = function(date, callback){
+    var cmd = "/home/repos/wazuh-API/scripts/stats.py";
+    var args = [];
+    
+    switch(date) {
+        case "today":
+            var moment = require('moment');
+            date = moment().format('YYYYMMDD')
+            args = ['-t', '-y', date.substring(0, 4), '-m', date.substring(4, 6), '-d', date.substring(6, 8)];
+            break;
+        case "hourly":
+            args = ['-h'];
+            break;
+        case "weekly":
+            args = ['-w'];
+            break;
+        default:
+           args = ['-t', '-y', date.substring(0, 4), '-m', date.substring(4, 6), '-d', date.substring(6, 8)];
+    }
+
+    execute.exec(cmd, args, callback);
+}
