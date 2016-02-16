@@ -12,12 +12,14 @@
 var express = require('express');
 var router = express.Router();
 var agent = require('../models/agent');
-var rh = require('../helpers/response_handler');
+var res_h = require('../helpers/response_handler');
+var req_h = require('../helpers/request_handler');
 var logger = require('../helpers/logger');
 var validator = require('../helpers/input_validation');
 
 /**
  * GET /agents - Get agents list
+ * GET /agents?status=active - Get agents with status: Active, Disconnected, Never connected
  * GET /agents/:agent_id/key - Get Agent Key
  * GET /agents/:agent_id/syscheck/modified_files - List modified files for the agent.
  * GET /agents/:agent_id/syscheck/modified_files/:filename - Prints information about a modified file.
@@ -41,6 +43,7 @@ var validator = require('../helpers/input_validation');
  *
 **/
 
+
 /********************************************/
 /* GET
 /********************************************/
@@ -48,9 +51,15 @@ var validator = require('../helpers/input_validation');
 // GET /agents - Get agents list
 router.get('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents");
-    agent.all(function (data) {
-        rh.cmd(data, res);
-    });
+    
+    filter = req_h.get_filter(req.query, ['status'], 1);
+    
+    if (filter == "bad_field")
+        res_h.bad_request("604", "Allowed fields: status", res);
+    else
+        agent.all(filter, function (data) {
+            res_h.cmd(data, res);
+        });
 })
 
 // GET /agents/:agent_id/key - Get Agent Key
@@ -59,11 +68,11 @@ router.get('/:agent_id/key', function(req, res) {
 
     if (validator.numbers(req.params.agent_id)){
         agent.get_key(req.params.agent_id, function (data) {
-            rh.cmd(data, res);
+            res_h.cmd(data, res);
         });
     }
     else{
-        rh.bad_request("600", "agent_id", res);
+        res_h.bad_request("600", "agent_id", res);
     }
 })
 
@@ -73,11 +82,11 @@ router.get('/:agent_id/syscheck/modified_files', function(req, res) {
 
     if (validator.numbers(req.params.agent_id)){
         agent.syscheck_modified_files(req.params.agent_id, function (data) {
-            rh.cmd(data, res);
+            res_h.cmd(data, res);
         });
     }
     else{
-        rh.bad_request("600", "agent_id", res);
+        res_h.bad_request("600", "agent_id", res);
     }
 })
 
@@ -90,14 +99,14 @@ router.get('/:agent_id/syscheck/modified_files/:filename', function(req, res) {
     
     if (ok_id && ok_filename){
         agent.syscheck_modified_file(req.params.agent_id, req.params.filename, function (data) {
-            rh.cmd(data, res);
+            res_h.cmd(data, res);
         });
     }
     else{
         if (!ok_id)
-            rh.bad_request("600", "agent_id", res);
+            res_h.bad_request("600", "agent_id", res);
         else (!ok_filename)
-            rh.bad_request("601", "filename", res);
+            res_h.bad_request("601", "filename", res);
     }
 })
 
@@ -107,11 +116,11 @@ router.get('/:agent_id/syscheck/last_scan', function(req, res) {
 
     if (validator.numbers(req.params.agent_id)){
         agent.syscheck_last_scan(req.params.agent_id, function (data) {
-            rh.cmd(data, res);
+            res_h.cmd(data, res);
         });
     }
     else{
-        rh.bad_request("600", "agent_id", res);
+        res_h.bad_request("600", "agent_id", res);
     }
 })
 
@@ -121,11 +130,11 @@ router.get('/:agent_id/rootcheck', function(req, res) {
 
     if (validator.numbers(req.params.agent_id)){
         agent.print_rootcheck_db(req.params.agent_id, function (data) {
-            rh.cmd(data, res);
+            res_h.cmd(data, res);
         });
     }
     else{
-        rh.bad_request("600", "agent_id", res);
+        res_h.bad_request("600", "agent_id", res);
     }
 })
 
@@ -135,11 +144,11 @@ router.get('/:agent_id/rootcheck/last_scan', function(req, res) {
 
     if (validator.numbers(req.params.agent_id)){
         agent.rootcheck_last_scan(req.params.agent_id, function (data) {
-            rh.cmd(data, res);
+            res_h.cmd(data, res);
         });
     }
     else{
-        rh.bad_request("600", "agent_id", res);
+        res_h.bad_request("600", "agent_id", res);
     }
 })
 
@@ -149,11 +158,11 @@ router.get('/:agent_id', function(req, res) {
     
     if (validator.numbers(req.params.agent_id)){
         agent.info(req.params.agent_id, function (data) {
-            rh.cmd(data, res);
+            res_h.cmd(data, res);
         });
     }
     else{
-        rh.bad_request("600", "agent_id", res);
+        res_h.bad_request("600", "agent_id", res);
     }
 })
 
@@ -168,11 +177,11 @@ router.put('/:agent_id/restart', function(req, res) {
     
     if (validator.numbers(req.params.agent_id)){
         agent.restart(req.params.agent_id, function (data) {
-            rh.cmd(data, res);
+            res_h.cmd(data, res);
         });
     }
     else{
-        rh.bad_request("600", "agent_id", res);
+        res_h.bad_request("600", "agent_id", res);
     }
 })
 
@@ -180,7 +189,7 @@ router.put('/:agent_id/restart', function(req, res) {
 router.put('/syscheck', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /agents/syscheck");
     agent.run_syscheck("ALL", function (data) {
-        rh.cmd(data, res);
+        res_h.cmd(data, res);
     });
 })
 
@@ -190,11 +199,11 @@ router.put('/:agent_id/syscheck', function(req, res) {
 
     if (validator.numbers(req.params.agent_id)){
         agent.run_syscheck(req.params.agent_id, function (data) {
-            rh.cmd(data, res);
+            res_h.cmd(data, res);
         });
     }
     else{
-        rh.bad_request("600", "agent_id", res);
+        res_h.bad_request("600", "agent_id", res);
     }
 })
 
@@ -202,7 +211,7 @@ router.put('/:agent_id/syscheck', function(req, res) {
 router.put('/rootcheck', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /agents/rootcheck");
     agent.run_syscheck("ALL", function (data) {
-        rh.cmd(data, res);
+        res_h.cmd(data, res);
     });
 })
 
@@ -212,11 +221,11 @@ router.put('/:agent_id/rootcheck', function(req, res) {
 
     if (validator.numbers(req.params.agent_id)){
         agent.run_rootcheck(req.params.agent_id, function (data) {
-            rh.cmd(data, res);
+            res_h.cmd(data, res);
         });
     }
     else{
-        rh.bad_request("600", "agent_id", res);
+        res_h.bad_request("600", "agent_id", res);
     }
 })
 
@@ -226,11 +235,11 @@ router.put('/:agent_name', function(req, res) {
     
     if (validator.names(req.params.agent_name)){
         agent.add(req.params.agent_name, function (data) {
-            rh.cmd(data, res);
+            res_h.cmd(data, res);
         });
     }
     else{
-        rh.bad_request("601", "agent_name", res);
+        res_h.bad_request("601", "agent_name", res);
     }
 
 })
@@ -244,7 +253,7 @@ router.put('/:agent_name', function(req, res) {
 router.delete('/syscheck', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /agents/syscheck");
         agent.clear_syscheck("ALL", function (data) {
-            rh.cmd(data, res);
+            res_h.cmd(data, res);
         });
 
 })
@@ -255,11 +264,11 @@ router.delete('/:agent_id/syscheck', function(req, res) {
     
     if (validator.numbers(req.params.agent_id)){
         agent.clear_syscheck(req.params.agent_id, function (data) {
-            rh.cmd(data, res);
+            res_h.cmd(data, res);
         });
     }
     else{
-        rh.bad_request("600", "agent_id", res);
+        res_h.bad_request("600", "agent_id", res);
     }
 
 })
@@ -268,7 +277,7 @@ router.delete('/:agent_id/syscheck', function(req, res) {
 router.delete('/rootcheck', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /agents/rootcheck");
         agent.clear_rootcheck("ALL", function (data) {
-            rh.cmd(data, res);
+            res_h.cmd(data, res);
         });
 
 })
@@ -279,11 +288,11 @@ router.delete('/:agent_id/rootcheck', function(req, res) {
     
     if (validator.numbers(req.params.agent_id)){
         agent.clear_rootcheck(req.params.agent_id, function (data) {
-            rh.cmd(data, res);
+            res_h.cmd(data, res);
         });
     }
     else{
-        rh.bad_request("600", "agent_id", res);
+        res_h.bad_request("600", "agent_id", res);
     }
 
 })
@@ -294,11 +303,11 @@ router.delete('/:agent_id', function(req, res) {
     
     if (validator.numbers(req.params.agent_id)){
         agent.remove(req.params.agent_id, function (data) {
-            rh.cmd(data, res);
+            res_h.cmd(data, res);
         });
     }
     else{
-        rh.bad_request("600", "agent_id", res);
+        res_h.bad_request("600", "agent_id", res);
     }
 
 })

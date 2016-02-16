@@ -11,7 +11,6 @@
 
 var execute = require('../helpers/execute');
 var errors = require('../helpers/errors');
-var jsutils = require('../helpers/js_utils');
 
 var cmd_ossec_control = "/var/ossec/bin/ossec-control";
 
@@ -39,18 +38,14 @@ exports.settings = function(filter, callback){
     var cmd = "/home/repos/wazuh-API/scripts/get_conf.py";
     execute.exec(cmd, [], function (data) {
 
-        if (data.error == 0 && !jsutils.isEmptyObject(filter)){
+        if (data.error == 0 && filter != null){
             
             if(filter.section && filter.field)
                 data_filtered = data.response[filter.section][filter.field];
             else
                 data_filtered = data.response[filter.section];
             
-            if (data_filtered)
-                r_data_filtered = {'error': 0, 'response': data_filtered};
-            else{
-                r_data_filtered = {'error': 0, 'response': null};
-            }
+            r_data_filtered = {'error': 0, 'response': data_filtered};
 
             callback(r_data_filtered);
         }

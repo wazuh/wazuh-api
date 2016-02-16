@@ -22,9 +22,28 @@ var cmd_rootcheck_control = config.ossec_path + "/bin/rootcheck_control";
 /* Agent
 /********************************************/
 
-exports.all = function(callback){
+exports.all = function(filter, callback){
     var args = ['-j', '-l'];
-    execute.exec(cmd_agent_control, args, callback);
+    execute.exec(cmd_agent_control, args, function (data) {
+
+        if (data.error == 0 && filter != null){
+            
+            var data_filtered = [];
+            
+            for(var i=0;i<data.response.length;i++){
+                var agent = data.response[i];
+                if (agent.status.toLowerCase() == filter.status.toLowerCase())
+                    data_filtered.push(agent)
+            }
+            
+            r_data_filtered = {'error': 0, 'response': data_filtered};
+            
+            callback(r_data_filtered);
+        }
+        else{
+            callback(data);
+        }
+    });
 }
 
 exports.info = function(id, callback){
