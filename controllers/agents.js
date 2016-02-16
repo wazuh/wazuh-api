@@ -21,7 +21,9 @@ var validator = require('../helpers/input_validation');
  * GET /agents/:agent_id/key - Get Agent Key
  * GET /agents/:agent_id/syscheck/modified_files - List modified files for the agent.
  * GET /agents/:agent_id/syscheck/modified_files/:filename - Prints information about a modified file.
+ * GET /agents/:agent_id/syscheck/last_scan - Syscheck last scan
  * GET /agents/:agent_id/rootcheck - Get rootcheck database
+ * GET /agents/:agent_id/rootcheck/last_scan - Rootcheck last scan
  * GET /agents/:agent_id - Get Agent Info
  *
  * PUT /agents/:agent_name - Add Agent
@@ -99,12 +101,40 @@ router.get('/:agent_id/syscheck/modified_files/:filename', function(req, res) {
     }
 })
 
+// GET /agents/:agent_id/syscheck/last_scan - Syscheck last scan
+router.get('/:agent_id/syscheck/last_scan', function(req, res) {
+    logger.log(req.connection.remoteAddress + " GET /agents/:agent_id/syscheck/last_scan");
+
+    if (validator.numbers(req.params.agent_id)){
+        agent.syscheck_last_scan(req.params.agent_id, function (data) {
+            rh.cmd(data, res);
+        });
+    }
+    else{
+        rh.bad_request("600", "agent_id", res);
+    }
+})
+
 // GET /agents/:agent_id/rootcheck - Get rootcheck database
 router.get('/:agent_id/rootcheck', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents/:agent_id/rootcheck");
 
     if (validator.numbers(req.params.agent_id)){
         agent.print_rootcheck_db(req.params.agent_id, function (data) {
+            rh.cmd(data, res);
+        });
+    }
+    else{
+        rh.bad_request("600", "agent_id", res);
+    }
+})
+
+// GET /agents/:agent_id/rootcheck/last_scan - Rootcheck last scan
+router.get('/:agent_id/rootcheck/last_scan', function(req, res) {
+    logger.log(req.connection.remoteAddress + " GET /agents/:agent_id/rootcheck/last_scan");
+
+    if (validator.numbers(req.params.agent_id)){
+        agent.rootcheck_last_scan(req.params.agent_id, function (data) {
             rh.cmd(data, res);
         });
     }

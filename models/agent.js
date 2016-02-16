@@ -93,6 +93,16 @@ exports.syscheck_modified_file = function(id, filename, callback){
     execute.exec(cmd_syscheck_control, args, callback);
 }
 
+exports.syscheck_last_scan = function(id, callback){
+    this.info(id, function (data) {
+        if (data.error == 0){
+            data_time = {'syscheckTime': data.response.syscheckTime, 'syscheckEndTime': data.response.syscheckEndTime};
+            callback({'error': 0, 'response': data_time});
+        }
+        else
+            callback(data)
+    });
+}
 
 /********************************************/
 /* Agent - Rootcheck
@@ -116,4 +126,15 @@ exports.clear_rootcheck = function(id, callback){
 exports.print_rootcheck_db = function(id, callback){
     var args = ['-j', '-i', id];
     execute.exec(cmd_rootcheck_control, args, callback);
+}
+
+exports.rootcheck_last_scan = function(id, callback){
+    this.info(id, function (data) {
+        if (data.error == 0){
+            data_time = {'rootcheckTime': data.response.rootcheckTime, 'rootcheckEndTime': data.response.rootcheckEndTime};
+            callback({'error': 0, 'response': data_time});
+        }
+        else
+            callback(data)
+    });
 }
