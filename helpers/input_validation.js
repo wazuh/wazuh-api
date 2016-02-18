@@ -10,16 +10,37 @@
  */
 
 exports.numbers = function(n) {
-    var regex = /^\d+$/;
-    return regex.test(n);
+    if (typeof n != 'undefined'){
+        var regex = /^\d+$/;
+        return regex.test(n);
+    }
+    else
+        return false;
 }
 
 exports.names = function(name) {
-    var regex = /^[a-zA-Z0-9\-\_\.]+$/;
-    return regex.test(name);
+    if (typeof name != 'undefined'){
+        var regex = /^[a-zA-Z0-9\-\_\.]+$/;
+        return regex.test(name);
+    }
+    else
+        return false;
 }
 
 exports.dates = function(date) {
-    var regex = /^\d{8}$/;
-    return regex.test(date);
+    if (typeof date != 'undefined'){
+        var regex = /^\d{8}$/;
+        return regex.test(date);
+    }
+    else
+        return false;
+}
+
+exports.ips = function(ip) {
+    if (typeof ip != 'undefined'){
+        var regex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
+        return regex.test(ip);
+    }
+    else
+        return false;
 }

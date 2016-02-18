@@ -31,6 +31,7 @@ errors['601'] = "Param not valid. Valid characters: a-z, A-Z, 0-9, ., _, -";  //
 errors['603'] = "No URI found. Bad HTTP verb?, typo?";  // Default error
 errors['604'] = "Filter error";  // Filter
 errors['605'] = "Param not valid. Date format: YYYYMMDD";  // Date
+errors['606'] = "Param not valid. IP invalid";  // Date
 
 exports.description = function(n){
     if (n in errors)

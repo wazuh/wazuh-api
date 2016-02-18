@@ -61,8 +61,23 @@ exports.get_key = function(id, callback){
     execute.exec(cmd_manage_agents, args, callback);
 }
 
-exports.add = function(name, callback){
-    var args = ['-j', '-a', 'any', '-n', name];
+exports.add = function(name, ip, callback){
+    var args;
+    
+    if (ip.toLowerCase() == "any")
+        args = ['-j', '-a', 'any', '-n', name];
+    else{
+        // ToDo: Checks
+        /*
+        ** IP already on OSSEC List?
+        **  Yes: Is the agent active?
+        **      Yes: Do nothing, generate alert.
+        **      No: Comment(remove)  old agent and add the new one
+        **  No: Add agent
+        */
+        args = ['-j', '-a', ip, '-n', name];
+    }
+    
     execute.exec(cmd_manage_agents, args, callback);
 }
 

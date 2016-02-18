@@ -234,7 +234,7 @@ router.put('/:agent_name', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /agents/:agent_name");
     
     if (validator.names(req.params.agent_name)){
-        agent.add(req.params.agent_name, function (data) {
+        agent.add(req.params.agent_name, "any", function (data) {
             res_h.cmd(data, res);
         });
     }
@@ -314,8 +314,28 @@ router.delete('/:agent_id', function(req, res) {
 
 
 /********************************************/
-/* PATCH
+/* POST
 /********************************************/
+
+// POST /agents - Add Agent
+router.post('/', function(req, res) {
+    logger.log(req.connection.remoteAddress + " POST /agents");
+    var name = req.body.name;
+    var ip = req.body.ip;
+
+    if (validator.names(name) && validator.ips(ip)){
+        agent.add(name, ip, function (data) {
+            res_h.cmd(data, res);
+        });
+    }
+    else{
+        if (!validator.names(name))
+            res_h.bad_request("601", "agent_name", res);
+        else
+            res_h.bad_request("606", "", res);
+    }
+
+})
 
 
 
