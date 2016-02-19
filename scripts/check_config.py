@@ -8,6 +8,7 @@ import json
 import os
 
 if __name__ == "__main__":
+    ossec_path = "/var/ossec"
     r_error = 0
     r_description = ""
     r_response = ""
@@ -15,7 +16,7 @@ if __name__ == "__main__":
     output = ""
     err = ""
     try:
-        p = subprocess.Popen(["/var/ossec/bin/ossec-logtest", "-t"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen(["{0}/bin/ossec-logtest".format(ossec_path), "-t"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         (output, err) = p.communicate()
 
         lines = err.split(os.linesep)

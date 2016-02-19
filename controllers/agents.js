@@ -35,11 +35,14 @@ var validator = require('../helpers/input_validation');
  * PUT /agents/rootcheck - Run rootcheck in all agents:
  * PUT /agents/:agent_id/rootcheck - Run rootcheck in the agent.
  *
+ * POST /agents - Add Agent
+ *
  * DELETE /agents/syscheck - Clear the database for all agent.
  * DELETE /agents/:agent_id/syscheck - Clear the database for the agent.
  * DELETE /agents/rootcheck - Clear the database for all agent.
  * DELETE /agents/:agent_id/rootcheck - Clear the database for the agent.
  * DELETE /agents/:agent_id - Remove Agent
+ *
  *
 **/
 

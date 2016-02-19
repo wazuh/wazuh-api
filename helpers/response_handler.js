@@ -31,13 +31,13 @@ exports.cmd = function(json_cmd_output, res){
     if (json_cmd_output.error != 0){
         status = 500;
         json_res = {'error': json_cmd_output.error, 'response': null, 'message': json_cmd_output.description};
+        logger.log("Response: " + JSON.stringify(json_res) + " HTTP Status: " + status);
     }
     else{
         status = 200;
         json_res = {'error': '0', 'response': json_cmd_output.response, 'message': null};
+        logger.log("Response: {...} HTTP Status: " + status);
     }
-    
-    logger.log("Response: " + JSON.stringify(json_res) + " HTTP Status: " + status);
     
     res.status(status).json(json_res);
 }

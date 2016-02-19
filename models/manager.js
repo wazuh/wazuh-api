@@ -11,8 +11,9 @@
 
 var execute = require('../helpers/execute');
 var errors = require('../helpers/errors');
+var config = require('../config.js');
 
-var cmd_ossec_control = "/var/ossec/bin/ossec-control";
+var cmd_ossec_control = config.ossec_path + "/bin/ossec-control";
 
 exports.status = function(callback){
     var args = ['-j', 'status'];
@@ -35,7 +36,7 @@ exports.restart = function(callback){
 }
 
 exports.settings = function(filter, callback){
-    var cmd = "/home/repos/wazuh-API/scripts/get_conf.py";
+    var cmd = config.api_path + "/scripts/get_conf.py";
     execute.exec(cmd, [], function (data) {
 
         if (data.error == 0 && filter != null){
@@ -56,12 +57,12 @@ exports.settings = function(filter, callback){
 }
 
 exports.testconfig = function(callback){
-    var cmd = "/home/repos/wazuh-API/scripts/check_config.py";
+    var cmd = config.api_path + "/scripts/check_config.py";
     execute.exec(cmd, [], callback);
 }
 
 exports.stats = function(date, callback){
-    var cmd = "/home/repos/wazuh-API/scripts/stats.py";
+    var cmd = config.api_path + "/scripts/stats.py";
     var args = [];
     
     switch(date) {

@@ -12,7 +12,7 @@
 var moment = require('moment');
 var config = require('../config.js');
 
-var tag = "WazuhAPI";
+var tag = config.logs_tag;
 var LEVEL_DISABLED = 0;
 var LEVEL_INFO = 1;
 var LEVEL_WARNING = 2;

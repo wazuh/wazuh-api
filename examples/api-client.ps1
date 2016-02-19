@@ -14,7 +14,7 @@
 
 function req($method, $resource){
     # Config
-    $base_url = "https://54.229.81.196:55000"
+    $base_url = "https://xxx.xxx.xxx.xxx:55000"
     $username = "foo"
     $password = "bar"
 
