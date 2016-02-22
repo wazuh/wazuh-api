@@ -30,7 +30,7 @@ if __name__ == "__main__":
         if err:
             if "Error" in err:
                 r_error = 82
-                r_description = "Config error: '{0}'".format(lines[error_line:-1])
+                r_description = "{0}".format(lines[error_line:-1])
             else:
                 r_error = 0
                 r_response = "OK"

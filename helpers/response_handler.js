@@ -46,7 +46,7 @@ exports.bad_request = function(internal_error, extra_msg, res){
     var msg = errors.description(internal_error);
     
     if (extra_msg)
-        msg = msg + ": " + extra_msg;
+        msg = msg + ". " + extra_msg;
     
     json_res = {'error': internal_error, 'response': null, 'message': msg};
     

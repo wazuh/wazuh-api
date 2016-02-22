@@ -18,18 +18,18 @@ var logger = require('../helpers/logger');
 var validator = require('../helpers/input_validation');
 
 /**
- * GET /manager/status - Get manager status
- * GET /manager/settings - Get manager settings
- * GET /manager/settings?section=rules - Get rules in ossec.conf
- * GET /manager/testconfig - Test config
- * GET /manager/stats - Stats Today
- * GET /manager/stats/hourly - Stats hourly averages.
- * GET /manager/stats/weekly - Stats weekly-hourly averages
- * GET /manager/stats/YYYYMMDD - Stats YYYYMMDD
  *
  * PUT /manager/start - Start manager
  * PUT /manager/stop - Stop manager
  * PUT /manager/restart - Restart manager
+ * GET /manager/status - Get manager status
+ * GET /manager/configuration - Get manager configuration
+ *   GET /manager/configuration?section=rules - Get rules in ossec.conf
+ * GET /manager/configuration/test - Test configuration
+ * GET /manager/stats - Stats Today
+ *   GET /manager/stats?date=YYYYMMDD - Stats YYYYMMDD
+ * GET /manager/stats/hourly - Stats hourly averages.
+ * GET /manager/stats/weekly - Stats weekly-hourly averages
  *
 **/
 
@@ -47,35 +47,54 @@ router.get('/status', function(req, res) {
     
 })
 
-// GET /manager/settings - Get manager settings
-router.get('/settings', function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /manager/settings");
+// GET /manager/configuration - Get manager configuration
+router.get('/configuration', function(req, res) {
+    logger.log(req.connection.remoteAddress + " GET /manager/configuration");
 
     filter = req_h.get_filter(req.query, ['section', 'field'], 2);
     
     if (filter == "bad_field")
         res_h.bad_request("604", "Allowed fields: section, field", res);
     else
-        manager.settings(filter, function (data) {
+        manager.config(filter, function (data) {
             res_h.cmd(data, res);
         });
 })
 
-// GET /manager/testconfig - Test config
-router.get('/testconfig', function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /manager/testconfig");
+// GET /manager/configuration/test - Test configuration
+router.get('/configuration/test', function(req, res) {
+    logger.log(req.connection.remoteAddress + " GET /manager/configuration/test");
     manager.testconfig(function (data) {
         res_h.cmd(data, res);
     });
     
 })
 
-// GET /manager/stats - Stats Today
+// GET /manager/stats - Stats
 router.get('/stats', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/stats");
-    manager.stats("today", function (data) {
-        res_h.cmd(data, res);
-    });
+
+    filter = req_h.get_filter(req.query, ['date'], 1);
+    
+    if (filter == "bad_field")
+        res_h.bad_request("604", "Allowed fields: date", res);
+    else{
+        if(filter != null){
+            if (validator.dates(filter.date)){
+                manager.stats(filter.date, function (data) {
+                    res_h.cmd(data, res);
+                });
+            }
+            else{
+                res_h.bad_request("605", "Field: date", res);
+            }
+        }
+        else{
+            manager.stats("today", function (data) {
+                res_h.cmd(data, res);
+            });
+        }
+    }
 })
 
 // GET /manager/stats/hourly - Stats hourly averages.
@@ -92,20 +111,6 @@ router.get('/stats/weekly', function(req, res) {
     manager.stats("weekly", function (data) {
         res_h.cmd(data, res);
     });
-})
-
-// GET /manager/stats/YYYYMMDD - Stats YYYYMMDD
-router.get('/stats/:date', function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /manager/stats/YYYYMMDD");
-    
-    if (validator.dates(req.params.date)){
-        manager.stats(req.params.date, function (data) {
-            res_h.cmd(data, res);
-        });
-    }
-    else{
-        res_h.bad_request("605", "date", res);
-    }
 })
 
 /********************************************/

@@ -20,7 +20,7 @@ exports.numbers = function(n) {
 
 exports.names = function(name) {
     if (typeof name != 'undefined'){
-        var regex = /^[a-zA-Z0-9\-\_\.]+$/;
+        var regex = /^[a-zA-Z0-9\-\_\.\\\/]+$/;
         return regex.test(name);
     }
     else
@@ -38,7 +38,7 @@ exports.dates = function(date) {
 
 exports.ips = function(ip) {
     if (typeof ip != 'undefined'){
-        var regex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
+        var regex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}(?:\/\d{1,2})*$|any$|ANY$/;
         return regex.test(ip);
     }
     else

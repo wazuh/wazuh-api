@@ -47,6 +47,8 @@ router.use(function(req, res, next) {
 // Controllers
 router.use('/agents', require('./agents'));
 router.use('/manager', require('./manager'));
+router.use('/syscheck', require('./syscheck'));
+router.use('/rootcheck', require('./rootcheck'));
 
 // Index
 router.get('/',function(req, res) {

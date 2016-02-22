@@ -35,7 +35,7 @@ exports.restart = function(callback){
     execute.exec(cmd_ossec_control, args, callback);
 }
 
-exports.settings = function(filter, callback){
+exports.config = function(filter, callback){
     var cmd = config.api_path + "/scripts/get_conf.py";
     execute.exec(cmd, [], function (data) {
 
