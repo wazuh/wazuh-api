@@ -19,12 +19,12 @@ var validator = require('../helpers/input_validation');
 
 /**
  *
- * GET /rootcheck/:agent_id/ - Get rootcheck database
+ * GET /rootcheck/:agent_id - Get rootcheck database
  * GET /rootcheck/:agent_id/last_scan - Rootcheck last scan
- * PUT /rootcheck/ - Run rootcheck in all agents:
- * PUT /rootcheck/:agent_id/ - Run rootcheck in the agent.
- * DELETE /rootcheck/ - Clear the database for all agent.
- * DELETE /rootcheck/:agent_id/ - Clear the database for the agent.
+ * PUT /rootcheck - Run rootcheck in all agents:
+ * PUT /rootcheck/:agent_id - Run rootcheck in the agent.
+ * DELETE /rootcheck - Clear the database for all agent.
+ * DELETE /rootcheck/:agent_id - Clear the database for the agent.
  *
 **/
 
@@ -104,7 +104,7 @@ router.delete('/', function(req, res) {
 
 // DELETE /rootcheck/:agent_id - Clear the database for the agent.
 router.delete('/:agent_id', function(req, res) {
-    logger.log(req.connection.remoteAddress + " DELETE /rootcheck/:agent_id/");
+    logger.log(req.connection.remoteAddress + " DELETE /rootcheck/:agent_id");
     
     if (validator.numbers(req.params.agent_id)){
         rootcheck.clear(req.params.agent_id, function (data) {

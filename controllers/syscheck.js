@@ -23,7 +23,7 @@ var validator = require('../helpers/input_validation');
  *   GET /syscheck/:agent_id/files/changed?filename=name - Prints information about a modified file.
  * GET /syscheck/:agent_id/last_scan - Syscheck last scan
  * PUT /syscheck - Run syscheck in all agents.
- * PUT /syscheck/:agent_id/ - Run syscheck in the agent.
+ * PUT /syscheck/:agent_id - Run syscheck in the agent.
  * DELETE /syscheck - Clear the database for all agent.
  * DELETE /syscheck/:agent_id - Clear the database for the agent.
  *
@@ -126,7 +126,7 @@ router.delete('/', function(req, res) {
 
 })
 
-// DELETE /syscheck/:agent_id/ - Clear the database for the agent.
+// DELETE /syscheck/:agent_id - Clear the database for the agent.
 router.delete('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /syscheck/:agent_id");
     

@@ -38,7 +38,7 @@ exports.dates = function(date) {
 
 exports.ips = function(ip) {
     if (typeof ip != 'undefined'){
-        var regex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}(?:\/\d{1,2})*$|any$|ANY$/;
+        var regex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}(?:\/\d{1,2})*$|^any$|^ANY$/;
         return regex.test(ip);
     }
     else
