@@ -12,13 +12,14 @@
 var express = require('express');
 var errors = require('../helpers/errors');
 var logger = require('../helpers/logger');
+var config = require('../config.js');
 var router = express.Router();
 var api_version = "v1.1";
 
-// Allow petitions from outside of the API URL
-// ToDo: Review
+// Access-Control-Allow
 router.use(function(req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Origin', config.AccessControlAllowOrigin);
+    res.setHeader('Access-Control-Allow-Headers', config.AccessControlAllowHeaders);
     next();
 });
 

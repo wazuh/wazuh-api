@@ -14,7 +14,6 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var auth = require("http-auth");
 var fs = require('fs');
-var https = require('https');
 var logger = require('./helpers/logger');
 var config = require('./config.js');
 
@@ -26,25 +25,43 @@ port = process.env.PORT || config.port;
 var app = express();
 
 // Basic authentication
-var auth_secure = auth.basic({
-    realm: "OSSEC API",
-    file: __dirname + "/ssl/htpasswd"
-});
-app.use(auth.connect(auth_secure));
+if (config.basic_auth.toLowerCase() == "yes"){
+    var auth_secure = auth.basic({
+        realm: "OSSEC API",
+        file: __dirname + "/ssl/htpasswd"
+    });
+    app.use(auth.connect(auth_secure));
+}
 
+// Certs
+var options;
+if (config.https.toLowerCase() == "yes"){
+    options = {
+      key: fs.readFileSync(__dirname + '/ssl/server.key'),
+      cert: fs.readFileSync(__dirname + '/ssl/server.crt')
+    };
+}
+
+// Body
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 
+// Controllers
 app.use(require('./controllers'))
 
-// Certs
-var options = {
-  key: fs.readFileSync(__dirname + '/ssl/server.key'),
-  cert: fs.readFileSync(__dirname + '/ssl/server.crt')
-};
 /********************************************/
 
 // Create server
-var server = https.createServer(options, app).listen(port, function(){
-    logger.log("Listening on: https://" + server.address().address + ":" + port);
-});
+if (config.https.toLowerCase() == "yes"){
+    var https = require('https');
+    var server = https.createServer(options, app).listen(port, function(){
+        logger.log("Listening on: https://" + server.address().address + ":" + port);
+    });
+}
+else{
+    var http = require('http');
+    var server = http.createServer(app).listen(port, function(){
+        logger.log("Listening on: http://" + server.address().address + ":" + port);
+    });
+}
+
