@@ -25,8 +25,8 @@ except Exception as e:
 
 
 def req(method, resource, data=None):
-    # Config
-    base_url = 'https://x.x.x.x:55000'
+    # Configuration
+    base_url = 'https://IP:55000'
     auth = HTTPBasicAuth('foo', 'bar')
     verify = False
     url = '{0}/{1}'.format(base_url, resource)
@@ -48,6 +48,7 @@ def req(method, resource, data=None):
 
     except Exception as exception:
         print("Error: {0}".format(exception))
+        sys.exit(1)
 
     return code, res_json
 

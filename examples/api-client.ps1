@@ -1,23 +1,26 @@
 ###
-#  API RESTful for OSSEC
-#  Copyright (C) 2015-2016 Wazuh, Inc.All rights reserved.
-#  Wazuh.com
-#
-#  This program is a free software; you can redistribute it
-#  and/or modify it under the terms of the GNU General Public
-#  License (version 2) as published by the FSF - Free Software
-#  Foundation.
-###
 
 # How to use OSSEC Wazuh RESTful API from PowerShell 3.0+
 # Documentation: http://wazuh-documentation.readthedocs.org/en/latest/ossec_api.html
 
-function req($method, $resource){
-    # Config
-    $base_url = "https://xxx.xxx.xxx.xxx:55000"
-    $username = "foo"
-    $password = "bar"
+function Ignore-SelfSignedCerts {
+    add-type @"
+        using System.Net;
+        using System.Security.Cryptography.X509Certificates;
+    
+        public class PolicyCert : ICertificatePolicy {
+            public PolicyCert() {}
+            public bool CheckValidationResult(
+                ServicePoint sPoint, X509Certificate cert,
+                WebRequest wRequest, int certProb) {
+                return true;
+            }
+        }
+"@
+    [System.Net.ServicePointManager]::CertificatePolicy = new-object PolicyCert 
+}
 
+function req($method, $resource){
     $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $username, $password)))
     $url = $base_url + $resource;
 
@@ -29,6 +32,13 @@ function req($method, $resource){
     
 }
 
+# Configuration
+$base_url = "https://54.217.225.57:55000"
+$username = "foo"
+$password = "bar"
+Ignore-SelfSignedCerts
+
+#Requests
 Write-Output "Welcome:"
 $response = req -method "get" -resource "/"
 Write-Output $response
