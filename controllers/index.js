@@ -13,7 +13,7 @@ var express = require('express');
 var errors = require('../helpers/errors');
 var logger = require('../helpers/logger');
 var router = express.Router();
-var api_version = "v1.0";
+var api_version = "v1.1";
 
 // Allow petitions from outside of the API URL
 // ToDo: Review
