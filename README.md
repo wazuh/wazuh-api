@@ -23,7 +23,7 @@ OSSEC Wazuh API RESTful capabilities:
 
 #### Request reference
 
-[Full request reference](http://documentation.wazuh.com/en/latest/ossec_api.html#installation)
+[Full request reference](http://documentation.wazuh.com/en/latest/ossec_api.html#request-list)
 
 #### Full documentation
 
