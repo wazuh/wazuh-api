@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v1.2] - 2016-03-??
+### Added
+- ?
+
+### Fixed
+- Problem importing xmljson package in Python
+
 ## [v1.1] - 2016-02-24
 ### Added
 - Agents
