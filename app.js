@@ -16,6 +16,7 @@ var auth = require("http-auth");
 var fs = require('fs');
 var logger = require('./helpers/logger');
 var config = require('./config.js');
+var cors = require('cors')
 
 /********************************************/
 /* Config APP
@@ -43,6 +44,8 @@ if (config.https.toLowerCase() == "yes"){
 }
 
 // Body
+app.use(cors());
+app.options('*', cors());
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 
