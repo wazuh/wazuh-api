@@ -43,9 +43,12 @@ if (config.https.toLowerCase() == "yes"){
     };
 }
 
-// Body
+// CORS
+// ToDo
 app.use(cors());
 app.options('*', cors());
+
+// Body
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 

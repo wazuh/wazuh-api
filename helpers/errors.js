@@ -32,6 +32,7 @@ errors['603'] = "No URL found. Bad HTTP verb?, typo?";  // Default error
 errors['604'] = "Filter error";  // Filter
 errors['605'] = "Param not valid. Date format: YYYYMMDD";  // Date
 errors['606'] = "Param not valid. IP invalid";  // IP
+errors['607'] = "Invalid content-type. POST requests should be 'application/json' or 'application/x-www-form-urlencoded'";  // 
 
 exports.description = function(n){
     if (n in errors)

@@ -13,8 +13,9 @@ var express = require('express');
 var errors = require('../helpers/errors');
 var logger = require('../helpers/logger');
 var config = require('../config.js');
+var res_h = require('../helpers/response_handler');
 var router = express.Router();
-var api_version = "v1.1";
+var api_version = "v1.1.0";
 
 // Access-Control-Allow
 router.use(function(req, res, next) {
@@ -23,6 +24,17 @@ router.use(function(req, res, next) {
     next();
 });
 
+// Content-type
+router.post("*", function(req, res, next) {
+    var content_type = req.get('Content-Type');
+
+    if (!content_type || !(content_type == 'application/json' || content_type == 'application/x-www-form-urlencoded')){
+        logger.log(req.connection.remoteAddress + " POST " + req.path);
+        res_h.bad_request("607", "", res);
+    }
+    else
+        next();
+});
 
 /**
  * Versioning
@@ -61,7 +73,7 @@ router.get('/',function(req, res) {
 
 // ALWAYS Keep this as the last route
 router.all('*',function(req, res) {
-    logger.log(req.host + " GET " + JSON.stringify(req.params));
+    logger.log(req.connection.remoteAddress + JSON.stringify(req.params));
     json_res = { 'error': "603", 'response': null, 'message': errors.description(603)};
     res.status(404).json(json_res);
     logger.log("Response: " + JSON.stringify(json_res) + " HTTP Status: 404");
