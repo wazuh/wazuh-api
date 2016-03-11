@@ -49,13 +49,14 @@ app.use(cors());
 app.options('*', cors());
 
 // Body
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
 // Controllers
-app.use(require('./controllers'))
+app.use(require('./controllers'));
 
 /********************************************/
+
 
 // Create server
 if (config.https.toLowerCase() == "yes"){
@@ -71,3 +72,23 @@ else{
     });
 }
 
+
+// Event Handler
+process.on('uncaughtException', function(err) {
+    logger.log("Internal Error: uncaughtException");
+    if(err.stack)
+        logger.log(err.stack);
+    logger.log("Exiting...");
+    
+    process.exit(1);
+});
+
+process.on('SIGTERM', function() {
+    logger.log("Exiting... (SIGTERM)");
+    process.exit(1);
+});
+
+process.on('SIGINT', function() {
+    logger.log("Exiting... (SIGINT)");
+    process.exit(1);
+}); 

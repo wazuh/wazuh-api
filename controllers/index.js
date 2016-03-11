@@ -73,10 +73,23 @@ router.get('/',function(req, res) {
 
 // ALWAYS Keep this as the last route
 router.all('*',function(req, res) {
-    logger.log(req.connection.remoteAddress + JSON.stringify(req.params));
+    logger.log(req.connection.remoteAddress + " " + req.method + " " + req.path);
     json_res = { 'error': "603", 'response': null, 'message': errors.description(603)};
     res.status(404).json(json_res);
     logger.log("Response: " + JSON.stringify(json_res) + " HTTP Status: 404");
 });
+
+
+// Errors
+router.use(function(err, req, res, next){
+    logger.log("Internal Error");
+    if(err.stack)
+        logger.log(err.stack);
+    logger.log("Exiting...");
+    
+    process.exit(1);
+});
+
+
 
 module.exports = router
