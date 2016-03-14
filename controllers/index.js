@@ -80,7 +80,7 @@ router.all('*',function(req, res) {
 });
 
 
-// Errors
+// Router Errors
 router.use(function(err, req, res, next){
     logger.log("Internal Error");
     if(err.stack)

@@ -17,6 +17,7 @@ var fs = require('fs');
 var logger = require('./helpers/logger');
 var config = require('./config.js');
 var cors = require('cors')
+var res_h = require('./helpers/response_handler');
 
 /********************************************/
 /* Config APP
@@ -55,6 +56,22 @@ app.use(bodyParser.urlencoded({extended: true}));
 // Controllers
 app.use(require('./controllers'));
 
+// APP Errors
+app.use (function (err, req, res, next){
+
+    if ( err = "Error: invalid json" ){
+        logger.log(req.connection.remoteAddress + " " + req.method + " " + req.path);
+        res_h.bad_request("607", "", res);
+    }
+    else{
+        logger.log("Internal Error");
+        if(err.stack)
+            logger.log(err.stack);
+        logger.log("Exiting...");
+        process.exit(1);
+    }
+});
+
 /********************************************/
 
 
@@ -79,7 +96,6 @@ process.on('uncaughtException', function(err) {
     if(err.stack)
         logger.log(err.stack);
     logger.log("Exiting...");
-    
     process.exit(1);
 });
 

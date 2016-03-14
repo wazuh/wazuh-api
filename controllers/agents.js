@@ -148,7 +148,7 @@ router.post('/', function(req, res) {
     }
     else{
         if (!validator.names(name))
-            res_h.bad_request("601", "Field: agent_name", res);
+            res_h.bad_request("601", "Field: name", res);
         else
             res_h.bad_request("606", "Field: ip", res);
     }
