@@ -22,6 +22,8 @@ var res_h = require('./helpers/response_handler');
 /********************************************/
 /* Config APP
 /********************************************/
+var current_version = "v1.2";
+
 port = process.env.PORT || config.port;
 
 var app = express();
@@ -45,7 +47,7 @@ if (config.https.toLowerCase() == "yes"){
 }
 
 // CORS
-// ToDo
+// ToDo: Review
 app.use(cors());
 app.options('*', cors());
 
@@ -53,13 +55,39 @@ app.options('*', cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
+/**
+ * Versioning
+ * Using: Header: "api-version: vX.Y" or URL: /v1.2/
+ */
+app.use(function(req, res, next) {
+    var api_version_header = req.get('api-version');
+    var api_version_url = req.path.split('/')[1];
+    var regex_version = /^v\d+(?:\.\d+){0,1}$/i;
+
+    if (api_version_header && regex_version.test(api_version_header))
+        req.url = "/" + api_version_header + req.url;
+    else if (!(api_version_url && regex_version.test(api_version_url)))
+        req.url = "/" + current_version + req.url;
+
+    next();
+});
+
 // Controllers
-app.use(require('./controllers'));
+app.use("/" + current_version, require('./controllers'));
+
+// Example: OLD version
+/*
+var router1_1 = express.Router();
+router1_1.get("/", function(req, res) {
+    res.json({status: "ok"});
+});
+
+app.use("/v1.1", router1_1);
+*/
 
 // APP Errors
 app.use (function (err, req, res, next){
-
-    if ( err = "Error: invalid json" ){
+    if ( err == "Error: invalid json" ){
         logger.log(req.connection.remoteAddress + " " + req.method + " " + req.path);
         res_h.bad_request("607", "", res);
     }

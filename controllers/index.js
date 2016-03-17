@@ -14,8 +14,8 @@ var errors = require('../helpers/errors');
 var logger = require('../helpers/logger');
 var config = require('../config.js');
 var res_h = require('../helpers/response_handler');
+
 var router = express.Router();
-var api_version = "v1.1.0";
 
 // Access-Control-Allow
 router.use(function(req, res, next) {
@@ -36,27 +36,6 @@ router.post("*", function(req, res, next) {
         next();
 });
 
-/**
- * Versioning
- * Using: Header ("api-version") or url ("/v1", "/v1.0/")
- * ToDo: Directory Structure and specific routes
- */
-router.use(function(req, res, next) {
-    var api_version_header = req.get('api-version');
-    var api_version_url = req.url.split('/')[1];
-    var regex_version = /v\d+(?:\.\d+){0,1}/i;
-
-    if (api_version_header)
-        api_version = api_version_header;
-    else if (api_version_url && regex_version.test(api_version_url))
-        api_version = api_version_url;
-
-    //console.log("Version: " + api_version);
-    
-    next();
-});
-
-
 // Controllers
 router.use('/agents', require('./agents'));
 router.use('/manager', require('./manager'));
@@ -65,7 +44,7 @@ router.use('/rootcheck', require('./rootcheck'));
 
 // Index
 router.get('/',function(req, res) {
-    logger.log(req.host + " GET /");
+    logger.log(req.connection.remoteAddress + " GET /");
     json_res = {'error': "0", 'response': "OSSEC-API", 'message': "wazuh.com"};
     res.json(json_res);
     logger.log("Response: " + JSON.stringify(json_res) + " HTTP Status: 200");
