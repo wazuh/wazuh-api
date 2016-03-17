@@ -25,18 +25,19 @@ var logger = require('../helpers/logger');
  */
 exports.cmd = function(json_cmd_output, res){
     var status = 200;
-    var json_res;
+    var json_res = {'error': json_cmd_output.error, 'response': null, 'message': null};
 
-    
     if (json_cmd_output.error != 0){
-        status = 500;
-        json_res = {'error': json_cmd_output.error, 'response': null, 'message': json_cmd_output.description};
+        if (json_cmd_output.error == "01" || json_cmd_output.error == "02")
+            status = 500;
+        
+        json_res.message = json_cmd_output.description;
+
         logger.log("Response: " + JSON.stringify(json_res) + " HTTP Status: " + status);
     }
     else{
-        status = 200;
-        json_res = {'error': '0', 'response': json_cmd_output.response, 'message': null};
-        logger.log("Response: {...} HTTP Status: " + status);
+        json_res.response = json_cmd_output.response;
+        logger.log("Response: {...} HTTP Status: 200");
     }
     
     res.status(status).json(json_res);

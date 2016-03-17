@@ -34,7 +34,7 @@ exports.exec = function(cmd, args, callback) {
         if ( stdout ) {
             try {
                 // String -> JSON
-                json_result = JSON.parse(stdout);  // stdout could has: "error, response" or "error, description".
+                json_result = JSON.parse(stdout);  // stdout could have: "error, response" or "error, description".
             } catch (e) {
                 json_result = {"error": "02", "description": errors.description("02")};
             }
