@@ -14,9 +14,9 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var auth = require("http-auth");
 var fs = require('fs');
-var logger = require('./helpers/logger');
-var config = require('./config.js');
 var cors = require('cors')
+var config = require('./config.js');
+var logger = require('./helpers/logger');
 var res_h = require('./helpers/response_handler');
 
 /********************************************/
@@ -63,27 +63,25 @@ app.use(function(req, res, next) {
     var api_version_header = req.get('api-version');
     var api_version_url = req.path.split('/')[1];
     var regex_version = /^v\d+(?:\.\d+){0,1}$/i;
+    var new_url = "";
 
-    if (api_version_header && regex_version.test(api_version_header))
-        req.url = "/" + api_version_header + req.url;
-    else if (!(api_version_url && regex_version.test(api_version_url)))
-        req.url = "/" + current_version + req.url;
+    if (api_version_url && regex_version.test(api_version_url))
+        new_url = req.url;
+    else if (api_version_header && regex_version.test(api_version_header))
+        new_url = "/" + api_version_header + req.url;
+    else 
+        new_url = "/" + current_version + req.url;
+
+    req.url = new_url;
 
     next();
 });
 
+
 // Controllers
 app.use("/" + current_version, require('./controllers'));
+//Example: app.use("/v1.2", require('./versions/v1.2/controllers'));
 
-// Example: OLD version
-/*
-var router1_1 = express.Router();
-router1_1.get("/", function(req, res) {
-    res.json({status: "ok"});
-});
-
-app.use("/v1.1", router1_1);
-*/
 
 // APP Errors
 app.use (function (err, req, res, next){
