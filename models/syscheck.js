@@ -57,12 +57,12 @@ exports.files_changed = function(id, filename, callback){
 }
 
 exports.last_scan = function(id, callback){
-    agent.info(id, function (data) {
-        if (data.error == 0){
-            data_time = {'syscheckTime': data.response.syscheckTime, 'syscheckEndTime': data.response.syscheckEndTime};
-            callback({'error': 0, 'response': data_time});
+    agent.info(id, function (json_output) {
+        if (json_output.error == 0){
+            data_time = {'syscheckTime': json_output.data.syscheckTime, 'syscheckEndTime': json_output.data.syscheckEndTime};
+            callback({'error': 0, 'data': data_time, 'message': ""});
         }
         else
-            callback(data)
+            callback(json_output)
     });
 }

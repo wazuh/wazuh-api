@@ -42,12 +42,12 @@ exports.print_db = function(id, callback){
 }
 
 exports.last_scan = function(id, callback){
-    agent.info(id, function (data) {
-        if (data.error == 0){
-            data_time = {'rootcheckTime': data.response.rootcheckTime, 'rootcheckEndTime': data.response.rootcheckEndTime};
-            callback({'error': 0, 'response': data_time});
+    agent.info(id, function (json_output) {
+        if (json_output.error == 0){
+            data_time = {'rootcheckTime': json_output.data.rootcheckTime, 'rootcheckEndTime': json_output.data.rootcheckEndTime};
+            callback({'error': 0, 'data': data_time, 'message': ""});
         }
         else
-            callback(data)
+            callback(json_output)
     });
 }

@@ -30,11 +30,11 @@ DAYS = "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
 MONTHS = "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", \
          "Nov", "Dec"
 
-ERRORS = {1: {"error": 60, "description": "Invalid parameters"}, \
-          2: {"error": 61, "description": "Couldn't open stats file"}, \
-          3: {"error": 62, "description": "Statistics file damaged"}, \
-          4: {"error": 63, "description": "Bad given arguments"}, \
-          5: {"error": 64, "description": "Low permissions"} }
+ERRORS = {1: {"error": 60, "message": "Invalid parameters"}, \
+          2: {"error": 61, "message": "Couldn't open stats file"}, \
+          3: {"error": 62, "message": "Statistics file damaged"}, \
+          4: {"error": 63, "message": "Bad given arguments"}, \
+          5: {"error": 64, "message": "Low permissions"} }
 
 def usage():
     '''Prints help message'''
@@ -120,7 +120,7 @@ def totals(year, month, day):
                              'syscheck': syscheck, 'firewall': firewall})
             alerts = []
 
-    return {'error': 0, 'response': response}
+    return {'error': 0, 'data': response}
 
 def hourly():
     '''Returns the hourly averages in JSON-exportable format'''
@@ -144,7 +144,7 @@ def hourly():
             if i < 24:
                 averages.append(0)
 
-    return {'error': 0, 'response': {'averages': averages, \
+    return {'error': 0, 'data': {'averages': averages, \
             'interactions': interactions}}
 
 def weekly():
@@ -174,7 +174,7 @@ def weekly():
 
         response[DAYS[i]] = {'hours': hours, 'interactions': interactions}
 
-    return {'error': 0, 'response': response}
+    return {'error': 0, 'data': response}
 
 # Main section
 

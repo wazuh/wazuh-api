@@ -4,7 +4,7 @@
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 r_error = 0
-r_description = ""
+r_message = ""
 
 import json
 
@@ -13,7 +13,7 @@ try:
     from xml.etree.ElementTree import fromstring
 except Exception as e:
         r_error = 50
-        r_description = "Problem with import modules in command: {0}".format(e)
+        r_message = "Problem with import modules in command: {0}".format(e)
 
 def remove_json_array(json_array):
     new_json = {}
@@ -36,7 +36,7 @@ def process_ossecconf(json_conf):
 if __name__ == "__main__":
     ossec_path = "/var/ossec"
     ossec_conf = "{0}/etc/ossec.conf".format(ossec_path)
-    r_response = ""
+    r_data = ""
     
     if r_error == 0:
         try:
@@ -45,17 +45,17 @@ if __name__ == "__main__":
             with open(ossec_conf) as f_ossec:
                 json_conf = xml_json.data(fromstring(f_ossec.read()))
         
-            r_response = process_ossecconf(json_conf['ossec_config'])
+            r_data = process_ossecconf(json_conf['ossec_config'])
 
         except Exception as e:
             r_error = 51
-            r_description = "Problem running command: {0}".format(e)
+            r_message = "Problem running command: {0}".format(e)
 
     # Response
     response = {'error': r_error}
     if r_error == 0:
-        response['response'] = r_response
+        response['data'] = r_data
     else:
-        response['description'] = r_description
+        response['message'] = r_message
     
     print(json.dumps(response))

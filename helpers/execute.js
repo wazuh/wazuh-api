@@ -16,10 +16,10 @@ var errors = require('../helpers/errors');
  * Exec command.
  * It returns (callback) always a JSON.
  * Input
- *   Error: {'error': !=0, 'mesage': 'Error description'}
+ *   Error: {'error': !=0, 'message': 'Error description'}
  *   OK: {'error': 0, 'data' = 'cmd output'}
  * Output
- *   Error: {'error': !=0, 'data'= "", 'mesage': 'Error description'}
+ *   Error: {'error': !=0, 'data'= "", 'message': 'Error description'}
  *   OK: {'error': 0, 'data' = 'cmd output', 'message': ""}
  */
 exports.exec = function(cmd, args, callback) {
@@ -47,21 +47,21 @@ exports.exec = function(cmd, args, callback) {
                     else
                         json_result.data = "";
 
-                    if ( json_cmd.hasOwnProperty('mesage') )
-                        json_result.mesage = json_cmd.mesage;
+                    if ( json_cmd.hasOwnProperty('message') )
+                        json_result.message = json_cmd.message;
                     else
-                        json_result.mesage = "";
+                        json_result.message = "";
                 }
                 else
-                    json_result = {"error": "01", "data": "", "mesage": errors.description("01")}; // Internal Error
+                    json_result = {"error": "01", "data": "", "message": errors.description("01")}; // Internal Error
                 
             } catch (e) {
-                json_result = {"error": "02", "data": "", "mesage": errors.description("02")}; // OUTPUT Not JSON
+                json_result = {"error": "02", "data": "", "message": errors.description("02")}; // OUTPUT Not JSON
             }
         }
         else{
             //if ( error != null || stderr != "")
-            json_result = {"error": "01", "data": "", "mesage": errors.description("01")}; // Internal Error
+            json_result = {"error": "01", "data": "", "message": errors.description("01")}; // Internal Error
         }
         
         callback(json_result);

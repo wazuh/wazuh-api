@@ -22,24 +22,24 @@ var cmd_manage_agents = config.ossec_path + "/bin/manage_agents";
 
 exports.all = function(filter, callback){
     var args = ['-j', '-l'];
-    execute.exec(cmd_agent_control, args, function (data) {
+    execute.exec(cmd_agent_control, args, function (json_output) {
 
-        if (data.error == 0 && filter != null){
+        if (json_output.error == 0 && filter != null){
             
             var data_filtered = [];
             
-            for(var i=0;i<data.response.length;i++){
-                var agent = data.response[i];
+            for(var i=0;i<json_output.data.length;i++){
+                var agent = json_output.data[i];
                 if (agent.status.toLowerCase() == filter.status.toLowerCase())
                     data_filtered.push(agent)
             }
             
-            r_data_filtered = {'error': 0, 'response': data_filtered};
+            r_data_filtered = {'error': 0, 'data': data_filtered, 'message': ""};
             
             callback(r_data_filtered);
         }
         else{
-            callback(data);
+            callback(json_output);
         }
     });
 }
