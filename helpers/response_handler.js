@@ -16,31 +16,20 @@ var logger = require('../helpers/logger');
  * cmd
  * Use this handler for *execute.exec*.
  *
- * json_cmd_output:
- *   Error: {'error': !=0, 'description': 'Error description'}
- *   OK: {'error': 0, 'response' = 'cmd output'}
- * output:
- *   Error: {'error': !=0, 'response': null, 'message': 'Error description'}
- *   OK: {'error': 0, 'response' = 'cmd output', 'message': null}
+ * When error is 01 or 02 -> status is 500
  */
 exports.cmd = function(json_cmd_output, res){
     var status = 200;
-    var json_res = {'error': json_cmd_output.error, 'response': null, 'message': null};
 
     if (json_cmd_output.error != 0){
         if (json_cmd_output.error == "01" || json_cmd_output.error == "02")
             status = 500;
-        
-        json_res.message = json_cmd_output.description;
-
-        logger.log("Response: " + JSON.stringify(json_res) + " HTTP Status: " + status);
+        logger.log("Response: " + JSON.stringify(json_cmd_output) + " HTTP Status: " + status);
     }
-    else{
-        json_res.response = json_cmd_output.response;
+    else
         logger.log("Response: {...} HTTP Status: 200");
-    }
     
-    res.status(status).json(json_res);
+    res.status(status).json(json_cmd_output);
 }
 
 exports.bad_request = function(internal_error, extra_msg, res){
@@ -49,7 +38,7 @@ exports.bad_request = function(internal_error, extra_msg, res){
     if (extra_msg)
         msg = msg + ". " + extra_msg;
     
-    json_res = {'error': internal_error, 'response': null, 'message': msg};
+    json_res = {'error': internal_error, 'data': "", 'message': msg};
     
     logger.log("Response: " + JSON.stringify(json_res) + " HTTP Status: 400");
     
