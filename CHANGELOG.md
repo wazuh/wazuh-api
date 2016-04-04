@@ -1,12 +1,22 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [v1.2] - 2016-03-??
+## [v1.2] - 2016-04-??
 ### Added
-- ?
+- CORS package
+- Content-Type Checking
+- Error Handler
+- Run API as service
+- API Versioning
+
+### Changed
+- Node modules: npm install
+- New fields: response -> data
 
 ### Fixed
 - Problem importing xmljson package in Python
+- HTTP Status Code
+
 
 ## [v1.1] - 2016-02-24
 ### Added

@@ -47,9 +47,13 @@ if (config.https.toLowerCase() == "yes"){
 }
 
 // CORS
-// ToDo: Review
-app.use(cors());
-app.options('*', cors());
+var corsOptions = {
+  origin: config.AccessControlAllowOrigin, //Access-Control-Allow-Origin
+  allowedHeaders: config.AccessControlAllowHeaders //Access-Control-Allow-Headers
+};
+cors_configured = cors(corsOptions);
+app.use(cors_configured);
+app.options('*', cors_configured); // enable pre-flight across-the-board
 
 // Body
 app.use(bodyParser.json());

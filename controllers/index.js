@@ -17,12 +17,6 @@ var res_h = require('../helpers/response_handler');
 
 var router = express.Router();
 
-// Access-Control-Allow
-router.use(function(req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', config.AccessControlAllowOrigin);
-    res.setHeader('Access-Control-Allow-Headers', config.AccessControlAllowHeaders);
-    next();
-});
 
 // Content-type
 router.post("*", function(req, res, next) {
