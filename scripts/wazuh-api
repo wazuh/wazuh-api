@@ -19,7 +19,7 @@
 #  sudo install -m 755 -o root -g root /var/ossec/api/scripts/wazuh-api /etc/init.d/
 #  sudo systemctl enable wazuh-api
 #  sudo systemctl daemon-reload
-#  sudo systemctl start wazuh-api
+#  sudo systemctl restart wazuh-api
 
 . /etc/ossec-init.conf
 
@@ -27,7 +27,17 @@ if [ "X${DIRECTORY}" = "X" ]; then
     DIRECTORY="/var/ossec"
 fi
 
-BIN_DIR="/usr/bin/nodejs"
+BIN_DIR=$(which nodejs 2> /dev/null)
+
+if [ "X$BIN_DIR" = "X" ]; then
+    BIN_DIR=$(which node 2> /dev/null)
+
+    if [ "X$BIN_DIR" = "X" ]; then
+        echo "NodeJS binaries not found"
+        exit 1
+    fi
+fi
+
 PID_DIR="/var/run/wazuh-api.pid"
 APP_PATH="${DIRECTORY}/api/app.js"
 LOG_DIR="${DIRECTORY}/logs/api.log"
