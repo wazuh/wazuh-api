@@ -3,19 +3,18 @@ All notable changes to this project will be documented in this file.
 
 ## [v1.2] - 2016-04-??
 ### Added
-- CORS package
-- Content-Type Checking
-- Error Handler
 - Run API as service
 - API Versioning
+- Improved error handling
+- CORS package
 
 ### Changed
-- Node modules: npm install
-- New fields: response -> data
+- NodeJS modules must be installed with *npm install*
+- Response JSON: Field *response* changed to *data*.
 
 ### Fixed
 - Problem importing xmljson package in Python
-- HTTP Status Code
+- Wrong HTTP Status Code in some specific cases
 
 
 ## [v1.1] - 2016-02-24
