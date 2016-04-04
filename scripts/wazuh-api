@@ -3,7 +3,7 @@
 # Author: Wazuh
 
 ### BEGIN INIT INFO
-# Provides:          WazuhAPI
+# Provides:          wazuh_api
 # Required-Start:    $remote_fs $syslog
 # Required-Stop:     $remote_fs $syslog
 # Should-Start:      $network
@@ -16,22 +16,33 @@
 ### END INIT INFO
 
 # Instructions:
-#  sudo cp /var/ossec/api/scripts/wazuh-api /etc/init.d/
-#  sudo chmod +x /etc/init.d/wazuh-api
-#  systemctl daemon-reload
+#  sudo install -m 755 -o root -g root /var/ossec/api/scripts/wazuh-api /etc/init.d/
+#  sudo systemctl enable wazuh-api
+#  sudo systemctl daemon-reload
+#  sudo systemctl start wazuh-api
+
+. /etc/ossec-init.conf
+
+if [ "X${DIRECTORY}" = "X" ]; then
+    DIRECTORY="/var/ossec"
+fi
 
 BIN_DIR="/usr/bin/nodejs"
 PID_DIR="/var/run/wazuh-api.pid"
-APP_PATH="/var/ossec/api/app.js"
-LOG_DIR="/var/ossec/logs/api.log"
+APP_PATH="${DIRECTORY}/api/app.js"
+LOG_DIR="${DIRECTORY}/logs/api.log"
 
 start() {
-    ($BIN_DIR $APP_PATH >> $LOG_DIR) & echo $!>$PID_DIR
+	if [ ! -f $PID_DIR ]; then
+		($BIN_DIR $APP_PATH >> $LOG_DIR) & echo $!>$PID_DIR
+	fi
 }
 
 stop() {
-    kill `cat $PID_DIR`
-    rm $PID_DIR
+	if [ -f $PID_DIR ]; then
+		kill `cat $PID_DIR`
+	    rm $PID_DIR
+	fi
 }
 
 
