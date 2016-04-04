@@ -28,7 +28,7 @@ errors['02'] = "Command output not in JSON";
 // 600 - 699 Requests
 errors['600'] = "Param not valid. Integer expected";  // Integer
 errors['601'] = "Param not valid. Valid characters: a-z, A-Z, 0-9, ., _, -,/,\\";  // Names
-errors['603'] = "No URL found. Bad HTTP verb?, typo?";  // Default error
+errors['603'] = "The requested URL was not found on this server";  // Default error
 errors['604'] = "Filter error";  // Filter
 errors['605'] = "Param not valid. Date format: YYYYMMDD";  // Date
 errors['606'] = "Param not valid. IP invalid";  // IP
