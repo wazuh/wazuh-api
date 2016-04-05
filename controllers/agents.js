@@ -143,6 +143,12 @@ router.post('/', function(req, res) {
     
     if ( !ip ){
         ip = req.connection.remoteAddress;
+        // Extract IPv4 from IPv6 hybrid notation
+        if (ip.indexOf("::ffff:") > -1) {
+            var ipFiltered = ip.split(":");
+            ip = ipFiltered[ipFiltered.length-1];
+            logger.debug("Hybrid IPv6 IP filtered: " + ip);
+        }   
         logger.debug("Add agent with automatic IP: " + ip);
     }
 
