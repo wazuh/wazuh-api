@@ -65,3 +65,8 @@ exports.log = function(message) {
     if(logger_level >= LEVEL_INFO)
         console.log(header() + message);
 }
+
+exports.debug = function(message) {
+    if(logger_level >= LEVEL_DEBUG)
+        console.log(header() + message);
+}

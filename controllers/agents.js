@@ -140,6 +140,11 @@ router.post('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " POST /agents");
     var name = req.body.name;
     var ip = req.body.ip;
+    
+    if ( !ip ){
+        ip = req.connection.remoteAddress;
+        logger.debug("Add agent with automatic IP: " + ip);
+    }
 
     if (validator.names(name) && validator.ips(ip)){
         agent.add(name, ip, function (data) {
