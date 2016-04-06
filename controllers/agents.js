@@ -159,9 +159,9 @@ router.post('/', function(req, res) {
     }
     else{
         if (!validator.names(name))
-            res_h.bad_request("601", "Field: name", res);
+            res_h.bad_generic_request("Agent name format invalid","601", res);
         else
-            res_h.bad_request("606", "Field: ip", res);
+            res_h.bad_generic_request("IP format invalid","99",res);
     }
 
 })
