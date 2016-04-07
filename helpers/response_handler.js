@@ -31,11 +31,7 @@ exports.cmd = function(json_cmd_output, res){
     
     res.status(status).json(json_cmd_output);
 }
-exports.bad_generic_request = function(message, error, res){
-    var status = 200;
-    json_res = {'error': error, 'data': "", 'message': message};
-    res.status(status).json(json_res);
-}
+
 exports.bad_request = function(internal_error, extra_msg, res){
     var msg = errors.description(internal_error);
     
