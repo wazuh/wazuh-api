@@ -7,6 +7,8 @@ All notable changes to this project will be documented in this file.
 - API Versioning
 - Improved error handling
 - CORS package
+- Automatic agent IP address registration
+- Improved proxy server IP source extraction
 
 ### Changed
 - NodeJS modules must be installed with *npm install*
