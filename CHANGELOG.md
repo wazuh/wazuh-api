@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [v1.2] - 2016-04-??
+## [v1.2] - 2016-04-11
 ### Added
 - Run API as service
 - API Versioning

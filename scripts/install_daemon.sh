@@ -60,7 +60,7 @@ if [ -n "$(ps -e | egrep ^\ *1\ .*systemd$)" ]; then
 	install -m $I_FMODE -o $I_OWNER -g $I_GROUP wazuh-api.service.tmp $I_SYSTEMD/wazuh-api.service
 	systemctl enable wazuh-api
 	systemctl daemon-reload
-	systemctl start wazuh-api
+	systemctl restart wazuh-api
 	echo "Daemon installed successfully. Please check the status running:"
 	echo "  systemctl status wazuh-api"
 
@@ -72,7 +72,7 @@ elif [ -n "$(ps -e | egrep ^\ *1\ .*init$)" ]; then
 	sed -i "s:^LOG_PATH=.*:LOG_PATH=\"$LOG_PATH\":g" wazuh-api.tmp
 	install -m $I_XMODE -o $I_OWNER -g $I_GROUP wazuh-api.tmp $I_SYSVINIT/wazuh-api
 	insserv wazuh-api
-	service wazuh-api start
+	service wazuh-api restart
 else
 	echo "Unknown init system. Exiting."
 	exit 1
