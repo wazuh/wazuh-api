@@ -56,8 +56,8 @@ fi
 # Install for systemd
 
 if [ -n "$(ps -e | egrep ^\ *1\ .*systemd$)" ]; then
-	sed -i "s:^ExecStart=.*:ExecStart=$BIN_DIR $APP_PATH >> $LOG_PATH:g" wazuh-api.service
-	install -m $I_FMODE -o $I_OWNER -g $I_GROUP wazuh-api.service $I_SYSTEMD
+	sed "s:^ExecStart=.*:ExecStart=$BIN_DIR $APP_PATH >> $LOG_PATH:g" wazuh-api.service > wazuh-api.service.tmp
+	install -m $I_FMODE -o $I_OWNER -g $I_GROUP wazuh-api.service.tmp $I_SYSTEMD/wazuh-api.service
 	systemctl enable wazuh-api
 	systemctl daemon-reload
 	systemctl start wazuh-api
@@ -67,9 +67,10 @@ if [ -n "$(ps -e | egrep ^\ *1\ .*systemd$)" ]; then
 # Install for SysVinit
 
 elif [ -n "$(ps -e | egrep ^\ *1\ .*init$)" ]; then
-	sed -i "s:^BIN_DIR=.*:BIN_DIR=\"$BIN_DIR\":g" wazuh-api
-	sed -i "s:^APP_PATH=.*:APP_PATH=\"$APP_PATH\":g" wazuh-api
-	sed -i "s:^LOG_PATH=.*:LOG_PATH=\"$LOG_PATH\":g" wazuh-api
+	sed "s:^BIN_DIR=.*:BIN_DIR=\"$BIN_DIR\":g" wazuh-api > wazuh-api.tmp
+	sed -i "s:^APP_PATH=.*:APP_PATH=\"$APP_PATH\":g" wazuh-api.tmp
+	sed -i "s:^LOG_PATH=.*:LOG_PATH=\"$LOG_PATH\":g" wazuh-api.tmp
+	install -m $I_XMODE -o $I_OWNER -g $I_GROUP wazuh-api.tmp $I_SYSVINIT/wazuh-api
 	insserv wazuh-api
 	service wazuh-api start
 else
