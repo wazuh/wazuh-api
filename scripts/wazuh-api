@@ -21,40 +21,23 @@
 #  sudo systemctl daemon-reload
 #  sudo systemctl restart wazuh-api
 
-. /etc/ossec-init.conf
-
-if [ "X${DIRECTORY}" = "X" ]; then
-    DIRECTORY="/var/ossec"
-fi
-
-BIN_DIR=$(which nodejs 2> /dev/null)
-
-if [ "X$BIN_DIR" = "X" ]; then
-    BIN_DIR=$(which node 2> /dev/null)
-
-    if [ "X$BIN_DIR" = "X" ]; then
-        echo "NodeJS binaries not found"
-        exit 1
-    fi
-fi
-
-PID_DIR="/var/run/wazuh-api.pid"
-APP_PATH="${DIRECTORY}/api/app.js"
-LOG_DIR="${DIRECTORY}/logs/api.log"
+PID_PATH="/var/run/wazuh-api.pid"
+BIN_DIR=
+APP_PATH=
+LOG_PATH=
 
 start() {
-	if [ ! -f $PID_DIR ]; then
-		($BIN_DIR $APP_PATH >> $LOG_DIR) & echo $!>$PID_DIR
+	if [ ! -f $PID_PATH ]; then
+		($BIN_DIR $APP_PATH >> $LOG_PATH) & echo $!>$PID_PATH
 	fi
 }
 
 stop() {
-	if [ -f $PID_DIR ]; then
-		kill `cat $PID_DIR`
-	    rm $PID_DIR
+	if [ -f $PID_PATH ]; then
+		kill `cat $PID_PATH`
+	    rm $PID_PATH
 	fi
 }
-
 
 case "$1" in
 start)
@@ -74,3 +57,4 @@ status)
     echo "*** Usage: $0 {start|stop|restart|status}"
     exit 1
 esac
+
