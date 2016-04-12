@@ -37,13 +37,7 @@ if (config.https.toLowerCase() == "yes"){
 }
 
 // CORS
-var corsOptions = {
-  origin: config.AccessControlAllowOrigin, //Access-Control-Allow-Origin
-  allowedHeaders: config.AccessControlAllowHeaders //Access-Control-Allow-Headers
-};
-cors_configured = cors(corsOptions);
-app.use(cors_configured);
-app.options('*', cors_configured); // enable pre-flight across-the-board
+app.use(cors());
 
 // Basic authentication
 if (config.basic_auth.toLowerCase() == "yes"){

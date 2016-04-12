@@ -7,8 +7,6 @@ config.port = "55000";
 // Security
 config.https = "yes"; // Values: yes, no
 config.basic_auth = "yes"; // Values: yes, no
-config.AccessControlAllowOrigin = ["*"];
-config.AccessControlAllowHeaders = ["kbn-version"];
 config.BehindProxyServer = "no";
 
 // Paths
