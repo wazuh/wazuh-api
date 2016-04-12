@@ -43,7 +43,14 @@ if __name__ == "__main__":
             r_error = 0
             
             with open(ossec_conf) as f_ossec:
-                json_conf = xml_json.data(fromstring(f_ossec.read()))
+                read_conf = f_ossec.read()
+                read_conf_tmp = ""
+                for c in read_conf.split("</ossec_config>\n\n<ossec_config>"):
+                    read_conf_tmp += c
+                if (read_conf_tmp != ""):
+                    read_conf = read_conf_tmp
+                json_conf = xml_json.data(fromstring(read_conf))
+
         
             r_data = process_ossecconf(json_conf['ossec_config'])
 
