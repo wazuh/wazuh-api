@@ -27,16 +27,6 @@ var current_version = "v1.2";
 port = process.env.PORT || config.port;
 
 var app = express();
-
-// Basic authentication
-if (config.basic_auth.toLowerCase() == "yes"){
-    var auth_secure = auth.basic({
-        realm: "OSSEC API",
-        file: __dirname + "/ssl/htpasswd"
-    });
-    app.use(auth.connect(auth_secure));
-}
-
 // Certs
 var options;
 if (config.https.toLowerCase() == "yes"){
@@ -54,6 +44,16 @@ var corsOptions = {
 cors_configured = cors(corsOptions);
 app.use(cors_configured);
 app.options('*', cors_configured); // enable pre-flight across-the-board
+
+// Basic authentication
+if (config.basic_auth.toLowerCase() == "yes"){
+    var auth_secure = auth.basic({
+        realm: "OSSEC API",
+        file: __dirname + "/ssl/htpasswd"
+    });
+    app.use(auth.connect(auth_secure));
+}
+
 
 // Body
 app.use(bodyParser.json());
