@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 - Run API as service
 - API Versioning
 - Improved error handling
-- CORS package
+- Improved Cross-origin resource sharing (CORS)
 - Automatic agent IP address registration
 - Improved proxy server IP source extraction
 

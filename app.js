@@ -37,7 +37,9 @@ if (config.https.toLowerCase() == "yes"){
 }
 
 // CORS
-app.use(cors());
+if (config.cors.toLowerCase() == "yes"){
+    app.use(cors());
+}
 
 // Basic authentication
 if (config.basic_auth.toLowerCase() == "yes"){
