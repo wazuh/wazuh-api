@@ -11,6 +11,7 @@ config.BehindProxyServer = "no";
 
 // Paths
 config.ossec_path = "/var/ossec";
+config.log_path = "/var/ossec/logs/api.log";
 config.api_path = __dirname;
 
 // Logs

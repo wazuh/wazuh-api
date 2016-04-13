@@ -11,8 +11,10 @@
 
 var moment = require('moment');
 var config = require('../config.js');
+var fs = require('fs');
 
 var tag = config.logs_tag;
+var f_log = config.log_path;
 var LEVEL_DISABLED = 0;
 var LEVEL_INFO = 1;
 var LEVEL_WARNING = 2;
@@ -44,29 +46,47 @@ function header(){
     return tag + " " + moment().format('YYYY-MM-DD HH:mm:ss') + ": ";
 }
 
+function write_log(msg){
+    fs.appendFile(f_log, msg + "\n", function(err) {
+        if(err) {
+            return console.error(err);
+        }
+    }); 
+}
+
 exports.logCommand = function(cmd, error, stdout, stderr) {
     var head = header() + "CMD -";
 
     if(logger_level >= LEVEL_DEBUG)
-        console.log(head + cmd);
+        write_log(head + cmd);
 
     if (logger_level >= LEVEL_ERROR){
         if(error != null)
-            console.error(head + " error:" + error);
+            write_log(head + " error:" + error);
 
         if(stderr != "")
-            console.error(head + " stderr:" + stderr);
+            write_log(head + " stderr:" + stderr);
     }
     if(logger_level >= LEVEL_DEBUG)
-        console.log(head + " stdout:" + stdout);
+        write_log(head + " stdout:" + stdout);
 }
 
 exports.log = function(message) {
     if(logger_level >= LEVEL_INFO)
-        console.log(header() + message);
+        write_log(header() + message);
+}
+
+exports.warning = function(message) {
+    if(logger_level >= LEVEL_WARNING)
+        write_log(header() + message);
+}
+
+exports.error = function(message) {
+    if(logger_level >= LEVEL_ERROR)
+        write_log(header() + message);
 }
 
 exports.debug = function(message) {
     if(logger_level >= LEVEL_DEBUG)
-        console.log(header() + message);
+        write_log(header() + message);
 }

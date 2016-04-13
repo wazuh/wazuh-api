@@ -24,11 +24,10 @@
 PID_PATH="/var/run/wazuh-api.pid"
 BIN_DIR=
 APP_PATH=
-LOG_PATH=
 
 start() {
 	if [ ! -f $PID_PATH ]; then
-		($BIN_DIR $APP_PATH >> $LOG_PATH) & echo $!>$PID_PATH
+		($BIN_DIR $APP_PATH &) && echo $!>$PID_PATH
 	fi
 }
 
