@@ -16,11 +16,12 @@ var res_h = require('../helpers/response_handler');
 var req_h = require('../helpers/request_handler');
 var logger = require('../helpers/logger');
 var validator = require('../helpers/input_validation');
+var config = require('../config.js');
 
 /**
  *
  * GET /agents - Get agents list
- *   GET /agents?status=active - Get agents with status: Active, Disconnected, Never connected
+ * GET /agents?status=active - Get agents with status: Active, Disconnected, Never connected
  * GET /agents/:agent_id - Get Agent Info
  * GET /agents/:agent_id/key - Get Agent Key
  * PUT /agents/:agent_id/restart - Restart Agent
@@ -140,6 +141,23 @@ router.post('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " POST /agents");
     var name = req.body.name;
     var ip = req.body.ip;
+    
+    // If not IP set, we will use source IP.
+    if ( !ip ){
+        // If we hare behind a proxy server, use headers.
+        if (config.BehindProxyServer.toLowerCase() == "yes")        
+            ip = req.headers['x-forwarded-for'];
+        else
+            ip = req.connection.remoteAddress;
+   
+        // Extract IPv4 from IPv6 hybrid notation
+        if (ip.indexOf("::ffff:") > -1) {
+            var ipFiltered = ip.split(":");
+            ip = ipFiltered[ipFiltered.length-1];
+            logger.debug("Hybrid IPv6 IP filtered: " + ip);
+        }   
+        logger.debug("Add agent with automatic IP: " + ip);
+    }
 
     if (validator.names(name) && validator.ips(ip)){
         agent.add(name, ip, function (data) {
@@ -148,7 +166,7 @@ router.post('/', function(req, res) {
     }
     else{
         if (!validator.names(name))
-            res_h.bad_request("601", "Field: agent_name", res);
+            res_h.bad_request("601", "Field: name", res);
         else
             res_h.bad_request("606", "Field: ip", res);
     }

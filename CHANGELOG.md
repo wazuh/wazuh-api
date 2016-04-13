@@ -1,6 +1,24 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v1.2] - 2016-04-13
+### Added
+- Run API as service
+- API Versioning
+- Improved error handling
+- Improved Cross-origin resource sharing (CORS)
+- Automatic agent IP address registration
+- Improved proxy server IP source extraction
+
+### Changed
+- NodeJS modules must be installed with *npm install*
+- Response JSON: Field *response* changed to *data*.
+
+### Fixed
+- Problem importing xmljson package in Python
+- Wrong HTTP Status Code in some specific cases
+
+
 ## [v1.1] - 2016-02-24
 ### Added
 - Agents

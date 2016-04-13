@@ -1,0 +1,59 @@
+#!/bin/sh
+# WAZUH API Service
+# Author: Wazuh
+
+### BEGIN INIT INFO
+# Provides:          wazuh_api
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Should-Start:      $network
+# Should-Stop:       $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Wazuh API
+# Description:       Wazuh API daemon
+#
+### END INIT INFO
+
+# Instructions:
+#  sudo install -m 755 -o root -g root /var/ossec/api/scripts/wazuh-api /etc/init.d/
+#  sudo systemctl enable wazuh-api
+#  sudo systemctl daemon-reload
+#  sudo systemctl restart wazuh-api
+
+PID_PATH="/var/run/wazuh-api.pid"
+BIN_DIR=
+APP_PATH=
+
+start() {
+	if [ ! -f $PID_PATH ]; then
+		($BIN_DIR $APP_PATH &) && echo $!>$PID_PATH
+	fi
+}
+
+stop() {
+	if [ -f $PID_PATH ]; then
+		kill `cat $PID_PATH`
+	    rm $PID_PATH
+	fi
+}
+
+case "$1" in
+start)
+    start
+    ;;
+stop)
+    stop
+    ;;
+restart)
+    stop
+    start
+    ;;
+status)
+
+    ;;
+*)
+    echo "*** Usage: $0 {start|stop|restart|status}"
+    exit 1
+esac
+

@@ -15,9 +15,12 @@ var errors = require('../helpers/errors');
 /**
  * Exec command.
  * It returns (callback) always a JSON.
- * Input/Output
- *   Error: {'error': !=0, 'description': 'Error description'}
- *   OK: {'error': 0, 'response' = 'cmd output'}
+ * Input
+ *   Error: {'error': !=0, 'message': 'Error description'}
+ *   OK: {'error': 0, 'data' = 'cmd output'}
+ * Output
+ *   Error: {'error': !=0, 'data'= "", 'message': 'Error description'}
+ *   OK: {'error': 0, 'data' = 'cmd output', 'message': ""}
  */
 exports.exec = function(cmd, args, callback) {
     const child_process  = require('child_process');
@@ -29,19 +32,36 @@ exports.exec = function(cmd, args, callback) {
             full_cmd = cmd;
         logger.logCommand(full_cmd, error, stdout, stderr);
         
-        var json_result = "";
+        var json_result = {};
 
         if ( stdout ) {
             try {
-                // String -> JSON
-                json_result = JSON.parse(stdout);  // stdout could has: "error, response" or "error, description".
+                var json_cmd = JSON.parse(stdout); // String -> JSON
+                
+                if ( json_cmd.hasOwnProperty('error') ){
+                
+                    json_result.error = json_cmd.error;
+                    
+                    if ( json_cmd.hasOwnProperty('data') )
+                        json_result.data = json_cmd.data;
+                    else
+                        json_result.data = "";
+
+                    if ( json_cmd.hasOwnProperty('message') )
+                        json_result.message = json_cmd.message;
+                    else
+                        json_result.message = "";
+                }
+                else
+                    json_result = {"error": "01", "data": "", "message": errors.description("01")}; // Internal Error
+                
             } catch (e) {
-                json_result = {"error": "02", "description": errors.description("02")};
+                json_result = {"error": "02", "data": "", "message": errors.description("02")}; // OUTPUT Not JSON
             }
         }
         else{
             //if ( error != null || stderr != "")
-            json_result = {"error": "01", "description": errors.description("01")};
+            json_result = {"error": "01", "data": "", "message": errors.description("01")}; // Internal Error
         }
         
         callback(json_result);

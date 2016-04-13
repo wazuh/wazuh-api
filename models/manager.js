@@ -37,21 +37,21 @@ exports.restart = function(callback){
 
 exports.config = function(filter, callback){
     var cmd = config.api_path + "/scripts/get_conf.py";
-    execute.exec(cmd, [], function (data) {
+    execute.exec(cmd, [], function (json_output) {
 
-        if (data.error == 0 && filter != null){
+        if (json_output.error == 0 && filter != null){
             
             if(filter.section && filter.field)
-                data_filtered = data.response[filter.section][filter.field];
+                data_filtered = json_output.data[filter.section][filter.field];
             else
-                data_filtered = data.response[filter.section];
+                data_filtered = json_output.data[filter.section];
             
-            r_data_filtered = {'error': 0, 'response': data_filtered};
+            r_data_filtered = {'error': 0, 'data': data_filtered, 'message': ""};
 
             callback(r_data_filtered);
         }
         else{
-            callback(data);
+            callback(json_output);
         }
     });
 }
