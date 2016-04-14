@@ -26,8 +26,15 @@ BIN_DIR=
 APP_PATH=
 
 start() {
-	if [ ! -f $PID_PATH ]; then
-		($BIN_DIR $APP_PATH &) && echo $!>$PID_PATH
+	if [ ! -f $PID_PATH ] || [ -z "$(ps -e | egrep "^\ *$(cat /var/run/wazuh-api.pid) .* node.*")" ]; then
+        $BIN_DIR $APP_PATH &
+
+        if [ "$?" = "0" ]; then
+            echo $! > $PID_PATH
+        else
+            echo "Start error"
+            exit 1
+        fi
 	fi
 }
 

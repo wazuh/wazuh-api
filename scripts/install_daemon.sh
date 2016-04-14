@@ -69,7 +69,13 @@ elif [ -n "$(ps -e | egrep ^\ *1\ .*init$)" ]; then
     sed "s:^BIN_DIR=.*:BIN_DIR=\"$BIN_DIR\":g" wazuh-api > wazuh-api.tmp
     sed -i "s:^APP_PATH=.*:APP_PATH=\"$APP_PATH\":g" wazuh-api.tmp
     install -m $I_XMODE -o $I_OWNER -g $I_GROUP wazuh-api.tmp $I_SYSVINIT/wazuh-api
-    insserv wazuh-api
+
+    if [ -n "$(cat /etc/os-release 2> /dev/null | egrep NAME=\"Ubuntu\")" ] && [ -n "$(ps -e | egrep upstart)" ]; then
+        update-rc.d wazuh-api defaults
+    else
+        insserv wazuh-api
+    fi
+
     service wazuh-api restart
 else
     echo "Unknown init system. Exiting."
