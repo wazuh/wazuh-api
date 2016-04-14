@@ -21,27 +21,40 @@
 #  sudo systemctl daemon-reload
 #  sudo systemctl restart wazuh-api
 
+PIDDR="/var/run"
+NAME="wazuh-api"
 PID_PATH="/var/run/wazuh-api.pid"
 BIN_DIR=
 APP_PATH=
 
 start() {
 	if [ ! -f $PID_PATH ] || [ -z "$(ps -e | egrep "^\ *$(cat /var/run/wazuh-api.pid) .* node.*")" ]; then
+        echo -n $"Starting $NAME: "
         $BIN_DIR $APP_PATH &
 
         if [ "$?" = "0" ]; then
+            echo_success
+            echo
             echo $! > $PID_PATH
         else
-            echo "Start error"
+            echo_failure
+            echo
             exit 1
         fi
 	fi
 }
 
 stop() {
+	echo -n $"Stopping $NAME: "
 	if [ -f $PID_PATH ]; then
 		kill `cat $PID_PATH`
 	    rm $PID_PATH
+	    echo_success
+            echo
+        else
+            echo_failure
+            echo
+            exit 1
 	fi
 }
 
@@ -57,7 +70,11 @@ restart)
     start
     ;;
 status)
-
+    if [ -z $PID_PATH ]; then
+        status $NAME
+    else
+        status -p $PID_PATH $NAME
+    fi;
     ;;
 *)
     echo "*** Usage: $0 {start|stop|restart|status}"
