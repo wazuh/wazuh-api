@@ -122,15 +122,15 @@ process.on('uncaughtException', function(err) {
     if(err.stack)
         logger.log(err.stack);
     logger.log("Exiting...");
-    process.exit(1);
+    setTimeout(function(){ process.exit(1); }, 500);
 });
 
 process.on('SIGTERM', function() {
     logger.log("Exiting... (SIGTERM)");
-    process.exit(1);
+    setTimeout(function(){ process.exit(1); }, 500);
 });
 
 process.on('SIGINT', function() {
     logger.log("Exiting... (SIGINT)");
-    process.exit(1);
+    setTimeout(function(){ process.exit(1); }, 500);
 }); 

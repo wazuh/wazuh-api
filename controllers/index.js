@@ -60,7 +60,7 @@ router.use(function(err, req, res, next){
         logger.log(err.stack);
     logger.log("Exiting...");
     
-    process.exit(1);
+    setTimeout(function(){ process.exit(1); }, 500);
 });
 
 
