@@ -53,15 +53,15 @@ exports.exec = function(cmd, args, callback) {
                         json_result.message = "";
                 }
                 else
-                    json_result = {"error": "01", "data": "", "message": errors.description("01")}; // Internal Error
+                    json_result = {"error": 1, "data": "", "message": errors.description(1)}; // Internal Error
                 
             } catch (e) {
-                json_result = {"error": "02", "data": "", "message": errors.description("02")}; // OUTPUT Not JSON
+                json_result = {"error": 2, "data": "", "message": errors.description(2)}; // OUTPUT Not JSON
             }
         }
         else{
             //if ( error != null || stderr != "")
-            json_result = {"error": "01", "data": "", "message": errors.description("01")}; // Internal Error
+            json_result = {"error": 1, "data": "", "message": errors.description(1)}; // Internal Error
         }
         
         callback(json_result);

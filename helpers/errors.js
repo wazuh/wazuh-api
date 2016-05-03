@@ -12,8 +12,8 @@
 var errors = {};
 
 // 01 - 10 Internal Errors
-errors['01'] = "Error executing internal command";
-errors['02'] = "Command output not in JSON";
+errors['1'] = "Error executing internal command";
+errors['2'] = "Command output not in JSON";
 
 // 10 - 19 rootcheck_control
 // 20 - 29 ossec-control
