@@ -40,8 +40,8 @@ var config = require('../config.js');
 router.get('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents");
     
-    filter = req_h.get_filter(req.query, ['status'], 1);
-    
+    filter = req_h.get_filter(req.query, ['status']);
+
     if (filter == "bad_field")
         res_h.bad_request("604", "Allowed fields: status", res);
     else

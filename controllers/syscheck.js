@@ -45,13 +45,13 @@ router.get('/:agent_id/files/changed', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/files/changed");
 
     if (validator.numbers(req.params.agent_id)){
-        filter = req_h.get_filter(req.query, ['filename'], 1);
+        filter = req_h.get_filter(req.query, ['filename']);
         
         if (filter == "bad_field")
             res_h.bad_request("604", "Allowed fields: filename", res);
         else{
             if(filter != null){
-                if (validator.names(filter.filename)){
+                if (validator.paths(filter.filename)){
                     syscheck.files_changed(req.params.agent_id, filter.filename, function (data) {
                         res_h.cmd(data, res);
                     });

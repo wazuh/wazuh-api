@@ -9,30 +9,35 @@
  * Foundation.
  */
  
-exports.get_filter = function (query, allow_fields, max_query){
+exports.get_filter = function (query, allow_fields){
     var bad_field = false;
-    var keys = Object.keys(query);
+    var filter = Object.keys(query);
     
-    if (keys.length == 0)
+    // Empty
+    if (filter.length == 0)
         return null;
-    else if (keys.length <= max_query){
-        var key_ok;
-        var key;
-        for (var k = 0, length = keys.length; k < length; k++){
-            key =  keys[k];
-            key_ok = false;
-            for(var i=0;i<allow_fields.length;i++){
-                if (key == allow_fields[i]){
-                    key_ok = true;
+    
+    // Filters
+    if (filter.length <= allow_fields.length){
+        for (var i = 0; i < filter.length; i++){
+            var field_ok = false;
+
+            // Fields
+            for(var j=0; j<allow_fields.length; j++){
+                if (filter[i] == allow_fields[j]){
+                    field_ok = true;
                     break;
                 }
             }
-            if (!key_ok){
+            
+            if (!field_ok){
                 bad_field = true;
                 break;
             }
         }
     }
+    else //Too much filters
+        bad_field = true;
     
     if (bad_field)
         return "bad_field";

@@ -51,7 +51,7 @@ router.get('/status', function(req, res) {
 router.get('/configuration', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/configuration");
 
-    filter = req_h.get_filter(req.query, ['section', 'field'], 2);
+    filter = req_h.get_filter(req.query, ['section', 'field']);
     
     if (filter == "bad_field")
         res_h.bad_request("604", "Allowed fields: section, field", res);
@@ -74,7 +74,7 @@ router.get('/configuration/test', function(req, res) {
 router.get('/stats', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/stats");
 
-    filter = req_h.get_filter(req.query, ['date'], 1);
+    filter = req_h.get_filter(req.query, ['date']);
     
     if (filter == "bad_field")
         res_h.bad_request("604", "Allowed fields: date", res);

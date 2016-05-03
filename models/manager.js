@@ -41,12 +41,16 @@ exports.config = function(filter, callback){
 
         if (json_output.error == 0 && filter != null){
             
-            if(filter.section && filter.field)
-                data_filtered = json_output.data[filter.section][filter.field];
-            else
+            if (filter.section){
                 data_filtered = json_output.data[filter.section];
+                if ( data_filtered != null && filter.field) 
+                    data_filtered = json_output.data[filter.section][filter.field];
+            }
             
-            r_data_filtered = {'error': 0, 'data': data_filtered, 'message': ""};
+            if (data_filtered)
+                r_data_filtered = {'error': 0, 'data': data_filtered, 'message': ""}
+            else
+                r_data_filtered = {'error': 0, 'data': "", 'message': ""}
 
             callback(r_data_filtered);
         }

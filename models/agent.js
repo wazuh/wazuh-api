@@ -30,6 +30,7 @@ exports.all = function(filter, callback){
             
             for(var i=0;i<json_output.data.length;i++){
                 var agent = json_output.data[i];
+
                 if (agent.status.toLowerCase() == filter.status.toLowerCase())
                     data_filtered.push(agent)
             }

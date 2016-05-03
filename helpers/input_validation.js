@@ -27,6 +27,15 @@ exports.names = function(name) {
         return false;
 }
 
+exports.paths = function(path) {
+    if (typeof path != 'undefined'){
+        var regex = /^[a-zA-Z0-9\-\_\.\\\/:]+$/;
+        return regex.test(path);
+    }
+    else
+        return false;
+}
+
 exports.dates = function(date) {
     if (typeof date != 'undefined'){
         var regex = /^\d{8}$/;
