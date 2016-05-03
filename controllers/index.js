@@ -39,7 +39,7 @@ router.use('/rootcheck', require('./rootcheck'));
 // Index
 router.get('/',function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /");
-    json_res = {'error': "0", 'data': "OSSEC-API", 'message': "wazuh.com"};
+    json_res = {'error': 0, 'data': "OSSEC-API", 'message': "wazuh.com"};
     res.json(json_res);
     logger.log("Response: " + JSON.stringify(json_res) + " HTTP Status: 200");
 });
