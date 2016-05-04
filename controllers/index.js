@@ -30,6 +30,19 @@ router.post("*", function(req, res, next) {
         next();
 });
 
+// Get pretty
+router.all("*", function(req, res, next) {
+
+    if (req.query && "pretty" in req.query){
+        delete req.query["pretty"];
+        res_h.pretty = true;
+    }
+    else
+        res_h.pretty = false;
+
+    next();
+});
+
 // Controllers
 router.use('/agents', require('./agents'));
 router.use('/manager', require('./manager'));
@@ -40,7 +53,7 @@ router.use('/rootcheck', require('./rootcheck'));
 router.get('/',function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /");
     json_res = {'error': 0, 'data': "OSSEC-API", 'message': "wazuh.com"};
-    res.json(json_res);
+    res_h.send(res, json_res, 200);
     logger.log("Response: " + JSON.stringify(json_res) + " HTTP Status: 200");
 });
 
@@ -48,7 +61,7 @@ router.get('/',function(req, res) {
 router.all('*',function(req, res) {
     logger.log(req.connection.remoteAddress + " " + req.method + " " + req.path);
     json_res = { 'error': 603, 'data': "", 'message': errors.description(603)};
-    res.status(404).json(json_res);
+    res_h.send(res, json_res, 404);
     logger.log("Response: " + JSON.stringify(json_res) + " HTTP Status: 404");
 });
 

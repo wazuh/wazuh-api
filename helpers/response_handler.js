@@ -12,6 +12,20 @@
 var errors = require('../helpers/errors');
 var logger = require('../helpers/logger');
 
+module.exports.pretty = false;
+
+exports.send = function(res, json, status){
+    if (this.pretty){
+        try {
+            res.status(status).send(JSON.stringify( json, null, 3) + "\n");
+        } catch (e) {
+            json_result = {"error": 3, "data": "", "message": errors.description(3)}; // OUTPUT Not JSON
+        }
+    }
+    else
+        res.status(status).json(json);
+}
+
 /**
  * cmd
  * Use this handler for *execute.exec*.
@@ -29,7 +43,7 @@ exports.cmd = function(json_cmd_output, res){
     else
         logger.log("Response: {...} HTTP Status: 200");
     
-    res.status(status).json(json_cmd_output);
+    this.send(res, json_cmd_output, status);
 }
 
 exports.bad_request = function(internal_error, extra_msg, res){
@@ -42,5 +56,5 @@ exports.bad_request = function(internal_error, extra_msg, res){
     
     logger.log("Response: " + JSON.stringify(json_res) + " HTTP Status: 400");
     
-    res.status(400).json(json_res);
+    this.send(res, json_res, 400);
 }
