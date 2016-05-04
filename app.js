@@ -94,7 +94,7 @@ app.use (function (err, req, res, next){
         if(err.stack)
             logger.log(err.stack);
         logger.log("Exiting...");
-        process.exit(1);
+        setTimeout(function(){ process.exit(1); }, 500);
     }
 });
 
