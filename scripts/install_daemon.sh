@@ -76,7 +76,7 @@ elif [ -n "$(ps -e | egrep ^\ *1\ .*init$)" ]; then
     install -m $I_XMODE -o $I_OWNER -g $I_GROUP wazuh-api.tmp $I_SYSVINIT/wazuh-api
 
     enabled=true
-    if [ -r "/etc/redhat-release" d] || [-r "/etc/SuSE-release"]; then
+    if [ -r "/etc/redhat-release" ] || [ -r "/etc/SuSE-release" ]; then
         /sbin/chkconfig --add wazuh-api > /dev/null 2>&1
     elif [ -f "/usr/sbin/update-rc.d" ] || [ -n "$(ps -e | egrep upstart)" ]; then
         update-rc.d wazuh-api defaults
