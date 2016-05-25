@@ -55,30 +55,43 @@ fi
 # Install for systemd
 
 if [ -n "$(ps -e | egrep ^\ *1\ .*systemd$)" ]; then
+    echo "Installing for systemd"
+
     sed "s:^ExecStart=.*:ExecStart=$BIN_DIR $APP_PATH:g" wazuh-api.service > wazuh-api.service.tmp
     install -m $I_FMODE -o $I_OWNER -g $I_GROUP wazuh-api.service.tmp $I_SYSTEMD/wazuh-api.service
     systemctl enable wazuh-api
     systemctl daemon-reload
     systemctl restart wazuh-api
+
     echo "Daemon installed successfully. Please check the status running:"
     echo "  systemctl status wazuh-api"
 
 # Install for SysVinit
 
 elif [ -n "$(ps -e | egrep ^\ *1\ .*init$)" ]; then
+    echo "Installing for SysVinit"
+
     sed "s:^BIN_DIR=.*:BIN_DIR=\"$BIN_DIR\":g" wazuh-api > wazuh-api.tmp
     sed -i "s:^APP_PATH=.*:APP_PATH=\"$APP_PATH\":g" wazuh-api.tmp
     install -m $I_XMODE -o $I_OWNER -g $I_GROUP wazuh-api.tmp $I_SYSVINIT/wazuh-api
 
-    if [ -n "$(cat /etc/os-release 2> /dev/null | egrep NAME=\"Ubuntu\")" ] && [ -n "$(ps -e | egrep upstart)" ]; then
+    enabled=true
+    if [ -r "/etc/redhat-release" d] || [-r "/etc/SuSE-release"]; then
+        /sbin/chkconfig --add wazuh-api > /dev/null 2>&1
+    elif [ -f "/usr/sbin/update-rc.d" ] || [ -n "$(ps -e | egrep upstart)" ]; then
         update-rc.d wazuh-api defaults
+    elif [ -r "/etc/gentoo-release" ]; then
+        rc-update add wazuh-api default
     else
-        insserv wazuh-api
+        echo "init script installed in $I_SYSVINIT/wazuh-api"
+        echo "We could not enable it. Please enable the service manually."
+        enabled=false
     fi
 
-    service wazuh-api restart
+    if [ "$enabled" = true ]; then
+        service wazuh-api restart
+    fi
 else
     echo "Unknown init system. Exiting."
     exit 1
 fi
-
