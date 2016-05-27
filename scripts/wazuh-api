@@ -21,27 +21,51 @@
 #  sudo systemctl daemon-reload
 #  sudo systemctl restart wazuh-api
 
-PID_PATH="/var/run/wazuh-api.pid"
 BIN_DIR=
 APP_PATH=
+OSSEC_PATH=
+PID_PATH="$OSSEC_PATH/var/run/wazuh-api.pid"
+API_LOGS="$OSSEC_PATH/logs/api.log"
 
 start() {
-	if [ ! -f $PID_PATH ] || [ -z "$(ps -e | egrep "^\ *$(cat /var/run/wazuh-api.pid) .* node.*")" ]; then
-        $BIN_DIR $APP_PATH &
+	if [ -f $PID_PATH ] && [ -n "$(ps --no-headers -p `cat $PID_PATH`)" ]; then
+		echo "WAZUH-API is already running."
+	else
+		$BIN_DIR $APP_PATH > /dev/null 2>&1 < /dev/null &
 
-        if [ "$?" = "0" ]; then
-            echo $! > $PID_PATH
-        else
-            echo "Start error"
-            exit 1
-        fi
+    if [ "$?" = "0" ]; then
+        echo $! > $PID_PATH
+    else
+        echo "Start error"
+        exit 1
+    fi
+
+		echo "WAZUH-API started."
 	fi
 }
 
 stop() {
-	if [ -f $PID_PATH ]; then
-		kill `cat $PID_PATH`
-	    rm $PID_PATH
+	if [ -f $PID_PATH ] && [ -n "$(ps --no-headers -p `cat $PID_PATH`)" ]; then
+		kill `cat $PID_PATH` >  /dev/null 2>&1
+		while [ -n "$(ps --no-headers -p `cat $PID_PATH`)" ]; do sleep 0.1; done
+    rm -f $PID_PATH
+		echo "WAZUH-API stopped."
+	else
+		echo "WAZUH-API is not running."
+	fi
+}
+
+status() {
+	if [ -f $PID_PATH ] && [ -n "$(ps --no-headers -p `cat $PID_PATH`)" ]; then
+		echo "WAZUH-API is running."
+	else
+		echo "WAZUH-API is stopped."
+		if [ -f $API_LOGS ]; then
+			echo "\nLast 20 log entries:"
+			tail -n 20 $API_LOGS
+			echo ""
+		fi
+		echo "Full log: $API_LOGS"
 	fi
 }
 
@@ -57,10 +81,9 @@ restart)
     start
     ;;
 status)
-
+		status
     ;;
 *)
     echo "*** Usage: $0 {start|stop|restart|status}"
     exit 1
 esac
-
