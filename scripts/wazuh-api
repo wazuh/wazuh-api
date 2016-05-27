@@ -61,7 +61,8 @@ status() {
   else
     echo "WAZUH-API is stopped."
     if [ -f $API_LOGS ]; then
-      echo "\nLast 20 log entries:"
+      echo ""
+      echo "Last 20 log entries:"
       tail -n 20 $API_LOGS
       echo ""
     fi
