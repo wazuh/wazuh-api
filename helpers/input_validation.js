@@ -20,7 +20,7 @@ exports.numbers = function(n) {
 
 exports.names = function(name) {
     if (typeof name != 'undefined'){
-        var regex = /^[a-zA-Z0-9\-\_\.\\\/]+$/;
+        var regex = /^[a-zA-Z0-9_\-\.]+$/;
         return regex.test(name);
     }
     else

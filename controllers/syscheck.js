@@ -46,7 +46,7 @@ router.get('/:agent_id/files/changed', function(req, res) {
 
     if (validator.numbers(req.params.agent_id)){
         filter = req_h.get_filter(req.query, ['filename']);
-        
+
         if (filter == "bad_field")
             res_h.bad_request("604", "Allowed fields: filename", res);
         else{
@@ -57,7 +57,7 @@ router.get('/:agent_id/files/changed', function(req, res) {
                     });
                 }
                 else
-                    res_h.bad_request("601", "Field: filename", res);
+                    res_h.bad_request("608", "Field: filename", res);
             }
             else{
                 syscheck.files_changed(req.params.agent_id, null, function (data) {
@@ -129,7 +129,7 @@ router.delete('/', function(req, res) {
 // DELETE /syscheck/:agent_id - Clear the database for the agent.
 router.delete('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /syscheck/:agent_id");
-    
+
     if (validator.numbers(req.params.agent_id)){
         syscheck.clear(req.params.agent_id, function (data) {
             res_h.cmd(data, res);
