@@ -69,7 +69,7 @@ app.use(function(req, res, next) {
         new_url = req.url;
     else if (api_version_header && regex_version.test(api_version_header))
         new_url = "/" + api_version_header + req.url;
-    else 
+    else
         new_url = "/" + current_version + req.url;
 
     req.url = new_url;
@@ -118,9 +118,15 @@ else{
 
 // Event Handler
 process.on('uncaughtException', function(err) {
-    logger.log("Internal Error: uncaughtException");
-    if(err.stack)
-        logger.log(err.stack);
+
+    if (err.errno == "EADDRINUSE")
+        logger.log("Error: Address in use (port " + port + "): Close the program using that port or change the port.")
+    else {
+      logger.log("Internal Error: uncaughtException");
+      if(err.stack)
+          logger.log(err.stack);
+    }
+
     logger.log("Exiting...");
     setTimeout(function(){ process.exit(1); }, 500);
 });
@@ -133,4 +139,4 @@ process.on('SIGTERM', function() {
 process.on('SIGINT', function() {
     logger.log("Exiting... (SIGINT)");
     setTimeout(function(){ process.exit(1); }, 500);
-}); 
+});
