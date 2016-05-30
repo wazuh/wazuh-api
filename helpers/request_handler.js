@@ -8,15 +8,15 @@
  * License (version 2) as published by the FSF - Free Software
  * Foundation.
  */
- 
+
 exports.get_filter = function (query, allow_fields){
     var bad_field = false;
     var filter = Object.keys(query);
-    
+
     // Empty
     if (filter.length == 0)
         return null;
-    
+
     // Filters
     if (filter.length <= allow_fields.length){
         for (var i = 0; i < filter.length; i++){
@@ -29,7 +29,7 @@ exports.get_filter = function (query, allow_fields){
                     break;
                 }
             }
-            
+
             if (!field_ok){
                 bad_field = true;
                 break;
@@ -38,7 +38,7 @@ exports.get_filter = function (query, allow_fields){
     }
     else //Too much filters
         bad_field = true;
-    
+
     if (bad_field)
         return "bad_field";
     else

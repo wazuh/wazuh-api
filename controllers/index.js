@@ -14,6 +14,7 @@ var errors = require('../helpers/errors');
 var logger = require('../helpers/logger');
 var config = require('../config.js');
 var res_h = require('../helpers/response_handler');
+var validator = require('../helpers/input_validation');
 
 var router = express.Router();
 
@@ -30,17 +31,46 @@ router.post("*", function(req, res, next) {
         next();
 });
 
-// Get pretty
+// All requests
 router.all("*", function(req, res, next) {
+    res_h.pretty = false;
+    res_h.offset = 0;
+    res_h.limit = 100;
+    go_next = true;
 
-    if (req.query && "pretty" in req.query){
-        delete req.query["pretty"];
-        res_h.pretty = true;
+    if (req.query){
+        // Pretty
+        if ("pretty" in req.query){
+            res_h.pretty = true;
+            delete req.query["pretty"];
+        }
+
+        // Pagination - offset
+        if ("offset" in req.query){
+            if (!validator.numbers(req.query["offset"])){
+                res_h.bad_request("600", "Field: offset", res);
+                go_next = false;
+            }else{
+                res_h.offset = req.query["offset"];
+                delete req.query["offset"];
+            }
+        }
+
+        // Pagination - limit
+        if ("limit" in req.query){
+            if (!validator.numbers(req.query["limit"])){
+                res_h.bad_request("600", "Field: limit", res);
+                go_next = false;
+            }
+            else{
+                res_h.limit = req.query["limit"];
+                delete req.query["limit"];
+            }
+        }
     }
-    else
-        res_h.pretty = false;
 
-    next();
+    if (go_next)
+        next();
 });
 
 // Controllers
@@ -72,7 +102,7 @@ router.use(function(err, req, res, next){
     if(err.stack)
         logger.log(err.stack);
     logger.log("Exiting...");
-    
+
     setTimeout(function(){ process.exit(1); }, 500);
 });
 
