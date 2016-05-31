@@ -48,7 +48,7 @@ router.get('/', function(req, res) {
     if (filter == "bad_field")
         res_h.bad_request("604", "Allowed fields: " + allowed_fields, res);
     else if (filter != null && !validator.alphanumeric_param(filter.status))
-        res_h.bad_request("601", "Field: status", res);
+        res_h.bad_request("609", "Field: status", res);
     else
         agent.all(filter, function (data) {
             res_h.cmd(data, res);
@@ -65,7 +65,7 @@ router.get('/total', function(req, res) {
     if (filter == "bad_field")
         res_h.bad_request("604", "Allowed fields: " + allowed_fields, res);
     else if (filter != null && !validator.alphanumeric_param(filter.status))
-        res_h.bad_request("601", "Field: status", res);
+        res_h.bad_request("609", "Field: status", res);
     else
         agent.total(filter, function (data) {
             res_h.cmd(data, res);
