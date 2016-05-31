@@ -22,6 +22,8 @@ var config = require('../config.js');
  *
  * GET /agents - Get agents list
  * GET /agents?status=active - Get agents with status: Active, Disconnected, Never connected
+ * GET /agents/total - Get number of agents
+ * GET /agents/total?status=active - Get number of agents with status: Active, Disconnected, Never connected
  * GET /agents/:agent_id - Get Agent Info
  * GET /agents/:agent_id/key - Get Agent Key
  * PUT /agents/:agent_id/restart - Restart Agent
@@ -39,13 +41,33 @@ var config = require('../config.js');
 // GET /agents - Get agents list
 router.get('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents");
-    
-    filter = req_h.get_filter(req.query, ['status']);
+
+    allowed_fields = ['status'];
+    filter = req_h.get_filter(req.query, allowed_fields);
 
     if (filter == "bad_field")
-        res_h.bad_request("604", "Allowed fields: status", res);
+        res_h.bad_request("604", "Allowed fields: " + allowed_fields, res);
+    else if (filter != null && !validator.alphanumeric_param(filter.status))
+        res_h.bad_request("601", "Field: status", res);
     else
         agent.all(filter, function (data) {
+            res_h.cmd(data, res);
+        });
+})
+
+// GET /agents/total - Get number of agents
+router.get('/total', function(req, res) {
+    logger.log(req.connection.remoteAddress + " GET /agents/total");
+
+    allowed_fields = ['status'];
+    filter = req_h.get_filter(req.query, allowed_fields);
+
+    if (filter == "bad_field")
+        res_h.bad_request("604", "Allowed fields: " + allowed_fields, res);
+    else if (filter != null && !validator.alphanumeric_param(filter.status))
+        res_h.bad_request("601", "Field: status", res);
+    else
+        agent.total(filter, function (data) {
             res_h.cmd(data, res);
         });
 })
@@ -53,7 +75,7 @@ router.get('/', function(req, res) {
 // GET /agents/:agent_id - Get Agent Info
 router.get('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents/:agent_id");
-    
+
     if (validator.numbers(req.params.agent_id)){
         agent.info(req.params.agent_id, function (data) {
             res_h.cmd(data, res);
@@ -86,7 +108,7 @@ router.get('/:agent_id/key', function(req, res) {
 // PUT /agents/:agent_id/restart - Restart Agent
 router.put('/:agent_id/restart', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /agents/:agent_id/restart");
-    
+
     if (validator.numbers(req.params.agent_id)){
         agent.restart(req.params.agent_id, function (data) {
             res_h.cmd(data, res);
@@ -100,7 +122,7 @@ router.put('/:agent_id/restart', function(req, res) {
 // PUT /agents/:agent_name - Add Agent
 router.put('/:agent_name', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /agents/:agent_name");
-    
+
     if (validator.names(req.params.agent_name)){
         agent.add(req.params.agent_name, "any", function (data) {
             res_h.cmd(data, res);
@@ -119,7 +141,7 @@ router.put('/:agent_name', function(req, res) {
 // DELETE /agents/:agent_id - Remove Agent
 router.delete('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /agents/:agent_id");
-    
+
     if (validator.numbers(req.params.agent_id)){
         agent.remove(req.params.agent_id, function (data) {
             res_h.cmd(data, res);
@@ -141,21 +163,21 @@ router.post('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " POST /agents");
     var name = req.body.name;
     var ip = req.body.ip;
-    
+
     // If not IP set, we will use source IP.
     if ( !ip ){
         // If we hare behind a proxy server, use headers.
-        if (config.BehindProxyServer.toLowerCase() == "yes")        
+        if (config.BehindProxyServer.toLowerCase() == "yes")
             ip = req.headers['x-forwarded-for'];
         else
             ip = req.connection.remoteAddress;
-   
+
         // Extract IPv4 from IPv6 hybrid notation
         if (ip.indexOf("::ffff:") > -1) {
             var ipFiltered = ip.split(":");
             ip = ipFiltered[ipFiltered.length-1];
             logger.debug("Hybrid IPv6 IP filtered: " + ip);
-        }   
+        }
         logger.debug("Add agent with automatic IP: " + ip);
     }
 

@@ -44,17 +44,22 @@ router.get('/status', function(req, res) {
     manager.status(function (data) {
         res_h.cmd(data, res);
     });
-    
+
 })
 
 // GET /manager/configuration - Get manager configuration
 router.get('/configuration', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/configuration");
 
-    filter = req_h.get_filter(req.query, ['section', 'field']);
-    
+    allowed_fields = ['section', 'field'];
+    filter = req_h.get_filter(req.query, allowed_fields);
+
     if (filter == "bad_field")
-        res_h.bad_request("604", "Allowed fields: section, field", res);
+        res_h.bad_request("604", "Allowed fields: " + allowed_fields, res);
+    else if (filter != null && filter.section != null && !validator.names(filter.section))
+        res_h.bad_request("601", "Field: section", res);
+    else if (filter != null && filter.field != null && !validator.names(filter.field))
+        res_h.bad_request("601", "Field: field", res);
     else
         manager.config(filter, function (data) {
             res_h.cmd(data, res);
@@ -67,33 +72,31 @@ router.get('/configuration/test', function(req, res) {
     manager.testconfig(function (data) {
         res_h.cmd(data, res);
     });
-    
+
 })
 
 // GET /manager/stats - Stats
 router.get('/stats', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/stats");
 
-    filter = req_h.get_filter(req.query, ['date']);
-    
+    allowed_fields = ['date'];
+    filter = req_h.get_filter(req.query, allowed_fields);
+
     if (filter == "bad_field")
-        res_h.bad_request("604", "Allowed fields: date", res);
+        res_h.bad_request("604", "Allowed fields: " + allowed_fields, res);
     else{
         if(filter != null){
-            if (validator.dates(filter.date)){
+            if (!validator.dates(filter.date))
+                res_h.bad_request("605", "Field: date", res);
+            else
                 manager.stats(filter.date, function (data) {
                     res_h.cmd(data, res);
                 });
-            }
-            else{
-                res_h.bad_request("605", "Field: date", res);
-            }
         }
-        else{
+        else
             manager.stats("today", function (data) {
                 res_h.cmd(data, res);
             });
-        }
     }
 })
 

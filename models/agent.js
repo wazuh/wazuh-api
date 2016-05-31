@@ -25,19 +25,46 @@ exports.all = function(filter, callback){
     execute.exec(cmd_agent_control, args, function (json_output) {
 
         if (json_output.error == 0 && filter != null){
-            
+
             var data_filtered = [];
-            
+
             for(var i=0;i<json_output.data.length;i++){
                 var agent = json_output.data[i];
 
                 if (agent.status.toLowerCase() == filter.status.toLowerCase())
                     data_filtered.push(agent)
             }
-            
+
             r_data_filtered = {'error': 0, 'data': data_filtered, 'message': ""};
-            
+
             callback(r_data_filtered);
+        }
+        else{
+            callback(json_output);
+        }
+    });
+}
+
+exports.total = function(filter, callback){
+    var args = ['-j', '-l'];
+    execute.exec(cmd_agent_control, args, function (json_output) {
+
+        if (json_output.error == 0){
+            var count = 0;
+
+            if (filter != null){
+                for(var i=0;i<json_output.data.length;i++){
+                    var agent = json_output.data[i];
+
+                    if (agent.status.toLowerCase() == filter.status.toLowerCase())
+                        count++;
+                }
+            }
+            else {
+                count = json_output.data.length;
+            }
+
+            callback({'error': 0, 'data': count, 'message': ""});
         }
         else{
             callback(json_output);
@@ -62,7 +89,7 @@ exports.get_key = function(id, callback){
 
 exports.add = function(name, ip, callback){
     var args;
-    
+
     if (ip.toLowerCase() == "any")
         args = ['-j', '-a', 'any', '-n', name];
     else{
@@ -76,7 +103,7 @@ exports.add = function(name, ip, callback){
         */
         args = ['-j', '-a', ip, '-n', name];
     }
-    
+
     execute.exec(cmd_manage_agents, args, callback);
 }
 

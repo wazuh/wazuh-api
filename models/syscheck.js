@@ -46,14 +46,25 @@ exports.clear = function(id, callback){
     execute.exec(cmd_syscheck_control, args, callback);
 }
 
-exports.files_changed = function(id, filename, callback){
+exports.files_changed = function(id, filter, callback){
     var args = ['-j', '-i', id];
-    if (filename != null)
-        args = ['-j', '-i', id, '-f', filename];
-    else
-        args = ['-j', '-i', id];
-    
+    if (filter != null)
+        args = ['-j', '-i', id, '-f', filter.filename];
+
     execute.exec(cmd_syscheck_control, args, callback);
+}
+
+exports.files_changed_total = function(id, filter, callback){
+    var args = ['-j', '-i', id];
+    if (filter != null)
+        args = ['-j', '-i', id, '-f', filter.filename];
+
+    execute.exec(cmd_syscheck_control, args, function (json_output) {
+        if (json_output.error == 0)
+            callback({'error': 0, 'data': json_output.data.length, 'message': ""});
+        else
+            callback(json_output);
+    });
 }
 
 exports.last_scan = function(id, callback){

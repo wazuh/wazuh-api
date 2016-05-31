@@ -53,3 +53,12 @@ exports.ips = function(ip) {
     else
         return false;
 }
+
+exports.alphanumeric_param = function(param) {
+    if (typeof param != 'undefined'){
+        var regex = /^[a-zA-Z0-9_\-\.\+\s]+$/;
+        return regex.test(param);
+    }
+    else
+        return false;
+}

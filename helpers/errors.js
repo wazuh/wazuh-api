@@ -34,7 +34,8 @@ errors['604'] = "Filter error";  // Filter
 errors['605'] = "Param not valid. Date format: YYYYMMDD";  // Date
 errors['606'] = "Param not valid. IP invalid";  // IP
 errors['607'] = "Invalid content-type. POST requests should be 'application/json' or 'application/x-www-form-urlencoded'";  //
-errors['608'] = "Param not valid. Valid characters: a-z, A-Z, 0-9, ., _, -, :, /, \\";  // Paths
+errors['608'] = "Param not valid. Path invalid. Valid characters: a-z, A-Z, 0-9, ., _, -, :, /, \\";  // Paths
+errors['609'] = "Param not valid. Valid characters: a-z, A-Z, 0-9, ., _, -, +";  // Alphanumeric params
 
 exports.description = function(n){
     if (n in errors)
