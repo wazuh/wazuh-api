@@ -22,7 +22,7 @@ var res_h = require('./helpers/response_handler');
 /********************************************/
 /* Config APP
 /********************************************/
-var current_version = "v1.2";
+current_version = "v1.2";
 
 port = process.env.PORT || config.port;
 

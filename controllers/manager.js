@@ -23,6 +23,7 @@ var validator = require('../helpers/input_validation');
  * PUT /manager/stop - Stop manager
  * PUT /manager/restart - Restart manager
  * GET /manager/status - Get manager status
+ * GET /manager/info - Get manager info
  * GET /manager/configuration - Get manager configuration
  *   GET /manager/configuration?section=rules - Get rules in ossec.conf
  * GET /manager/configuration/test - Test configuration
@@ -42,6 +43,15 @@ var validator = require('../helpers/input_validation');
 router.get('/status', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/status");
     manager.status(function (data) {
+        res_h.cmd(data, res);
+    });
+
+})
+
+// GET /manager/info - Get manager info
+router.get('/info', function(req, res) {
+    logger.log(req.connection.remoteAddress + " GET /manager/info");
+    manager.info(function (data) {
         res_h.cmd(data, res);
     });
 
