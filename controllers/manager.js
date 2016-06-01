@@ -43,7 +43,7 @@ var validator = require('../helpers/input_validation');
 router.get('/status', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/status");
     manager.status(function (data) {
-        res_h.cmd(data, res);
+        res_h.send(res, data);
     });
 
 })
@@ -52,7 +52,7 @@ router.get('/status', function(req, res) {
 router.get('/info', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/info");
     manager.info(function (data) {
-        res_h.cmd(data, res);
+        res_h.send(res, data);
     });
 
 })
@@ -72,7 +72,7 @@ router.get('/configuration', function(req, res) {
         res_h.bad_request("601", "Field: field", res);
     else
         manager.config(filter, function (data) {
-            res_h.cmd(data, res);
+            res_h.send(res, data);
         });
 })
 
@@ -80,7 +80,7 @@ router.get('/configuration', function(req, res) {
 router.get('/configuration/test', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/configuration/test");
     manager.testconfig(function (data) {
-        res_h.cmd(data, res);
+        res_h.send(res, data);
     });
 
 })
@@ -100,12 +100,12 @@ router.get('/stats', function(req, res) {
                 res_h.bad_request("605", "Field: date", res);
             else
                 manager.stats(filter.date, function (data) {
-                    res_h.cmd(data, res);
+                    res_h.send(res, data);
                 });
         }
         else
             manager.stats("today", function (data) {
-                res_h.cmd(data, res);
+                res_h.send(res, data);
             });
     }
 })
@@ -114,7 +114,7 @@ router.get('/stats', function(req, res) {
 router.get('/stats/hourly', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/stats/hourly");
     manager.stats("hourly", function (data) {
-        res_h.cmd(data, res);
+        res_h.send(res, data);
     });
 })
 
@@ -122,7 +122,7 @@ router.get('/stats/hourly', function(req, res) {
 router.get('/stats/weekly', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/stats/weekly");
     manager.stats("weekly", function (data) {
-        res_h.cmd(data, res);
+        res_h.send(res, data);
     });
 })
 
@@ -133,7 +133,7 @@ router.get('/stats/weekly', function(req, res) {
 router.put('/start', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /manager/start");
     manager.start(function (data) {
-        res_h.cmd(data, res);
+        res_h.send(res, data);
     });
 })
 
@@ -141,7 +141,7 @@ router.put('/start', function(req, res) {
 router.put('/stop', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /manager/stop");
     manager.stop(function (data) {
-        res_h.cmd(data, res);
+        res_h.send(res, data);
     });
 })
 
@@ -149,7 +149,7 @@ router.put('/stop', function(req, res) {
 router.put('/restart', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /manager/restart");
     manager.restart(function (data) {
-        res_h.cmd(data, res);
+        res_h.send(res, data);
     });
 })
 

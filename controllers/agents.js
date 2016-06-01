@@ -51,7 +51,7 @@ router.get('/', function(req, res) {
         res_h.bad_request("609", "Field: status", res);
     else
         agent.all(filter, function (data) {
-            res_h.cmd(data, res);
+            res_h.send(res, data);
         });
 })
 
@@ -68,7 +68,7 @@ router.get('/total', function(req, res) {
         res_h.bad_request("609", "Field: status", res);
     else
         agent.total(filter, function (data) {
-            res_h.cmd(data, res);
+            res_h.send(res, data);
         });
 })
 
@@ -78,7 +78,7 @@ router.get('/:agent_id', function(req, res) {
 
     if (validator.numbers(req.params.agent_id)){
         agent.info(req.params.agent_id, function (data) {
-            res_h.cmd(data, res);
+            res_h.send(res, data);
         });
     }
     else{
@@ -92,7 +92,7 @@ router.get('/:agent_id/key', function(req, res) {
 
     if (validator.numbers(req.params.agent_id)){
         agent.get_key(req.params.agent_id, function (data) {
-            res_h.cmd(data, res);
+            res_h.send(res, data);
         });
     }
     else{
@@ -111,7 +111,7 @@ router.put('/:agent_id/restart', function(req, res) {
 
     if (validator.numbers(req.params.agent_id)){
         agent.restart(req.params.agent_id, function (data) {
-            res_h.cmd(data, res);
+            res_h.send(res, data);
         });
     }
     else{
@@ -125,7 +125,7 @@ router.put('/:agent_name', function(req, res) {
 
     if (validator.names(req.params.agent_name)){
         agent.add(req.params.agent_name, "any", function (data) {
-            res_h.cmd(data, res);
+            res_h.send(res, data);
         });
     }
     else{
@@ -144,7 +144,7 @@ router.delete('/:agent_id', function(req, res) {
 
     if (validator.numbers(req.params.agent_id)){
         agent.remove(req.params.agent_id, function (data) {
-            res_h.cmd(data, res);
+            res_h.send(res, data);
         });
     }
     else{
@@ -183,7 +183,7 @@ router.post('/', function(req, res) {
 
     if (validator.names(name) && validator.ips(ip)){
         agent.add(name, ip, function (data) {
-            res_h.cmd(data, res);
+            res_h.send(res, data);
         });
     }
     else{

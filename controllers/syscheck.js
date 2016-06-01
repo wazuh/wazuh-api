@@ -56,7 +56,7 @@ router.get('/:agent_id/files/changed', function(req, res) {
                 res_h.bad_request("608", "Field: filename", res);
         else
             syscheck.files_changed(req.params.agent_id, filter, function (data) {
-                res_h.cmd(data, res);
+                res_h.send(res, data);
             });
     }
     else{
@@ -78,7 +78,7 @@ router.get('/:agent_id/files/changed/total', function(req, res) {
                 res_h.bad_request("608", "Field: filename", res);
         else
             syscheck.files_changed_total(req.params.agent_id, filter, function (data) {
-                res_h.cmd(data, res);
+                res_h.send(res, data);
             });
     }
     else{
@@ -92,7 +92,7 @@ router.get('/:agent_id/last_scan', function(req, res) {
 
     if (validator.numbers(req.params.agent_id)){
         syscheck.last_scan(req.params.agent_id, function (data) {
-            res_h.cmd(data, res);
+            res_h.send(res, data);
         });
     }
     else{
@@ -109,7 +109,7 @@ router.get('/:agent_id/last_scan', function(req, res) {
 router.put('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /syscheck");
     syscheck.run("ALL", function (data) {
-        res_h.cmd(data, res);
+        res_h.send(res, data);
     });
 })
 
@@ -119,7 +119,7 @@ router.put('/:agent_id', function(req, res) {
 
     if (validator.numbers(req.params.agent_id)){
         syscheck.run(req.params.agent_id, function (data) {
-            res_h.cmd(data, res);
+            res_h.send(res, data);
         });
     }
     else{
@@ -136,7 +136,7 @@ router.put('/:agent_id', function(req, res) {
 router.delete('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /syscheck");
         syscheck.clear("ALL", function (data) {
-            res_h.cmd(data, res);
+            res_h.send(res, data);
         });
 
 })
@@ -147,7 +147,7 @@ router.delete('/:agent_id', function(req, res) {
 
     if (validator.numbers(req.params.agent_id)){
         syscheck.clear(req.params.agent_id, function (data) {
-            res_h.cmd(data, res);
+            res_h.send(res, data);
         });
     }
     else{

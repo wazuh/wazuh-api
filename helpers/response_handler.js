@@ -16,48 +16,46 @@ exports.pretty = false;
 exports.offset = 0;
 exports.limit = 100;
 
-exports.send = function(res, json, status){
-    if (this.pretty){
-        try {
-            res.status(status).send(JSON.stringify( json, null, 3) + "\n");
-        } catch (e) {
-            json_result = {"error": 3, "data": "", "message": errors.description(3)}; // OUTPUT Not JSON
-        }
-    }
-    else
-        res.status(status).json(json);
-}
+exports.send = function(res, json_r, status){
+    
+    if (typeof status == 'undefined')
+        status = 200;
 
-/**
- * cmd
- * Use this handler for *execute.exec*.
- *
- * When error is 01 or 02 -> status is 500
- */
-exports.cmd = function(json_cmd_output, res){
-    var status = 200;
-    var json_res = json_cmd_output;
+    // Validate json and status
+    if (json_r != null && json_r.error != null && json_r.data != null && json_r.message != null && status >= 100 && status <= 600){
 
-    if (json_cmd_output.error != 0){
-        if (json_cmd_output.error == "01" || json_cmd_output.error == "02")
+        // Calculate status
+        if (json_r.error >= 1 && json_r.error <= 9)
             status = 500;
-        logger.log("Response: " + JSON.stringify(json_cmd_output) + " HTTP Status: " + status);
-    }
-    else{
-        new_data = [];
-        if ( Array.isArray(json_cmd_output.data) ){
+
+        // Pagination
+        if ( Array.isArray(json_r.data) ){
+            var new_data = [];
             var c = 0;
-            for(var i = this.offset; i < json_cmd_output.data.length && c < this.limit; i++){
-                new_data.push(json_cmd_output.data[i]);
+            for(var i = this.offset; i < json_r.data.length && c < this.limit; i++){
+                new_data.push(json_r.data[i]);
                 c++;
             }
-            json_res = {'error': 0, 'data': new_data, 'message': json_cmd_output.msg};
+            msg = json_r.msg;
+            json_r = {'error': 0, 'data': new_data, 'message': msg};
         }
-
-        logger.log("Response: {...} HTTP Status: 200");
+    }
+    else{
+        json_r = {"error": 3, "data": "", "message": errors.description(3)}; // Internal Error
+        status = 500;
     }
 
-    this.send(res, json_res, status);
+    // Logging
+    if (status == 200)
+        logger.log("Response: {...OK...} HTTP Status: 200");
+    else
+        logger.log("Response: " + JSON.stringify(json_r) + " HTTP Status: " + status);
+
+    // Send
+    if (this.pretty)
+        res.status(status).send(JSON.stringify( json_r, null, 3) + "\n");
+    else
+        res.status(status).json(json_r);
 }
 
 exports.bad_request = function(internal_error, extra_msg, res){
@@ -67,8 +65,6 @@ exports.bad_request = function(internal_error, extra_msg, res){
         msg = msg + ". " + extra_msg;
 
     json_res = {'error': internal_error, 'data': "", 'message': msg};
-
-    logger.log("Response: " + JSON.stringify(json_res) + " HTTP Status: 400");
 
     this.send(res, json_res, 400);
 }

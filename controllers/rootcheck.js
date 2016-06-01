@@ -39,7 +39,7 @@ router.get('/:agent_id', function(req, res) {
 
     if (validator.numbers(req.params.agent_id)){
         rootcheck.print_db(req.params.agent_id, function (data) {
-            res_h.cmd(data, res);
+            res_h.send(res, data);
         });
     }
     else{
@@ -53,7 +53,7 @@ router.get('/:agent_id/last_scan', function(req, res) {
 
     if (validator.numbers(req.params.agent_id)){
         rootcheck.last_scan(req.params.agent_id, function (data) {
-            res_h.cmd(data, res);
+            res_h.send(res, data);
         });
     }
     else{
@@ -70,7 +70,7 @@ router.get('/:agent_id/last_scan', function(req, res) {
 router.put('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /rootcheck");
     rootcheck.run("ALL", function (data) {
-        res_h.cmd(data, res);
+        res_h.send(res, data);
     });
 })
 
@@ -80,7 +80,7 @@ router.put('/:agent_id', function(req, res) {
 
     if (validator.numbers(req.params.agent_id)){
         rootcheck.run(req.params.agent_id, function (data) {
-            res_h.cmd(data, res);
+            res_h.send(res, data);
         });
     }
     else{
@@ -97,7 +97,7 @@ router.put('/:agent_id', function(req, res) {
 router.delete('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /rootcheck");
         rootcheck.clear("ALL", function (data) {
-            res_h.cmd(data, res);
+            res_h.send(res, data);
         });
 
 })
@@ -105,10 +105,10 @@ router.delete('/', function(req, res) {
 // DELETE /rootcheck/:agent_id - Clear the database for the agent.
 router.delete('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /rootcheck/:agent_id");
-    
+
     if (validator.numbers(req.params.agent_id)){
         rootcheck.clear(req.params.agent_id, function (data) {
-            res_h.cmd(data, res);
+            res_h.send(res, data);
         });
     }
     else{

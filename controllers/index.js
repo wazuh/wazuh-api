@@ -83,8 +83,7 @@ router.use('/rootcheck', require('./rootcheck'));
 router.get('/',function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /");
     json_res = {'error': 0, 'data': "OSSEC-API", 'message': "wazuh.com"};
-    res_h.send(res, json_res, 200);
-    logger.log("Response: " + JSON.stringify(json_res) + " HTTP Status: 200");
+    res_h.send(res, json_res);
 });
 
 // ALWAYS Keep this as the last route
@@ -92,7 +91,6 @@ router.all('*',function(req, res) {
     logger.log(req.connection.remoteAddress + " " + req.method + " " + req.path);
     json_res = { 'error': 603, 'data': "", 'message': errors.description(603)};
     res_h.send(res, json_res, 404);
-    logger.log("Response: " + JSON.stringify(json_res) + " HTTP Status: 404");
 });
 
 
