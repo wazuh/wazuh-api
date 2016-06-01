@@ -100,11 +100,18 @@ exports.info = function(callback){
             json_data = {};
             for (var i in lines) {
                 var match = line_regex.exec(lines[i]);
-                if (match && match[1] && match[2])
-                    json_data[match[1].toLowerCase()] =match[2];
-            }
+                if (match && match[1] && match[2]){
+                    var key = match[1].toLowerCase();
 
-            json_data["api_version"] = current_version;
+                    if (key == "version")
+                        continue;
+                    if (key == "wazuh_version")
+                        key = "version";
+
+                    json_data[key] =match[2];
+                }
+
+            }
 
             json_res = {'error': 0, 'data': json_data, 'message': ''};
         }

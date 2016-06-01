@@ -86,6 +86,13 @@ router.get('/',function(req, res) {
     res_h.send(res, json_res);
 });
 
+// Version
+router.get('/version',function(req, res) {
+    logger.log(req.connection.remoteAddress + " GET /version");
+    json_res = {'error': 0, 'data': current_version, 'message': ""};
+    res_h.send(res, json_res);
+});
+
 // ALWAYS Keep this as the last route
 router.all('*',function(req, res) {
     logger.log(req.connection.remoteAddress + " " + req.method + " " + req.path);
