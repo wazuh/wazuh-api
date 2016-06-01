@@ -23,6 +23,10 @@ var validator = require('../helpers/input_validation');
  *   GET /syscheck/:agent_id/files/changed?filename=name - Prints information about a modified file.
  * GET /syscheck/:agent_id/files/changed/total - Number of modified files for the agent.
  *   GET /syscheck/:agent_id/files/changed/total?filename=name - Number of modified files for the agent matching the filename param.
+ * GET /syscheck/:agent_id/registry/changed - List modified registry entries
+ *  filter: filename
+ * GET /syscheck/:agent_id/registry/changed/total - Number of modified registry entries
+ *  filter: filename
  * GET /syscheck/:agent_id/last_scan - Syscheck last scan
  * PUT /syscheck - Run syscheck in all agents.
  * PUT /syscheck/:agent_id - Run syscheck in the agent.
@@ -78,6 +82,50 @@ router.get('/:agent_id/files/changed/total', function(req, res) {
                 res_h.bad_request("608", "Field: filename", res);
         else
             syscheck.files_changed_total(req.params.agent_id, filter, function (data) {
+                res_h.send(res, data);
+            });
+    }
+    else{
+        res_h.bad_request("600", "Field: agent_id", res);
+    }
+})
+
+// GET /syscheck/:agent_id/registry/changed - List modified registry entries
+router.get('/:agent_id/registry/changed', function(req, res) {
+    logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/registry/changed");
+
+    if (validator.numbers(req.params.agent_id)){
+        allowed_fields = ['filename'];
+        filter = req_h.get_filter(req.query, allowed_fields);
+
+        if (filter == "bad_field")
+            res_h.bad_request("604", "Allowed fields: " + allowed_fields, res);
+        else if(filter != null && !validator.paths(filter.filename))
+                res_h.bad_request("608", "Field: filename", res);
+        else
+            syscheck.registry_changed(req.params.agent_id, filter, function (data) {
+                res_h.send(res, data);
+            });
+    }
+    else{
+        res_h.bad_request("600", "Field: agent_id", res);
+    }
+})
+
+// GET /syscheck/:agent_id/registry/changed/total - Number of modified registry entries
+router.get('/:agent_id/registry/changed/total', function(req, res) {
+    logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/registry/changed/total");
+
+    if (validator.numbers(req.params.agent_id)){
+        allowed_fields = ['filename'];
+        filter = req_h.get_filter(req.query, allowed_fields);
+
+        if (filter == "bad_field")
+            res_h.bad_request("604", "Allowed fields: " + allowed_fields, res);
+        else if(filter != null && !validator.paths(filter.filename))
+                res_h.bad_request("608", "Field: filename", res);
+        else
+            syscheck.registry_changed_total(req.params.agent_id, filter, function (data) {
                 res_h.send(res, data);
             });
     }

@@ -67,6 +67,27 @@ exports.files_changed_total = function(id, filter, callback){
     });
 }
 
+exports.registry_changed = function(id, filter, callback){
+    var args = ['-j', '-r', '-i', id];
+    if (filter != null)
+        args = ['-j', '-r', '-i', id, '-f', filter.filename];
+
+    execute.exec(cmd_syscheck_control, args, callback);
+}
+
+exports.registry_changed_total = function(id, filter, callback){
+    var args = ['-j', '-r', '-i', id];
+    if (filter != null)
+        args = ['-j', '-r', '-i', id, '-f', filter.filename];
+
+    execute.exec(cmd_syscheck_control, args, function (json_output) {
+        if (json_output.error == 0)
+            callback({'error': 0, 'data': json_output.data.length, 'message': ""});
+        else
+            callback(json_output);
+    });
+}
+
 exports.last_scan = function(id, callback){
     agent.info(id, function (json_output) {
         if (json_output.error == 0){
