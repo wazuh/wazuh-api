@@ -25,23 +25,23 @@ var errors = require('../helpers/errors');
 exports.exec = function(cmd, args, callback) {
     const child_process  = require('child_process');
 
-    child_process.execFile(cmd, args, function(error, stdout, stderr) {
+    child_process.execFile(cmd, args, {maxBuffer: 1024 * 500}, function(error, stdout, stderr) {
         if (args != null)
             full_cmd = cmd + " " + args.toString();
         else
             full_cmd = cmd;
         logger.logCommand(full_cmd, error, stdout, stderr);
-        
+
         var json_result = {};
 
         if ( stdout ) {
             try {
                 var json_cmd = JSON.parse(stdout); // String -> JSON
-                
+
                 if ( json_cmd.hasOwnProperty('error') ){
-                
+
                     json_result.error = json_cmd.error;
-                    
+
                     if ( json_cmd.hasOwnProperty('data') )
                         json_result.data = json_cmd.data;
                     else
@@ -54,7 +54,7 @@ exports.exec = function(cmd, args, callback) {
                 }
                 else
                     json_result = {"error": 1, "data": "", "message": errors.description(1)}; // Internal Error
-                
+
             } catch (e) {
                 json_result = {"error": 2, "data": "", "message": errors.description(2)}; // OUTPUT Not JSON
             }
@@ -63,7 +63,7 @@ exports.exec = function(cmd, args, callback) {
             //if ( error != null || stderr != "")
             json_result = {"error": 1, "data": "", "message": errors.description(1)}; // Internal Error
         }
-        
+
         callback(json_result);
     });
 }

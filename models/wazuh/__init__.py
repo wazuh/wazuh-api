@@ -30,8 +30,10 @@ class Wazuh:
         self.stats = Stats(self.path)
 
     def __str__(self):
-        dictionary = {'path': self.path, 'version': self.version, 'installation_date': self.installation_date, 'type': self.type}
-        return str(dictionary)
+        return str(self.to_dict())
+
+    def to_dict(self):
+        return {'path': self.path, 'version': self.version, 'installation_date': self.installation_date, 'type': self.type}
 
     def get_ossec_init(self):
         with open(self.OSSEC_INIT, 'r') as f:
@@ -49,7 +51,7 @@ class Wazuh:
                         self.installation_date = match.group(2)
                     elif key == "type":
                         self.type = match.group(2)
-
+        return self.to_dict()
 
 def main():
     print("Wazuh HIDS Library")

@@ -116,14 +116,16 @@ if __name__ == "__main__":
     pattern = re.compile(r'^[a-zA-Z0-9\._]+$')
     m = pattern.match(function)
     if not m:
-        print("bad argument function")
+        # ToDo
+        print_json("Wazuh-Python Internal Error: Bad argument", 1000)
         exit(1)
 
     pattern = re.compile(r'[a-zA-Z0-9\-/_\.\:\\\s,="]+$')
     if arguments:
         m = pattern.match(arguments)
         if not m:
-            print("bad argument arguments")
+            # ToDo
+            print_json("Wazuh-Python Internal Error: Bad argument", 1000)
             exit(1)
     else:
         arguments = ""

@@ -91,6 +91,7 @@ class Rules:
                             rule = Rule(rule_path)
                             rule.id = xml_rule.attrib['id']
                             rule.level = xml_rule.attrib['level']
+                            rule.set_group(general_groups)
 
                             for k in xml_rule.attrib:
                                 if k != 'id' and k != 'level':
@@ -98,7 +99,6 @@ class Rules:
 
                             for xml_rule_tags in xml_rule.getchildren():
                                 if xml_rule_tags.tag.lower() == "group":
-                                    rule.set_group(general_groups)
                                     rule.set_group(xml_rule_tags.text.split(","))
                                 elif xml_rule_tags.tag.lower() == "description":
                                     rule.description = xml_rule_tags.text
