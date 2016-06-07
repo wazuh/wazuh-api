@@ -79,7 +79,7 @@ def test():
     exit(0)
 
 if __name__ == "__main__":
-    function = None
+    function_id = None
     arguments = None
     pretty = False
     debug = False
@@ -99,7 +99,7 @@ if __name__ == "__main__":
 
     for o, a in opts:
         if o in ("-f", "--function"):
-            function = a
+            function_id = a
         elif o in ("-a", "--arguments"):
             arguments = a
         elif o in ("-p", "--pretty"):
@@ -114,7 +114,7 @@ if __name__ == "__main__":
 
     # Check arguments
     pattern = re.compile(r'^[a-zA-Z0-9\._]+$')
-    m = pattern.match(function)
+    m = pattern.match(function_id)
     if not m:
         # ToDo
         print_json("Wazuh-Python Internal Error: Bad argument", 1000)
@@ -127,17 +127,27 @@ if __name__ == "__main__":
             # ToDo
             print_json("Wazuh-Python Internal Error: Bad argument", 1000)
             exit(1)
-    else:
-        arguments = ""
 
-    # Execution
-    myWazuh = Wazuh()
-    action = "myWazuh.{0}({1})".format(function, arguments)
+    wazuh = Wazuh()
+    functions = {
+        'get_ossec_init': wazuh.get_ossec_init,
+        'get_ossec_conf': wazuh.configuration.get_ossec_conf,
+        'check_configuration': wazuh.configuration.check,
+        'get_rules': wazuh.rules.get_rules,
+        'get_rules_files': wazuh.rules.get_rules_files,
+        'get_rules_with_group': wazuh.rules.get_rules_with_group,
+        'get_rule': wazuh.rules.get_rule,
+        'get_groups': wazuh.rules.get_groups,
+        'stats.totals': wazuh.stats.totals,
+        'stats.hourly': wazuh.stats.hourly,
+        'stats.weekl': wazuh.stats.weekly,
+        }
 
-    if debug:
-        print(action)
     try:
-        data = eval(action)
+        if arguments:
+            data = functions[function_id](*arguments.split(','))
+        else:
+            data = functions[function_id]()
         print_json(data)
     except Exception as e:
         handle_exception(e)

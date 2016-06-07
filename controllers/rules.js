@@ -27,7 +27,7 @@ var wazuh_control = config.api_path + "/models/wazuh-control.py";
 router.get('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rules");
 
-    var args = ["-f", "rules.get_rules"]
+    var args = ["-f", "get_rules"]
         execute.exec(wazuh_control, args, function (data) {
         res_h.send(res, data);
     });

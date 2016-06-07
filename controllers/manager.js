@@ -74,7 +74,7 @@ router.get('/configuration', function(req, res) {
     else if (filter != null && filter.field != null && !validator.names(filter.field))
         res_h.bad_request("601", "Field: field", res);
     else{
-        var args = ["-f", "configuration.get_ossec_conf"]
+        var args = ["-f", "get_ossec_conf"]
         execute.exec(wazuh_control, args, function (json_output) {
 
             if (json_output.error == 0 && filter != null){
@@ -102,7 +102,7 @@ router.get('/configuration', function(req, res) {
 // GET /manager/configuration/test - Test configuration
 router.get('/configuration/test', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/configuration/test");
-    var args = ["-f", "configuration.check"]
+    var args = ["-f", "check_configuration"]
     execute.exec(wazuh_control, args, function (data) {
         res_h.send(res, data);
     });
