@@ -68,7 +68,7 @@ exports.check = function (query, filters, res){
         var type = filter[key];
 
         if(!validator[type](query[field])){ // Bad type
-            var erro_code = errors.get_error_code_from_type(type);
+            var erro_code = errors.description(type);
             res_h.bad_request(erro_code, " Field: " + field, res);
             return [-2, null];
         }

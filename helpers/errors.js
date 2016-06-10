@@ -28,16 +28,19 @@ errors['3'] = "Internal error";
 
 // 600 - 699 Requests
 errors['600'] = "Param not valid. Integer expected";  // Integer
+errors['numbers'] = 600;
 errors['601'] = "Param not valid. Valid characters: a-z, A-Z, 0-9, ., _, -";  // Names
+errors['names'] = 601;
 errors['603'] = "The requested URL was not found on this server";  // Default error
 errors['604'] = "Filter error";  // Filter
 errors['605'] = "Param not valid. Date format: YYYYMMDD";  // Date
+errors['dates'] = 605;
 errors['606'] = "Param not valid. IP invalid";  // IP
+errors['ips'] = 606;  // IP
 errors['607'] = "Invalid content-type. POST requests should be 'application/json' or 'application/x-www-form-urlencoded'";  //
 errors['608'] = "Param not valid. Path invalid. Valid characters: a-z, A-Z, 0-9, ., _, -, :, /, \\";  // Paths
+errors['paths'] = 608;
 errors['609'] = "Param not valid. Valid characters: a-z, A-Z, 0-9, ., _, -, +";  // Alphanumeric params
-
-
 errors['alphanumeric_param'] = 609;
 
 exports.description = function(n){
@@ -45,10 +48,4 @@ exports.description = function(n){
         return errors[n];
     else
         return "Undefined error.";
-}
-
-exports.get_error_code_from_type = function(type){
-    if (type == "alphanumeric_param")
-        return 609;
-    return 3;
 }

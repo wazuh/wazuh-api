@@ -131,16 +131,16 @@ if __name__ == "__main__":
     wazuh = Wazuh()
     functions = {
         'get_ossec_init': wazuh.get_ossec_init,
-        'get_ossec_conf': wazuh.configuration.get_ossec_conf,
-        'check_configuration': wazuh.configuration.check,
-        'get_rules': wazuh.rules.get_rules,
-        'get_rules_files': wazuh.rules.get_rules_files,
-        'get_rules_with_group': wazuh.rules.get_rules_with_group,
-        'get_rule': wazuh.rules.get_rule,
-        'get_groups': wazuh.rules.get_groups,
-        'stats.totals': wazuh.stats.totals,
-        'stats.hourly': wazuh.stats.hourly,
-        'stats.weekl': wazuh.stats.weekly,
+        'configuration.get_ossec_conf': wazuh.configuration.get_ossec_conf,
+        'configuration.check': wazuh.configuration.check,
+        'rules.get_rules': wazuh.rules.get_rules,
+        'rules.get_rules_files': wazuh.rules.get_rules_files,
+        'rules.get_rules_with_group': wazuh.rules.get_rules_with_group,
+        'rules.get_rule': wazuh.rules.get_rule,
+        'rules.get_groups': wazuh.rules.get_groups,
+        'rules.stats.totals': wazuh.stats.totals,
+        'rules.stats.hourly': wazuh.stats.hourly,
+        'rules.stats.weekl': wazuh.stats.weekly,
         }
 
     try:

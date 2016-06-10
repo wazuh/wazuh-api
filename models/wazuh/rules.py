@@ -108,7 +108,7 @@ class Rules:
                                     rule.details[xml_rule_tags.tag.lower()] = xml_rule_tags.text
                             rules.append(rule)
         except Exception as e:
-            raise WazuhException(1201, rule_path)
+            raise WazuhException(1201, "{0}. Error: {1}".format(rule_path, str(e)))
 
         return rules
 

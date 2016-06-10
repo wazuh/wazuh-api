@@ -44,9 +44,9 @@ router.get('/', function(req, res) {
         switch(check_filter[1]) {
             case 0: // status - group
                 if (req.query.status == "all")
-                    args = ["-f", "get_rules_with_group", "-a", req.query.group + ", enabled=False"];
+                    args = ["-f", "rules.get_rules_with_group", "-a", req.query.group + ", enabled=False"];
                 else
-                    args = ["-f", "get_rules_with_group", "-a", req.query.group];
+                    args = ["-f", "rules.get_rules_with_group", "-a", req.query.group];
                 break;
             case 1:  // status - level
                 console.log("ToDo");
@@ -56,19 +56,19 @@ router.get('/', function(req, res) {
                 break;
             case 3:  // status
                 if (req.query.status == "all")
-                    args = ["-f", "get_rules", "-a", "enabled=False" ];
+                    args = ["-f", "rules.get_rules", "-a", "enabled=False" ];
                 else
-                    args = ["-f", "get_rules"];
+                    args = ["-f", "rules.get_rules"];
                 break;
             case 4:  // group
-                args = ["-f", "get_rules_with_group", "-a", req.query.group];
+                args = ["-f", "rules.get_rules_with_group", "-a", req.query.group];
                 break;
             case 5:  // level
                 console.log("ToDo");
                 break;
         }
     }else { // No filter
-        args = ["-f", "get_rules"];
+        args = ["-f", "rules.get_rules"];
     }
 
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
@@ -77,15 +77,30 @@ router.get('/', function(req, res) {
 // GET /rules/groups
 router.get('/groups', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rules/groups");
-    var args = ["-f", "get_groups"]
+    var args = ["-f", "rules.get_groups"]
     execute.exec(wazuh_control, args, function (data) {res_h.send(res, data);});
 })
 
 // GET /rules/files
 router.get('/files', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rules/files");
-    var args = ["-f", "get_rules_files"]
+    var args = ["-f", "rules.get_rules_files"]
     execute.exec(wazuh_control, args, function (data) {res_h.send(res, data);});
+})
+
+// GET /rules/:rule_id
+router.get('/:rule_id', function(req, res) {
+    logger.log(req.connection.remoteAddress + " GET /rules/:rule_id");
+    var filters = [{'rule_id':'numbers'}];
+
+    var check_filter = filter.check(req.params, filters, res);
+    if (check_filter[0] < 0)  // Filter with error
+        return;
+
+    var args = ["-f", "rules.get_rule", "-a", req.params.rule_id];
+
+    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+
 })
 /********************************************/
 /* PUT
