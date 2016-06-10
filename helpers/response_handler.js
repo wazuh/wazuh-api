@@ -17,7 +17,7 @@ exports.offset = 0;
 exports.limit = 100;
 
 exports.send = function(res, json_r, status){
-    
+
     if (typeof status == 'undefined')
         status = 200;
 
@@ -52,10 +52,12 @@ exports.send = function(res, json_r, status){
         logger.log("Response: " + JSON.stringify(json_r) + " HTTP Status: " + status);
 
     // Send
-    if (this.pretty)
-        res.status(status).send(JSON.stringify( json_r, null, 3) + "\n");
-    else
-        res.status(status).json(json_r);
+    if (!res.headersSent){
+        if (this.pretty)
+            res.status(status).send(JSON.stringify( json_r, null, 3) + "\n");
+        else
+            res.status(status).json(json_r);
+    }
 }
 
 exports.bad_request = function(internal_error, extra_msg, res){

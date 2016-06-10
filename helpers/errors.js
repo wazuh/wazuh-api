@@ -37,9 +37,18 @@ errors['607'] = "Invalid content-type. POST requests should be 'application/json
 errors['608'] = "Param not valid. Path invalid. Valid characters: a-z, A-Z, 0-9, ., _, -, :, /, \\";  // Paths
 errors['609'] = "Param not valid. Valid characters: a-z, A-Z, 0-9, ., _, -, +";  // Alphanumeric params
 
+
+errors['alphanumeric_param'] = 609;
+
 exports.description = function(n){
     if (n in errors)
         return errors[n];
     else
         return "Undefined error.";
+}
+
+exports.get_error_code_from_type = function(type){
+    if (type == "alphanumeric_param")
+        return 609;
+    return 3;
 }
