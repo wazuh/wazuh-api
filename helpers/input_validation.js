@@ -62,3 +62,12 @@ exports.alphanumeric_param = function(param) {
     else
         return false;
 }
+
+exports.ranges = function(range) {
+    if (typeof range != 'undefined'){
+        var regex = /^[0-9]+$|^[0-9]{1,2}\-[0-9]{1,2}$/;
+        return regex.test(range);
+    }
+    else
+        return false;
+}

@@ -30,35 +30,40 @@ router.get('/', function(req, res) {
     var args = [];
 
     var filter0 = {'status':'alphanumeric_param', 'group': 'alphanumeric_param'};
-    var filter1 = {'status':'alphanumeric_param', 'level': 'alphanumeric_param'};
-    var filter2 = {'file':'alphanumeric_param'};
+    var filter1 = {'status':'alphanumeric_param', 'level': 'ranges'};
+    var filter2 = {'status':'alphanumeric_param', 'file': 'alphanumeric_param'};
     var filter3 = {'status':'alphanumeric_param'};
     var filter4 = {'group':'alphanumeric_param'};
-    var filter5 = {'level':'alphanumeric_param'};
-    var filters = [filter0, filter1, filter2, filter3, filter4, filter5];
+    var filter5 = {'level':'ranges'};
+    var filter6 = {'file':'alphanumeric_param'};
+
+    var filters = [filter0, filter1, filter2, filter3, filter4, filter5, filter6];
 
     var check_filter = filter.check(req.query, filters, res);
     if (check_filter[0] < 0)  // Filter with error
         return;
     else if (check_filter[0] == 1){ // Filter OK
         switch(check_filter[1]) {
-            case 0: // status - group
+            case 0:  // status - group
                 args = ["-f", "rules.get_rules_with_group", "-a", req.query.group + "," + req.query.status];
                 break;
             case 1:  // status - level
-                console.log("ToDo");
+                args = ["-f", "rules.get_rules_with_level", "-a", req.query.level + "," + req.query.status];
                 break;
-            case 2:  // file
-                console.log("ToDo");
+            case 2:  // status - file
+                args = ["-f", "rules.get_rules_with_file", "-a", req.query.file + "," + req.query.status];
                 break;
-            case 3:  // status
-                args = ["-f", "rules.get_rules", "-a", req.query.status ];
+            case 3: // status
+                args = ["-f", "rules.get_rules", "-a", req.query.status];
                 break;
             case 4:  // group
                 args = ["-f", "rules.get_rules_with_group", "-a", req.query.group];
                 break;
             case 5:  // level
-                console.log("ToDo");
+                args = ["-f", "rules.get_rules_with_level", "-a", req.query.level];
+                break;
+            case 6:  // file
+                args = ["-f", "rules.get_rules_with_file", "-a", req.query.file];
                 break;
         }
     }else { // No filter
@@ -78,7 +83,28 @@ router.get('/groups', function(req, res) {
 // GET /rules/files
 router.get('/files', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rules/files");
-    var args = ["-f", "rules.get_rules_files"]
+    var args = [];
+
+    var filter0 = {'status':'alphanumeric_param'};
+    var filter1 = {'download':'alphanumeric_param'};
+    var filters = [filter0, filter1];
+
+    var check_filter = filter.check(req.query, filters, res);
+    if (check_filter[0] < 0)  // Filter with error
+        return;
+    else if (check_filter[0] == 1){ // Filter OK
+        switch(check_filter[1]) {
+            case 0: // status
+                args = ["-f", "rules.get_rules_files", "-a", req.query.status];
+                break;
+            case 1: // download
+                res_h.send_file(req.query.download, res);
+                return;
+        }
+    }else { // No filter
+        args = ["-f", "rules.get_rules_files"];
+    }
+
     execute.exec(wazuh_control, args, function (data) {res_h.send(res, data);});
 })
 

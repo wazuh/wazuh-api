@@ -11,6 +11,7 @@
 
 var errors = require('../helpers/errors');
 var logger = require('../helpers/logger');
+var fileSystem = require('fs');
 
 exports.pretty = false;
 exports.offset = 0;
@@ -36,7 +37,11 @@ exports.send = function(res, json_r, status){
                 new_data.push(json_r.data[i]);
                 c++;
             }
-            msg = json_r.msg;
+            if (typeof json_r.msg == 'undefined')
+                msg = "";
+            else
+                msg = json_r.msg
+            
             json_r = {'error': 0, 'data': new_data, 'message': msg};
         }
     }
@@ -69,4 +74,29 @@ exports.bad_request = function(internal_error, extra_msg, res){
     json_res = {'error': internal_error, 'data': "", 'message': msg};
 
     this.send(res, json_res, 400);
+}
+
+exports.send_file = function(rule_name, res){
+    try {
+        var filepath = "/var/ossec/rules/" +rule_name;
+        var stat = fileSystem.statSync(filepath);
+
+        res.writeHead(200, {
+        'Content-Type': 'text/xml',
+        'Content-Length': stat.size
+        });
+
+        var readStream = fileSystem.createReadStream(filepath);
+
+        readStream.pipe(res)
+    } catch (e) {
+        if (e.code === 'ENOENT') {
+            json_res = {'error': 700, 'data': "", 'message': errors.description(700) + ": " + filepath};
+            this.send(res, json_res, 404);
+        } else {
+            json_res = {'error': 3, 'data': "", 'message': errors.description(3)};
+            this.send(res, json_res, 500);
+        }
+    }
+
 }

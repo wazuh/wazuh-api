@@ -57,7 +57,7 @@ class Rules:
         if status == self.S_ENABLED:
             for f in data_enabled:
                 data.append({'name': f, 'status': 'enabled'})
-            return data
+            return sorted(data)
 
         # All rules
         data_all = []
@@ -73,12 +73,12 @@ class Rules:
             data.append({'name': f, 'status': 'disabled'})
 
         if status == self.S_DISABLED:
-            return data
+            return sorted(data)
         if status == self.S_ALL:
             for f in data_enabled:
                 data.append({'name': f, 'status': 'enabled'})
 
-        return data
+        return sorted(data)
 
 
     def get_rules_with_group(self, group, status=None):
@@ -87,6 +87,33 @@ class Rules:
         for r in self.get_rules(status):
             if group in r.groups:
                 rules.append(r)
+
+        return rules
+
+    def get_rules_with_file(self, file, status=None):
+        rules = []
+
+        for r in self.get_rules(status):
+            if file == r.file:
+                rules.append(r)
+
+        return rules
+
+    def get_rules_with_level(self, level, status=None):
+        rules = []
+
+        levels = level.split('-')
+
+        if 0 < len(levels) <= 2:
+
+            for r in self.get_rules(status):
+                if len(levels) == 1:
+                    if levels[0] == r.level:
+                        rules.append(r)
+                elif levels[0] <= r.level <= levels[1]:
+                        rules.append(r)
+        else:
+            raise WazuhException(1203)
 
         return rules
 

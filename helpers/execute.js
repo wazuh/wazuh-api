@@ -51,6 +51,7 @@ exports.exec = function(cmd, args, callback) {
                         json_result.message = json_cmd.message;
                     else
                         json_result.message = "";
+
                 }
                 else
                     json_result = {"error": 1, "data": "", "message": errors.description(1)}; // Internal Error

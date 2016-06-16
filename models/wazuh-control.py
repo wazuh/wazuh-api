@@ -53,37 +53,11 @@ def usage():
     print(help_msg)
     exit(1)
 
-def test():
-    # Wazuh
-    myWazuh = Wazuh()
-    myWazuh.get_ossec_init()
-
-    # Configuration
-    myWazuh.configuration.get_ossec_conf()
-    myWazuh.configuration.check()
-
-    # Rules
-    myWazuh.rules.get_rules()
-    myWazuh.rules.get_rules(enabled=False)
-    myWazuh.rules.get_rules_files(enabled=False)
-    myWazuh.rules.get_rules_with_group(group="web", enabled=False)
-    myWazuh.rules.get_rule(1002)
-    myWazuh.rules.get_groups()
-
-    # Stats
-    myWazuh.stats.totals("2016","06","06")
-    myWazuh.stats.hourly()
-    myWazuh.stats.weekly()
-
-    print("OK")
-    exit(0)
-
 if __name__ == "__main__":
     function_id = None
     arguments = None
     pretty = False
     debug = False
-    # test()
 
     # Read arguments
     try:
@@ -120,7 +94,7 @@ if __name__ == "__main__":
         print_json("Wazuh-Python Internal Error: Bad argument", 1000)
         exit(1)
 
-    pattern = re.compile(r'[a-zA-Z0-9\-/_\.\:\\\s,="]+$')
+    pattern = re.compile(r'[a-zA-Z0-9\-/_\.\:\\\s,=\[\]"]+$')
     if arguments:
         m = pattern.match(arguments)
         if not m:
@@ -136,6 +110,8 @@ if __name__ == "__main__":
         'rules.get_rules': wazuh.rules.get_rules,
         'rules.get_rules_files': wazuh.rules.get_rules_files,
         'rules.get_rules_with_group': wazuh.rules.get_rules_with_group,
+        'rules.get_rules_with_file': wazuh.rules.get_rules_with_file,
+        'rules.get_rules_with_level': wazuh.rules.get_rules_with_level,
         'rules.get_rule': wazuh.rules.get_rule,
         'rules.get_groups': wazuh.rules.get_groups,
         'rules.stats.totals': wazuh.stats.totals,

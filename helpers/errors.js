@@ -42,6 +42,10 @@ errors['608'] = "Param not valid. Path invalid. Valid characters: a-z, A-Z, 0-9,
 errors['paths'] = 608;
 errors['609'] = "Param not valid. Valid characters: a-z, A-Z, 0-9, ., _, -, +";  // Alphanumeric params
 errors['alphanumeric_param'] = 609;
+errors['610'] = "Param not valid. Valid characters: number or interval separated by '-'";  // range
+errors['ranges'] = 610;
+
+errors['700'] = "File not found"
 
 exports.description = function(n){
     if (n in errors)
