@@ -16,6 +16,7 @@ class WazuhException(Exception):
         # Rules: 1200 - 1299
         1200: 'Error reading rules from ossec.conf',
         1201: 'Error reading rule files',
+        1202: 'Argument \'status\' must be: enabled, disabled or all',
 
         # Stats: 1300 - 1399
         1307: 'Invalid parameters',

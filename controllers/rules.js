@@ -43,10 +43,7 @@ router.get('/', function(req, res) {
     else if (check_filter[0] == 1){ // Filter OK
         switch(check_filter[1]) {
             case 0: // status - group
-                if (req.query.status == "all")
-                    args = ["-f", "rules.get_rules_with_group", "-a", req.query.group + ", enabled=False"];
-                else
-                    args = ["-f", "rules.get_rules_with_group", "-a", req.query.group];
+                args = ["-f", "rules.get_rules_with_group", "-a", req.query.group + "," + req.query.status];
                 break;
             case 1:  // status - level
                 console.log("ToDo");
@@ -55,10 +52,7 @@ router.get('/', function(req, res) {
                 console.log("ToDo");
                 break;
             case 3:  // status
-                if (req.query.status == "all")
-                    args = ["-f", "rules.get_rules", "-a", "enabled=False" ];
-                else
-                    args = ["-f", "rules.get_rules"];
+                args = ["-f", "rules.get_rules", "-a", req.query.status ];
                 break;
             case 4:  // group
                 args = ["-f", "rules.get_rules_with_group", "-a", req.query.group];

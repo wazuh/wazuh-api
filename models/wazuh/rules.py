@@ -15,39 +15,76 @@ __all__ = ["Rules", "Rule"]
 
 
 class Rules:
+    S_ENABLED = 'enabled'
+    S_DISABLED = 'disabled'
+    S_ALL = 'all'
 
     def __init__(self, path='/var/ossec'):
         self.ossec_path = path
         self.path = '{0}/rules'.format(path)
 
-    def get_rules(self, enabled=True):
+    def __check_status(self, status):
+        if status is None:
+            return self.S_ENABLED
+        elif status in [self.S_ALL, self.S_ENABLED, self.S_DISABLED]:
+            return status
+        else:
+            raise WazuhException(1202)
+
+    def get_rules(self, status=None):
         rules = []
 
-        for filename_r in self.get_rules_files(enabled):
-            rules.extend(self.__load_rules_from_file(filename_r))
+        status = self.__check_status(status)
+
+        for rule_file in self.get_rules_files(status):
+            rules.extend(self.__load_rules_from_file(rule_file['name'], rule_file['status']))
 
         return rules
 
-    def get_rules_files(self, enabled=True):
-        if enabled:
-            ossec_conf = Configuration(self.ossec_path).get_ossec_conf()
+    def get_rules_files(self, status=None):
+        data = []
 
-            if 'rules' in ossec_conf and 'include' in ossec_conf['rules']:
-                data = ossec_conf['rules']['include']
-            else:
-                raise WazuhException(1200)
+        status = self.__check_status(status)
+
+        # Enabled rules
+        ossec_conf = Configuration(self.ossec_path).get_ossec_conf()
+
+        if 'rules' in ossec_conf and 'include' in ossec_conf['rules']:
+            data_enabled = ossec_conf['rules']['include']
         else:
-            data = []
-            rule_paths = sorted(glob("{0}/*_rules.xml".format(self.path)))
-            for rule_path in rule_paths:
-                data.append(rule_path.split('/')[-1])
+            raise WazuhException(1200)
+
+        if status == self.S_ENABLED:
+            for f in data_enabled:
+                data.append({'name': f, 'status': 'enabled'})
+            return data
+
+        # All rules
+        data_all = []
+        rule_paths = sorted(glob("{0}/*_rules.xml".format(self.path)))
+        for rule_path in rule_paths:
+            data_all.append(rule_path.split('/')[-1])
+
+        # Disabled
+        for r in data_enabled:
+            if r in data_all:
+                data_all.remove(r)
+        for f in data_all:  # data_all = disabled
+            data.append({'name': f, 'status': 'disabled'})
+
+        if status == self.S_DISABLED:
+            return data
+        if status == self.S_ALL:
+            for f in data_enabled:
+                data.append({'name': f, 'status': 'enabled'})
 
         return data
 
-    def get_rules_with_group(self, group, enabled=True):
+
+    def get_rules_with_group(self, group, status=None):
         rules = []
 
-        for r in self.get_rules(enabled):
+        for r in self.get_rules(status):
             if group in r.groups:
                 rules.append(r)
 
@@ -56,7 +93,7 @@ class Rules:
     def get_rule(self, id):
         rule = ""
 
-        for r in self.get_rules(False):
+        for r in self.get_rules(self.S_ALL):
             if r.id == str(id):
                 rule = r
                 break
@@ -64,16 +101,15 @@ class Rules:
         return rule
 
     def get_groups(self):
-        # Get all rules
         groups = set()
 
-        for rule in self.get_rules(False):
+        for rule in self.get_rules(self.S_ALL):  # Get all rules
             for group in rule.groups:
                 groups.add(group)
 
         return sorted(list(groups))
 
-    def __load_rules_from_file(self, rule_path):
+    def __load_rules_from_file(self, rule_path, rule_status):
         try:
             rules = []
             # wrap the data
@@ -87,11 +123,13 @@ class Rules:
                 if xml_group.tag.lower() == "group":
                     general_groups = xml_group.attrib['name'].split(',')
                     for xml_rule in xml_group.getchildren():
+                        # New rule
                         if xml_rule.tag.lower() == "rule":
                             rule = Rule(rule_path)
                             rule.id = xml_rule.attrib['id']
                             rule.level = xml_rule.attrib['level']
                             rule.set_group(general_groups)
+                            rule.status = rule_status
 
                             for k in xml_rule.attrib:
                                 if k != 'id' and k != 'level':
@@ -119,6 +157,7 @@ class Rule:
         self.description = None
         self.id = None
         self.level = None
+        self.status = None
         self.groups = []
         self.details = {}
 
@@ -126,7 +165,7 @@ class Rule:
         return str(self.to_dict())
 
     def to_dict(self):
-        dictionary = {'file': self.file, 'id': self.id, 'level': self.level, 'description': self.description, 'groups': self.groups, 'details': self.details}
+        dictionary = {'file': self.file, 'id': self.id, 'level': self.level, 'description': self.description, 'status': self.status, 'groups': self.groups, 'details': self.details}
         return dictionary
 
     def set_group(self, group):
