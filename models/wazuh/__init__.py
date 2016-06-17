@@ -6,6 +6,9 @@
 from rules import Rules
 from configuration import Configuration
 from manager import Manager
+from rootcheck import Rootcheck
+from syscheck import Syscheck
+from agents import Agents
 import re
 
 __all__ = ["Wazuh"]
@@ -28,6 +31,9 @@ class Wazuh:
         self.rules = Rules(self.path)
         self.configuration = Configuration(self.path)
         self.manager = Manager(self.path)
+        self.rootcheck = Rootcheck(self.path)
+        self.syscheck = Syscheck(self.path)
+        self.agents = Agents(self.path)
 
     def __str__(self):
         return str(self.to_dict())

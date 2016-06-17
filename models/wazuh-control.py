@@ -5,6 +5,7 @@
 
 from wazuh import Wazuh
 from wazuh.rules import Rule
+from wazuh.agents import Agent
 from wazuh.utils import cut_array
 from sys import argv, exit
 from getopt import getopt, GetoptError
@@ -30,8 +31,10 @@ def print_json(data, error=0):
 def encode_json(o):
     if isinstance(o, Rule):
         return o.to_dict()
+    elif isinstance(o, Agent):
+        return o.to_dict()
 
-    print_json("Wazuh-Python Internal Error", 1000)
+    print_json("Wazuh-Python Internal Error: data encoding unknown", 1000)
 
 def handle_exception(exception):
     if exception.__class__.__name__ == "WazuhException":
@@ -129,7 +132,25 @@ if __name__ == "__main__":
         'manager.status': wazuh.manager.status,
         'manager.start': wazuh.manager.start,
         'manager.stop': wazuh.manager.stop,
-        'manager.restart': wazuh.manager.restart
+        'manager.restart': wazuh.manager.restart,
+        'rootcheck.run': wazuh.rootcheck.run,
+        'rootcheck.clear': wazuh.rootcheck.clear,
+        'rootcheck.print_db': wazuh.rootcheck.print_db,
+        'rootcheck.last_scan': wazuh.rootcheck.last_scan,
+        'syscheck.run': wazuh.syscheck.run,
+        'syscheck.clear': wazuh.syscheck.clear,
+        'syscheck.last_scan': wazuh.syscheck.last_scan,
+        'syscheck.files_changed': wazuh.syscheck.files_changed,
+        'syscheck.files_changed_total': wazuh.syscheck.files_changed_total,
+        'syscheck.registry_changed': wazuh.syscheck.registry_changed,
+        'syscheck.registry_changed_total': wazuh.syscheck.registry_changed_total,
+        'agents.get_agent': wazuh.agents.get_agent,
+        'agents.get_agent_key': wazuh.agents.get_agent_key,
+        'agents.restart': wazuh.agents.restart,
+        'agents.remove_agent': wazuh.agents.remove_agent,
+        'agents.add_agent': wazuh.agents.add_agent,
+        'agents.get_agents_overview': wazuh.agents.get_agents_overview,
+        'agents.get_total': wazuh.agents.get_total
         }
 
     try:
