@@ -5,7 +5,7 @@
 
 from rules import Rules
 from configuration import Configuration
-from stats import Stats
+from manager import Manager
 import re
 
 __all__ = ["Wazuh"]
@@ -27,7 +27,7 @@ class Wazuh:
 
         self.rules = Rules(self.path)
         self.configuration = Configuration(self.path)
-        self.stats = Stats(self.path)
+        self.manager = Manager(self.path)
 
     def __str__(self):
         return str(self.to_dict())

@@ -9,6 +9,9 @@ class WazuhException(Exception):
         # Wazuh: 1000 - 1099
         1000: 'Wazuh-Python Internal Error',
         1001: 'Error importing module',
+        1002: 'Error executing command',
+        1003: 'Command output not in json',
+        1004: 'Malformed command output ',
 
         # Configuration: 1100 - 1199
         1100: 'Error checking configuration',
@@ -35,9 +38,12 @@ class WazuhException(Exception):
 
         }
 
-    def __init__(self, code, extra_message=None):
+    def __init__(self, code, extra_message=None, cmd_error=False):
         self.code = code
-        if extra_message:
-            self.message = "{0}: {1}".format(self.ERRORS[code], extra_message)
+        if not cmd_error:
+            if extra_message:
+                self.message = "{0}: {1}".format(self.ERRORS[code], extra_message)
+            else:
+                self.message = "{0}.".format(self.ERRORS[code], extra_message)
         else:
-            self.message = "{0}.".format(self.ERRORS[code], extra_message)
+            self.message = extra_message

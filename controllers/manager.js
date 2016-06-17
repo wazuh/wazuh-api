@@ -9,15 +9,16 @@
  * Foundation.
  */
 
-var express = require('express');
-var router = express.Router();
-var manager = require('../models/manager');
+
 var res_h = require('../helpers/response_handler');
 var logger = require('../helpers/logger');
 var filter = require('../helpers/filters');
-var config = require('../config.js');
 var execute = require('../helpers/execute');
+var config = require('../config.js');
 var wazuh_control = config.api_path + "/models/wazuh-control.py";
+var express = require('express');
+var router = express.Router();
+
 
 /********************************************/
 /* GET
@@ -26,16 +27,14 @@ var wazuh_control = config.api_path + "/models/wazuh-control.py";
 // GET /manager/status - Get manager status
 router.get('/status', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/status");
-    manager.status(function (data) {
-        res_h.send(res, data);
-    });
-
+    var args = ["-f", "manager.status"]
+    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
 // GET /manager/info - Get manager info
 router.get('/info', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/info");
-    var args = ["-f", "get_ossec_init"]
+    var args = ["-f", "wazuh.get_ossec_init"]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
@@ -90,14 +89,14 @@ router.get('/stats', function(req, res) {
         switch(check_filter[1]) {
             case 0:  // date
                 var date_arg = req.query.date.substring(0, 4) + "," + req.query.date.substring(4, 6) + "," + req.query.date.substring(6, 8)
-                args = ["-f", "stats.totals", "-a", date_arg]
+                args = ["-f", "manager.stats.totals", "-a", date_arg]
                 break;
         }
     }else { // No filter
         var moment = require('moment');
         date = moment().format('YYYYMMDD')
         var date_arg = date.substring(0, 4) + "," + date.substring(4, 6) + "," + date.substring(6, 8)
-        args = ["-f", "stats.totals", "-a", date_arg]
+        args = ["-f", "manager.stats.totals", "-a", date_arg]
     }
 
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
@@ -106,14 +105,14 @@ router.get('/stats', function(req, res) {
 // GET /manager/stats/hourly - Stats hourly averages.
 router.get('/stats/hourly', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/stats/hourly");
-    var args = ["-f", "stats.hourly",]
+    var args = ["-f", "manager.stats.hourly",]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
 // GET /manager/stats/weekly - Stats weekly-hourly averages
 router.get('/stats/weekly', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/stats/weekly");
-    var args = ["-f", "stats.weekly",]
+    var args = ["-f", "manager.stats.weekly",]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
@@ -123,25 +122,22 @@ router.get('/stats/weekly', function(req, res) {
 // PUT /manager/start - Start manager
 router.put('/start', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /manager/start");
-    manager.start(function (data) {
-        res_h.send(res, data);
-    });
+    var args = ["-f", "manager.start"]
+    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
 // PUT /manager/stop - Stop manager
 router.put('/stop', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /manager/stop");
-    manager.stop(function (data) {
-        res_h.send(res, data);
-    });
+    var args = ["-f", "manager.stop"]
+    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
 // PUT /manager/restart - Restart manager
 router.put('/restart', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /manager/restart");
-    manager.restart(function (data) {
-        res_h.send(res, data);
-    });
+    var args = ["-f", "manager.restart"]
+    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
 /********************************************/

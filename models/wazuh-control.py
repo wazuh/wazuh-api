@@ -113,7 +113,7 @@ if __name__ == "__main__":
 
     wazuh = Wazuh()
     functions = {
-        'get_ossec_init': wazuh.get_ossec_init,
+        'wazuh.get_ossec_init': wazuh.get_ossec_init,
         'configuration.get_ossec_conf': wazuh.configuration.get_ossec_conf,
         'configuration.check': wazuh.configuration.check,
         'rules.get_rules': wazuh.rules.get_rules,
@@ -123,9 +123,13 @@ if __name__ == "__main__":
         'rules.get_rules_with_level': wazuh.rules.get_rules_with_level,
         'rules.get_rule': wazuh.rules.get_rule,
         'rules.get_groups': wazuh.rules.get_groups,
-        'stats.totals': wazuh.stats.totals,
-        'stats.hourly': wazuh.stats.hourly,
-        'stats.weekl': wazuh.stats.weekly,
+        'manager.stats.totals': wazuh.manager.stats.totals,
+        'manager.stats.hourly': wazuh.manager.stats.hourly,
+        'manager.stats.weekly': wazuh.manager.stats.weekly,
+        'manager.status': wazuh.manager.status,
+        'manager.start': wazuh.manager.start,
+        'manager.stop': wazuh.manager.stop,
+        'manager.restart': wazuh.manager.restart
         }
 
     try:

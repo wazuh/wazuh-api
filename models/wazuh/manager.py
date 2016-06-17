@@ -3,12 +3,43 @@
 # Created by Wazuh, Inc. <info@wazuh.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
-# Stats
+# Rules
 
+from glob import glob
+import xml.etree.ElementTree as ET
+from wazuh.configuration import Configuration
 from wazuh.exception import WazuhException
+from wazuh.utils import execute
 
+__all__ = ["Manager"]
 
-__all__ = ["Stats"]
+class Manager:
+
+    def __init__(self, path='/var/ossec'):
+        self.path = path
+        self.OSSEC_CONTROL = '{0}/bin/ossec-control'.format(path)
+        self.stats = Stats(path)
+
+    def status(self):
+        return execute([self.OSSEC_CONTROL, '-j', 'status'])
+
+    def start(self):
+        return execute([self.OSSEC_CONTROL, '-j', 'start'])
+
+    def stop(self):
+        return execute([self.OSSEC_CONTROL, '-j', 'stop'])
+
+    def restart(self):
+        return execute([self.OSSEC_CONTROL, '-j', 'restart'])
+
+    def stats_totals(self, year, month, day):
+        return self.stats.totals(year, month, day)
+
+    def stats_hourly(self):
+        return self.stats.hourly()
+
+    def stats_weekly(self):
+        return self.stats.weekly()
 
 
 class Stats:
