@@ -123,9 +123,9 @@ if __name__ == "__main__":
         'rules.get_rules_with_level': wazuh.rules.get_rules_with_level,
         'rules.get_rule': wazuh.rules.get_rule,
         'rules.get_groups': wazuh.rules.get_groups,
-        'rules.stats.totals': wazuh.stats.totals,
-        'rules.stats.hourly': wazuh.stats.hourly,
-        'rules.stats.weekl': wazuh.stats.weekly,
+        'stats.totals': wazuh.stats.totals,
+        'stats.hourly': wazuh.stats.hourly,
+        'stats.weekl': wazuh.stats.weekly,
         }
 
     try:

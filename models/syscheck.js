@@ -46,18 +46,18 @@ exports.clear = function(id, callback){
     execute.exec(cmd_syscheck_control, args, callback);
 }
 
-exports.files_changed = function(id, filter, callback){
+exports.files_changed = function(id, filename, callback){
     var args = ['-j', '-i', id];
-    if (filter != null)
-        args = ['-j', '-i', id, '-f', filter.filename];
+    if (filename != null)
+        args = ['-j', '-i', id, '-f', filename];
 
     execute.exec(cmd_syscheck_control, args, callback);
 }
 
-exports.files_changed_total = function(id, filter, callback){
+exports.files_changed_total = function(id, filename, callback){
     var args = ['-j', '-i', id];
-    if (filter != null)
-        args = ['-j', '-i', id, '-f', filter.filename];
+    if (filename != null)
+        args = ['-j', '-i', id, '-f', filename];
 
     execute.exec(cmd_syscheck_control, args, function (json_output) {
         if (json_output.error == 0)
@@ -67,18 +67,18 @@ exports.files_changed_total = function(id, filter, callback){
     });
 }
 
-exports.registry_changed = function(id, filter, callback){
+exports.registry_changed = function(id, filename, callback){
     var args = ['-j', '-r', '-i', id];
-    if (filter != null)
-        args = ['-j', '-r', '-i', id, '-f', filter.filename];
+    if (filename != null)
+        args = ['-j', '-r', '-i', id, '-f', filename];
 
     execute.exec(cmd_syscheck_control, args, callback);
 }
 
-exports.registry_changed_total = function(id, filter, callback){
+exports.registry_changed_total = function(id, filename, callback){
     var args = ['-j', '-r', '-i', id];
-    if (filter != null)
-        args = ['-j', '-r', '-i', id, '-f', filter.filename];
+    if (filename != null)
+        args = ['-j', '-r', '-i', id, '-f', filename];
 
     execute.exec(cmd_syscheck_control, args, function (json_output) {
         if (json_output.error == 0)

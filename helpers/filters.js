@@ -81,7 +81,7 @@ filters_to_string = function (filters){
     var output = "";
     for (var i = 0; i < filters.length; i++){
         filter = filters[i];
-        output += "filter" + i + " : [";
+        output += "Filter " + i + ": [";
         for(var field in filter)
             output += " " + field + " ";
         output += "]  ";

@@ -20,18 +20,18 @@ var cmd_manage_agents = config.ossec_path + "/bin/manage_agents";
 /* Agent
 /********************************************/
 
-exports.all = function(filter, callback){
+exports.all = function(status, callback){
     var args = ['-j', '-l'];
     execute.exec(cmd_agent_control, args, function (json_output) {
 
-        if (json_output.error == 0 && filter != null){
+        if (json_output.error == 0 && status != null){
 
             var data_filtered = [];
 
             for(var i=0;i<json_output.data.length;i++){
                 var agent = json_output.data[i];
 
-                if (agent.status.toLowerCase() == filter.status.toLowerCase())
+                if (agent.status.toLowerCase() == status.toLowerCase())
                     data_filtered.push(agent)
             }
 
@@ -45,18 +45,18 @@ exports.all = function(filter, callback){
     });
 }
 
-exports.total = function(filter, callback){
+exports.total = function(status, callback){
     var args = ['-j', '-l'];
     execute.exec(cmd_agent_control, args, function (json_output) {
 
         if (json_output.error == 0){
             var count = 0;
 
-            if (filter != null){
+            if (status != null){
                 for(var i=0;i<json_output.data.length;i++){
                     var agent = json_output.data[i];
 
-                    if (agent.status.toLowerCase() == filter.status.toLowerCase())
+                    if (agent.status.toLowerCase() == status.toLowerCase())
                         count++;
                 }
             }
@@ -93,14 +93,6 @@ exports.add = function(name, ip, callback){
     if (ip.toLowerCase() == "any")
         args = ['-j', '-a', 'any', '-n', name];
     else{
-        // ToDo: Checks
-        /*
-        ** IP already on OSSEC List?
-        **  Yes: Is the agent active?
-        **      Yes: Do nothing, generate alert.
-        **      No: Comment(remove)  old agent and add the new one
-        **  No: Add agent
-        */
         args = ['-j', '-a', ip, '-n', name];
     }
 

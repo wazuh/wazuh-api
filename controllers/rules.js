@@ -13,7 +13,6 @@ var express = require('express');
 var res_h = require('../helpers/response_handler');
 var filter = require('../helpers/filters');
 var logger = require('../helpers/logger');
-var validator = require('../helpers/input_validation');
 var execute = require('../helpers/execute');
 var config = require('../config.js');
 

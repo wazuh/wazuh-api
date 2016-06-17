@@ -13,25 +13,9 @@ var express = require('express');
 var router = express.Router();
 var agent = require('../models/agent');
 var res_h = require('../helpers/response_handler');
-var req_h = require('../helpers/request_handler');
+var filter = require('../helpers/filters');
 var logger = require('../helpers/logger');
-var validator = require('../helpers/input_validation');
 var config = require('../config.js');
-
-/**
- *
- * GET /agents - Get agents list
- * GET /agents?status=active - Get agents with status: Active, Disconnected, Never connected
- * GET /agents/total - Get number of agents
- * GET /agents/total?status=active - Get number of agents with status: Active, Disconnected, Never connected
- * GET /agents/:agent_id - Get Agent Info
- * GET /agents/:agent_id/key - Get Agent Key
- * PUT /agents/:agent_id/restart - Restart Agent
- * PUT /agents/:agent_name - Add Agent
- * POST /agents - Add Agent
- * DELETE /agents/:agent_id - Remove Agent
- *
-**/
 
 
 /********************************************/
@@ -41,63 +25,72 @@ var config = require('../config.js');
 // GET /agents - Get agents list
 router.get('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents");
+    var status = null;
 
-    allowed_fields = ['status'];
-    filter = req_h.get_filter(req.query, allowed_fields);
+    var filters = [{'status':'alphanumeric_param'}];
+    var check_filter = filter.check(req.query, filters, res);
+    if (check_filter[0] < 0)  // Filter with error
+        return;
+    else if (check_filter[0] == 1){ // Filter OK
+        switch(check_filter[1]) {
+            case 0:  // status
+                status = req.query.status;
+                break;
+        }
+    }
 
-    if (filter == "bad_field")
-        res_h.bad_request("604", "Allowed fields: " + allowed_fields, res);
-    else if (filter != null && !validator.alphanumeric_param(filter.status))
-        res_h.bad_request("609", "Field: status", res);
-    else
-        agent.all(filter, function (data) {
-            res_h.send(res, data);
-        });
+    agent.all(status, function (data) {
+        res_h.send(res, data);
+    });
 })
 
 // GET /agents/total - Get number of agents
 router.get('/total', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents/total");
+    var status = null;
 
-    allowed_fields = ['status'];
-    filter = req_h.get_filter(req.query, allowed_fields);
+    var filters = [{'status':'alphanumeric_param'}];
+    var check_filter = filter.check(req.query, filters, res);
+    if (check_filter[0] < 0)  // Filter with error
+        return;
+    else if (check_filter[0] == 1){ // Filter OK
+        switch(check_filter[1]) {
+            case 0:  // status
+                status = req.query.status;
+                break;
+        }
+    }
 
-    if (filter == "bad_field")
-        res_h.bad_request("604", "Allowed fields: " + allowed_fields, res);
-    else if (filter != null && !validator.alphanumeric_param(filter.status))
-        res_h.bad_request("609", "Field: status", res);
-    else
-        agent.total(filter, function (data) {
-            res_h.send(res, data);
-        });
+    agent.total(status, function (data) {
+        res_h.send(res, data);
+    });
 })
 
 // GET /agents/:agent_id - Get Agent Info
 router.get('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents/:agent_id");
 
-    if (validator.numbers(req.params.agent_id)){
-        agent.info(req.params.agent_id, function (data) {
-            res_h.send(res, data);
-        });
-    }
-    else{
-        res_h.bad_request("600", "Field: agent_id", res);
-    }
+    var check_filter = filter.check(req.params, [{'agent_id':'numbers'}], res);
+    if (check_filter[0] < 0)  // Filter with error
+        return;
+
+    agent.info(req.params.agent_id, function (data) {
+        res_h.send(res, data);
+    });
+
 })
 
 // GET /agents/:agent_id/key - Get Agent Key
 router.get('/:agent_id/key', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents/:agent_id/key");
 
-    if (validator.numbers(req.params.agent_id)){
-        agent.get_key(req.params.agent_id, function (data) {
-            res_h.send(res, data);
-        });
-    }
-    else{
-        res_h.bad_request("600", "Field: agent_id", res);
-    }
+    var check_filter = filter.check(req.params, [{'agent_id':'numbers'}], res);
+    if (check_filter[0] < 0)  // Filter with error
+        return;
+
+    agent.get_key(req.params.agent_id, function (data) {
+        res_h.send(res, data);
+    });
 })
 
 
@@ -109,28 +102,26 @@ router.get('/:agent_id/key', function(req, res) {
 router.put('/:agent_id/restart', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /agents/:agent_id/restart");
 
-    if (validator.numbers(req.params.agent_id)){
-        agent.restart(req.params.agent_id, function (data) {
-            res_h.send(res, data);
-        });
-    }
-    else{
-        res_h.bad_request("600", "Field: agent_id", res);
-    }
+    var check_filter = filter.check(req.params, [{'agent_id':'numbers'}], res);
+    if (check_filter[0] < 0)  // Filter with error
+        return;
+
+    agent.restart(req.params.agent_id, function (data) {
+        res_h.send(res, data);
+    });
 })
 
 // PUT /agents/:agent_name - Add Agent
 router.put('/:agent_name', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /agents/:agent_name");
 
-    if (validator.names(req.params.agent_name)){
-        agent.add(req.params.agent_name, "any", function (data) {
-            res_h.send(res, data);
-        });
-    }
-    else{
-        res_h.bad_request("601", "Field: agent_name", res);
-    }
+    var check_filter = filter.check(req.params, [{'agent_name':'names'}], res);
+    if (check_filter[0] < 0)  // Filter with error
+        return;
+
+    agent.add(req.params.agent_name, "any", function (data) {
+        res_h.send(res, data);
+    });
 })
 
 
@@ -142,15 +133,13 @@ router.put('/:agent_name', function(req, res) {
 router.delete('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /agents/:agent_id");
 
-    if (validator.numbers(req.params.agent_id)){
-        agent.remove(req.params.agent_id, function (data) {
-            res_h.send(res, data);
-        });
-    }
-    else{
-        res_h.bad_request("600", "Field: agent_id", res);
-    }
+    var check_filter = filter.check(req.params, [{'agent_id':'numbers'}], res);
+    if (check_filter[0] < 0)  // Filter with error
+        return;
 
+    agent.remove(req.params.agent_id, function (data) {
+        res_h.send(res, data);
+    });
 })
 
 
@@ -161,10 +150,9 @@ router.delete('/:agent_id', function(req, res) {
 // POST /agents - Add Agent
 router.post('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " POST /agents");
-    var name = req.body.name;
-    var ip = req.body.ip;
 
     // If not IP set, we will use source IP.
+    var ip = req.body.ip;
     if ( !ip ){
         // If we hare behind a proxy server, use headers.
         if (config.BehindProxyServer.toLowerCase() == "yes")
@@ -180,19 +168,21 @@ router.post('/', function(req, res) {
         }
         logger.debug("Add agent with automatic IP: " + ip);
     }
+    req.body.ip = ip;
 
-    if (validator.names(name) && validator.ips(ip)){
-        agent.add(name, ip, function (data) {
-            res_h.send(res, data);
-        });
+    var filters = [{'name':'names', 'ip':'ips'}];
+    var check_filter = filter.check(req.body, filters, res);
+    if (check_filter[0] < 0)  // Filter with error
+        return;
+    else if (check_filter[0] == 1){ // Filter OK
+        switch(check_filter[1]) {
+            case 0:  // status
+                agent.add(req.body.name, req.body.ip, function (data) {
+                    res_h.send(res, data);
+                });
+                break;
+        }
     }
-    else{
-        if (!validator.names(name))
-            res_h.bad_request("601", "Field: name", res);
-        else
-            res_h.bad_request("606", "Field: ip", res);
-    }
-
 })
 
 

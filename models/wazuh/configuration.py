@@ -75,7 +75,7 @@ class Configuration:
         self.ossec_path = path
         self.path = "{0}/etc/ossec.conf".format(path)
 
-    def get_ossec_conf(self):
+    def get_ossec_conf(self, section=None, field=None):
         if import_problem is not None:
             raise WazuhException(1001, import_problem)
         else:
@@ -84,6 +84,11 @@ class Configuration:
                 read_conf = prepare_ossecconf(read_conf)
                 json_conf = xml_json.data(fromstring(read_conf))
                 data = unify_ossecconf(json_conf)
+
+        if section:
+            data = data[section]
+        if section and field:
+            data = data[field] # data[section][field]
 
         return data
 
