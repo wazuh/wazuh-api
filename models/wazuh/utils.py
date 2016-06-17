@@ -9,26 +9,25 @@ from subprocess import call, CalledProcessError
 from os import remove, close as close
 import json
 
-"""
+
 try:
     from subprocess import check_output
 except ImportError:
-"""
-def check_output(arguments, stdin=None, stderr=None, shell=False):
-    temp_f = mkstemp()
-    returncode = call(arguments, stdin=stdin, stdout=temp_f[0], stderr=stderr, shell=shell)
-    close(temp_f[0])
-    file_o = open(temp_f[1], 'r')
-    cmd_output = file_o.read()
-    file_o.close()
-    remove(temp_f[1])
+    def check_output(arguments, stdin=None, stderr=None, shell=False):
+        temp_f = mkstemp()
+        returncode = call(arguments, stdin=stdin, stdout=temp_f[0], stderr=stderr, shell=shell)
+        close(temp_f[0])
+        file_o = open(temp_f[1], 'r')
+        cmd_output = file_o.read()
+        file_o.close()
+        remove(temp_f[1])
 
-    if returncode != 0:
-        error_cmd = CalledProcessError(returncode, arguments[0])
-        error_cmd.output = cmd_output
-        raise error_cmd
-    else:
-        return cmd_output
+        if returncode != 0:
+            error_cmd = CalledProcessError(returncode, arguments[0])
+            error_cmd.output = cmd_output
+            raise error_cmd
+        else:
+            return cmd_output
 
 def execute(command):
     try: output = check_output(command)
