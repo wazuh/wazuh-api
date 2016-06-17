@@ -5,6 +5,7 @@
 
 from wazuh import Wazuh
 from wazuh.rules import Rule
+from wazuh.utils import cut_array
 from sys import argv, exit
 from getopt import getopt, GetoptError
 import re
@@ -56,12 +57,13 @@ def usage():
 if __name__ == "__main__":
     function_id = None
     arguments = None
+    pagination = None
     pretty = False
     debug = False
 
     # Read arguments
     try:
-        opts, args = getopt(argv[1:], "f:a:pdh", ["function=", "arguments", "pretty", "debug", "help"])
+        opts, args = getopt(argv[1:], "f:a:p:Pdh", ["function=", "arguments", "pagination", "pretty", "debug", "help"])
         n_args = len(opts)
         if not (1 <= n_args <= 4):
             print("Incorrect number of arguments.\nTry '--help' for more information.")
@@ -76,7 +78,9 @@ if __name__ == "__main__":
             function_id = a
         elif o in ("-a", "--arguments"):
             arguments = a
-        elif o in ("-p", "--pretty"):
+        elif o in ("-p", "--pagination"):
+            pagination = a
+        elif o in ("-P", "--pretty"):
             pretty = True
         elif o in ("-d", "--debug"):
             debug = True
@@ -90,15 +94,20 @@ if __name__ == "__main__":
     pattern = re.compile(r'^[a-zA-Z0-9\._]+$')
     m = pattern.match(function_id)
     if not m:
-        # ToDo
         print_json("Wazuh-Python Internal Error: Bad argument", 1000)
         exit(1)
 
-    pattern = re.compile(r'[a-zA-Z0-9\-/_\.\:\\\s,=\[\]"]+$')
+    pattern = re.compile(r'^[a-zA-Z0-9\-/_\.\:\\\s,=\[\]"]+$')
     if arguments:
         m = pattern.match(arguments)
         if not m:
-            # ToDo
+            print_json("Wazuh-Python Internal Error: Bad argument", 1000)
+            exit(1)
+
+    pattern = re.compile(r'^\d+,\d+$')
+    if pagination:
+        m = pattern.match(pagination)
+        if not m:
             print_json("Wazuh-Python Internal Error: Bad argument", 1000)
             exit(1)
 
@@ -124,6 +133,11 @@ if __name__ == "__main__":
             data = functions[function_id](*arguments.split(','))
         else:
             data = functions[function_id]()
+
+        if pagination and type(data) is list:
+            offset_limit = pagination.split(',')
+            data = cut_array(data, offset_limit[0], offset_limit[1])
+
         print_json(data)
     except Exception as e:
         handle_exception(e)

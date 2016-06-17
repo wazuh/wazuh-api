@@ -22,7 +22,11 @@ class WazuhException(Exception):
         # Stats: 1300 - 1399
         1307: 'Invalid parameters',
         1308: 'Couldn\'t open stats file',
-        1309: 'Statistics file damaged'
+        1309: 'Statistics file damaged',
+
+        # Utils: 1400 - 1499
+        1400: 'Invalid offset',
+        1401: 'Invalid limit'
 
         # Manager:
         # Agents:

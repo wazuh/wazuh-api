@@ -10,7 +10,6 @@ import xml.etree.ElementTree as ET
 from wazuh.configuration import Configuration
 from wazuh.exception import WazuhException
 
-
 __all__ = ["Rules", "Rule"]
 
 
@@ -25,7 +24,7 @@ class Rules:
 
     def __check_status(self, status):
         if status is None:
-            return self.S_ENABLED
+            return self.S_ALL
         elif status in [self.S_ALL, self.S_ENABLED, self.S_DISABLED]:
             return status
         else:
@@ -33,8 +32,6 @@ class Rules:
 
     def get_rules(self, status=None):
         rules = []
-
-        status = self.__check_status(status)
 
         for rule_file in self.get_rules_files(status):
             rules.extend(self.__load_rules_from_file(rule_file['name'], rule_file['status']))
@@ -120,7 +117,7 @@ class Rules:
     def get_rule(self, id):
         rule = ""
 
-        for r in self.get_rules(self.S_ALL):
+        for r in self.get_rules():
             if r.id == str(id):
                 rule = r
                 break
@@ -130,7 +127,7 @@ class Rules:
     def get_groups(self):
         groups = set()
 
-        for rule in self.get_rules(self.S_ALL):  # Get all rules
+        for rule in self.get_rules():
             for group in rule.groups:
                 groups.add(group)
 
