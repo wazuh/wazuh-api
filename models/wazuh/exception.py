@@ -44,6 +44,6 @@ class WazuhException(Exception):
             if extra_message:
                 self.message = "{0}: {1}".format(self.ERRORS[code], extra_message)
             else:
-                self.message = "{0}.".format(self.ERRORS[code], extra_message)
+                self.message = "{0}.".format(self.ERRORS[code])
         else:
             self.message = extra_message

@@ -50,8 +50,10 @@ def usage():
 
     \tf, --function     Function to execute
     \ta, --arguments    Arguments of function
+    \tP, --pagination   Pagination
     \tp, --pretty       Pretty JSON
     \td, --debug        Debug mode
+    \tl, --list         List functions
     \th, --help         Help
     '''
     print(help_msg)
@@ -63,10 +65,11 @@ if __name__ == "__main__":
     pagination = None
     pretty = False
     debug = False
+    list_f = False
 
     # Read arguments
     try:
-        opts, args = getopt(argv[1:], "f:a:p:Pdh", ["function=", "arguments", "pagination", "pretty", "debug", "help"])
+        opts, args = getopt(argv[1:], "f:a:p:Pdlh", ["function=", "arguments", "pagination", "pretty", "debug", "list", "help"])
         n_args = len(opts)
         if not (1 <= n_args <= 4):
             print("Incorrect number of arguments.\nTry '--help' for more information.")
@@ -87,34 +90,17 @@ if __name__ == "__main__":
             pretty = True
         elif o in ("-d", "--debug"):
             debug = True
+        elif o in ("-l", "--list"):
+            list_f = True
         elif o in ("-h", "--help"):
             usage()
         else:
             usage()
             exit(1)
 
-    # Check arguments
-    pattern = re.compile(r'^[a-zA-Z0-9\._]+$')
-    m = pattern.match(function_id)
-    if not m:
-        print_json("Wazuh-Python Internal Error: Bad argument", 1000)
-        exit(1)
-
-    pattern = re.compile(r'^[a-zA-Z0-9\-/_\.\:\\\s,=\[\]"]+$')
-    if arguments:
-        m = pattern.match(arguments)
-        if not m:
-            print_json("Wazuh-Python Internal Error: Bad argument", 1000)
-            exit(1)
-
-    pattern = re.compile(r'^\d+,\d+$')
-    if pagination:
-        m = pattern.match(pagination)
-        if not m:
-            print_json("Wazuh-Python Internal Error: Bad argument", 1000)
-            exit(1)
 
     wazuh = Wazuh()
+
     functions = {
         'wazuh.get_ossec_init': wazuh.get_ossec_init,
         'configuration.get_ossec_conf': wazuh.configuration.get_ossec_conf,
@@ -152,6 +138,33 @@ if __name__ == "__main__":
         'agents.get_agents_overview': wazuh.agents.get_agents_overview,
         'agents.get_total': wazuh.agents.get_total
         }
+
+    if list_f:
+        print_json(functions.keys())
+        exit(0)
+
+    # Check arguments
+    pattern = re.compile(r'^[a-zA-Z0-9\._]+$')
+    m = pattern.match(function_id)
+    if not m:
+        print_json("Wazuh-Python Internal Error: Bad argument", 1000)
+        exit(1)
+
+    pattern = re.compile(r'^[a-zA-Z0-9\-/_\.\:\\\s,=\[\]"]+$')
+    if arguments:
+        m = pattern.match(arguments)
+        if not m:
+            print_json("Wazuh-Python Internal Error: Bad argument", 1000)
+            exit(1)
+
+    pattern = re.compile(r'^\d+,\d+$')
+    if pagination:
+        m = pattern.match(pagination)
+        if not m:
+            print_json("Wazuh-Python Internal Error: Bad argument", 1000)
+            exit(1)
+
+    # Execute
 
     try:
         if arguments:

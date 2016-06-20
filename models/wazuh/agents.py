@@ -8,21 +8,26 @@ from wazuh.utils import execute
 
 __all__ = ["Agents", "Agent"]
 
+MANAGE_AGENT = '/var/ossec/bin/manage_agents'
+AGENT_CONTROL = '/var/ossec/bin/agent_control'
+
 class Agents:
 
     def __init__(self, path='/var/ossec'):
         self.path = path
-        self.MANAGE_AGENT = '{0}/bin/manage_agents'.format(path)
-        self.AGENT_CONTROL = '{0}/bin/agent_control'.format(path)
+        global MANAGE_AGENT
+        global AGENT_CONTROL
+        MANAGE_AGENT = '{0}/bin/manage_agents'.format(path)
+        AGENT_CONTROL = '{0}/bin/agent_control'.format(path)
 
     def restart(self, agent_id):
         if agent_id == "all":
-            return execute([self.AGENT_CONTROL, '-j', '-R', '-a'])
+            return execute([AGENT_CONTROL, '-j', '-R', '-a'])
         else:
             return Agent(agent_id).restart()
 
     def get_agents_overview(self, status="all"):
-        agents = execute([self.AGENT_CONTROL, '-j', '-l'])
+        agents = execute([AGENT_CONTROL, '-j', '-l'])
         if status.lower() == "all":
             return agents
         else:
@@ -51,10 +56,6 @@ class Agents:
 
 class Agent:
     def __init__(self, id=-1):
-        # ToDo
-        self.AGENT_CONTROL = '/var/ossec/bin/agent_control'
-        self.MANAGE_AGENT = '/var/ossec/bin/manage_agents'
-
         self.id = id
 
         self.status = None
@@ -76,7 +77,7 @@ class Agent:
         return dictionary
 
     def get(self):
-        data_agent = execute([self.AGENT_CONTROL, '-j', '-e', '-i', self.id])
+        data_agent = execute([AGENT_CONTROL, '-j', '-e', '-i', self.id])
 
         self.status = data_agent['status']
         self.name = data_agent['name']
@@ -91,18 +92,19 @@ class Agent:
         self.syscheckEndTime = data_agent['syscheckEndTime']
 
     def get_key(self):
-        return execute([self.MANAGE_AGENT, '-j', '-e', self.id])
+        return execute([MANAGE_AGENT, '-j', '-e', self.id])
 
     def restart(self):
-        return execute([self.AGENT_CONTROL, '-j', '-R', '-u', self.id])
+        return execute([AGENT_CONTROL, '-j', '-R', '-u', self.id])
 
     def remove(self):
-        return execute([self.MANAGE_AGENT, '-j', '-r', self.id])
+        return execute([MANAGE_AGENT, '-j', '-r', self.id])
 
     def add(self, name, ip):
         if ip.lower() == 'any':
-            cmd = [self.MANAGE_AGENT, '-j', '-a', 'any', '-n', name]
+            cmd = [MANAGE_AGENT, '-j', '-a', 'any', '-n', name]
         else:
-            cmd = [self.MANAGE_AGENT, '-j', '-a', ip, '-n', name];
+            cmd = [MANAGE_AGENT, '-j', '-a', ip, '-n', name];
 
-        return execute(cmd)['id']
+        self.id = execute(cmd)['id']
+        return self.id
