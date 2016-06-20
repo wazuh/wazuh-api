@@ -9,9 +9,7 @@ import subprocess
 import os
 from xml.etree.ElementTree import fromstring
 from wazuh.exception import WazuhException
-
-__all__ = ["Configuration"]
-
+from wazuh import common
 
 import_problem = None
 
@@ -70,15 +68,13 @@ def unify_ossecconf(json_conf):
 
 
 class Configuration:
-    def __init__(self, path='/var/ossec'):
-        self.ossec_path = path
-        self.path = "{0}/etc/ossec.conf".format(path)
 
-    def get_ossec_conf(self, section=None, field=None):
+    @staticmethod
+    def get_ossec_conf(section=None, field=None):
         if import_problem is not None:
             raise WazuhException(1001, import_problem)
         else:
-            with open(self.path, 'r') as f_ossec:
+            with open(common.ossec_conf, 'r') as f_ossec:
                 read_conf = f_ossec.read()
                 read_conf = prepare_ossecconf(read_conf)
                 json_conf = xml_json.data(fromstring(read_conf))
@@ -91,8 +87,9 @@ class Configuration:
 
         return data
 
-    def check(self):
-        cmd = "{0}/bin/ossec-logtest".format(self.ossec_path)
+    @staticmethod
+    def check():
+        cmd = "{0}/bin/ossec-logtest".format(common.ossec_path)
         p = subprocess.Popen([cmd, "-t"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         (output, err) = p.communicate()
 

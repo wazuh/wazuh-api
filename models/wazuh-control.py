@@ -3,14 +3,21 @@
 # Created by Wazuh, Inc. <info@wazuh.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
-from wazuh import Wazuh
-from wazuh.rules import Rule
-from wazuh.agents import Agent
-from wazuh.utils import cut_array
+
 from sys import argv, exit
 from getopt import getopt, GetoptError
 import re
 import json
+
+from wazuh import Wazuh
+from wazuh.agent import Agent
+from wazuh.configuration import Configuration
+from wazuh.manager import Manager
+from wazuh.stats import Stats
+from wazuh.rootcheck import Rootcheck
+from wazuh.syscheck import Syscheck
+from wazuh.rule import Rule
+
 
 def print_json(data, error=0):
     output = {'error': error}
@@ -50,8 +57,8 @@ def usage():
 
     \tf, --function     Function to execute
     \ta, --arguments    Arguments of function
-    \tP, --pagination   Pagination
-    \tp, --pretty       Pretty JSON
+    \tp, --pagination   Pagination
+    \tP, --pretty       Pretty JSON
     \td, --debug        Debug mode
     \tl, --list         List functions
     \th, --help         Help
@@ -103,40 +110,40 @@ if __name__ == "__main__":
 
     functions = {
         'wazuh.get_ossec_init': wazuh.get_ossec_init,
-        'configuration.get_ossec_conf': wazuh.configuration.get_ossec_conf,
-        'configuration.check': wazuh.configuration.check,
-        'rules.get_rules': wazuh.rules.get_rules,
-        'rules.get_rules_files': wazuh.rules.get_rules_files,
-        'rules.get_rules_with_group': wazuh.rules.get_rules_with_group,
-        'rules.get_rules_with_file': wazuh.rules.get_rules_with_file,
-        'rules.get_rules_with_level': wazuh.rules.get_rules_with_level,
-        'rules.get_rule': wazuh.rules.get_rule,
-        'rules.get_groups': wazuh.rules.get_groups,
-        'manager.stats.totals': wazuh.manager.stats.totals,
-        'manager.stats.hourly': wazuh.manager.stats.hourly,
-        'manager.stats.weekly': wazuh.manager.stats.weekly,
-        'manager.status': wazuh.manager.status,
-        'manager.start': wazuh.manager.start,
-        'manager.stop': wazuh.manager.stop,
-        'manager.restart': wazuh.manager.restart,
-        'rootcheck.run': wazuh.rootcheck.run,
-        'rootcheck.clear': wazuh.rootcheck.clear,
-        'rootcheck.print_db': wazuh.rootcheck.print_db,
-        'rootcheck.last_scan': wazuh.rootcheck.last_scan,
-        'syscheck.run': wazuh.syscheck.run,
-        'syscheck.clear': wazuh.syscheck.clear,
-        'syscheck.last_scan': wazuh.syscheck.last_scan,
-        'syscheck.files_changed': wazuh.syscheck.files_changed,
-        'syscheck.files_changed_total': wazuh.syscheck.files_changed_total,
-        'syscheck.registry_changed': wazuh.syscheck.registry_changed,
-        'syscheck.registry_changed_total': wazuh.syscheck.registry_changed_total,
-        'agents.get_agent': wazuh.agents.get_agent,
-        'agents.get_agent_key': wazuh.agents.get_agent_key,
-        'agents.restart': wazuh.agents.restart,
-        'agents.remove_agent': wazuh.agents.remove_agent,
-        'agents.add_agent': wazuh.agents.add_agent,
-        'agents.get_agents_overview': wazuh.agents.get_agents_overview,
-        'agents.get_total': wazuh.agents.get_total
+        'configuration.get_ossec_conf': Configuration.get_ossec_conf,
+        'configuration.check': Configuration.check,
+        'rules.get_rules': Rule.get_rules,
+        'rules.get_rules_files': Rule.get_rules_files,
+        'rules.get_rules_with_group': Rule.get_rules_with_group,
+        'rules.get_rules_with_file': Rule.get_rules_with_file,
+        'rules.get_rules_with_level': Rule.get_rules_with_level,
+        'rules.get_rule': Rule.get_rule,
+        'rules.get_groups': Rule.get_groups,
+        'manager.stats.totals': Stats.totals,
+        'manager.stats.hourly': Stats.hourly,
+        'manager.stats.weekly': Stats.weekly,
+        'manager.status': Manager.status,
+        'manager.start': Manager.start,
+        'manager.stop': Manager.stop,
+        'manager.restart': Manager.restart,
+        'rootcheck.run': Rootcheck.run,
+        'rootcheck.clear': Rootcheck.clear,
+        'rootcheck.print_db': Rootcheck.print_db,
+        'rootcheck.last_scan': Rootcheck.last_scan,
+        'syscheck.run': Syscheck.run,
+        'syscheck.clear': Syscheck.clear,
+        'syscheck.last_scan': Syscheck.last_scan,
+        'syscheck.files_changed': Syscheck.files_changed,
+        'syscheck.files_changed_total': Syscheck.files_changed_total,
+        'syscheck.registry_changed': Syscheck.registry_changed,
+        'syscheck.registry_changed_total': Syscheck.registry_changed_total,
+        'agents.get_agent': Agent.get_agent,
+        'agents.get_agent_key': Agent.get_agent_key,
+        'agents.restart': Agent.restart_agents,
+        'agents.remove_agent': Agent.remove_agent,
+        'agents.add_agent': Agent.add_agent,
+        'agents.get_agents_overview': Agent.get_agents_overview,
+        'agents.get_total': Agent.get_total_agents
         }
 
     if list_f:

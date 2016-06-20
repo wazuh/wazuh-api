@@ -3,15 +3,8 @@
 # Created by Wazuh, Inc. <info@wazuh.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
-from rules import Rules
-from configuration import Configuration
-from manager import Manager
-from rootcheck import Rootcheck
-from syscheck import Syscheck
-from agents import Agents
+import common
 import re
-
-__all__ = ["Wazuh"]
 
 
 class Wazuh:
@@ -19,6 +12,17 @@ class Wazuh:
 
     def __init__(self, path='/var/ossec', get_init=False):
         self.path = path
+        common.ossec_path = path
+
+        common.manage_agents = '{0}/bin/manage_agents'.format(path)
+        common.agent_control = '{0}/bin/agent_control'.format(path)
+        common.ossec_control = '{0}/bin/ossec-control'.format(path)
+        common.rootcheck_control = '{0}/bin/rootcheck_control'.format(path)
+        common.syscheck_control = '{0}/bin/syscheck_control'.format(path)
+
+        common.ossec_conf = "{0}/etc/ossec.conf".format(path)
+        common.stats_path = '{0}/stats'.format(path)
+        common.rules_path = '{0}/rules'.format(path)
 
         self.version = None
         self.installation_date = None
@@ -27,13 +31,6 @@ class Wazuh:
 
         if get_init:
             self.get_ossec_init()
-
-        self.rules = Rules(self.path)
-        self.configuration = Configuration(self.path)
-        self.manager = Manager(self.path)
-        self.rootcheck = Rootcheck(self.path)
-        self.syscheck = Syscheck(self.path)
-        self.agents = Agents(self.path)
 
     def __str__(self):
         return str(self.to_dict())

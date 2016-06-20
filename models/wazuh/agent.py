@@ -5,54 +5,7 @@
 
 from wazuh.exception import WazuhException
 from wazuh.utils import execute
-
-__all__ = ["Agents", "Agent"]
-
-MANAGE_AGENT = '/var/ossec/bin/manage_agents'
-AGENT_CONTROL = '/var/ossec/bin/agent_control'
-
-class Agents:
-
-    def __init__(self, path='/var/ossec'):
-        self.path = path
-        global MANAGE_AGENT
-        global AGENT_CONTROL
-        MANAGE_AGENT = '{0}/bin/manage_agents'.format(path)
-        AGENT_CONTROL = '{0}/bin/agent_control'.format(path)
-
-    def restart(self, agent_id):
-        if agent_id == "all":
-            return execute([AGENT_CONTROL, '-j', '-R', '-a'])
-        else:
-            return Agent(agent_id).restart()
-
-    def get_agents_overview(self, status="all"):
-        agents = execute([AGENT_CONTROL, '-j', '-l'])
-        if status.lower() == "all":
-            return agents
-        else:
-            new_agents = []
-            for agent in agents:
-                if agent['status'].lower() == status.lower():
-                    new_agents.append(agent)
-            return new_agents
-
-    def get_total(self, status="all"):
-        return len(self.get_agents_overview(status))
-
-    def get_agent(self, agent_id):
-        agent = Agent(agent_id)
-        agent.get()
-        return agent
-
-    def get_agent_key(self, agent_id):
-        return Agent(agent_id).get_key()
-
-    def remove_agent(self, agent_id):
-        return Agent(agent_id).remove()
-
-    def add_agent(self, name, ip):
-        return Agent().add(name, ip)
+from wazuh import common
 
 class Agent:
     def __init__(self, id=-1):
@@ -77,7 +30,7 @@ class Agent:
         return dictionary
 
     def get(self):
-        data_agent = execute([AGENT_CONTROL, '-j', '-e', '-i', self.id])
+        data_agent = execute([common.agent_control, '-j', '-e', '-i', self.id])
 
         self.status = data_agent['status']
         self.name = data_agent['name']
@@ -92,19 +45,65 @@ class Agent:
         self.syscheckEndTime = data_agent['syscheckEndTime']
 
     def get_key(self):
-        return execute([MANAGE_AGENT, '-j', '-e', self.id])
+        self.key = execute([common.manage_agents, '-j', '-e', self.id])
+        return self.key
 
     def restart(self):
-        return execute([AGENT_CONTROL, '-j', '-R', '-u', self.id])
+        return execute([common.agent_control, '-j', '-R', '-u', self.id])
 
     def remove(self):
-        return execute([MANAGE_AGENT, '-j', '-r', self.id])
+        return execute([common.manage_agents, '-j', '-r', self.id])
 
     def add(self, name, ip):
         if ip.lower() == 'any':
-            cmd = [MANAGE_AGENT, '-j', '-a', 'any', '-n', name]
+            cmd = [common.manage_agents, '-j', '-a', 'any', '-n', name]
         else:
-            cmd = [MANAGE_AGENT, '-j', '-a', ip, '-n', name];
+            cmd = [common.manage_agents, '-j', '-a', ip, '-n', name];
 
         self.id = execute(cmd)['id']
         return self.id
+
+    @staticmethod
+    def get_agents_overview(status="all"):
+        agents = execute([common.agent_control, '-j', '-l'])
+        if status.lower() == "all":
+            return agents
+        else:
+            new_agents = []
+            for agent in agents:
+                if agent['status'].lower() == status.lower():
+                    new_agents.append(agent)
+            return new_agents
+
+    @staticmethod
+    def get_total_agents(status="all"):
+        return len(Agent.get_agents_overview(status))
+
+    @staticmethod
+    def restart_agents(agent_id):
+        if agent_id == "ALL":
+            return execute([common.agent_control, '-j', '-R', '-a'])
+        else:
+            agent = Agent(agent_id)
+            return agent.restart()
+
+    @staticmethod
+    def get_agent(agent_id):
+        agent = Agent(agent_id)
+        agent.get()
+        return agent
+
+    @staticmethod
+    def get_agent_key(agent_id):
+        agent = Agent(agent_id)
+        return agent.get_key()
+
+    @staticmethod
+    def remove_agent(agent_id):
+        agent = Agent(agent_id)
+        return agent.remove()
+
+    @staticmethod
+    def add_agent(name, ip):
+        agent = Agent()
+        return agent.add(name, ip)
