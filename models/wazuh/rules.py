@@ -104,9 +104,9 @@ class Rules:
 
             for r in self.get_rules(status):
                 if len(levels) == 1:
-                    if levels[0] == r.level:
+                    if int(levels[0]) == r.level:
                         rules.append(r)
-                elif levels[0] <= r.level <= levels[1]:
+                elif int(levels[0]) <= r.level <= int(levels[1]):
                         rules.append(r)
         else:
             raise WazuhException(1203)
@@ -117,7 +117,7 @@ class Rules:
         rule = ""
 
         for r in self.get_rules():
-            if r.id == str(id):
+            if r.id == int(id):
                 rule = r
                 break
 
@@ -149,8 +149,8 @@ class Rules:
                         # New rule
                         if xml_rule.tag.lower() == "rule":
                             rule = Rule(rule_path)
-                            rule.id = xml_rule.attrib['id']
-                            rule.level = xml_rule.attrib['level']
+                            rule.id = int(xml_rule.attrib['id'])
+                            rule.level = int(xml_rule.attrib['level'])
                             rule.set_group(general_groups)
                             rule.status = rule_status
 
