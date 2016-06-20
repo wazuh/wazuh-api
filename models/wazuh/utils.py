@@ -60,7 +60,7 @@ def cut_array(array, offset, limit):
 
     if offset < 0 or offset >= size:
         raise WazuhException(1400)
-    elif limit <= 0 or limit > size:
+    elif limit <= 0:
         raise WazuhException(1401)
     else:
         return array[offset:offset+limit]

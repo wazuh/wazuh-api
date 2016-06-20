@@ -9,15 +9,12 @@
  * Foundation.
  */
 
-// Modules
+
 var express = require('express');
 var bodyParser = require('body-parser');
-var auth = require("http-auth");
-var fs = require('fs');
-var cors = require('cors')
-var config = require('./config.js');
-var logger = require('./helpers/logger');
-var res_h = require('./helpers/response_handler');
+config = require('./config.js');
+logger = require('./helpers/logger');
+res_h = require('./helpers/response_handler');
 
 /********************************************/
 /* Config APP
@@ -30,6 +27,7 @@ var app = express();
 // Certs
 var options;
 if (config.https.toLowerCase() == "yes"){
+    var fs = require('fs');
     options = {
       key: fs.readFileSync(__dirname + '/ssl/server.key'),
       cert: fs.readFileSync(__dirname + '/ssl/server.crt')
@@ -38,11 +36,13 @@ if (config.https.toLowerCase() == "yes"){
 
 // CORS
 if (config.cors.toLowerCase() == "yes"){
+    var cors = require('cors')
     app.use(cors());
 }
 
 // Basic authentication
 if (config.basic_auth.toLowerCase() == "yes"){
+    var auth = require("http-auth");
     var auth_secure = auth.basic({
         realm: "OSSEC API",
         file: __dirname + "/ssl/htpasswd"

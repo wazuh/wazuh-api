@@ -12,6 +12,8 @@
 var logger = require('../helpers/logger');
 var errors = require('../helpers/errors');
 
+exports.query_offset = 0;
+exports.query_limit = 0;
 /**
  * Exec command.
  * It returns (callback) always a JSON.
@@ -25,11 +27,19 @@ var errors = require('../helpers/errors');
 exports.exec = function(cmd, args, callback) {
     const child_process  = require('child_process');
 
+    // Add pagination
+    args.push("-p");
+    args.push(this.query_offset + "," + this.query_limit);
+    logger.debug("Pagination: " + this.query_offset + " " + this.query_limit);
+
     child_process.execFile(cmd, args, {maxBuffer: 1024 * 500}, function(error, stdout, stderr) {
+
+
         if (args != null)
             full_cmd = cmd + " " + args.toString();
         else
             full_cmd = cmd;
+
         logger.logCommand(full_cmd, error, stdout, stderr);
 
         var json_result = {};

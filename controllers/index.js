@@ -9,15 +9,14 @@
  * Foundation.
  */
 
-var express = require('express');
-var errors = require('../helpers/errors');
-var logger = require('../helpers/logger');
-var config = require('../config.js');
-var res_h = require('../helpers/response_handler');
+
+errors = require('../helpers/errors');
+filter = require('../helpers/filters');
+execute = require('../helpers/execute');
+wazuh_control = config.api_path + "/models/wazuh-control.py";
+
+var router = require('express').Router();
 var validator = require('../helpers/input_validation');
-
-var router = express.Router();
-
 
 // Content-type
 router.post("*", function(req, res, next) {
@@ -33,10 +32,10 @@ router.post("*", function(req, res, next) {
 
 // All requests
 router.all("*", function(req, res, next) {
+    var go_next = true;
     res_h.pretty = false;
-    res_h.offset = 0;
-    res_h.limit = 100;
-    go_next = true;
+    execute.query_offset = 0;
+    execute.query_limit = 0;
 
     if (req.query){
         // Pretty
@@ -51,7 +50,7 @@ router.all("*", function(req, res, next) {
                 res_h.bad_request("600", "Field: offset", res);
                 go_next = false;
             }else{
-                res_h.offset = req.query["offset"];
+                execute.query_offset = req.query["offset"];
                 delete req.query["offset"];
             }
         }
@@ -63,7 +62,7 @@ router.all("*", function(req, res, next) {
                 go_next = false;
             }
             else{
-                res_h.limit = req.query["limit"];
+                execute.query_limit = req.query["limit"];
                 delete req.query["limit"];
             }
         }

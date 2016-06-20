@@ -10,15 +10,7 @@
  */
 
 
-var res_h = require('../helpers/response_handler');
-var logger = require('../helpers/logger');
-var filter = require('../helpers/filters');
-var execute = require('../helpers/execute');
-var config = require('../config.js');
-var wazuh_control = config.api_path + "/models/wazuh-control.py";
-var express = require('express');
-var router = express.Router();
-
+var router = require('express').Router();
 
 /********************************************/
 /* GET

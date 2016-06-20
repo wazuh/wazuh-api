@@ -14,8 +14,6 @@ var logger = require('../helpers/logger');
 var fileSystem = require('fs');
 
 exports.pretty = false;
-exports.offset = 0;
-exports.limit = 100;
 
 exports.send = function(res, json_r, status){
 
@@ -29,21 +27,6 @@ exports.send = function(res, json_r, status){
         if (json_r.error >= 1 && json_r.error <= 9)
             status = 500;
 
-        // Pagination
-        if ( Array.isArray(json_r.data) ){
-            var new_data = [];
-            var c = 0;
-            for(var i = this.offset; i < json_r.data.length && c < this.limit; i++){
-                new_data.push(json_r.data[i]);
-                c++;
-            }
-            if (typeof json_r.msg == 'undefined')
-                msg = "";
-            else
-                msg = json_r.msg
-            
-            json_r = {'error': 0, 'data': new_data, 'message': msg};
-        }
     }
     else{
         json_r = {"error": 3, "data": "", "message": errors.description(3)}; // Internal Error
