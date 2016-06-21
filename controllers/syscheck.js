@@ -34,12 +34,12 @@ router.get('/:agent_id/files/changed', function(req, res) {
     else if (check_filter[0] == 1){ // Filter OK
         switch(check_filter[1]) {
             case 0:  // filename
-                args = ["-f", "syscheck.files_changed", "-a", req.params.agent_id + "," + req.query.filename]
+                args = ["-f", "/syscheck/:agent_id/files/changed", "-a", req.params.agent_id + "," + req.query.filename]
                 break;
         }
     }
     else { // No filter
-        args = ["-f", "syscheck.files_changed", "-a", req.params.agent_id]
+        args = ["-f", "/syscheck/:agent_id/files/changed", "-a", req.params.agent_id]
     }
 
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
@@ -63,12 +63,12 @@ router.get('/:agent_id/files/changed/total', function(req, res) {
     else if (check_filter[0] == 1){ // Filter OK
         switch(check_filter[1]) {
             case 0:  // filename
-                args = ["-f", "syscheck.files_changed_total", "-a", req.params.agent_id + "," + req.query.filename]
+                args = ["-f", "/syscheck/:agent_id/files/changed/total", "-a", req.params.agent_id + "," + req.query.filename]
                 break;
         }
     }
     else { // No filter
-        args = ["-f", "syscheck.files_changed_total", "-a", req.params.agent_id]
+        args = ["-f", "/syscheck/:agent_id/files/changed/total", "-a", req.params.agent_id]
     }
 
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
@@ -91,12 +91,12 @@ router.get('/:agent_id/registry/changed', function(req, res) {
     else if (check_filter[0] == 1){ // Filter OK
         switch(check_filter[1]) {
             case 0:  // filename
-                args = ["-f", "syscheck.registry_changed", "-a", req.params.agent_id + "," + req.query.filename]
+                args = ["-f", "/syscheck/:agent_id/registry/changed", "-a", req.params.agent_id + "," + req.query.filename]
                 break;
         }
     }
     else { // No filter
-        args = ["-f", "syscheck.registry_changed", "-a", req.params.agent_id]
+        args = ["-f", "/syscheck/:agent_id/registry/changed", "-a", req.params.agent_id]
     }
 
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
@@ -119,12 +119,12 @@ router.get('/:agent_id/registry/changed/total', function(req, res) {
     else if (check_filter[0] == 1){ // Filter OK
         switch(check_filter[1]) {
             case 0:  // filename
-                args = ["-f", "syscheck.registry_changed_total", "-a", req.params.agent_id + "," + req.query.filename]
+                args = ["-f", "/syscheck/:agent_id/registry/changed/total", "-a", req.params.agent_id + "," + req.query.filename]
                 break;
         }
     }
     else { // No filter
-        args = ["-f", "syscheck.registry_changed_total", "-a", req.params.agent_id]
+        args = ["-f", "/syscheck/:agent_id/registry/changed/total", "-a", req.params.agent_id]
     }
 
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
@@ -138,7 +138,7 @@ router.get('/:agent_id/last_scan', function(req, res) {
     if (check_filter[0] < 0)  // Filter with error
         return -1;
 
-    var args = ["-f", "syscheck.last_scan", "-a", req.params.agent_id]
+    var args = ["-f", "/syscheck/:agent_id/last_scan", "-a", req.params.agent_id]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
@@ -151,7 +151,7 @@ router.get('/:agent_id/last_scan', function(req, res) {
 router.put('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /syscheck");
 
-    var args = ["-f", "syscheck.run", "-a", "ALL"]
+    var args = ["-f", "PUT/syscheck", "-a", "ALL"]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
@@ -163,7 +163,7 @@ router.put('/:agent_id', function(req, res) {
     if (check_filter[0] < 0)  // Filter with error
         return -1;
 
-    var args = ["-f", "syscheck.run", "-a", req.params.agent_id]
+    var args = ["-f", "PUT/syscheck", "-a", req.params.agent_id]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
@@ -175,7 +175,7 @@ router.put('/:agent_id', function(req, res) {
 // DELETE /syscheck - Clear the database for all agent.
 router.delete('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /syscheck");
-    var args = ["-f", "syscheck.clear", "-a", "ALL"]
+    var args = ["-f", "DELETE/syscheck", "-a", "ALL"]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
@@ -187,7 +187,7 @@ router.delete('/:agent_id', function(req, res) {
     if (check_filter[0] < 0)  // Filter with error
         return -1;
 
-    var args = ["-f", "syscheck.clear", "-a", req.params.agent_id]
+    var args = ["-f", "DELETE/syscheck", "-a", req.params.agent_id]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 

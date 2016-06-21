@@ -24,7 +24,7 @@ router.get('/:agent_id', function(req, res) {
     if (check_filter[0] < 0)  // Filter with error
         return;
 
-    var args = ["-f", "rootcheck.print_db", "-a", req.params.agent_id]
+    var args = ["-f", "/rootcheck/:agent_id", "-a", req.params.agent_id]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
@@ -36,7 +36,7 @@ router.get('/:agent_id/last_scan', function(req, res) {
     if (check_filter[0] < 0)  // Filter with error
         return;
 
-    var args = ["-f", "rootcheck.last_scan", "-a", req.params.agent_id]
+    var args = ["-f", "/rootcheck/:agent_id/last_scan", "-a", req.params.agent_id]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
@@ -49,7 +49,7 @@ router.get('/:agent_id/last_scan', function(req, res) {
 router.put('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /rootcheck");
 
-    var args = ["-f", "rootcheck.run", "-a", "ALL"]
+    var args = ["-f", "PUT/rootcheck", "-a", "ALL"]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
@@ -61,7 +61,7 @@ router.put('/:agent_id', function(req, res) {
     if (check_filter[0] < 0)  // Filter with error
         return;
 
-    var args = ["-f", "rootcheck.run", "-a", req.params.agent_id]
+    var args = ["-f", "PUT/rootcheck", "-a", req.params.agent_id]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
@@ -74,7 +74,7 @@ router.put('/:agent_id', function(req, res) {
 router.delete('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /rootcheck");
 
-    var args = ["-f", "rootcheck.clear", "-a", "ALL"]
+    var args = ["-f", "DELETE/rootcheck", "-a", "ALL"]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
@@ -86,7 +86,7 @@ router.delete('/:agent_id', function(req, res) {
     if (check_filter[0] < 0)  // Filter with error
         return;
 
-    var args = ["-f", "rootcheck.clear", "-a", req.params.agent_id]
+    var args = ["-f", "DELETE/rootcheck", "-a", req.params.agent_id]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 

@@ -37,29 +37,29 @@ router.get('/', function(req, res) {
     else if (check_filter[0] == 1){ // Filter OK
         switch(check_filter[1]) {
             case 0:  // status - group
-                args = ["-f", "rules.get_rules_with_group", "-a", req.query.group + "," + req.query.status];
+                args = ["-f", "/rules?group", "-a", req.query.group + "," + req.query.status];
                 break;
             case 1:  // status - level
-                args = ["-f", "rules.get_rules_with_level", "-a", req.query.level + "," + req.query.status];
+                args = ["-f", "/rules?level", "-a", req.query.level + "," + req.query.status];
                 break;
             case 2:  // status - file
-                args = ["-f", "rules.get_rules_with_file", "-a", req.query.file + "," + req.query.status];
+                args = ["-f", "/rules?file", "-a", req.query.file + "," + req.query.status];
                 break;
             case 3: // status
-                args = ["-f", "rules.get_rules", "-a", req.query.status];
+                args = ["-f", "/rules", "-a", req.query.status];
                 break;
             case 4:  // group
-                args = ["-f", "rules.get_rules_with_group", "-a", req.query.group];
+                args = ["-f", "/rules?group", "-a", req.query.group];
                 break;
             case 5:  // level
-                args = ["-f", "rules.get_rules_with_level", "-a", req.query.level];
+                args = ["-f", "/rules?level", "-a", req.query.level];
                 break;
             case 6:  // file
-                args = ["-f", "rules.get_rules_with_file", "-a", req.query.file];
+                args = ["-f", "/rules?file", "-a", req.query.file];
                 break;
         }
     }else { // No filter
-        args = ["-f", "rules.get_rules"];
+        args = ["-f", "/rules"];
     }
 
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
@@ -68,7 +68,7 @@ router.get('/', function(req, res) {
 // GET /rules/groups
 router.get('/groups', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rules/groups");
-    var args = ["-f", "rules.get_groups"]
+    var args = ["-f", "/rules/groups"]
     execute.exec(wazuh_control, args, function (data) {res_h.send(res, data);});
 })
 
@@ -87,14 +87,14 @@ router.get('/files', function(req, res) {
     else if (check_filter[0] == 1){ // Filter OK
         switch(check_filter[1]) {
             case 0: // status
-                args = ["-f", "rules.get_rules_files", "-a", req.query.status];
+                args = ["-f", "/rules/files", "-a", req.query.status];
                 break;
             case 1: // download
                 res_h.send_file(req.query.download, res);
                 return;
         }
     }else { // No filter
-        args = ["-f", "rules.get_rules_files"];
+        args = ["-f", "/rules/files"];
     }
 
     execute.exec(wazuh_control, args, function (data) {res_h.send(res, data);});
@@ -109,7 +109,7 @@ router.get('/:rule_id', function(req, res) {
     if (check_filter[0] < 0)  // Filter with error
         return;
 
-    var args = ["-f", "rules.get_rule", "-a", req.params.rule_id];
+    var args = ["-f", "/rules/:rule_id", "-a", req.params.rule_id];
 
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 

@@ -19,7 +19,7 @@ var router = require('express').Router();
 // GET /agents - Get agents list
 router.get('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents");
-    var args = ["-f", "agents.get_agents_overview"]
+    var args = ["-f", "/agents"]
 
     var filters = [{'status':'alphanumeric_param'}];
     var check_filter = filter.check(req.query, filters, res);
@@ -28,7 +28,7 @@ router.get('/', function(req, res) {
     else if (check_filter[0] == 1){ // Filter OK
         switch(check_filter[1]) {
             case 0:  // status
-                args = ["-f", "agents.get_agents_overview", "-a", req.query.status]
+                args = ["-f", "/agents", "-a", req.query.status]
                 break;
         }
     }
@@ -39,7 +39,7 @@ router.get('/', function(req, res) {
 // GET /agents/total - Get number of agents
 router.get('/total', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents/total");
-    var args = ["-f", "agents.get_total"]
+    var args = ["-f", "/agents/total"]
 
     var filters = [{'status':'alphanumeric_param'}];
     var check_filter = filter.check(req.query, filters, res);
@@ -48,7 +48,7 @@ router.get('/total', function(req, res) {
     else if (check_filter[0] == 1){ // Filter OK
         switch(check_filter[1]) {
             case 0:  // status
-                args = ["-f", "agents.get_total", "-a", req.query.status]
+                args = ["-f", "/agents/total", "-a", req.query.status]
                 break;
         }
     }
@@ -64,7 +64,7 @@ router.get('/:agent_id', function(req, res) {
     if (check_filter[0] < 0)  // Filter with error
         return;
 
-    var args = ["-f", "agents.get_agent", "-a", req.params.agent_id]
+    var args = ["-f", "/agents/:agent_id", "-a", req.params.agent_id]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 
 })
@@ -77,7 +77,7 @@ router.get('/:agent_id/key', function(req, res) {
     if (check_filter[0] < 0)  // Filter with error
         return;
 
-    var args = ["-f", "agents.get_agent_key", "-a", req.params.agent_id]
+    var args = ["-f", "/agents/:agent_id/key", "-a", req.params.agent_id]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
@@ -94,7 +94,7 @@ router.put('/:agent_id/restart', function(req, res) {
     if (check_filter[0] < 0)  // Filter with error
         return;
 
-    var args = ["-f", "agents.restart", "-a", req.params.agent_id]
+    var args = ["-f", "PUT/agents/:agent_id/restart", "-a", req.params.agent_id]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
@@ -106,7 +106,7 @@ router.put('/:agent_name', function(req, res) {
     if (check_filter[0] < 0)  // Filter with error
         return;
 
-    var args = ["-f", "agents.add_agent", "-a", req.params.agent_name + "," + "any"]
+    var args = ["-f", "PUT/agents/:agent_name", "-a", req.params.agent_name + "," + "any"]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
@@ -123,7 +123,7 @@ router.delete('/:agent_id', function(req, res) {
     if (check_filter[0] < 0)  // Filter with error
         return;
 
-    var args = ["-f", "agents.remove_agent", "-a", req.params.agent_id]
+    var args = ["-f", "DELETE/agents/:agent_id", "-a", req.params.agent_id]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
@@ -162,7 +162,7 @@ router.post('/', function(req, res) {
     else if (check_filter[0] == 1){ // Filter OK
         switch(check_filter[1]) {
             case 0:  // status
-                var args = ["-f", "agents.add_agent", "-a", req.body.name + "," + req.body.ip]
+                var args = ["-f", "POST/agents", "-a", req.body.name + "," + req.body.ip]
                 execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
                 break;
         }

@@ -105,7 +105,7 @@ class Rule:
         return sorted(data)
 
     @staticmethod
-    def get_rules_with_group(group, status=None):
+    def get_rules_by_group(group, status=None):
         rules = []
 
         for r in Rule.get_rules(status):
@@ -115,7 +115,7 @@ class Rule:
         return rules
 
     @staticmethod
-    def get_rules_with_file(file, status=None):
+    def get_rules_by_file(file, status=None):
         rules = []
 
         for r in Rule.get_rules(status):
@@ -125,7 +125,7 @@ class Rule:
         return rules
 
     @staticmethod
-    def get_rules_with_level(level, status=None):
+    def get_rules_by_level(level, status=None):
         rules = []
 
         levels = level.split('-')
@@ -144,15 +144,14 @@ class Rule:
         return rules
 
     @staticmethod
-    def get_rule(id):
-        rule = ""
+    def get_rules_by_id(id):
+        rules = []
 
         for r in Rule.get_rules():
             if r.id == int(id):
-                rule = r
-                break
+                rules.append(r)
 
-        return rule
+        return rules
 
     @staticmethod
     def get_groups():

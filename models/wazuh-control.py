@@ -114,50 +114,57 @@ if __name__ == "__main__":
     wazuh = Wazuh()
 
     functions = {
-        'wazuh.get_ossec_init': wazuh.get_ossec_init,
-        'configuration.get_ossec_conf': Configuration.get_ossec_conf,
-        'configuration.check': Configuration.check,
-        'rules.get_rules': Rule.get_rules,
-        'rules.get_rules_files': Rule.get_rules_files,
-        'rules.get_rules_with_group': Rule.get_rules_with_group,
-        'rules.get_rules_with_file': Rule.get_rules_with_file,
-        'rules.get_rules_with_level': Rule.get_rules_with_level,
-        'rules.get_rule': Rule.get_rule,
-        'rules.get_groups': Rule.get_groups,
-        'manager.stats.totals': Stats.totals,
-        'manager.stats.hourly': Stats.hourly,
-        'manager.stats.weekly': Stats.weekly,
-        'manager.status': Manager.status,
-        'manager.start': Manager.start,
-        'manager.stop': Manager.stop,
-        'manager.restart': Manager.restart,
-        'rootcheck.run': Rootcheck.run,
-        'rootcheck.clear': Rootcheck.clear,
-        'rootcheck.print_db': Rootcheck.print_db,
-        'rootcheck.last_scan': Rootcheck.last_scan,
-        'syscheck.run': Syscheck.run,
-        'syscheck.clear': Syscheck.clear,
-        'syscheck.last_scan': Syscheck.last_scan,
-        'syscheck.files_changed': Syscheck.files_changed,
-        'syscheck.files_changed_total': Syscheck.files_changed_total,
-        'syscheck.registry_changed': Syscheck.registry_changed,
-        'syscheck.registry_changed_total': Syscheck.registry_changed_total,
-        'agents.get_agent': Agent.get_agent,
-        'agents.get_agent_key': Agent.get_agent_key,
-        'agents.restart': Agent.restart_agents,
-        'agents.remove_agent': Agent.remove_agent,
-        'agents.add_agent': Agent.add_agent,
-        'agents.get_agents_overview': Agent.get_agents_overview,
-        'agents.get_total': Agent.get_total_agents,
+        '/agents/:agent_id': Agent.get_agent,
+        '/agents/:agent_id/key': Agent.get_agent_key,
+        '/agents': Agent.get_agents_overview,
+        '/agents/total': Agent.get_total_agents,
+        'PUT/agents/:agent_id/restart': Agent.restart_agents,
+        'PUT/agents/:agent_name': Agent.add_agent,
+        'POST/agents': Agent.add_agent,
+        'DELETE/agents/:agent_id': Agent.remove_agent,
+
         '/decoders': Decoder.get_decoders,
         '/decoders?file': Decoder.get_decoders_by_file,
         '/decoders/parents': Decoder.get_parent_decoders,
         '/decoders/files': Decoder.get_decoders_files,
-        '/decoders/:decoder_name': Decoder.get_decoders_by_name
+        '/decoders/:decoder_name': Decoder.get_decoders_by_name,
+
+        '/manager/info': wazuh.get_ossec_init,
+        '/manager/status': Manager.status,
+        '/manager/configuration': Configuration.get_ossec_conf,
+        '/manager/configuration/test': Configuration.check,
+        '/manager/stats': Stats.totals,
+        '/manager/stats/hourly': Stats.hourly,
+        '/manager/stats/weekly': Stats.weekly,
+        'PUT/manager/start': Manager.start,
+        'PUT/manager/stop': Manager.stop,
+        'PUT/manager/restart': Manager.restart,
+
+        '/rootcheck/:agent_id': Rootcheck.print_db,
+        '/rootcheck/:agent_id/last_scan': Rootcheck.last_scan,
+        'PUT/rootcheck': Rootcheck.run,
+        'DELETE/rootcheck': Rootcheck.clear,
+
+        '/rules': Rule.get_rules,
+        '/rules?group': Rule.get_rules_by_group,
+        '/rules?file': Rule.get_rules_by_file,
+        '/rules?level': Rule.get_rules_by_level,
+        '/rules/groups': Rule.get_groups,
+        '/rules/files': Rule.get_rules_files,
+        '/rules/:rule_id': Rule.get_rules_by_id,
+
+        '/syscheck/:agent_id/last_scan': Syscheck.last_scan,
+        '/syscheck/:agent_id/files/changed': Syscheck.files_changed,
+        '/syscheck/:agent_id/files/changed/total': Syscheck.files_changed_total,
+        '/syscheck/:agent_id/registry/changed': Syscheck.registry_changed,
+        '/syscheck/:agent_id/registry/changed/total': Syscheck.registry_changed_total,
+        'PUT/syscheck': Syscheck.run,
+        'DELETE/syscheck': Syscheck.clear
+
         }
 
     if list_f:
-        print_json(functions.keys())
+        print_json(sorted(functions.keys()))
         exit(0)
 
     # Check arguments

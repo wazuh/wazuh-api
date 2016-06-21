@@ -19,14 +19,14 @@ var router = require('express').Router();
 // GET /manager/status - Get manager status
 router.get('/status', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/status");
-    var args = ["-f", "manager.status"]
+    var args = ["-f", "/manager/status"]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
 // GET /manager/info - Get manager info
 router.get('/info', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/info");
-    var args = ["-f", "wazuh.get_ossec_init"]
+    var args = ["-f", "/manager/info"]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
@@ -45,14 +45,14 @@ router.get('/configuration', function(req, res) {
     else if (check_filter[0] == 1){ // Filter OK
         switch(check_filter[1]) {
             case 0:  // section - field
-                args = ["-f", "configuration.get_ossec_conf", "-a", req.query.section + "," + req.query.field];
+                args = ["-f", "/manager/configuration", "-a", req.query.section + "," + req.query.field];
                 break;
             case 1:  // section
-                args = ["-f", "configuration.get_ossec_conf", "-a", req.query.section];
+                args = ["-f", "/manager/configuration", "-a", req.query.section];
                 break;
         }
     }else { // No filter
-        args = ["-f", "configuration.get_ossec_conf"]
+        args = ["-f", "/manager/configuration"]
     }
 
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
@@ -61,7 +61,7 @@ router.get('/configuration', function(req, res) {
 // GET /manager/configuration/test - Test configuration
 router.get('/configuration/test', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/configuration/test");
-    var args = ["-f", "configuration.check"]
+    var args = ["-f", "/manager/configuration/test"]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
@@ -81,14 +81,14 @@ router.get('/stats', function(req, res) {
         switch(check_filter[1]) {
             case 0:  // date
                 var date_arg = req.query.date.substring(0, 4) + "," + req.query.date.substring(4, 6) + "," + req.query.date.substring(6, 8)
-                args = ["-f", "manager.stats.totals", "-a", date_arg]
+                args = ["-f", "/manager/stats", "-a", date_arg]
                 break;
         }
     }else { // No filter
         var moment = require('moment');
         date = moment().format('YYYYMMDD')
         var date_arg = date.substring(0, 4) + "," + date.substring(4, 6) + "," + date.substring(6, 8)
-        args = ["-f", "manager.stats.totals", "-a", date_arg]
+        args = ["-f", "/manager/stats", "-a", date_arg]
     }
 
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
@@ -97,14 +97,14 @@ router.get('/stats', function(req, res) {
 // GET /manager/stats/hourly - Stats hourly averages.
 router.get('/stats/hourly', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/stats/hourly");
-    var args = ["-f", "manager.stats.hourly",]
+    var args = ["-f", "/manager/stats/hourly",]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
 // GET /manager/stats/weekly - Stats weekly-hourly averages
 router.get('/stats/weekly', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/stats/weekly");
-    var args = ["-f", "manager.stats.weekly",]
+    var args = ["-f", "/manager/stats/weekly",]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
@@ -114,21 +114,21 @@ router.get('/stats/weekly', function(req, res) {
 // PUT /manager/start - Start manager
 router.put('/start', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /manager/start");
-    var args = ["-f", "manager.start"]
+    var args = ["-f", "PUT/manager/start"]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
 // PUT /manager/stop - Stop manager
 router.put('/stop', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /manager/stop");
-    var args = ["-f", "manager.stop"]
+    var args = ["-f", "PUT/manager/stop"]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
 // PUT /manager/restart - Restart manager
 router.put('/restart', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /manager/restart");
-    var args = ["-f", "manager.restart"]
+    var args = ["-f", "PUT/manager/restart"]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
