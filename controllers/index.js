@@ -78,6 +78,7 @@ router.use('/manager', require('./manager'));
 router.use('/syscheck', require('./syscheck'));
 router.use('/rootcheck', require('./rootcheck'));
 router.use('/rules', require('./rules'));
+router.use('/decoders', require('./decoders'));
 
 // Index
 router.get('/',function(req, res) {

@@ -17,6 +17,7 @@ from wazuh.stats import Stats
 from wazuh.rootcheck import Rootcheck
 from wazuh.syscheck import Syscheck
 from wazuh.rule import Rule
+from wazuh.decoder import Decoder
 from wazuh.utils import cut_array
 
 
@@ -41,8 +42,11 @@ def encode_json(o):
         return o.to_dict()
     elif isinstance(o, Agent):
         return o.to_dict()
+    elif isinstance(o, Decoder):
+        return o.to_dict()
 
     print_json("Wazuh-Python Internal Error: data encoding unknown", 1000)
+    exit(1)
 
 def handle_exception(exception):
     if exception.__class__.__name__ == "WazuhException":
@@ -144,7 +148,12 @@ if __name__ == "__main__":
         'agents.remove_agent': Agent.remove_agent,
         'agents.add_agent': Agent.add_agent,
         'agents.get_agents_overview': Agent.get_agents_overview,
-        'agents.get_total': Agent.get_total_agents
+        'agents.get_total': Agent.get_total_agents,
+        '/decoders': Decoder.get_decoders,
+        '/decoders?file': Decoder.get_decoders_by_file,
+        '/decoders/parents': Decoder.get_parent_decoders,
+        '/decoders/files': Decoder.get_decoders_files,
+        '/decoders/:decoder_name': Decoder.get_decoders_by_name
         }
 
     if list_f:
@@ -152,24 +161,24 @@ if __name__ == "__main__":
         exit(0)
 
     # Check arguments
-    pattern = re.compile(r'^[a-zA-Z0-9\._]+$')
+    pattern = re.compile(r'^[a-zA-Z0-9\.:_/?]+$')
     m = pattern.match(function_id)
     if not m:
-        print_json("Wazuh-Python Internal Error: Bad argument", 1000)
+        print_json("Wazuh-Python Internal Error: Bad argument: Function", 1000)
         exit(1)
 
     pattern = re.compile(r'^[a-zA-Z0-9\-/_\.\:\\\s,=\[\]"]+$')
     if arguments:
         m = pattern.match(arguments)
         if not m:
-            print_json("Wazuh-Python Internal Error: Bad argument", 1000)
+            print_json("Wazuh-Python Internal Error: Bad argument: Args", 1000)
             exit(1)
 
     pattern = re.compile(r'^\d+,\d+$')
     if pagination:
         m = pattern.match(pagination)
         if not m:
-            print_json("Wazuh-Python Internal Error: Bad argument", 1000)
+            print_json("Wazuh-Python Internal Error: Bad argument: Pagination", 1000)
             exit(1)
 
     # Execute

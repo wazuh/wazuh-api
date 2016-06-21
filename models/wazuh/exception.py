@@ -29,7 +29,11 @@ class WazuhException(Exception):
 
         # Utils: 1400 - 1499
         1400: 'Invalid offset',
-        1401: 'Invalid limit'
+        1401: 'Invalid limit',
+
+        # Decoders: 1500 - 1599
+        1500: 'Error reading decoders from ossec.conf',
+        1501: 'Error reading decoder files',
 
         # Manager:
         # Agents:
