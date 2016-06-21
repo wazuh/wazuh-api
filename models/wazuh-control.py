@@ -17,6 +17,7 @@ from wazuh.stats import Stats
 from wazuh.rootcheck import Rootcheck
 from wazuh.syscheck import Syscheck
 from wazuh.rule import Rule
+from wazuh.utils import cut_array
 
 
 def print_json(data, error=0):
