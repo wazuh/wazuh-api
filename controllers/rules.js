@@ -24,12 +24,14 @@ router.get('/', function(req, res) {
     var filter0 = {'status':'alphanumeric_param', 'group': 'alphanumeric_param'};
     var filter1 = {'status':'alphanumeric_param', 'level': 'ranges'};
     var filter2 = {'status':'alphanumeric_param', 'file': 'alphanumeric_param'};
-    var filter3 = {'status':'alphanumeric_param'};
-    var filter4 = {'group':'alphanumeric_param'};
-    var filter5 = {'level':'ranges'};
-    var filter6 = {'file':'alphanumeric_param'};
+    var filter3 = {'status':'alphanumeric_param', 'pci': 'alphanumeric_param'};
+    var filter4 = {'status':'alphanumeric_param'};
+    var filter5 = {'group':'alphanumeric_param'};
+    var filter6 = {'level':'ranges'};
+    var filter7 = {'file':'alphanumeric_param'};
+    var filter8 = {'pci':'alphanumeric_param'};
 
-    var filters = [filter0, filter1, filter2, filter3, filter4, filter5, filter6];
+    var filters = [filter0, filter1, filter2, filter3, filter4, filter5, filter6, filter7, filter8];
 
     var check_filter = filter.check(req.query, filters, res);
     if (check_filter[0] < 0)  // Filter with error
@@ -45,17 +47,23 @@ router.get('/', function(req, res) {
             case 2:  // status - file
                 args = ["-f", "/rules?file", "-a", req.query.file + "," + req.query.status];
                 break;
-            case 3: // status
+            case 3:  // status - pci
+                args = ["-f", "/rules?pci", "-a", req.query.pci + "," + req.query.status];
+                break;
+            case 4: // status
                 args = ["-f", "/rules", "-a", req.query.status];
                 break;
-            case 4:  // group
+            case 5:  // group
                 args = ["-f", "/rules?group", "-a", req.query.group];
                 break;
-            case 5:  // level
+            case 6:  // level
                 args = ["-f", "/rules?level", "-a", req.query.level];
                 break;
-            case 6:  // file
+            case 7:  // file
                 args = ["-f", "/rules?file", "-a", req.query.file];
+                break;
+            case 8:  // pci
+                args = ["-f", "/rules?pci", "-a", req.query.pci];
                 break;
         }
     }else { // No filter
@@ -69,6 +77,13 @@ router.get('/', function(req, res) {
 router.get('/groups', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rules/groups");
     var args = ["-f", "/rules/groups"]
+    execute.exec(wazuh_control, args, function (data) {res_h.send(res, data);});
+})
+
+// GET /rules/pci
+router.get('/pci', function(req, res) {
+    logger.log(req.connection.remoteAddress + " GET /rules/pci");
+    var args = ["-f", "/rules/pci"]
     execute.exec(wazuh_control, args, function (data) {res_h.send(res, data);});
 })
 

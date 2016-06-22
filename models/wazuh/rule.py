@@ -23,28 +23,36 @@ class Rule:
         self.level = None
         self.status = None
         self.groups = []
+        self.pci = []
         self.details = {}
 
     def __str__(self):
         return str(self.to_dict())
 
     def to_dict(self):
-        dictionary = {'file': self.file, 'id': self.id, 'level': self.level, 'description': self.description, 'status': self.status, 'groups': self.groups, 'details': self.details}
+        dictionary = {'file': self.file, 'id': self.id, 'level': self.level, 'description': self.description, 'status': self.status, 'groups': self.groups, 'pci': self.pci, 'details': self.details}
         return dictionary
 
     def set_group(self, group):
-        groups = []
+        Rule.__add_unique_element(self.groups, group)
 
-        if type(group) in [list, tuple]:
-            groups.extend(group)
+    def set_pci(self, pci):
+        Rule.__add_unique_element(self.pci, pci)
+
+    @staticmethod
+    def __add_unique_element(src_list, element):
+        new_list = []
+
+        if type(element) in [list, tuple]:
+            new_list.extend(element)
         else:
-            groups.append(group)
+            new_list.append(element)
 
-        for gr in groups:
-            if gr is not None and gr != '':
-                g = gr.strip()
-                if g not in self.groups:
-                    self.groups.append(g)
+        for item in new_list:
+            if item is not None and item != '':
+                i = item.strip()
+                if i not in src_list:
+                    src_list.append(i)
 
     @staticmethod
     def __check_status(status):
@@ -115,6 +123,16 @@ class Rule:
         return rules
 
     @staticmethod
+    def get_rules_by_pci(pci, status=None):
+        rules = []
+
+        for r in Rule.get_rules(status):
+            if pci in r.pci:
+                rules.append(r)
+
+        return rules
+
+    @staticmethod
     def get_rules_by_file(file, status=None):
         rules = []
 
@@ -164,12 +182,23 @@ class Rule:
         return sorted(list(groups))
 
     @staticmethod
+    def get_pci():
+        pci = set()
+
+        for rule in Rule.get_rules():
+            for pci_item in rule.pci:
+                pci.add(pci_item)
+
+        return sorted(list(pci))
+
+    @staticmethod
     def __load_rules_from_file(rule_path, rule_status):
         try:
             rules = []
             # wrap the data
             f = open("{0}/{1}".format(common.rules_path, rule_path))
             data = f.read()
+            data = data.replace(" -- ", " -INVALID_CHAR ")
             f.close()
             xmldata = '<root_tag>' + data + '</root_tag>'
 
@@ -180,11 +209,11 @@ class Rule:
                     for xml_rule in xml_group.getchildren():
                         # New rule
                         if xml_rule.tag.lower() == "rule":
+                            groups = []
                             rule = Rule()
                             rule.file = rule_path
                             rule.id = int(xml_rule.attrib['id'])
                             rule.level = int(xml_rule.attrib['level'])
-                            rule.set_group(general_groups)
                             rule.status = rule_status
 
                             for k in xml_rule.attrib:
@@ -193,13 +222,29 @@ class Rule:
 
                             for xml_rule_tags in xml_rule.getchildren():
                                 if xml_rule_tags.tag.lower() == "group":
-                                    rule.set_group(xml_rule_tags.text.split(","))
+                                    groups.extend(xml_rule_tags.text.split(","))
                                 elif xml_rule_tags.tag.lower() == "description":
                                     rule.description = xml_rule_tags.text
                                 elif xml_rule_tags.tag.lower() == "field":
                                     rule.details[xml_rule_tags.attrib['name']] = xml_rule_tags.text
                                 else:
                                     rule.details[xml_rule_tags.tag.lower()] = xml_rule_tags.text
+
+                            # Set groups
+                            groups.extend(general_groups)
+
+                            pci_groups = []
+                            ossec_groups = []
+                            for g in groups:
+                                if 'pci_' in g:
+                                    pci_groups.append(g)
+                                else:
+                                    ossec_groups.append(g)
+
+                            rule.set_group(ossec_groups)
+                            rule.set_pci(pci_groups)
+
+
                             rules.append(rule)
         except Exception as e:
             raise WazuhException(1201, "{0}. Error: {1}".format(rule_path, str(e)))

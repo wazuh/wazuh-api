@@ -150,7 +150,9 @@ if __name__ == "__main__":
         '/rules?group': Rule.get_rules_by_group,
         '/rules?file': Rule.get_rules_by_file,
         '/rules?level': Rule.get_rules_by_level,
+        '/rules?pci': Rule.get_rules_by_pci,
         '/rules/groups': Rule.get_groups,
+        '/rules/pci': Rule.get_pci,
         '/rules/files': Rule.get_rules_files,
         '/rules/:rule_id': Rule.get_rules_by_id,
 
