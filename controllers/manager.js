@@ -132,6 +132,45 @@ router.put('/restart', function(req, res) {
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
+// PUT /manager/update-ruleset - update ruleset
+router.put('/update-ruleset', function(req, res) {
+    logger.log(req.connection.remoteAddress + " PUT /manager/update-ruleset");
+    var args = []
+    var filter0 = {'type':'names', 'force': 'names'};
+    var filter1 = {'type':'names'};
+    var filter2 = {'force':'names'};
+
+    var filters = [filter0, filter1, filter2];
+
+    var check_filter = filter.check(req.query, filters, res);
+    if (check_filter[0] < 0)  // Filter with error
+        return;
+    else if (check_filter[0] == 1){ // Filter OK
+        switch(check_filter[1]) {
+            case 0:  // type - force
+                var second_argument = ""
+                if (req.query.force == "yes")
+                    var second_argument = "," + "force=True"
+
+                args = ["-f", "PUT/manager/update-ruleset", "-a", req.query.type + second_argument];
+                break;
+            case 1:  // type
+                args = ["-f", "PUT/manager/update-ruleset", "-a", req.query.type];
+                break;
+            case 2:  // force
+                if (req.query.force == "yes")
+                    args = ["-f", "PUT/manager/update-ruleset", "-a", "force=True"];
+                else
+                    args = ["-f", "PUT/manager/update-ruleset"]
+                break;
+        }
+    }else { // No filter
+        args = ["-f", "PUT/manager/update-ruleset"]
+    }
+
+    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+})
+
 /********************************************/
 /* DELETE
 /********************************************/

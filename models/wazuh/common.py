@@ -11,6 +11,8 @@ ossec_control = '{0}/bin/ossec-control'.format(ossec_path)
 rootcheck_control = '{0}/bin/rootcheck_control'.format(ossec_path)
 syscheck_control = '{0}/bin/syscheck_control'.format(ossec_path)
 
+ruleset_py = '{0}/update/ruleset/ossec_ruleset.py'.format(ossec_path)
+
 ossec_conf = "{0}/etc/ossec.conf".format(ossec_path)
 stats_path = '{0}/stats'.format(ossec_path)
 rules_path = '{0}/rules'.format(ossec_path)

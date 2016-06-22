@@ -139,6 +139,7 @@ if __name__ == "__main__":
         'PUT/manager/start': Manager.start,
         'PUT/manager/stop': Manager.stop,
         'PUT/manager/restart': Manager.restart,
+        'PUT/manager/update-ruleset': Manager.update_ruleset,
 
         '/rootcheck/:agent_id': Rootcheck.print_db,
         '/rootcheck/:agent_id/last_scan': Rootcheck.last_scan,
@@ -168,7 +169,7 @@ if __name__ == "__main__":
         exit(0)
 
     # Check arguments
-    pattern = re.compile(r'^[a-zA-Z0-9\.:_/?]+$')
+    pattern = re.compile(r'^[a-zA-Z0-9\.:_/?-]+$')
     m = pattern.match(function_id)
     if not m:
         print_json("Wazuh-Python Internal Error: Bad argument: Function", 1000)

@@ -26,3 +26,17 @@ class Manager:
     @staticmethod
     def restart():
         return execute([common.ossec_control, '-j', 'restart'])
+
+    @staticmethod
+    def update_ruleset(type='both', force=False):
+        args = [common.ruleset_py, '--json', '--restart']
+
+        if type == 'rules':
+            args.append('--rules')
+        elif type == 'rootchecks':
+            args.append('--rootchecks')
+
+        if force:
+            args.append('--force-update')
+
+        return execute(args)

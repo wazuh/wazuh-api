@@ -20,6 +20,8 @@ class Wazuh:
         common.rootcheck_control = '{0}/bin/rootcheck_control'.format(path)
         common.syscheck_control = '{0}/bin/syscheck_control'.format(path)
 
+        common.ruleset_py = '{0}/update/ruleset/ossec_ruleset.py'.format(path)
+
         common.ossec_conf = "{0}/etc/ossec.conf".format(path)
         common.stats_path = '{0}/stats'.format(path)
         common.rules_path = '{0}/rules'.format(path)
