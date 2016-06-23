@@ -157,7 +157,7 @@ router.put('/update-ruleset', function(req, res) {
             case 0:  // type - force
                 var second_argument = ""
                 if (req.query.force == "yes")
-                    var second_argument = "," + "force=True"
+                    var second_argument = "," + "True"
 
                 args = ["-f", "PUT/manager/update-ruleset", "-a", req.query.type + second_argument];
                 break;
@@ -166,7 +166,7 @@ router.put('/update-ruleset', function(req, res) {
                 break;
             case 2:  // force
                 if (req.query.force == "yes")
-                    args = ["-f", "PUT/manager/update-ruleset", "-a", "force=True"];
+                    args = ["-f", "PUT/manager/update-ruleset", "-a", "both, True"];
                 else
                     args = ["-f", "PUT/manager/update-ruleset"]
                 break;
