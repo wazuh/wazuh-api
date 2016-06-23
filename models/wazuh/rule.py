@@ -29,6 +29,30 @@ class Rule:
     def __str__(self):
         return str(self.to_dict())
 
+    def __lt__(self, other):
+        if isinstance(other, Rule):
+            return self.id < other.id
+        else:
+            raise WazuhException(1204)
+
+    def __le__(self, other):
+        if isinstance(other, Rule):
+            return self.id <= other.id
+        else:
+            raise WazuhException(1204)
+
+    def __gt__(self, other):
+        if isinstance(other, Rule):
+            return self.id > other.id
+        else:
+            raise WazuhException(1204)
+
+    def __ge__(self, other):
+        if isinstance(other, Rule):
+            return self.id >= other.id
+        else:
+            raise WazuhException(1204)
+
     def to_dict(self):
         dictionary = {'file': self.file, 'id': self.id, 'level': self.level, 'description': self.description, 'status': self.status, 'groups': self.groups, 'pci': self.pci, 'details': self.details}
         return dictionary
@@ -62,15 +86,6 @@ class Rule:
             return status
         else:
             raise WazuhException(1202)
-
-    @staticmethod
-    def get_rules(status=None):
-        rules = []
-
-        for rule_file in Rule.get_rules_files(status):
-            rules.extend(Rule.__load_rules_from_file(rule_file['name'], rule_file['status']))
-
-        return rules
 
     @staticmethod
     def get_rules_files(status=None):
@@ -113,6 +128,15 @@ class Rule:
         return sorted(data)
 
     @staticmethod
+    def get_rules(status=None):
+        rules = []
+
+        for rule_file in Rule.get_rules_files(status):
+            rules.extend(Rule.__load_rules_from_file(rule_file['name'], rule_file['status']))
+
+        return sorted(rules)
+
+    @staticmethod
     def get_rules_by_group(group, status=None):
         rules = []
 
@@ -120,7 +144,7 @@ class Rule:
             if group in r.groups:
                 rules.append(r)
 
-        return rules
+        return sorted(rules)
 
     @staticmethod
     def get_rules_by_pci(pci, status=None):
@@ -130,7 +154,7 @@ class Rule:
             if pci in r.pci:
                 rules.append(r)
 
-        return rules
+        return sorted(rules)
 
     @staticmethod
     def get_rules_by_file(file, status=None):
@@ -140,7 +164,7 @@ class Rule:
             if file == r.file:
                 rules.append(r)
 
-        return rules
+        return sorted(rules)
 
     @staticmethod
     def get_rules_by_level(level, status=None):
@@ -159,7 +183,7 @@ class Rule:
         else:
             raise WazuhException(1203)
 
-        return rules
+        return sorted(rules)
 
     @staticmethod
     def get_rules_by_id(id):
@@ -169,7 +193,7 @@ class Rule:
             if r.id == int(id):
                 rules.append(r)
 
-        return rules
+        return sorted(rules)
 
     @staticmethod
     def get_groups():

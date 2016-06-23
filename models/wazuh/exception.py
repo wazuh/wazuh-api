@@ -16,11 +16,12 @@ class WazuhException(Exception):
         # Configuration: 1100 - 1199
         1100: 'Error checking configuration',
 
-        # Rules: 1200 - 1299
+        # Rule: 1200 - 1299
         1200: 'Error reading rules from ossec.conf',
         1201: 'Error reading rule files',
         1202: 'Argument \'status\' must be: enabled, disabled or all',
         1203: 'Argument \'level\' must be a number or an interval separated by \'-\'',
+        1204: 'Operation not implemented',
 
         # Stats: 1300 - 1399
         1307: 'Invalid parameters',
