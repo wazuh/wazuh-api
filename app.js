@@ -10,8 +10,17 @@
  */
 
 
-var express = require('express');
-var bodyParser = require('body-parser');
+try {
+    var express = require('express');
+    var bodyParser = require('body-parser');
+    var cors = require('cors')
+    var auth = require("http-auth");
+    var moment = require('moment');
+} catch (e) {
+    console.log("Dependencies not found. Try 'npm install' in /var/ossec/api. Exiting...");
+    process.exit(1);
+}
+
 config = require('./config.js');
 logger = require('./helpers/logger');
 res_h = require('./helpers/response_handler');
@@ -36,13 +45,11 @@ if (config.https.toLowerCase() == "yes"){
 
 // CORS
 if (config.cors.toLowerCase() == "yes"){
-    var cors = require('cors')
     app.use(cors());
 }
 
 // Basic authentication
 if (config.basic_auth.toLowerCase() == "yes"){
-    var auth = require("http-auth");
     var auth_secure = auth.basic({
         realm: "OSSEC API",
         file: __dirname + "/ssl/htpasswd"
