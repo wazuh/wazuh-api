@@ -27,6 +27,16 @@ class Decoder:
         dictionary = {'file': self.file, 'full_path': self.full_path, 'name': self.name, 'position': self.position, 'details': self.details}
         return dictionary
 
+    def add_detail(self, detail, value):
+        if detail in self.details:
+            if type(self.details[detail]) is not list:
+                element = self.details[detail]
+                self.details[detail] = [element]
+
+            self.details[detail].append(value)
+        else:
+            self.details[detail] = value
+
     @staticmethod
     def get_decoders():
         decoders = []
@@ -121,7 +131,8 @@ class Decoder:
                             decoder.details[k] = xml_decoder.attrib[k]
 
                     for xml_decoder_tags in xml_decoder.getchildren():
-                        decoder.details[xml_decoder_tags.tag.lower()] = xml_decoder_tags.text
+                        decoder.add_detail(xml_decoder_tags.tag.lower(), xml_decoder_tags.text)
+
                     decoders.append(decoder)
         except Exception as e:
             raise WazuhException(1501, "{0}. Error: {1}".format(decoder_path, str(e)))

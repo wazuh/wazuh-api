@@ -18,7 +18,7 @@ class Rule:
 
     def __init__(self):
         self.file = None
-        self.description = None
+        self.description = ""
         self.id = None
         self.level = None
         self.status = None
@@ -62,6 +62,16 @@ class Rule:
 
     def set_pci(self, pci):
         Rule.__add_unique_element(self.pci, pci)
+
+    def add_detail(self, detail, value):
+        if detail in self.details:
+            if type(self.details[detail]) is not list:
+                element = self.details[detail]
+                self.details[detail] = [element]
+
+            self.details[detail].append(value)
+        else:
+            self.details[detail] = value
 
     @staticmethod
     def __add_unique_element(src_list, element):
@@ -245,14 +255,16 @@ class Rule:
                                     rule.details[k] = xml_rule.attrib[k]
 
                             for xml_rule_tags in xml_rule.getchildren():
-                                if xml_rule_tags.tag.lower() == "group":
-                                    groups.extend(xml_rule_tags.text.split(","))
-                                elif xml_rule_tags.tag.lower() == "description":
-                                    rule.description = xml_rule_tags.text
-                                elif xml_rule_tags.tag.lower() == "field":
-                                    rule.details[xml_rule_tags.attrib['name']] = xml_rule_tags.text
+                                tag = xml_rule_tags.tag.lower()
+                                value = xml_rule_tags.text
+                                if tag == "group":
+                                    groups.extend(value.split(","))
+                                elif tag== "description":
+                                    rule.description += value
+                                elif tag == "field":
+                                    rule.add_detail(xml_rule_tags.attrib['name'], value)
                                 else:
-                                    rule.details[xml_rule_tags.tag.lower()] = xml_rule_tags.text
+                                    rule.add_detail(tag, value)
 
                             # Set groups
                             groups.extend(general_groups)
