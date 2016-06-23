@@ -108,6 +108,13 @@ router.get('/stats/weekly', function(req, res) {
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
+// GET /manager/update-ruleset/backups - Stats weekly-hourly averages
+router.get('/update-ruleset/backups', function(req, res) {
+    logger.log(req.connection.remoteAddress + " GET /manager/update-ruleset/backups");
+    var args = ["-f", "/manager/update-ruleset/backups",]
+    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+})
+
 /********************************************/
 /* PUT
 /********************************************/
@@ -168,6 +175,17 @@ router.put('/update-ruleset', function(req, res) {
         args = ["-f", "PUT/manager/update-ruleset"]
     }
 
+    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+})
+
+// PUT /manager/update-ruleset/backups/:id- backup ruleset
+router.put('/update-ruleset/backups/:id', function(req, res) {
+    logger.log(req.connection.remoteAddress + " PUT/manager/update-ruleset/backups/:id");
+    var check_filter = filter.check(req.params, [{'id':'names'}], res);
+    if (check_filter[0] < 0)  // Filter with error
+        return;
+
+    var args = ["-f", "PUT/manager/update-ruleset/backups/:id", "-a", req.params.id]
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 

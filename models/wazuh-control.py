@@ -136,10 +136,12 @@ if __name__ == "__main__":
         '/manager/stats': Stats.totals,
         '/manager/stats/hourly': Stats.hourly,
         '/manager/stats/weekly': Stats.weekly,
+        '/manager/update-ruleset/backups': Manager.get_ruleset_backups,
         'PUT/manager/start': Manager.start,
         'PUT/manager/stop': Manager.stop,
         'PUT/manager/restart': Manager.restart,
         'PUT/manager/update-ruleset': Manager.update_ruleset,
+        'PUT/manager/update-ruleset/backups/:id': Manager.restore_ruleset_backups,
 
         '/rootcheck/:agent_id': Rootcheck.print_db,
         '/rootcheck/:agent_id/last_scan': Rootcheck.last_scan,

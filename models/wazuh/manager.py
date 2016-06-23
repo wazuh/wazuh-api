@@ -40,3 +40,15 @@ class Manager:
             args.append('--force-update')
 
         return execute(args)
+
+    @staticmethod
+    def get_ruleset_backups():
+        args = [common.ruleset_py, '--json', '--backups', 'list']
+
+        return execute(args)['list']
+
+    @staticmethod
+    def restore_ruleset_backups(date):
+        args = [common.ruleset_py, '--json', '--backups', date, '-s']
+
+        return execute(args)
