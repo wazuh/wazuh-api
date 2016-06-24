@@ -7,6 +7,7 @@ from wazuh.exception import WazuhException
 from tempfile import mkstemp
 from subprocess import call, CalledProcessError
 from os import remove, close as close
+from datetime import datetime, timedelta
 import json
 
 
@@ -64,3 +65,11 @@ def cut_array(array, offset, limit):
         raise WazuhException(1401)
     else:
         return array[offset:offset+limit]
+
+def previous_month(n=1):
+    date = datetime.today().replace(day=1)  # First day of current month
+
+    for i in range(0, int(n)):
+        date = (date - timedelta(days=1)).replace(day=1)  # (first_day - 1) = previous month
+
+    return date.replace(hour=00, minute=00, second=00, microsecond=00)

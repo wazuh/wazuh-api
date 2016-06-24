@@ -142,6 +142,8 @@ if __name__ == "__main__":
         '/manager/stats/hourly': Stats.hourly,
         '/manager/stats/weekly': Stats.weekly,
         '/manager/update-ruleset/backups': Manager.get_ruleset_backups,
+        '/manager/logs/summary': Manager.ossec_log_summary,
+        '/manager/logs': Manager.ossec_log,
         'PUT/manager/start': Manager.start,
         'PUT/manager/stop': Manager.stop,
         'PUT/manager/restart': Manager.restart,

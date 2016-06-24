@@ -23,6 +23,7 @@ class Wazuh:
         common.ruleset_py = '{0}/update/ruleset/ossec_ruleset.py'.format(path)
 
         common.ossec_conf = "{0}/etc/ossec.conf".format(path)
+        common.ossec_log = "{0}/logs/ossec.log".format(path)
         common.stats_path = '{0}/stats'.format(path)
         common.rules_path = '{0}/rules'.format(path)
 

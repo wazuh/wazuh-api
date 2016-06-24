@@ -115,6 +115,46 @@ router.get('/update-ruleset/backups', function(req, res) {
     execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
 })
 
+// GET /manager/logs - Logs
+router.get('/logs', function(req, res) {
+    logger.log(req.connection.remoteAddress + " GET /manager/logs");
+    var args = []
+
+    var filter0 = {'type_log':'names', 'category':'names'};
+    var filter1 = {'type_log':'names'};
+    var filter2 = {'category':'names'};
+
+    var filters = [filter0, filter1, filter2];
+
+    var check_filter = filter.check(req.query, filters, res);
+    if (check_filter[0] < 0)  // Filter with error
+        return;
+    else if (check_filter[0] == 1){ // Filter OK
+        switch(check_filter[1]) {
+            case 0:  // type_log - category
+                args = ["-f", "/manager/logs", "-a", req.query.type_log + "," + req.query.category]
+                break;
+            case 1:  // type_log
+                args = ["-f", "/manager/logs", "-a", req.query.type_log + ",all"]
+                break;
+            case 2:  // category
+                args = ["-f", "/manager/logs", "-a", "all," + req.query.category]
+                break;
+        }
+    }else { // No filter
+        args = ["-f", "/manager/logs", "-a", "all,all"]
+    }
+
+    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+})
+
+// GET /manager/logs/summary - ossec.log summary
+router.get('/logs/summary', function(req, res) {
+    logger.log(req.connection.remoteAddress + " GET /manager/logs/summary");
+    var args = ["-f", "/manager/logs/summary",]
+    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+})
+
 /********************************************/
 /* PUT
 /********************************************/
