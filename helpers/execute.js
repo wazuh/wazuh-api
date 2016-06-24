@@ -11,6 +11,7 @@
 
 var logger = require('../helpers/logger');
 var errors = require('../helpers/errors');
+var timeout = 30; // seconds
 
 exports.query_offset = 0;
 exports.query_limit = 0;
@@ -33,12 +34,18 @@ exports.exec = function(cmd, args, callback) {
     logger.debug("CMD - Pagination: " + this.query_offset + " " + this.query_limit);
 
     // log
-    logger.debug("CMD - Command: " + cmd + " " + args.join(' '));
+    var full_cmd = "CMD - Command: " + cmd + " " + args.join(' ')
+    logger.debug(full_cmd);
 
     const command = child_process.spawn(cmd, args);
 
     var output = [];
     var error = false;
+
+    setTimeout(function(){
+        logger.debug("Sending SIGTERM to " + full_cmd)
+        command.kill('SIGTERM');
+    }, timeout*1000);
 
     command.stdout.on('data', (chunk) => {
         output.push(chunk)
@@ -73,7 +80,7 @@ exports.exec = function(cmd, args, callback) {
                 }
                 else{
                     // Check JSON content
-                    if ( json_cmd.hasOwnProperty('error') && ( json_cmd.hasOwnProperty('data') || json_cmd.hasOwnProperty('data') ) ){
+                    if ( json_cmd.hasOwnProperty('error') && ( json_cmd.hasOwnProperty('message') || json_cmd.hasOwnProperty('data') ) ){
 
                         json_result.error = json_cmd.error;
 

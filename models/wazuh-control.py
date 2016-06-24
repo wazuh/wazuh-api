@@ -8,6 +8,7 @@ from sys import argv, exit
 from getopt import getopt, GetoptError
 import re
 import json
+import signal
 
 from wazuh import Wazuh
 from wazuh.agent import Agent
@@ -55,6 +56,9 @@ def handle_exception(exception):
         print_json("Wazuh-Python Internal Error: {0}".format(str(exception)), 1000)
         if debug:
             raise exception
+
+def signal_handler(n_signal, frame):
+    exit(1)
 
 def usage():
     help_msg = '''
@@ -110,6 +114,7 @@ if __name__ == "__main__":
             usage()
             exit(1)
 
+    signal.signal(signal.SIGTERM, signal_handler)
 
     wazuh = Wazuh()
 
