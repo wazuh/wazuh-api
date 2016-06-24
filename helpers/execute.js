@@ -30,51 +30,84 @@ exports.exec = function(cmd, args, callback) {
     // Add pagination
     args.push("-p");
     args.push(this.query_offset + "," + this.query_limit);
-    logger.debug("Pagination: " + this.query_offset + " " + this.query_limit);
+    logger.debug("CMD - Pagination: " + this.query_offset + " " + this.query_limit);
 
-    child_process.execFile(cmd, args, {maxBuffer: 1024 * 500}, function(error, stdout, stderr) {
+    // log
+    logger.debug("CMD - Command: " + cmd + " " + args.join(' '));
 
+    const command = child_process.spawn(cmd, args);
 
-        if (args != null)
-            full_cmd = cmd + " " + args.toString();
-        else
-            full_cmd = cmd;
+    var output = [];
+    var error = false;
 
-        logger.logCommand(full_cmd, error, stdout, stderr);
-
-        var json_result = {};
-
-        if ( stdout ) {
-            try {
-                var json_cmd = JSON.parse(stdout); // String -> JSON
-
-                if ( json_cmd.hasOwnProperty('error') ){
-
-                    json_result.error = json_cmd.error;
-
-                    if ( json_cmd.hasOwnProperty('data') )
-                        json_result.data = json_cmd.data;
-                    else
-                        json_result.data = "";
-
-                    if ( json_cmd.hasOwnProperty('message') )
-                        json_result.message = json_cmd.message;
-                    else
-                        json_result.message = "";
-
-                }
-                else
-                    json_result = {"error": 1, "data": "", "message": errors.description(1)}; // Internal Error
-
-            } catch (e) {
-                json_result = {"error": 2, "data": "", "message": errors.description(2)}; // OUTPUT Not JSON
-            }
-        }
-        else{
-            //if ( error != null || stderr != "")
-            json_result = {"error": 1, "data": "", "message": errors.description(1)}; // Internal Error
-        }
-
-        callback(json_result);
+    command.stdout.on('data', (chunk) => {
+        output.push(chunk)
+        //console.log("Chunk: " + Buffer.byteLength(chunk, 'utf8') + " bytes");
     });
+
+    command.on('error', function(err) {
+        logger.error("CMD - Error executing command: " + err);
+        error = true;
+        callback({"error": 1, "data": "", "message": errors.description(1)});  // Error executing internal command
+    });
+
+    command.on('close', (code) => {
+        logger.debug("CMD - Exit code: " + code);
+        if (!error){
+            var json_result = {};
+
+            if (code != 0){  // Exit code must be 0
+              json_result = {"error": 1, "data": "", "message": errors.description(1) + ". Exit code: " + code};  // Error executing internal command
+            }
+            else{
+                var json_cmd = {}
+                // Check JSON
+                var stdout = output.join('');
+                logger.debug("CMD - STDOUT:\n---\n" + stdout + "\n---");
+                logger.debug("CMD - STDOUT: " + Buffer.byteLength(stdout, 'utf8') + " bytes");
+                json_cmd = tryParseJSON(stdout)
+
+                if (!json_cmd){
+                    logger.debug("CMD - STDOUT NOT JSON");
+                    json_result = {"error": 2, "data": "", "message": errors.description(2)}; // OUTPUT Not JSON
+                }
+                else{
+                    // Check JSON content
+                    if ( json_cmd.hasOwnProperty('error') && ( json_cmd.hasOwnProperty('data') || json_cmd.hasOwnProperty('data') ) ){
+
+                        json_result.error = json_cmd.error;
+
+                        if ( json_cmd.hasOwnProperty('data') )
+                            json_result.data = json_cmd.data;
+                        else
+                            json_result.data = "";
+
+                        if ( json_cmd.hasOwnProperty('message') )
+                            json_result.message = json_cmd.message;
+                        else
+                            json_result.message = "";
+                    }
+                    else{
+                        json_result = {"error": 1, "data": "", "message": errors.description(1) + ". Wrong keys"}; // JSON Wrong keys
+                        logger.error("CMD - Wrong keys: " + Object.keys(json_cmd));
+                    }
+                }
+            }
+            callback(json_result);
+        }
+    });
+
 }
+
+function tryParseJSON (jsonString){
+    try {
+        var o = JSON.parse(jsonString);
+
+        if (o && typeof o === "object" && o !== null) {
+            return o;
+        }
+    }
+    catch (e) { }
+
+    return false;
+};

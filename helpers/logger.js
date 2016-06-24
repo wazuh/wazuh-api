@@ -51,24 +51,7 @@ function write_log(msg){
         if(err) {
             return console.error(err);
         }
-    }); 
-}
-
-exports.logCommand = function(cmd, error, stdout, stderr) {
-    var head = header() + "CMD -";
-
-    if(logger_level >= LEVEL_DEBUG)
-        write_log(head + cmd);
-
-    if (logger_level >= LEVEL_ERROR){
-        if(error != null)
-            write_log(head + " error:" + error);
-
-        if(stderr != "")
-            write_log(head + " stderr:" + stderr);
-    }
-    if(logger_level >= LEVEL_DEBUG)
-        write_log(head + " stdout:" + stdout);
+    });
 }
 
 exports.log = function(message) {
