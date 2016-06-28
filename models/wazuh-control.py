@@ -64,13 +64,13 @@ def usage():
     help_msg = '''
     Wazuh Control
 
-    \tf, --function     Function to execute
-    \ta, --arguments    Arguments of function
-    \tp, --pagination   Pagination
-    \tP, --pretty       Pretty JSON
-    \td, --debug        Debug mode
-    \tl, --list         List functions
-    \th, --help         Help
+    \t-f, --function    Function to execute
+    \t-a, --arguments   Arguments of function
+    \t-p, --pagination  Pagination
+    \t-P, --pretty      Pretty JSON
+    \t-d, --debug       Debug mode
+    \t-l, --list        List functions
+    \t-h, --help        Help
     '''
     print(help_msg)
     exit(1)
