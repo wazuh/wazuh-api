@@ -9,7 +9,7 @@ import xml.etree.ElementTree as ET
 from wazuh.configuration import Configuration
 from wazuh.exception import WazuhException
 from wazuh import common
-
+from wazuh.utils import cut_array
 
 class Rule:
     S_ENABLED = 'enabled'
@@ -98,7 +98,7 @@ class Rule:
             raise WazuhException(1202)
 
     @staticmethod
-    def get_rules_files(status=None):
+    def get_rules_files(status=None, offset=0, limit=0):
         data = []
 
         status = Rule.__check_status(status)
@@ -135,95 +135,59 @@ class Rule:
             for f in data_enabled:
                 data.append({'name': f, 'status': 'enabled'})
 
-        return sorted(data)
+        return cut_array(sorted(data), offset, limit)
 
     @staticmethod
-    def get_rules(status=None):
+    def get_rules(status=None, group=None, pci=None, file=None, id=None, level=None, offset=0, limit=0):
+        all_rules = []
         rules = []
+
+        if level:
+            levels = level.split('-')
+            if len(levels) < 0 or len(levels) > 2:
+                raise WazuhException(1203)
 
         for rule_file in Rule.get_rules_files(status):
-            rules.extend(Rule.__load_rules_from_file(rule_file['name'], rule_file['status']))
+            all_rules.extend(Rule.__load_rules_from_file(rule_file['name'], rule_file['status']))
 
-        return sorted(rules)
-
-    @staticmethod
-    def get_rules_by_group(group, status=None):
-        rules = []
-
-        for r in Rule.get_rules(status):
-            if group in r.groups:
-                rules.append(r)
-
-        return sorted(rules)
-
-    @staticmethod
-    def get_rules_by_pci(pci, status=None):
-        rules = []
-
-        for r in Rule.get_rules(status):
-            if pci in r.pci:
-                rules.append(r)
-
-        return sorted(rules)
-
-    @staticmethod
-    def get_rules_by_file(file, status=None):
-        rules = []
-
-        for r in Rule.get_rules(status):
-            if file == r.file:
-                rules.append(r)
-
-        return sorted(rules)
-
-    @staticmethod
-    def get_rules_by_level(level, status=None):
-        rules = []
-
-        levels = level.split('-')
-
-        if 0 < len(levels) <= 2:
-
-            for r in Rule.get_rules(status):
+        rules = list(all_rules)
+        for r in all_rules:
+            if group and group not in r.groups:
+                rules.remove(r)
+            elif pci and pci not in r.pci:
+                rules.remove(r)
+            elif file and file != r.file:
+                rules.remove(r)
+            elif id and int(id) != r.id :
+                rules.remove(r)
+            elif level:
                 if len(levels) == 1:
-                    if int(levels[0]) == r.level:
-                        rules.append(r)
-                elif int(levels[0]) <= r.level <= int(levels[1]):
-                        rules.append(r)
-        else:
-            raise WazuhException(1203)
+                    if int(levels[0]) != r.level:
+                        rules.remove(r)
+                elif not (int(levels[0]) <= r.level <= int(levels[1])):
+                        rules.remove(r)
 
-        return sorted(rules)
+        return cut_array(sorted(rules), offset, limit)
 
     @staticmethod
-    def get_rules_by_id(id):
-        rules = []
-
-        for r in Rule.get_rules():
-            if r.id == int(id):
-                rules.append(r)
-
-        return sorted(rules)
-
-    @staticmethod
-    def get_groups():
+    def get_groups(offset=0, limit=0):
         groups = set()
 
         for rule in Rule.get_rules():
             for group in rule.groups:
                 groups.add(group)
 
-        return sorted(list(groups))
+        return cut_array(sorted(list(groups)), offset, limit)
 
     @staticmethod
-    def get_pci():
+    def get_pci(offset=0, limit=0):
         pci = set()
 
         for rule in Rule.get_rules():
             for pci_item in rule.pci:
                 pci.add(pci_item)
 
-        return sorted(list(pci))
+        return cut_array(sorted(list(pci)), offset, limit)
 
     @staticmethod
     def __load_rules_from_file(rule_path, rule_status):

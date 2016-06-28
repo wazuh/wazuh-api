@@ -19,7 +19,6 @@ from wazuh.rootcheck import Rootcheck
 import wazuh.syscheck as syscheck
 from wazuh.rule import Rule
 from wazuh.decoder import Decoder
-from wazuh.utils import cut_array
 
 
 def print_json(data, error=0):
@@ -49,6 +48,21 @@ def encode_json(o):
     print_json("Wazuh-Python Internal Error: data encoding unknown", 1000)
     exit(1)
 
+def is_json(myjson):
+  try:
+    json_object = json.loads(myjson)
+  except ValueError, e:
+    return False
+  return json_object
+
+def get_stdin(msg):
+    try:
+        stdin = raw_input(msg)
+    except:
+        # Python 3
+        stdin = input(msg)
+    return stdin
+
 def handle_exception(exception):
     if exception.__class__.__name__ == "WazuhException":
         print_json(exception.message, exception.code)
@@ -64,30 +78,25 @@ def usage():
     help_msg = '''
     Wazuh Control
 
-    \t-f, --function    Function to execute
-    \t-a, --arguments   Arguments of function
-    \t-p, --pagination  Pagination
-    \t-P, --pretty      Pretty JSON
-    \t-d, --debug       Debug mode
-    \t-l, --list        List functions
-    \t-h, --help        Help
+    \t-p, --pretty       Pretty JSON
+    \t-d, --debug        Debug mode
+    \t-l, --list         List functions
+    \t-h, --help         Help
     '''
     print(help_msg)
     exit(1)
 
 if __name__ == "__main__":
-    function_id = None
-    arguments = None
-    pagination = None
+    request = {}
     pretty = False
     debug = False
     list_f = False
 
-    # Read arguments
+    # Read and check arguments
     try:
-        opts, args = getopt(argv[1:], "f:a:p:Pdlh", ["function=", "arguments", "pagination", "pretty", "debug", "list", "help"])
+        opts, args = getopt(argv[1:], "pdlh", ["pretty", "debug", "list", "help"])
         n_args = len(opts)
-        if not (1 <= n_args <= 4):
+        if not (0 <= n_args <= 2):
             print("Incorrect number of arguments.\nTry '--help' for more information.")
             exit(1)
     except GetoptError as err_args:
@@ -96,13 +105,7 @@ if __name__ == "__main__":
         exit(1)
 
     for o, a in opts:
-        if o in ("-f", "--function"):
-            function_id = a
-        elif o in ("-a", "--arguments"):
-            arguments = a
-        elif o in ("-p", "--pagination"):
-            pagination = a
-        elif o in ("-P", "--pretty"):
+        if o in ("-p", "--pretty"):
             pretty = True
         elif o in ("-d", "--debug"):
             debug = True
@@ -111,10 +114,19 @@ if __name__ == "__main__":
         elif o in ("-h", "--help"):
             usage()
         else:
-            usage()
+            print("Wrong argument combination.")
+            print("Try '--help' for more information.")
             exit(1)
 
     signal.signal(signal.SIGTERM, signal_handler)
+    signal.signal(signal.SIGINT, signal_handler)
+
+    if not list_f:
+        stdin = get_stdin("")
+        request = is_json(stdin)
+        if not request:
+            print_json("Wazuh-Python Internal Error: Bad JSON input", 1000)
+            exit(1)
 
     wazuh = Wazuh()
 
@@ -124,15 +136,15 @@ if __name__ == "__main__":
         '/agents': Agent.get_agents_overview,
         '/agents/total': Agent.get_total_agents,
         'PUT/agents/:agent_id/restart': Agent.restart_agents,
+        'PUT/agents/restart': Agent.restart_agents,
         'PUT/agents/:agent_name': Agent.add_agent,
         'POST/agents': Agent.add_agent,
         'DELETE/agents/:agent_id': Agent.remove_agent,
 
         '/decoders': Decoder.get_decoders,
-        '/decoders?file': Decoder.get_decoders_by_file,
-        '/decoders/parents': Decoder.get_parent_decoders,
+        '/decoders/parents': Decoder.get_decoders,
         '/decoders/files': Decoder.get_decoders_files,
-        '/decoders/:decoder_name': Decoder.get_decoders_by_name,
+        '/decoders/:decoder_name': Decoder.get_decoders,
 
         '/manager/info': wazuh.get_ossec_init,
         '/manager/status': Manager.status,
@@ -156,14 +168,9 @@ if __name__ == "__main__":
         'DELETE/rootcheck': Rootcheck.clear,
 
         '/rules': Rule.get_rules,
-        '/rules?group': Rule.get_rules_by_group,
-        '/rules?file': Rule.get_rules_by_file,
-        '/rules?level': Rule.get_rules_by_level,
-        '/rules?pci': Rule.get_rules_by_pci,
         '/rules/groups': Rule.get_groups,
         '/rules/pci': Rule.get_pci,
         '/rules/files': Rule.get_rules_files,
-        '/rules/:rule_id': Rule.get_rules_by_id,
 
         '/syscheck/:agent_id/last_scan': syscheck.last_scan,
         '/syscheck/:agent_id/files/changed': syscheck.files_changed,
@@ -175,42 +182,20 @@ if __name__ == "__main__":
 
         }
 
-    if list_f:
-        print_json(sorted(functions.keys()))
-        exit(0)
-
-    # Check arguments
-    pattern = re.compile(r'^[a-zA-Z0-9\.:_/?-]+$')
-    m = pattern.match(function_id)
-    if not m:
-        print_json("Wazuh-Python Internal Error: Bad argument: Function", 1000)
-        exit(1)
-
-    pattern = re.compile(r'^[a-zA-Z0-9\-/_\.\:\\\s,=\[\]"]+$')
-    if arguments:
-        m = pattern.match(arguments)
-        if not m:
-            print_json("Wazuh-Python Internal Error: Bad argument: Args", 1000)
-            exit(1)
-
-    pattern = re.compile(r'^\d+,\d+$')
-    if pagination:
-        m = pattern.match(pagination)
-        if not m:
-            print_json("Wazuh-Python Internal Error: Bad argument: Pagination", 1000)
-            exit(1)
-
-    # Execute
-
+    # Main
     try:
-        if arguments:
-            data = functions[function_id](*arguments.split(','))
-        else:
-            data = functions[function_id]()
+        if list_f:
+            print_json(sorted(functions.keys()))
+            exit(0)
 
-        if pagination and type(data) is list:
-            offset_limit = pagination.split(',')
-            data = cut_array(data, offset_limit[0], offset_limit[1])
+        if 'function' not in request:
+            print_json("Wazuh-Python Internal Error: 'JSON input' must have the 'function' key", 1000)
+            exit(1)
+
+        if 'arguments' in request and request['arguments']:
+            data = functions[request['function']](**request['arguments'])
+        else:
+            data = functions[request['function']]()
 
         print_json(data)
     except Exception as e:

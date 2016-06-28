@@ -13,8 +13,6 @@ var logger = require('../helpers/logger');
 var errors = require('../helpers/errors');
 var timeout = 30; // seconds
 
-exports.query_offset = 0;
-exports.query_limit = 0;
 /**
  * Exec command.
  * It returns (callback) always a JSON.
@@ -25,40 +23,38 @@ exports.query_limit = 0;
  *   Error: {'error': !=0, 'data'= "", 'message': 'Error description'}
  *   OK: {'error': 0, 'data' = 'cmd output', 'message': ""}
  */
-exports.exec = function(cmd, args, callback) {
+exports.exec = function(cmd, args, stdin, callback) {
     const child_process  = require('child_process');
 
-    // Add pagination
-    args.push("-p");
-    args.push(this.query_offset + "," + this.query_limit);
-    logger.debug("CMD - Pagination: " + this.query_offset + " " + this.query_limit);
-
     // log
-    var full_cmd = "CMD - Command: " + cmd + " " + args.join(' ')
+    var full_cmd = "CMD - Command: " + cmd + " args:" + args.join(' ') + " stdin:" + JSON.stringify(stdin)
     logger.debug(full_cmd);
 
-    const command = child_process.spawn(cmd, args);
+    const child = child_process.spawn(cmd, args);
 
     var output = [];
     var error = false;
 
     setTimeout(function(){
         logger.debug("Sending SIGTERM to " + full_cmd)
-        command.kill('SIGTERM');
+        child.kill('SIGTERM');
     }, timeout*1000);
 
-    command.stdout.on('data', (chunk) => {
+    child.stdin.setEncoding('utf-8');
+    child.stdin.write(JSON.stringify(stdin) +"\n");
+
+    child.stdout.on('data', (chunk) => {
         output.push(chunk)
         //console.log("Chunk: " + Buffer.byteLength(chunk, 'utf8') + " bytes");
     });
 
-    command.on('error', function(err) {
+    child.on('error', function(err) {
         logger.error("CMD - Error executing command: " + err);
         error = true;
         callback({"error": 1, "data": "", "message": errors.description(1)});  // Error executing internal command
     });
 
-    command.on('close', (code) => {
+    child.on('close', (code) => {
         logger.debug("CMD - Exit code: " + code);
         if (!error){
             var json_result = {};
