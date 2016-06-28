@@ -39,7 +39,10 @@ class WazuhException(Exception):
         # Manager:
         # Agents:
         # Syscheck:
-        # Rootcheck
+        # Rootcheck:
+
+        # Database:
+        2000: 'No such database file',
 
         }
 

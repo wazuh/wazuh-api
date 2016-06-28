@@ -165,6 +165,8 @@ if __name__ == "__main__":
         '/rules/files': Rule.get_rules_files,
         '/rules/:rule_id': Rule.get_rules_by_id,
 
+        '/syscheck/files': syscheck.files,
+        '/syscheck/files/total': syscheck.files_total,
         '/syscheck/:agent_id/last_scan': syscheck.last_scan,
         '/syscheck/:agent_id/files/changed': syscheck.files_changed,
         '/syscheck/:agent_id/files/changed/total': syscheck.files_changed_total,

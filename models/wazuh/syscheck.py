@@ -6,6 +6,7 @@
 from wazuh.exception import WazuhException
 from wazuh.utils import execute
 from wazuh.agent import Agent
+from wazuh.database import Connection
 from wazuh import common
 
 def run(agent_id):
@@ -26,6 +27,57 @@ def last_scan(agent_id):
     data = {'syscheckTime': agent.syscheckTime, 'syscheckEndTime': agent.syscheckEndTime};
 
     return data
+
+def files(agent_id=None, event=None, filename=None, filetype='file', offset=0, limit=common.database_limit):
+    '''Return a list of files from the database that match the filters'''
+
+    conn = Connection()
+    query = "SELECT datetime(date, 'unixepoch'), size, perm, uid, gid, md5, sha1 FROM fim_event, fim_file WHERE id_file = fim_file.id AND type = ?"
+    data = [filetype]
+
+    if agent_id:
+        query += ' AND id_agent = ?'
+        data.append(agent_id)
+
+    if event:
+        query += ' AND event = ?'
+        data.append(event)
+
+    if filename:
+        query += ' AND path = ?'
+        data.append(filename)
+
+    query += ' ORDER BY date DESC LIMIT ?,?'
+    data += [offset, limit]
+    conn.execute(query, data)
+    data = []
+
+    for tuple in conn:
+        data.append({'date': tuple[0], 'size': tuple[1], 'perm': tuple[2], 'uid': tuple[3], 'gid': tuple[4], 'md5': tuple[5], 'sha1': tuple[6]})
+
+    return data
+
+def files_total(agent_id=None, event=None, filename=None, filetype='file'):
+    '''Return the number of files in the database that match the filter'''
+
+    conn = Connection()
+    query = 'SELECT COUNT(*) FROM fim_event, fim_file WHERE id_file = fim_file.id AND type = ?'
+    data = [filetype]
+
+    if agent_id:
+        query += ' AND id_agent = ?'
+        data.append(agent_id)
+
+    if event:
+        query += ' AND event = ?'
+        data.append(event)
+
+    if filename:
+        query += ' AND path = ?'
+        data.append(filename)
+
+    conn.execute(query, data)
+    return conn.fetch()[0]
 
 def files_changed(agent_id, filename=None, filetype='file'):
     cmd = [common.syscheck_control, '-j', '-i', agent_id]
