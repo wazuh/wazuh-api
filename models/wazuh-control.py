@@ -16,7 +16,7 @@ from wazuh.configuration import Configuration
 from wazuh.manager import Manager
 from wazuh.stats import Stats
 from wazuh.rootcheck import Rootcheck
-from wazuh.syscheck import Syscheck
+import wazuh.syscheck as syscheck
 from wazuh.rule import Rule
 from wazuh.decoder import Decoder
 from wazuh.utils import cut_array
@@ -165,13 +165,13 @@ if __name__ == "__main__":
         '/rules/files': Rule.get_rules_files,
         '/rules/:rule_id': Rule.get_rules_by_id,
 
-        '/syscheck/:agent_id/last_scan': Syscheck.last_scan,
-        '/syscheck/:agent_id/files/changed': Syscheck.files_changed,
-        '/syscheck/:agent_id/files/changed/total': Syscheck.files_changed_total,
-        '/syscheck/:agent_id/registry/changed': Syscheck.registry_changed,
-        '/syscheck/:agent_id/registry/changed/total': Syscheck.registry_changed_total,
-        'PUT/syscheck': Syscheck.run,
-        'DELETE/syscheck': Syscheck.clear
+        '/syscheck/:agent_id/last_scan': syscheck.last_scan,
+        '/syscheck/:agent_id/files/changed': syscheck.files_changed,
+        '/syscheck/:agent_id/files/changed/total': syscheck.files_changed_total,
+        '/syscheck/:agent_id/registry/changed': syscheck.registry_changed,
+        '/syscheck/:agent_id/registry/changed/total': syscheck.registry_changed_total,
+        'PUT/syscheck': syscheck.run,
+        'DELETE/syscheck': syscheck.clear
 
         }
 
