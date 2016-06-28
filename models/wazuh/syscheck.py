@@ -15,11 +15,29 @@ def run(agent_id):
     else:
         return execute([common.agent_control, '-j', '-r', '-u', agent_id])
 
-def clear(agent_id):
-    if agent_id == "ALL":
-        return execute([common.syscheck_control, '-j', '-u', 'all'])
-    else:
-        return execute([common.syscheck_control, '-j', '-u', agent_id])
+def clear(agent_id, all_agents=False):
+    '''Clear the database for one agent or for every agent
+       all_agents must be an integer: 1 (true) or 0 (false)'''
+
+    conn = Connection()
+    conn.begin()
+
+    try:
+        if int(all_agents):
+            conn.execute('DELETE FROM fim_event')
+            conn.execute('DELETE FROM fim_file')
+            retval = execute([common.syscheck_control, '-j', '-u', 'all'])
+        else:
+            conn.execute('DELETE FROM fim_event WHERE id_file IN (SELECT id FROM fim_file WHERE id_agent = ?)', [agent_id])
+            conn.execute('DELETE FROM fim_file WHERE id_agent = ?', [agent_id])
+            retval = execute([common.syscheck_control, '-j', '-u', agent_id])
+    except Exception as exception:
+        raise exception
+    finally:
+        conn.commit()
+        conn.vacuum()
+
+    return retval
 
 def last_scan(agent_id):
     agent = Agent(agent_id)

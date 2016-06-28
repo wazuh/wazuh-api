@@ -20,14 +20,26 @@ class Connection:
         self.__conn = sqlite3.connect(common.database_path)
         self.__cur = self.__conn.cursor()
 
-    def execute(self, query, args):
+    def __iter__(self):
+        '''Iterating support'''
+        return self.__cur.__iter__()
+
+    def begin(self):
+        '''Begin transaction'''
+        self.__cur.execute('BEGIN')
+
+    def commit(self):
+        '''Commit changes'''
+        self.__conn.commit()
+
+    def execute(self, query, *args):
         '''Execute query'''
-        self.__cur.execute(query, args)
+        self.__cur.execute(query, *args)
 
     def fetch(self):
         '''Return next tuple'''
         return self.__cur.fetchone()
 
-    def __iter__(self):
-        '''Iterating support'''
-        return self.__cur.__iter__()
+    def vacuum(self):
+        '''Rebuild the entire database: reduce size and desfragment'''
+        self.__cur.execute('VACUUM')
