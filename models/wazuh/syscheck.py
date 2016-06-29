@@ -4,18 +4,18 @@
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 from wazuh.exception import WazuhException
-from wazuh.utils import execute
+from wazuh.utils import execute, cut_array
 from wazuh.agent import Agent
 from wazuh.database import Connection
 from wazuh import common
 
-def run(agent_id):
-    if agent_id == "ALL":
+def run(agent_id=None, all_agents=False):
+    if all_agents:
         return execute([common.agent_control, '-j', '-r', '-a'])
     else:
         return execute([common.agent_control, '-j', '-r', '-u', agent_id])
 
-def clear(agent_id, all_agents=False):
+def clear(agent_id=None, all_agents=False):
     '''Clear the database for one agent or for every agent
        all_agents must be an integer: 1 (true) or 0 (false)'''
 
@@ -97,22 +97,24 @@ def files_total(agent_id=None, event=None, filename=None, filetype='file'):
     conn.execute(query, data)
     return conn.fetch()[0]
 
-def files_changed(agent_id, filename=None, filetype='file'):
+def files_changed(agent_id, filename=None, filetype='file', offset=0, limit=0):
     cmd = [common.syscheck_control, '-j', '-i', agent_id]
     if filename:
         cmd.extend(['-f', filename])
-    return execute(cmd)
+    data = execute(cmd)
+    return cut_array(data, offset, limit)
 
 def files_changed_total(agent_id, filename=None):
-    files = Syscheck.files_changed(agent_id, filename)
+    files = files_changed(agent_id, filename)
     return len(files)
 
-def registry_changed(agent_id, filename=None):
+def registry_changed(agent_id, filename=None, offset=0, limit=0):
     cmd = [common.syscheck_control, '-j', '-r', '-i', agent_id]
     if filename:
         cmd.extend(['-f', filename])
-    return execute(cmd)
+    data = execute(cmd)
+    return cut_array(data, offset, limit)
 
 def registry_changed_total(agent_id, filename=None):
-    files = Syscheck.registry_changed(agent_id, filename)
+    files = registry_changed(agent_id, filename)
     return len(files)

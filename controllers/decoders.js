@@ -19,51 +19,83 @@ var router = require('express').Router();
 // GET /decoders
 router.get('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /decoders");
-    var args = [];
 
-    var check_filter = filter.check(req.query, [{'file':'paths'}], res);
-    if (check_filter[0] < 0)  // Filter with error
+    var data_request = {'function': '/decoders', 'arguments': {}};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'file':'paths'};
+
+    if (!filter.check(req.query, filters, res))  // Filter with error
         return;
-    else if (check_filter[0] == 1){ // Filter OK
-        switch(check_filter[1]) {
-            case 0:  // status - group
-                args = ["-f", "/decoders?file", "-a", req.query.file];
-                break;
-        }
-    }else { // No filter
-        args = ["-f", "/decoders"];
-    }
-    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
+    if ('file' in req.query)
+        data_request['arguments']['file'] = req.query.file;
+
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
 
 // GET /decoders/files
 router.get('/files', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /decoders/files");
-    var args = ["-f", "/decoders/files"];
-    execute.exec(wazuh_control, args, function (data) {res_h.send(res, data);});
+
+    var data_request = {'function': '/decoders/files', 'arguments': {}};
+    var filters = {'offset': 'numbers', 'limit': 'numbers'};
+
+    if (!filter.check(req.query, filters, res))  // Filter with error
+        return;
+
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
+
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
 // GET /decoders/parents
 router.get('/parents', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /decoders/parents");
-    var args = ["-f", "/decoders/parents"];
-    execute.exec(wazuh_control, args, function (data) {res_h.send(res, data);});
+
+    var data_request = {'function': '/decoders', 'arguments': {}};
+    var filters = {'offset': 'numbers', 'limit': 'numbers'};
+
+    if (!filter.check(req.query, filters, res))  // Filter with error
+        return;
+
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
+
+    data_request['arguments']['parents'] = "True";
+
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
 // GET /decoders/:decoder_name
 router.get('/:decoder_name', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /decoders/:decoder_name");
-    var filters = [{'decoder_name':'names'}];
 
-    var check_filter = filter.check(req.params, filters, res);
-    if (check_filter[0] < 0)  // Filter with error
+    var data_request = {'function': '/decoders/:decoder_name', 'arguments': {}};
+    var filters = {'offset': 'numbers', 'limit': 'numbers'};
+
+    if (!filter.check(req.query, filters, res))  // Filter with error
         return;
 
-    var args = ["-f", "/decoders/:decoder_name", "-a", req.params.decoder_name];
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
 
-    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+    if (!filter.check(req.params, {'decoder_name':'names'}, res))  // Filter with error
+        return;
 
+    data_request['arguments']['name'] = req.params.decoder_name;
+
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 /********************************************/
 /* PUT

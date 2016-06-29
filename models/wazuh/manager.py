@@ -4,7 +4,7 @@
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 from wazuh.exception import WazuhException
-from wazuh.utils import execute, previous_month
+from wazuh.utils import execute, previous_month, cut_array
 from wazuh import common
 from datetime import datetime
 import re
@@ -75,7 +75,7 @@ class Manager:
         return category
 
     @staticmethod
-    def ossec_log(type_log='error', category='all', months=3):
+    def ossec_log(type_log='error', category='all', months=3, offset=0, limit=0):
         logs = []
 
         first_date = previous_month(months)
@@ -111,7 +111,7 @@ class Manager:
                 elif type_log == 'info' and "error:" not in line.lower():
                     logs.append(line)
 
-        return sorted(logs, reverse=True)
+        return cut_array(sorted(logs, reverse=True), offset, limit)
 
     @staticmethod
     def ossec_log_summary(months=3):

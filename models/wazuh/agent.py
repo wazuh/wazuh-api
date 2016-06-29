@@ -4,7 +4,7 @@
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 from wazuh.exception import WazuhException
-from wazuh.utils import execute
+from wazuh.utils import execute, cut_array
 from wazuh import common
 
 class Agent:
@@ -64,24 +64,24 @@ class Agent:
         return self.id
 
     @staticmethod
-    def get_agents_overview(status="all"):
+    def get_agents_overview(status="all", offset=0, limit=0):
         agents = execute([common.agent_control, '-j', '-l'])
         if status.lower() == "all":
-            return agents
+            return cut_array(agents, offset, limit)
         else:
             new_agents = []
             for agent in agents:
                 if agent['status'].lower() == status.lower():
                     new_agents.append(agent)
-            return new_agents
+            return cut_array(new_agents, offset, limit)
 
     @staticmethod
     def get_total_agents(status="all"):
         return len(Agent.get_agents_overview(status))
 
     @staticmethod
-    def restart_agents(agent_id):
-        if agent_id == "ALL":
+    def restart_agents(agent_id=None, restart_all=False):
+        if restart_all:
             return execute([common.agent_control, '-j', '-R', '-a'])
         else:
             agent = Agent(agent_id)
@@ -104,6 +104,6 @@ class Agent:
         return agent.remove()
 
     @staticmethod
-    def add_agent(name, ip):
+    def add_agent(name, ip='any'):
         agent = Agent()
         return agent.add(name, ip)

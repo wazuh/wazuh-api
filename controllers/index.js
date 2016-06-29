@@ -34,37 +34,12 @@ router.post("*", function(req, res, next) {
 router.all("*", function(req, res, next) {
     var go_next = true;
     res_h.pretty = false;
-    execute.query_offset = 0;
-    execute.query_limit = 0;
 
     if (req.query){
         // Pretty
         if ("pretty" in req.query){
             res_h.pretty = true;
             delete req.query["pretty"];
-        }
-
-        // Pagination - offset
-        if ("offset" in req.query){
-            if (!validator.numbers(req.query["offset"])){
-                res_h.bad_request("600", "Field: offset", res);
-                go_next = false;
-            }else{
-                execute.query_offset = req.query["offset"];
-                delete req.query["offset"];
-            }
-        }
-
-        // Pagination - limit
-        if ("limit" in req.query){
-            if (!validator.numbers(req.query["limit"])){
-                res_h.bad_request("600", "Field: limit", res);
-                go_next = false;
-            }
-            else{
-                execute.query_limit = req.query["limit"];
-                delete req.query["limit"];
-            }
         }
     }
 

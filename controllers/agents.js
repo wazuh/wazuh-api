@@ -19,53 +19,55 @@ var router = require('express').Router();
 // GET /agents - Get agents list
 router.get('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents");
-    var args = ["-f", "/agents"]
 
-    var filters = [{'status':'alphanumeric_param'}];
-    var check_filter = filter.check(req.query, filters, res);
-    if (check_filter[0] < 0)  // Filter with error
+    var data_request = {'function': '/agents', 'arguments': {}};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'status':'alphanumeric_param'};
+
+    if (!filter.check(req.query, filters, res))  // Filter with error
         return;
-    else if (check_filter[0] == 1){ // Filter OK
-        switch(check_filter[1]) {
-            case 0:  // status
-                args = ["-f", "/agents", "-a", req.query.status]
-                break;
-        }
-    }
 
-    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
+    if ('status' in req.query)
+        data_request['arguments']['status'] = req.query.status;
+
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
 // GET /agents/total - Get number of agents
 router.get('/total', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents/total");
-    var args = ["-f", "/agents/total"]
 
-    var filters = [{'status':'alphanumeric_param'}];
-    var check_filter = filter.check(req.query, filters, res);
-    if (check_filter[0] < 0)  // Filter with error
+    var data_request = {'function': '/agents/total', 'arguments': {}};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'status':'alphanumeric_param'};
+
+    if (!filter.check(req.query, filters, res))  // Filter with error
         return;
-    else if (check_filter[0] == 1){ // Filter OK
-        switch(check_filter[1]) {
-            case 0:  // status
-                args = ["-f", "/agents/total", "-a", req.query.status]
-                break;
-        }
-    }
 
-    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
+    if ('status' in req.query)
+        data_request['arguments']['status'] = req.query.status;
+
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
 // GET /agents/:agent_id - Get Agent Info
 router.get('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents/:agent_id");
 
-    var check_filter = filter.check(req.params, [{'agent_id':'numbers'}], res);
-    if (check_filter[0] < 0)  // Filter with error
+    var data_request = {'function': '/agents/:agent_id', 'arguments': {}};
+
+    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
         return;
 
-    var args = ["-f", "/agents/:agent_id", "-a", req.params.agent_id]
-    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 
 })
 
@@ -73,12 +75,14 @@ router.get('/:agent_id', function(req, res) {
 router.get('/:agent_id/key', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents/:agent_id/key");
 
-    var check_filter = filter.check(req.params, [{'agent_id':'numbers'}], res);
-    if (check_filter[0] < 0)  // Filter with error
+    var data_request = {'function': '/agents/:agent_id/key', 'arguments': {}};
+
+    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
         return;
 
-    var args = ["-f", "/agents/:agent_id/key", "-a", req.params.agent_id]
-    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
 
@@ -86,28 +90,43 @@ router.get('/:agent_id/key', function(req, res) {
 /* PUT
 /********************************************/
 
+// PUT /agents/restart - Restart All Agents
+router.put('/restart', function(req, res) {
+    logger.log(req.connection.remoteAddress + " PUT /agents/restart");
+
+    var data_request = {'function': 'PUT/agents/restart', 'arguments': {}};
+
+    data_request['arguments']['restart_all'] = 'True';
+
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+})
+
 // PUT /agents/:agent_id/restart - Restart Agent
 router.put('/:agent_id/restart', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /agents/:agent_id/restart");
 
-    var check_filter = filter.check(req.params, [{'agent_id':'numbers'}], res);
-    if (check_filter[0] < 0)  // Filter with error
+    var data_request = {'function': 'PUT/agents/:agent_id/restart', 'arguments': {}};
+
+    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
         return;
 
-    var args = ["-f", "PUT/agents/:agent_id/restart", "-a", req.params.agent_id]
-    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
 // PUT /agents/:agent_name - Add Agent
 router.put('/:agent_name', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /agents/:agent_name");
 
-    var check_filter = filter.check(req.params, [{'agent_name':'names'}], res);
-    if (check_filter[0] < 0)  // Filter with error
+    var data_request = {'function': 'PUT/agents/:agent_name', 'arguments': {}};
+
+    if (!filter.check(req.params, {'agent_name':'names'}, res))  // Filter with error
         return;
 
-    var args = ["-f", "PUT/agents/:agent_name", "-a", req.params.agent_name + "," + "any"]
-    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+    data_request['arguments']['name'] = req.params.agent_name;
+
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
 
@@ -119,12 +138,14 @@ router.put('/:agent_name', function(req, res) {
 router.delete('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /agents/:agent_id");
 
-    var check_filter = filter.check(req.params, [{'agent_id':'numbers'}], res);
-    if (check_filter[0] < 0)  // Filter with error
+    var data_request = {'function': 'DELETE/agents/:agent_id', 'arguments': {}};
+
+    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
         return;
 
-    var args = ["-f", "DELETE/agents/:agent_id", "-a", req.params.agent_id]
-    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
 
@@ -155,18 +176,19 @@ router.post('/', function(req, res) {
     }
     req.body.ip = ip;
 
-    var filters = [{'name':'names', 'ip':'ips'}];
-    var check_filter = filter.check(req.body, filters, res);
-    if (check_filter[0] < 0)  // Filter with error
+    var data_request = {'function': 'POST/agents', 'arguments': {}};
+    var filters = {'name':'names', 'ip':'ips'};
+
+    if (!filter.check(req.body, filters, res))  // Filter with error
         return;
-    else if (check_filter[0] == 1){ // Filter OK
-        switch(check_filter[1]) {
-            case 0:  // status
-                var args = ["-f", "POST/agents", "-a", req.body.name + "," + req.body.ip]
-                execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
-                break;
-        }
-    }
+
+    data_request['arguments']['ip'] = req.body.ip;
+
+    if ('name' in req.body){
+        data_request['arguments']['name'] = req.body.name;
+        execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    }else
+        res_h.bad_request(604, "Missing field: 'name'", res);
 })
 
 

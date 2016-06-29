@@ -19,127 +19,98 @@ var router = require('express').Router();
 // GET /syscheck/:agent_id/files/changed - List modified files for the agent.
 router.get('/:agent_id/files/changed', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/files/changed");
-    var args = []
 
-    // Params
-    var check_filter = filter.check(req.params, [{'agent_id':'numbers'}], res);
-    if (check_filter[0] < 0)  // Filter with error
+    var data_request = {'function': '/syscheck/:agent_id/files/changed', 'arguments': {}};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'filename':'paths'};
+
+    if (!filter.check(req.query, filters, res))  // Filter with error
         return;
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
+    if ('filename' in req.query)
+        data_request['arguments']['filename'] = req.query.filename;
 
-    // Query
-    var filters = [{'filename':'paths'}];
-    var check_filter = filter.check(req.query, filters, res);
-    if (check_filter[0] < 0)  // Filter with error
+    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
         return;
-    else if (check_filter[0] == 1){ // Filter OK
-        switch(check_filter[1]) {
-            case 0:  // filename
-                args = ["-f", "/syscheck/:agent_id/files/changed", "-a", req.params.agent_id + "," + req.query.filename]
-                break;
-        }
-    }
-    else { // No filter
-        args = ["-f", "/syscheck/:agent_id/files/changed", "-a", req.params.agent_id]
-    }
+    data_request['arguments']['agent_id'] = req.params.agent_id;
 
-    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
 // GET /syscheck/:agent_id/files/changed/total - Number of modified files for the agent.
 router.get('/:agent_id/files/changed/total', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/files/changed/total");
-    var args = []
 
-    // Params
-    var check_filter = filter.check(req.params, [{'agent_id':'numbers'}], res);
-    if (check_filter[0] < 0)  // Filter with error
+    var data_request = {'function': '/syscheck/:agent_id/files/changed/total', 'arguments': {}};
+    var filters = {'filename':'paths'};
+
+    if (!filter.check(req.query, filters, res))  // Filter with error
         return;
+    if ('filename' in req.query)
+        data_request['arguments']['filename'] = req.query.filename;
 
-    // Query
-    var filters = [{'filename':'paths'}];
-    var check_filter = filter.check(req.query, filters, res);
-    if (check_filter[0] < 0)  // Filter with error
+    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
         return;
-    else if (check_filter[0] == 1){ // Filter OK
-        switch(check_filter[1]) {
-            case 0:  // filename
-                args = ["-f", "/syscheck/:agent_id/files/changed/total", "-a", req.params.agent_id + "," + req.query.filename]
-                break;
-        }
-    }
-    else { // No filter
-        args = ["-f", "/syscheck/:agent_id/files/changed/total", "-a", req.params.agent_id]
-    }
+    data_request['arguments']['agent_id'] = req.params.agent_id;
 
-    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
 // GET /syscheck/:agent_id/registry/changed - List modified registry entries
 router.get('/:agent_id/registry/changed', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/registry/changed");
 
-    // Params
-    var check_filter = filter.check(req.params, [{'agent_id':'numbers'}], res);
-    if (check_filter[0] < 0)  // Filter with error
-        return;
+    var data_request = {'function': '/syscheck/:agent_id/registry/changed', 'arguments': {}};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'filename':'paths'};
 
-    // Query
-    var filters = [{'filename':'paths'}];
-    var check_filter = filter.check(req.query, filters, res);
-    if (check_filter[0] < 0)  // Filter with error
+    if (!filter.check(req.query, filters, res))  // Filter with error
         return;
-    else if (check_filter[0] == 1){ // Filter OK
-        switch(check_filter[1]) {
-            case 0:  // filename
-                args = ["-f", "/syscheck/:agent_id/registry/changed", "-a", req.params.agent_id + "," + req.query.filename]
-                break;
-        }
-    }
-    else { // No filter
-        args = ["-f", "/syscheck/:agent_id/registry/changed", "-a", req.params.agent_id]
-    }
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
+    if ('filename' in req.query)
+        data_request['arguments']['filename'] = req.query.filename;
 
-    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
+        return;
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
 // GET /syscheck/:agent_id/registry/changed/total - Number of modified registry entries
 router.get('/:agent_id/registry/changed/total', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/registry/changed/total");
 
-    // Params
-    var check_filter = filter.check(req.params, [{'agent_id':'numbers'}], res);
-    if (check_filter[0] < 0)  // Filter with error
-        return;
+    var data_request = {'function': '/syscheck/:agent_id/registry/changed/total', 'arguments': {}};
+    var filters = {'filename':'paths'};
 
-    // Query
-    var filters = [{'filename':'paths'}];
-    var check_filter = filter.check(req.query, filters, res);
-    if (check_filter[0] < 0)  // Filter with error
+    if (!filter.check(req.query, filters, res))  // Filter with error
         return;
-    else if (check_filter[0] == 1){ // Filter OK
-        switch(check_filter[1]) {
-            case 0:  // filename
-                args = ["-f", "/syscheck/:agent_id/registry/changed/total", "-a", req.params.agent_id + "," + req.query.filename]
-                break;
-        }
-    }
-    else { // No filter
-        args = ["-f", "/syscheck/:agent_id/registry/changed/total", "-a", req.params.agent_id]
-    }
+    if ('filename' in req.query)
+        data_request['arguments']['filename'] = req.query.filename;
 
-    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
+        return;
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
 // GET /syscheck/:agent_id/last_scan - Syscheck last scan
 router.get('/:agent_id/last_scan', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/last_scan");
 
-    var check_filter = filter.check(req.params, [{'agent_id':'numbers'}], res);
-    if (check_filter[0] < 0)  // Filter with error
-        return -1;
+    var data_request = {'function': '/syscheck/:agent_id/last_scan', 'arguments': {}};
 
-    var args = ["-f", "/syscheck/:agent_id/last_scan", "-a", req.params.agent_id]
-    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
+        return;
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
 
@@ -151,20 +122,22 @@ router.get('/:agent_id/last_scan', function(req, res) {
 router.put('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /syscheck");
 
-    var args = ["-f", "PUT/syscheck", "-a", "ALL"]
-    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+    var data_request = {'function': 'PUT/syscheck', 'arguments': {}};
+    data_request['arguments']['all_agents'] = "True";
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
 // PUT /syscheck/:agent_id - Run syscheck in the agent.
 router.put('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /syscheck/:agent_id");
 
-    var check_filter = filter.check(req.params, [{'agent_id':'numbers'}], res);
-    if (check_filter[0] < 0)  // Filter with error
-        return -1;
+    var data_request = {'function': 'PUT/syscheck', 'arguments': {}};
 
-    var args = ["-f", "PUT/syscheck", "-a", req.params.agent_id]
-    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
+        return;
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
 
@@ -175,20 +148,23 @@ router.put('/:agent_id', function(req, res) {
 // DELETE /syscheck - Clear the database for all agent.
 router.delete('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /syscheck");
-    var args = ["-f", "DELETE/syscheck", "-a", "ALL"]
-    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+
+    var data_request = {'function': 'DELETE/syscheck', 'arguments': {}};
+    data_request['arguments']['all_agents'] = "True";
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
 // DELETE /syscheck/:agent_id - Clear the database for the agent.
 router.delete('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /syscheck/:agent_id");
 
-    var check_filter = filter.check(req.params, [{'agent_id':'numbers'}], res);
-    if (check_filter[0] < 0)  // Filter with error
-        return -1;
+    var data_request = {'function': 'DELETE/syscheck', 'arguments': {}};
 
-    var args = ["-f", "DELETE/syscheck", "-a", req.params.agent_id]
-    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
+        return;
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
 

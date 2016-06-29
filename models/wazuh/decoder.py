@@ -9,6 +9,7 @@ import xml.etree.ElementTree as ET
 from wazuh.configuration import Configuration
 from wazuh.exception import WazuhException
 from wazuh import common
+from wazuh.utils import cut_array
 
 
 class Decoder:
@@ -38,16 +39,7 @@ class Decoder:
             self.details[detail] = value
 
     @staticmethod
-    def get_decoders():
-        decoders = []
-
-        for decoder_file in Decoder.get_decoders_files():
-            decoders.extend(Decoder.__load_decoders_from_file(decoder_file))
-
-        return decoders
-
-    @staticmethod
-    def get_decoders_files():
+    def get_decoders_files(offset=0, limit=0):
         data = []
         decoder_dirs = []
         decoder_files = []
@@ -69,38 +61,26 @@ class Decoder:
         for decoder_file in decoder_files:
             data.append("{0}/{1}".format(common.ossec_path, decoder_file))
 
-        return sorted(data)
+        return cut_array(sorted(data), offset, limit)
 
     @staticmethod
-    def get_decoders_by_file(file):
+    def get_decoders(file=None, name=None, parents=False, offset=0, limit=0):
+        all_decoders = []
         decoders = []
 
-        for decoder in Decoder.get_decoders():
-            if decoder.file == file:
-                decoders.append(decoder)
+        for decoder_file in Decoder.get_decoders_files():
+            all_decoders.extend(Decoder.__load_decoders_from_file(decoder_file))
 
-        return decoders
+        decoders = list(all_decoders)
+        for d in all_decoders:
+            if file and file not in d.file:
+                decoders.remove(d)
+            if name and name not in d.name:
+                decoders.remove(d)
+            if parents and 'parent' in d.details:
+                decoders.remove(d)
 
-    @staticmethod
-    def get_parent_decoders():
-        decoders = []
-
-        for decoder in Decoder.get_decoders():
-            if 'parent' not in decoder.details:
-                decoders.append(decoder)
-
-        return decoders
-
-    @staticmethod
-    def get_decoders_by_name(name):
-        decoders = []
-
-        for decoder in Decoder.get_decoders():
-            if decoder.name == name:
-                decoders.append(decoder)
-
-        return decoders
-
+        return cut_array(decoders, offset, limit)
 
     @staticmethod
     def __load_decoders_from_file(decoder_path):

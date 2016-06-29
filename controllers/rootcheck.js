@@ -20,24 +20,39 @@ var router = require('express').Router();
 router.get('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rootcheck/:agent_id");
 
-    var check_filter = filter.check(req.params, [{'agent_id':'numbers'}], res);
-    if (check_filter[0] < 0)  // Filter with error
+    var data_request = {'function': '/rootcheck/:agent_id', 'arguments': {}};
+
+    var filters = {'offset': 'numbers', 'limit': 'numbers'};
+
+    if (!filter.check(req.query, filters, res))  // Filter with error
         return;
 
-    var args = ["-f", "/rootcheck/:agent_id", "-a", req.params.agent_id]
-    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
+
+
+    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
+        return;
+
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
 // GET /rootcheck/:agent_id/last_scan - Rootcheck last scan
 router.get('/:agent_id/last_scan', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rootcheck/:agent_id/last_scan");
 
-    var check_filter = filter.check(req.params, [{'agent_id':'numbers'}], res);
-    if (check_filter[0] < 0)  // Filter with error
+    var data_request = {'function': '/rootcheck/:agent_id/last_scan', 'arguments': {}};
+
+    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
         return;
 
-    var args = ["-f", "/rootcheck/:agent_id/last_scan", "-a", req.params.agent_id]
-    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
 
@@ -49,20 +64,23 @@ router.get('/:agent_id/last_scan', function(req, res) {
 router.put('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /rootcheck");
 
-    var args = ["-f", "PUT/rootcheck", "-a", "ALL"]
-    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+    var data_request = {'function': 'PUT/rootcheck', 'arguments': {}};
+    data_request['arguments']['all_agents'] = "True";
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
 // PUT /rootcheck/:agent_id - Run rootcheck in the agent.
 router.put('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /rootcheck/:agent_id");
 
-    var check_filter = filter.check(req.params, [{'agent_id':'numbers'}], res);
-    if (check_filter[0] < 0)  // Filter with error
+    var data_request = {'function': 'PUT/rootcheck', 'arguments': {}};
+
+    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
         return;
 
-    var args = ["-f", "PUT/rootcheck", "-a", req.params.agent_id]
-    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
 
@@ -74,20 +92,23 @@ router.put('/:agent_id', function(req, res) {
 router.delete('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /rootcheck");
 
-    var args = ["-f", "DELETE/rootcheck", "-a", "ALL"]
-    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+    var data_request = {'function': 'DELETE/rootcheck', 'arguments': {}};
+    data_request['arguments']['all_agents'] = "True";
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
 // DELETE /rootcheck/:agent_id - Clear the database for the agent.
 router.delete('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /rootcheck/:agent_id");
 
-    var check_filter = filter.check(req.params, [{'agent_id':'numbers'}], res);
-    if (check_filter[0] < 0)  // Filter with error
+    var data_request = {'function': 'DELETE/rootcheck', 'arguments': {}};
+
+    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
         return;
 
-    var args = ["-f", "DELETE/rootcheck", "-a", req.params.agent_id]
-    execute.exec(wazuh_control, args, function (data) { res_h.send(res, data); });
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
 
