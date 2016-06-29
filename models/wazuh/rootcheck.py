@@ -8,31 +8,25 @@ from wazuh.utils import execute, cut_array
 from wazuh.agent import Agent
 from wazuh import common
 
-class Rootcheck:
+def run(agent_id=None, all_agents=False):
+    if all_agents:
+        return execute([common.agent_control, '-j', '-r', '-a'])
+    else:
+        return execute([common.agent_control, '-j', '-r', '-u', agent_id])
 
-    @staticmethod
-    def run(agent_id=None, all_agents=False):
-        if all_agents:
-            return execute([common.agent_control, '-j', '-r', '-a'])
-        else:
-            return execute([common.agent_control, '-j', '-r', '-u', agent_id])
+def clear(agent_id=None, all_agents=False):
+    if all_agents:
+        return execute([common.rootcheck_control, '-j', '-u', 'all'])
+    else:
+        return execute([common.rootcheck_control, '-j', '-u', agent_id])
 
-    @staticmethod
-    def clear(agent_id=None, all_agents=False):
-        if all_agents:
-            return execute([common.rootcheck_control, '-j', '-u', 'all'])
-        else:
-            return execute([common.rootcheck_control, '-j', '-u', agent_id])
+def print_db(agent_id, offset=0, limit=0):
+    data = execute([common.rootcheck_control, '-j', '-i', agent_id])
+    return cut_array(data, offset, limit)
 
-    @staticmethod
-    def print_db(agent_id, offset=0, limit=0):
-        data = execute([common.rootcheck_control, '-j', '-i', agent_id])
-        return cut_array(data, offset, limit)
+def last_scan(agent_id):
+    agent = Agent(agent_id)
+    agent.get()
+    data = {'rootcheckTime': agent.rootcheckTime, 'rootcheckEndTime': agent.rootcheckEndTime};
 
-    @staticmethod
-    def last_scan(agent_id):
-        agent = Agent(agent_id)
-        agent.get()
-        data = {'rootcheckTime': agent.rootcheckTime, 'rootcheckEndTime': agent.rootcheckEndTime};
-
-        return data
+    return data

@@ -15,7 +15,7 @@ from wazuh.agent import Agent
 from wazuh.configuration import Configuration
 from wazuh.manager import Manager
 from wazuh.stats import Stats
-from wazuh.rootcheck import Rootcheck
+import wazuh.rootcheck as rootcheck
 import wazuh.syscheck as syscheck
 from wazuh.rule import Rule
 from wazuh.decoder import Decoder
@@ -162,10 +162,10 @@ if __name__ == "__main__":
         'PUT/manager/update-ruleset': Manager.update_ruleset,
         'PUT/manager/update-ruleset/backups/:id': Manager.restore_ruleset_backups,
 
-        '/rootcheck/:agent_id': Rootcheck.print_db,
-        '/rootcheck/:agent_id/last_scan': Rootcheck.last_scan,
-        'PUT/rootcheck': Rootcheck.run,
-        'DELETE/rootcheck': Rootcheck.clear,
+        '/rootcheck/:agent_id': rootcheck.print_db,
+        '/rootcheck/:agent_id/last_scan': rootcheck.last_scan,
+        'PUT/rootcheck': rootcheck.run,
+        'DELETE/rootcheck': rootcheck.clear,
 
         '/rules': Rule.get_rules,
         '/rules/groups': Rule.get_groups,
