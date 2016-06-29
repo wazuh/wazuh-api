@@ -50,7 +50,7 @@ def files(agent_id=None, event=None, filename=None, filetype='file', offset=0, l
     '''Return a list of files from the database that match the filters'''
 
     conn = Connection()
-    query = "SELECT datetime(date, 'unixepoch'), size, perm, uid, gid, md5, sha1 FROM fim_event, fim_file WHERE id_file = fim_file.id AND type = ?"
+    query = "SELECT datetime(date, 'unixepoch'), id_agent, path, size, perm, uid, gid, md5, sha1 FROM fim_event, fim_file WHERE id_file = fim_file.id AND type = ?"
     data = [filetype]
 
     if agent_id:
@@ -71,7 +71,7 @@ def files(agent_id=None, event=None, filename=None, filetype='file', offset=0, l
     data = []
 
     for tuple in conn:
-        data.append({'date': tuple[0], 'size': tuple[1], 'perm': tuple[2], 'uid': tuple[3], 'gid': tuple[4], 'md5': tuple[5], 'sha1': tuple[6]})
+        data.append({'date': tuple[0], 'agentID': tuple[1], 'file': tuple[2], 'size': tuple[3], 'perm': tuple[4], 'uid': tuple[5], 'gid': tuple[6], 'md5': tuple[7], 'sha1': tuple[8]})
 
     return data
 
