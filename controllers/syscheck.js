@@ -123,7 +123,7 @@ router.put('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /syscheck");
 
     var data_request = {'function': 'PUT/syscheck', 'arguments': {}};
-    data_request['arguments']['all_agents'] = "True";
+    data_request['arguments']['all_agents'] = 1;
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
@@ -150,7 +150,7 @@ router.delete('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /syscheck");
 
     var data_request = {'function': 'DELETE/syscheck', 'arguments': {}};
-    data_request['arguments']['all_agents'] = "True";
+    data_request['arguments']['all_agents'] = 1;
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 

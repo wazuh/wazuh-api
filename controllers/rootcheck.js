@@ -65,7 +65,7 @@ router.put('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /rootcheck");
 
     var data_request = {'function': 'PUT/rootcheck', 'arguments': {}};
-    data_request['arguments']['all_agents'] = "True";
+    data_request['arguments']['all_agents'] = 1;
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
@@ -93,7 +93,7 @@ router.delete('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /rootcheck");
 
     var data_request = {'function': 'DELETE/rootcheck', 'arguments': {}};
-    data_request['arguments']['all_agents'] = "True";
+    data_request['arguments']['all_agents'] = 1;
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
