@@ -67,17 +67,17 @@ class Agent:
     def get_agents_overview(status="all", offset=0, limit=0):
         agents = execute([common.agent_control, '-j', '-l'])
         if status.lower() == "all":
-            return cut_array(agents, offset, limit)
+            return {'items': cut_array(sorted(agents), offset, limit), 'totalItems': len(agents)}
         else:
             new_agents = []
             for agent in agents:
                 if agent['status'].lower() == status.lower():
                     new_agents.append(agent)
-            return cut_array(new_agents, offset, limit)
+            return {'items': cut_array(sorted(new_agents), offset, limit), 'totalItems': len(new_agents)}
 
     @staticmethod
     def get_total_agents(status="all"):
-        return len(Agent.get_agents_overview(status))
+        return len(Agent.get_agents_overview(status)['items'])
 
     @staticmethod
     def restart_agents(agent_id=None, restart_all=False):

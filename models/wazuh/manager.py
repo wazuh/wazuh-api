@@ -111,7 +111,7 @@ class Manager:
                 elif type_log == 'info' and "error:" not in line.lower():
                     logs.append(line)
 
-        return cut_array(sorted(logs, reverse=True), offset, limit)
+        return {'items': cut_array(sorted(logs, reverse=True), offset, limit), 'totalItems': len(logs)}
 
     @staticmethod
     def ossec_log_summary(months=3):

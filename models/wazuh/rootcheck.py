@@ -22,7 +22,7 @@ def clear(agent_id=None, all_agents=False):
 
 def print_db(agent_id, offset=0, limit=0):
     data = execute([common.rootcheck_control, '-j', '-i', agent_id])
-    return cut_array(data, offset, limit)
+    return {'items': cut_array(sorted(data), offset, limit), 'totalItems': len(data)}
 
 def last_scan(agent_id):
     agent = Agent(agent_id)

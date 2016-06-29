@@ -17,3 +17,5 @@ ossec_conf = "{0}/etc/ossec.conf".format(ossec_path)
 ossec_log = "{0}/logs/ossec.log".format(ossec_path)
 stats_path = '{0}/stats'.format(ossec_path)
 rules_path = '{0}/rules'.format(ossec_path)
+
+database_limit = 500

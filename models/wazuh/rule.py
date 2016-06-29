@@ -114,7 +114,7 @@ class Rule:
         if status == Rule.S_ENABLED:
             for f in data_enabled:
                 data.append({'name': f, 'status': 'enabled'})
-            return sorted(data)
+            return {'items': cut_array(sorted(data), offset, limit), 'totalItems': len(data)}
 
         # All rules
         data_all = []
@@ -130,12 +130,12 @@ class Rule:
             data.append({'name': f, 'status': 'disabled'})
 
         if status == Rule.S_DISABLED:
-            return sorted(data)
+            return {'items': cut_array(sorted(data), offset, limit), 'totalItems': len(data)}
         if status == Rule.S_ALL:
             for f in data_enabled:
                 data.append({'name': f, 'status': 'enabled'})
 
-        return cut_array(sorted(data), offset, limit)
+        return {'items': cut_array(sorted(data), offset, limit), 'totalItems': len(data)}
 
     @staticmethod
     def get_rules(status=None, group=None, pci=None, file=None, id=None, level=None, offset=0, limit=0):
@@ -147,7 +147,7 @@ class Rule:
             if len(levels) < 0 or len(levels) > 2:
                 raise WazuhException(1203)
 
-        for rule_file in Rule.get_rules_files(status):
+        for rule_file in Rule.get_rules_files(status)['items']:
             all_rules.extend(Rule.__load_rules_from_file(rule_file['name'], rule_file['status']))
 
         rules = list(all_rules)
@@ -167,27 +167,27 @@ class Rule:
                 elif not (int(levels[0]) <= r.level <= int(levels[1])):
                         rules.remove(r)
 
-        return cut_array(sorted(rules), offset, limit)
+        return {'items': cut_array(sorted(rules), offset, limit), 'totalItems': len(rules)}
 
     @staticmethod
     def get_groups(offset=0, limit=0):
         groups = set()
 
-        for rule in Rule.get_rules():
+        for rule in Rule.get_rules()['items']:
             for group in rule.groups:
                 groups.add(group)
 
-        return cut_array(sorted(list(groups)), offset, limit)
+        return {'items': cut_array(sorted(groups), offset, limit), 'totalItems': len(groups)}
 
     @staticmethod
     def get_pci(offset=0, limit=0):
         pci = set()
 
-        for rule in Rule.get_rules():
+        for rule in Rule.get_rules()['items']:
             for pci_item in rule.pci:
                 pci.add(pci_item)
 
-        return cut_array(sorted(list(pci)), offset, limit)
+        return {'items': cut_array(sorted(pci), offset, limit), 'totalItems': len(pci)}
 
     @staticmethod
     def __load_rules_from_file(rule_path, rule_status):

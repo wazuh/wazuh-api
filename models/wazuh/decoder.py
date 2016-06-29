@@ -61,7 +61,7 @@ class Decoder:
         for decoder_file in decoder_files:
             data.append("{0}/{1}".format(common.ossec_path, decoder_file))
 
-        return cut_array(sorted(data), offset, limit)
+        return {'items': cut_array(sorted(data), offset, limit), 'totalItems': len(data)}
 
     @staticmethod
     def get_decoders(file=None, name=None, parents=False, offset=0, limit=0):
@@ -80,7 +80,7 @@ class Decoder:
             if parents and 'parent' in d.details:
                 decoders.remove(d)
 
-        return cut_array(decoders, offset, limit)
+        return {'items': cut_array(sorted(decoders), offset, limit), 'totalItems': len(decoders)}
 
     @staticmethod
     def __load_decoders_from_file(decoder_path):

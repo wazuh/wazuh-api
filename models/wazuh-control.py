@@ -63,14 +63,6 @@ def get_stdin(msg):
         stdin = input(msg)
     return stdin
 
-def handle_exception(exception):
-    if exception.__class__.__name__ == "WazuhException":
-        print_json(exception.message, exception.code)
-    else:
-        print_json("Wazuh-Python Internal Error: {0}".format(str(exception)), 1000)
-        if debug:
-            raise exception
-
 def signal_handler(n_signal, frame):
     exit(1)
 
@@ -199,4 +191,9 @@ if __name__ == "__main__":
 
         print_json(data)
     except Exception as e:
-        handle_exception(e)
+        if e.__class__.__name__ == "WazuhException":
+            print_json(e.message, e.code)
+        else:
+            print_json("Wazuh-Python Internal Error: {0}".format(str(e)), 1000)
+        if debug:
+            raise

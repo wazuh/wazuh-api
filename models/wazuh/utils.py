@@ -4,12 +4,12 @@
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 from wazuh.exception import WazuhException
+from wazuh import common
 from tempfile import mkstemp
 from subprocess import call, CalledProcessError
 from os import remove, close as close
 from datetime import datetime, timedelta
 import json
-
 
 try:
     from subprocess import check_output
@@ -51,17 +51,18 @@ def execute(command):
         return output_json['data']
 
 def cut_array(array, offset, limit):
+    if not array:
+        return array
+
     offset = int(offset)
     limit = int(limit)
 
-    if offset == 0 and limit == 0:
-        return array
+    if limit == 0:
+        limit = common.database_limit
 
-    size = len(array)
-
-    if offset < 0 or offset >= size:
+    if offset < 0 or offset >= len(array):
         raise WazuhException(1400)
-    elif limit <= 0:
+    elif limit <= 0 or limit > common.database_limit:
         raise WazuhException(1401)
     else:
         return array[offset:offset+limit]

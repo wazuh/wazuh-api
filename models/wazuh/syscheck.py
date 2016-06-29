@@ -32,7 +32,7 @@ def files_changed(agent_id, filename=None, filetype='file', offset=0, limit=0):
     if filename:
         cmd.extend(['-f', filename])
     data = execute(cmd)
-    return cut_array(data, offset, limit)
+    return {'items': cut_array(sorted(data), offset, limit), 'totalItems': len(data)}
 
 def files_changed_total(agent_id, filename=None):
     files = files_changed(agent_id, filename)
@@ -43,7 +43,7 @@ def registry_changed(agent_id, filename=None, offset=0, limit=0):
     if filename:
         cmd.extend(['-f', filename])
     data = execute(cmd)
-    return cut_array(data, offset, limit)
+    return {'items': cut_array(sorted(data), offset, limit), 'totalItems': len(data)}
 
 def registry_changed_total(agent_id, filename=None):
     files = registry_changed(agent_id, filename)
