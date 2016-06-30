@@ -4,7 +4,7 @@
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 from wazuh.exception import WazuhException
-from wazuh.utils import execute, cut_array
+from wazuh.utils import execute, cut_array, sort_array
 from wazuh.agent import Agent
 from wazuh import common
 
@@ -27,24 +27,34 @@ def last_scan(agent_id):
 
     return data
 
-def files_changed(agent_id, filename=None, filetype='file', offset=0, limit=0):
+def files_changed(agent_id, filename=None, filetype='file', offset=0, limit=0, sort=None):
     cmd = [common.syscheck_control, '-j', '-i', agent_id]
     if filename:
         cmd.extend(['-f', filename])
     data = execute(cmd)
-    return {'items': cut_array(sorted(data), offset, limit), 'totalItems': len(data)}
+
+    if sort:
+        data = sort_array(data, sort['fields'], sort['order'])
+    else:
+        data = sort_array(data, ['date', 'file'], 'asc')
+
+    return {'items': cut_array(data, offset, limit), 'totalItems': len(data)}
 
 def files_changed_total(agent_id, filename=None):
-    files = files_changed(agent_id, filename)
-    return len(files)
+    return files_changed(agent_id, filename)['totalItems']
 
-def registry_changed(agent_id, filename=None, offset=0, limit=0):
+def registry_changed(agent_id, filename=None, offset=0, limit=0, sort=None):
     cmd = [common.syscheck_control, '-j', '-r', '-i', agent_id]
     if filename:
         cmd.extend(['-f', filename])
     data = execute(cmd)
-    return {'items': cut_array(sorted(data), offset, limit), 'totalItems': len(data)}
+
+    if sort:
+        data = sort_array(data, sort['fields'], sort['order'])
+    else:
+        data = sort_array(data, ['date', 'file'], 'asc')
+
+    return {'items': cut_array(data, offset, limit), 'totalItems': len(data)}
 
 def registry_changed_total(agent_id, filename=None):
-    files = registry_changed(agent_id, filename)
-    return len(files)
+    return registry_changed(agent_id, filename)['totalItems']

@@ -9,10 +9,11 @@ import xml.etree.ElementTree as ET
 from wazuh.configuration import Configuration
 from wazuh.exception import WazuhException
 from wazuh import common
-from wazuh.utils import cut_array
+from wazuh.utils import cut_array, sort_array
 
 
 class Decoder:
+    SORT_FIELDS = ['file', 'full_path', 'name', 'position']
 
     def __init__(self):
         self.file = None
@@ -39,7 +40,7 @@ class Decoder:
             self.details[detail] = value
 
     @staticmethod
-    def get_decoders_files(offset=0, limit=0):
+    def get_decoders_files(offset=0, limit=0, sort=None):
         data = []
         decoder_dirs = []
         decoder_files = []
@@ -61,14 +62,19 @@ class Decoder:
         for decoder_file in decoder_files:
             data.append("{0}/{1}".format(common.ossec_path, decoder_file))
 
-        return {'items': cut_array(sorted(data), offset, limit), 'totalItems': len(data)}
+        if sort:
+            data = sort_array(data, order=sort['order'])
+        else:
+            data = sort_array(data, order='asc')
+
+        return {'items': cut_array(data, offset, limit), 'totalItems': len(data)}
 
     @staticmethod
-    def get_decoders(file=None, name=None, parents=False, offset=0, limit=0):
+    def get_decoders(file=None, name=None, parents=False, offset=0, limit=0, sort=None):
         all_decoders = []
         decoders = []
 
-        for decoder_file in Decoder.get_decoders_files():
+        for decoder_file in Decoder.get_decoders_files()['items']:
             all_decoders.extend(Decoder.__load_decoders_from_file(decoder_file))
 
         decoders = list(all_decoders)
@@ -80,7 +86,12 @@ class Decoder:
             if parents and 'parent' in d.details:
                 decoders.remove(d)
 
-        return {'items': cut_array(sorted(decoders), offset, limit), 'totalItems': len(decoders)}
+        if sort:
+            decoders = sort_array(decoders, sort['fields'], sort['order'], Decoder.SORT_FIELDS)
+        else:
+            decoders = sort_array(decoders, ['file', 'position'], 'asc')
+
+        return {'items': cut_array(decoders, offset, limit), 'totalItems': len(decoders)}
 
     @staticmethod
     def __load_decoders_from_file(decoder_path):

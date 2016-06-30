@@ -4,7 +4,7 @@
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 from wazuh.exception import WazuhException
-from wazuh.utils import execute, cut_array
+from wazuh.utils import execute, cut_array, sort_array
 from wazuh import common
 
 class Agent:
@@ -64,20 +64,25 @@ class Agent:
         return self.id
 
     @staticmethod
-    def get_agents_overview(status="all", offset=0, limit=0):
-        agents = execute([common.agent_control, '-j', '-l'])
+    def get_agents_overview(status="all", offset=0, limit=0, sort=None):
+        agents = []
         if status.lower() == "all":
-            return {'items': cut_array(sorted(agents), offset, limit), 'totalItems': len(agents)}
+            agents = execute([common.agent_control, '-j', '-l'])
         else:
-            new_agents = []
-            for agent in agents:
+            for agent in execute([common.agent_control, '-j', '-l']):
                 if agent['status'].lower() == status.lower():
-                    new_agents.append(agent)
-            return {'items': cut_array(sorted(new_agents), offset, limit), 'totalItems': len(new_agents)}
+                    agents.append(agent)
+
+        if sort:
+            agents = sort_array(agents, sort['fields'], sort['order'])
+        else:
+            agents = sort_array(agents, ['id'], 'asc')
+
+        return {'items': cut_array(agents, offset, limit), 'totalItems': len(agents)}
 
     @staticmethod
     def get_total_agents(status="all"):
-        return len(Agent.get_agents_overview(status)['items'])
+        return Agent.get_agents_overview(status)['totalItems']
 
     @staticmethod
     def restart_agents(agent_id=None, restart_all=False):

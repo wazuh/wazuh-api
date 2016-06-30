@@ -21,7 +21,7 @@ router.get('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /decoders");
 
     var data_request = {'function': '/decoders', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'file':'paths'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'file':'paths'};
 
     if (!filter.check(req.query, filters, res))  // Filter with error
         return;
@@ -30,6 +30,8 @@ router.get('/', function(req, res) {
         data_request['arguments']['offset'] = req.query.offset;
     if ('limit' in req.query)
         data_request['arguments']['limit'] = req.query.limit;
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('file' in req.query)
         data_request['arguments']['file'] = req.query.file;
 
@@ -42,7 +44,7 @@ router.get('/files', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /decoders/files");
 
     var data_request = {'function': '/decoders/files', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param'};
 
     if (!filter.check(req.query, filters, res))  // Filter with error
         return;
@@ -51,6 +53,8 @@ router.get('/files', function(req, res) {
         data_request['arguments']['offset'] = req.query.offset;
     if ('limit' in req.query)
         data_request['arguments']['limit'] = req.query.limit;
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
 
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
@@ -60,7 +64,7 @@ router.get('/parents', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /decoders/parents");
 
     var data_request = {'function': '/decoders', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param'};
 
     if (!filter.check(req.query, filters, res))  // Filter with error
         return;
@@ -69,6 +73,8 @@ router.get('/parents', function(req, res) {
         data_request['arguments']['offset'] = req.query.offset;
     if ('limit' in req.query)
         data_request['arguments']['limit'] = req.query.limit;
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
 
     data_request['arguments']['parents'] = "True";
 
@@ -80,7 +86,7 @@ router.get('/:decoder_name', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /decoders/:decoder_name");
 
     var data_request = {'function': '/decoders/:decoder_name', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param'};
 
     if (!filter.check(req.query, filters, res))  // Filter with error
         return;
@@ -89,6 +95,8 @@ router.get('/:decoder_name', function(req, res) {
         data_request['arguments']['offset'] = req.query.offset;
     if ('limit' in req.query)
         data_request['arguments']['limit'] = req.query.limit;
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
 
     if (!filter.check(req.params, {'decoder_name':'names'}, res))  // Filter with error
         return;

@@ -67,6 +67,35 @@ def cut_array(array, offset, limit):
     else:
         return array[offset:offset+limit]
 
+def sort_array(array, sort_by=None, order='asc', allowed_sort_fields=None):
+    if not array:
+        return array
+
+    if order.lower() == 'dsc':
+        order_dsc = True
+    elif order.lower() == 'asc':
+        order_dsc = False
+    else:
+        raise WazuhException(1402)
+
+    if allowed_sort_fields:
+        for sort_field in sort_by:
+            if sort_field not in allowed_sort_fields:
+                raise WazuhException(1403, 'Allowed sort fields: {0}. Field: {1}'.format(allowed_sort_fields, sort_field))
+
+    if sort_by:  # array should be a dictionary or a Class
+        if type(array[0]) is dict:
+            allowed_sort_fields = array[0].keys()
+            for sort_field in sort_by:
+                if sort_field not in allowed_sort_fields:
+                    raise WazuhException(1403, 'Allowed sort fields: {0}. Field: {1}'.format(allowed_sort_fields, sort_field))
+
+            return sorted(array, key = lambda o: tuple(o.get(a) for a in sort_by), reverse=order_dsc)
+        else:
+            return sorted(array, key = lambda o: tuple(getattr(o,a) for a in sort_by), reverse=order_dsc)
+    else:
+        return sorted(array, reverse=order_dsc)
+
 def previous_month(n=1):
     date = datetime.today().replace(day=1)  # First day of current month
 

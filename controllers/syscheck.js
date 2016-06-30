@@ -21,7 +21,7 @@ router.get('/:agent_id/files/changed', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/files/changed");
 
     var data_request = {'function': '/syscheck/:agent_id/files/changed', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'filename':'paths'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'filename':'paths'};
 
     if (!filter.check(req.query, filters, res))  // Filter with error
         return;
@@ -29,6 +29,8 @@ router.get('/:agent_id/files/changed', function(req, res) {
         data_request['arguments']['offset'] = req.query.offset;
     if ('limit' in req.query)
         data_request['arguments']['limit'] = req.query.limit;
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('filename' in req.query)
         data_request['arguments']['filename'] = req.query.filename;
 
@@ -63,7 +65,7 @@ router.get('/:agent_id/registry/changed', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/registry/changed");
 
     var data_request = {'function': '/syscheck/:agent_id/registry/changed', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'filename':'paths'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'filename':'paths'};
 
     if (!filter.check(req.query, filters, res))  // Filter with error
         return;
@@ -71,6 +73,8 @@ router.get('/:agent_id/registry/changed', function(req, res) {
         data_request['arguments']['offset'] = req.query.offset;
     if ('limit' in req.query)
         data_request['arguments']['limit'] = req.query.limit;
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('filename' in req.query)
         data_request['arguments']['filename'] = req.query.filename;
 

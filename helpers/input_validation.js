@@ -63,6 +63,14 @@ exports.alphanumeric_param = function(param) {
         return false;
 }
 
+exports.sort_param = function(param) {
+    if (typeof param != 'undefined'){
+        var regex = /^[a-zA-Z0-9_\-\,\s]+$/; // + is translated as \s
+        return regex.test(param);
+    }
+    else
+        return false;
+}
 exports.ranges = function(range) {
     if (typeof range != 'undefined'){
         var regex = /^[0-9]+$|^[0-9]{1,2}\-[0-9]{1,2}$/;

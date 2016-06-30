@@ -31,6 +31,8 @@ class WazuhException(Exception):
         # Utils: 1400 - 1499
         1400: 'Invalid offset',
         1401: 'Invalid limit',
+        1402: 'Invalid order. Order must be \'asc\' or \'dsc\'',
+        1403: 'Sort field invalid',
 
         # Decoders: 1500 - 1599
         1500: 'Error reading decoders from ossec.conf',

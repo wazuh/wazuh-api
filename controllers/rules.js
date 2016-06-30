@@ -21,7 +21,7 @@ router.get('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rules");
 
     var data_request = {'function': '/rules', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'status':'alphanumeric_param', 'group':'alphanumeric_param', 'level':'ranges', 'file':'alphanumeric_param', 'pci':'alphanumeric_param'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'status':'alphanumeric_param', 'group':'alphanumeric_param', 'level':'ranges', 'file':'alphanumeric_param', 'pci':'alphanumeric_param'};
 
     if (!filter.check(req.query, filters, res))  // Filter with error
         return;
@@ -30,6 +30,8 @@ router.get('/', function(req, res) {
         data_request['arguments']['offset'] = req.query.offset;
     if ('limit' in req.query)
         data_request['arguments']['limit'] = req.query.limit;
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('status' in req.query)
         data_request['arguments']['status'] = req.query.status;
     if ('group' in req.query)
@@ -48,7 +50,7 @@ router.get('/', function(req, res) {
 router.get('/groups', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rules/groups");
     var data_request = {'function': '/rules/groups', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param'};
 
     if (!filter.check(req.query, filters, res))  // Filter with error
         return;
@@ -57,6 +59,8 @@ router.get('/groups', function(req, res) {
         data_request['arguments']['offset'] = req.query.offset;
     if ('limit' in req.query)
         data_request['arguments']['limit'] = req.query.limit;
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
 
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
@@ -65,7 +69,7 @@ router.get('/groups', function(req, res) {
 router.get('/pci', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rules/pci");
     var data_request = {'function': '/rules/pci', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param'};
 
     if (!filter.check(req.query, filters, res))  // Filter with error
         return;
@@ -74,6 +78,8 @@ router.get('/pci', function(req, res) {
         data_request['arguments']['offset'] = req.query.offset;
     if ('limit' in req.query)
         data_request['arguments']['limit'] = req.query.limit;
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
 
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
@@ -83,7 +89,7 @@ router.get('/files', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rules/files");
 
     var data_request = {'function': '/rules/files', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'status':'alphanumeric_param', 'download':'alphanumeric_param'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'status':'alphanumeric_param', 'download':'alphanumeric_param'};
 
     if (!filter.check(req.query, filters, res))  // Filter with error
         return;
@@ -92,6 +98,8 @@ router.get('/files', function(req, res) {
         data_request['arguments']['offset'] = req.query.offset;
     if ('limit' in req.query)
         data_request['arguments']['limit'] = req.query.limit;
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('status' in req.query)
         data_request['arguments']['status'] = req.query.status;
 
@@ -106,7 +114,7 @@ router.get('/:rule_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rules/:rule_id");
 
     var data_request = {'function': '/rules', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param'};
 
     if (!filter.check(req.query, filters, res))  // Filter with error
         return;
@@ -115,6 +123,8 @@ router.get('/:rule_id', function(req, res) {
         data_request['arguments']['offset'] = req.query.offset;
     if ('limit' in req.query)
         data_request['arguments']['limit'] = req.query.limit;
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
 
     if (!filter.check(req.params, {'rule_id':'numbers'}, res))  // Filter with error
         return;
