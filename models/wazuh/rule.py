@@ -6,7 +6,7 @@
 
 from glob import glob
 import xml.etree.ElementTree as ET
-from wazuh.configuration import Configuration
+import wazuh.configuration as configuration
 from wazuh.exception import WazuhException
 from wazuh import common
 from wazuh.utils import cut_array, sort_array
@@ -105,7 +105,7 @@ class Rule:
         status = Rule.__check_status(status)
 
         # Enabled rules
-        ossec_conf = Configuration().get_ossec_conf()
+        ossec_conf = configuration.get_ossec_conf()
 
         if 'rules' in ossec_conf and 'include' in ossec_conf['rules']:
             data_enabled = ossec_conf['rules']['include']

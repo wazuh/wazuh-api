@@ -6,7 +6,7 @@
 
 from glob import glob
 import xml.etree.ElementTree as ET
-from wazuh.configuration import Configuration
+import wazuh.configuration as configuration
 from wazuh.exception import WazuhException
 from wazuh import common
 from wazuh.utils import cut_array, sort_array
@@ -45,7 +45,7 @@ class Decoder:
         decoder_dirs = []
         decoder_files = []
 
-        ossec_conf = Configuration().get_ossec_conf()
+        ossec_conf = configuration.get_ossec_conf()
 
         if 'rules' in ossec_conf:
             if 'decoder_dir' in ossec_conf['rules']:

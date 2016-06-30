@@ -19,7 +19,7 @@ except Exception as e:
     import_problem = e
 
 
-def merge_json_array(json_array):
+def __merge_json_array(json_array):
     if isinstance(json_array, list):
         new_json = {}
         for element in json_array:
@@ -28,7 +28,7 @@ def merge_json_array(json_array):
     return json_array
 
 
-def process_ossecconf(json_conf):
+def __process_ossecconf(json_conf):
 
     for element in json_conf:
         if not isinstance(json_conf[element], list):
@@ -52,61 +52,57 @@ def process_ossecconf(json_conf):
     return json_conf
 
 
-def prepare_ossecconf(json_conf):
+def __prepare_ossecconf(json_conf):
     json_conf = "<root>"+json_conf+"</root>"
     return json_conf
 
 
-def unify_ossecconf(json_conf):
-    json_conf["root"]["ossec_config"] = merge_json_array(json_conf["root"]['ossec_config'])
-    json_conf["root"]["ossec_config"]["global"] = merge_json_array(json_conf["root"]['ossec_config']["global"])
-    json_conf["root"]["ossec_config"]["syscheck"] = merge_json_array(json_conf["root"]['ossec_config']["syscheck"])
-    json_conf["root"]["ossec_config"]["rootcheck"] = merge_json_array(json_conf["root"]['ossec_config']["rootcheck"])
+def __unify_ossecconf(json_conf):
+    json_conf["root"]["ossec_config"] = __merge_json_array(json_conf["root"]['ossec_config'])
+    json_conf["root"]["ossec_config"]["global"] = __merge_json_array(json_conf["root"]['ossec_config']["global"])
+    json_conf["root"]["ossec_config"]["syscheck"] = __merge_json_array(json_conf["root"]['ossec_config']["syscheck"])
+    json_conf["root"]["ossec_config"]["rootcheck"] = __merge_json_array(json_conf["root"]['ossec_config']["rootcheck"])
     json_conf = json_conf["root"]
-    json_conf = process_ossecconf(json_conf['ossec_config'])
+    json_conf = __process_ossecconf(json_conf['ossec_config'])
     return json_conf
 
 
-class Configuration:
+def get_ossec_conf(section=None, field=None):
+    if import_problem is not None:
+        raise WazuhException(1001, import_problem)
+    else:
+        with open(common.ossec_conf, 'r') as f_ossec:
+            read_conf = f_ossec.read()
+            read_conf = __prepare_ossecconf(read_conf)
+            json_conf = xml_json.data(fromstring(read_conf))
+            data = __unify_ossecconf(json_conf)
 
-    @staticmethod
-    def get_ossec_conf(section=None, field=None):
-        if import_problem is not None:
-            raise WazuhException(1001, import_problem)
+    if section:
+        data = data[section]
+    if section and field:
+        data = data[field] # data[section][field]
+
+    return data
+
+def check():
+    cmd = "{0}/bin/ossec-logtest".format(common.ossec_path)
+    p = subprocess.Popen([cmd, "-t"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    (output, err) = p.communicate()
+
+    lines = err.split(os.linesep)
+    error_line = 0
+    for l in lines:
+        if "error" in l.lower():
+            break
         else:
-            with open(common.ossec_conf, 'r') as f_ossec:
-                read_conf = f_ossec.read()
-                read_conf = prepare_ossecconf(read_conf)
-                json_conf = xml_json.data(fromstring(read_conf))
-                data = unify_ossecconf(json_conf)
+            error_line += 1
 
-        if section:
-            data = data[section]
-        if section and field:
-            data = data[field] # data[section][field]
-
-        return data
-
-    @staticmethod
-    def check():
-        cmd = "{0}/bin/ossec-logtest".format(common.ossec_path)
-        p = subprocess.Popen([cmd, "-t"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        (output, err) = p.communicate()
-
-        lines = err.split(os.linesep)
-        error_line = 0
-        for l in lines:
-            if "error" in l.lower():
-                break
-            else:
-                error_line += 1
-
-        if err:
-            if "Error" in err:
-                data = "{0}".format(lines[error_line:-1])
-            else:
-                data = "OK"
+    if err:
+        if "Error" in err:
+            data = "{0}".format(lines[error_line:-1])
         else:
-            raise WazuhException(1100)
+            data = "OK"
+    else:
+        raise WazuhException(1100)
 
-        return data
+    return data

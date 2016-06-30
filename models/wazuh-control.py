@@ -12,13 +12,14 @@ import signal
 
 from wazuh import Wazuh
 from wazuh.agent import Agent
-from wazuh.configuration import Configuration
-from wazuh.manager import Manager
-from wazuh.stats import Stats
-import wazuh.rootcheck as rootcheck
-import wazuh.syscheck as syscheck
 from wazuh.rule import Rule
 from wazuh.decoder import Decoder
+import wazuh.configuration as configuration
+import wazuh.manager as manager
+import wazuh.stats as stats
+import wazuh.rootcheck as rootcheck
+import wazuh.syscheck as syscheck
+
 
 
 def print_json(data, error=0):
@@ -139,20 +140,20 @@ if __name__ == "__main__":
         '/decoders/:decoder_name': Decoder.get_decoders,
 
         '/manager/info': wazuh.get_ossec_init,
-        '/manager/status': Manager.status,
-        '/manager/configuration': Configuration.get_ossec_conf,
-        '/manager/configuration/test': Configuration.check,
-        '/manager/stats': Stats.totals,
-        '/manager/stats/hourly': Stats.hourly,
-        '/manager/stats/weekly': Stats.weekly,
-        '/manager/update-ruleset/backups': Manager.get_ruleset_backups,
-        '/manager/logs/summary': Manager.ossec_log_summary,
-        '/manager/logs': Manager.ossec_log,
-        'PUT/manager/start': Manager.start,
-        'PUT/manager/stop': Manager.stop,
-        'PUT/manager/restart': Manager.restart,
-        'PUT/manager/update-ruleset': Manager.update_ruleset,
-        'PUT/manager/update-ruleset/backups/:id': Manager.restore_ruleset_backups,
+        '/manager/status': manager.status,
+        '/manager/configuration': configuration.get_ossec_conf,
+        '/manager/configuration/test': configuration.check,
+        '/manager/stats': stats.totals,
+        '/manager/stats/hourly': stats.hourly,
+        '/manager/stats/weekly': stats.weekly,
+        '/manager/update-ruleset/backups': manager.get_ruleset_backups,
+        '/manager/logs/summary': manager.ossec_log_summary,
+        '/manager/logs': manager.ossec_log,
+        'PUT/manager/start': manager.start,
+        'PUT/manager/stop': manager.stop,
+        'PUT/manager/restart': manager.restart,
+        'PUT/manager/update-ruleset': manager.update_ruleset,
+        'PUT/manager/update-ruleset/backups/:id': manager.restore_ruleset_backups,
 
         '/rootcheck/:agent_id': rootcheck.print_db,
         '/rootcheck/:agent_id/last_scan': rootcheck.last_scan,
