@@ -68,7 +68,7 @@ class Decoder:
         all_decoders = []
         decoders = []
 
-        for decoder_file in Decoder.get_decoders_files():
+        for decoder_file in Decoder.get_decoders_files()['items']:
             all_decoders.extend(Decoder.__load_decoders_from_file(decoder_file))
 
         decoders = list(all_decoders)
