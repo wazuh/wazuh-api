@@ -47,7 +47,6 @@ exports.check = function (query, filters, res){
 }
 
 /*
-
  * filters = "-field1,field2"
  * Return:
  * sort_param = {"fields":["field1", "field1"], "order": "dsc"}
@@ -60,7 +59,7 @@ exports.sort_param_to_json = function (sort_param){
         sort["order"] = "dsc";
         all_fields = sort_param.substring(1);
     }
-    else if (sort_param[0] == ' '){  // +  is translated as a space
+    else if (sort_param[0] == '+' || sort_param[0] == ' '){  // +  is translated as a space
         sort["order"] = "asc";
         all_fields = sort_param.substring(1);
     }
@@ -73,6 +72,29 @@ exports.sort_param_to_json = function (sort_param){
             sort["fields"].push(fields[i].trim());
 
     return sort
+}
+
+/*
+ * filters = word. "word1 word2". !word. !"word1 word2"
+ * Return:
+ * search_param = {'value': 'search_text', 'negation':0}
+*/
+exports.search_param_to_json = function (search_param){
+    var search = {"value": "", "negation": 0};
+
+    var value = search_param;
+
+    if (search_param[0] == '!'){
+        search["negation"] = 1;
+        value = search_param.substring(1);
+    }
+
+    if (value[0] == '"' && value[value.length - 1] == '"')
+        search["value"] = value.substring(1, value.length - 1);
+    else
+        search["value"] = value.trim()
+
+    return search
 }
 
 filters_to_string = function (filters){

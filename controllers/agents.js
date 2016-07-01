@@ -21,7 +21,7 @@ router.get('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents");
 
     var data_request = {'function': '/agents', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'status':'alphanumeric_param'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param'};
 
     if (!filter.check(req.query, filters, res))  // Filter with error
         return;
@@ -32,6 +32,8 @@ router.get('/', function(req, res) {
         data_request['arguments']['limit'] = req.query.limit;
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
     if ('status' in req.query)
         data_request['arguments']['status'] = req.query.status;
 

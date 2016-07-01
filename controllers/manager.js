@@ -116,7 +116,7 @@ router.get('/logs', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/logs");
 
     var data_request = {'function': '/manager/logs', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'type_log':'names', 'category': 'names'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'type_log':'names', 'category': 'names'};
 
     if (!filter.check(req.query, filters, res))  // Filter with error
         return;
@@ -127,6 +127,8 @@ router.get('/logs', function(req, res) {
         data_request['arguments']['limit'] = req.query.limit;
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
     if ('type_log' in req.query)
         data_request['arguments']['type_log'] = req.query.type_log;
     if ('category' in req.query)

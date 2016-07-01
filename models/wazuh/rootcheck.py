@@ -4,7 +4,7 @@
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 from wazuh.exception import WazuhException
-from wazuh.utils import execute, cut_array, sort_array
+from wazuh.utils import execute, cut_array, sort_array, search_array
 from wazuh.agent import Agent
 from wazuh import common
 
@@ -20,8 +20,12 @@ def clear(agent_id=None, all_agents=False):
     else:
         return execute([common.rootcheck_control, '-j', '-u', agent_id])
 
-def print_db(agent_id, offset=0, limit=0, sort=None):
+def print_db(agent_id, offset=0, limit=0, sort=None, search=None):
     data = execute([common.rootcheck_control, '-j', '-i', agent_id])
+
+    if search:
+        data = search_array(data, search['value'], search['negation'])
+
     if sort:
         data = sort_array(data, sort['fields'], sort['order'])
     else:

@@ -9,7 +9,7 @@ import xml.etree.ElementTree as ET
 import wazuh.configuration as configuration
 from wazuh.exception import WazuhException
 from wazuh import common
-from wazuh.utils import cut_array, sort_array
+from wazuh.utils import cut_array, sort_array, search_array
 
 class Rule:
     S_ENABLED = 'enabled'
@@ -99,7 +99,7 @@ class Rule:
             raise WazuhException(1202)
 
     @staticmethod
-    def get_rules_files(status=None, offset=0, limit=0, sort=None):
+    def get_rules_files(status=None, offset=0, limit=0, sort=None, search=None):
         data = []
 
         status = Rule.__check_status(status)
@@ -133,6 +133,9 @@ class Rule:
                 for f in data_enabled:
                     data.append({'name': f, 'status': 'enabled'})
 
+        if search:
+            data = search_array(data, search['value'], search['negation'])
+
         if sort:
             data = sort_array(data, sort['fields'], sort['order'])
         else:
@@ -141,7 +144,7 @@ class Rule:
         return {'items': cut_array(data, offset, limit), 'totalItems': len(data)}
 
     @staticmethod
-    def get_rules(status=None, group=None, pci=None, file=None, id=None, level=None, offset=0, limit=0, sort=None):
+    def get_rules(status=None, group=None, pci=None, file=None, id=None, level=None, offset=0, limit=0, sort=None, search=None):
         all_rules = []
         rules = []
 
@@ -170,6 +173,9 @@ class Rule:
                 elif not (int(levels[0]) <= r.level <= int(levels[1])):
                         rules.remove(r)
 
+        if search:
+            rules = search_array(rules, search['value'], search['negation'])
+
         if sort:
             rules = sort_array(rules, sort['fields'], sort['order'], Rule.SORT_FIELDS)
         else:
@@ -178,12 +184,15 @@ class Rule:
         return {'items': cut_array(rules, offset, limit), 'totalItems': len(rules)}
 
     @staticmethod
-    def get_groups(offset=0, limit=0, sort=None):
+    def get_groups(offset=0, limit=0, sort=None, search=None):
         groups = set()
 
         for rule in Rule.get_rules()['items']:
             for group in rule.groups:
                 groups.add(group)
+
+        if search:
+            groups = search_array(groups, search['value'], search['negation'])
 
         if sort:
             groups = sort_array(groups, order=sort['order'])
@@ -193,12 +202,15 @@ class Rule:
         return {'items': cut_array(groups, offset, limit), 'totalItems': len(groups)}
 
     @staticmethod
-    def get_pci(offset=0, limit=0, sort=None):
+    def get_pci(offset=0, limit=0, sort=None, search=None):
         pci = set()
 
         for rule in Rule.get_rules()['items']:
             for pci_item in rule.pci:
                 pci.add(pci_item)
+
+        if search:
+            pci = search_array(pci, search['value'], search['negation'])
 
         if sort:
             pci = sort_array(pci, order=sort['order'])

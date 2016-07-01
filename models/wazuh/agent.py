@@ -4,7 +4,7 @@
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 from wazuh.exception import WazuhException
-from wazuh.utils import execute, cut_array, sort_array
+from wazuh.utils import execute, cut_array, sort_array, search_array
 from wazuh import common
 
 class Agent:
@@ -64,7 +64,7 @@ class Agent:
         return self.id
 
     @staticmethod
-    def get_agents_overview(status="all", offset=0, limit=0, sort=None):
+    def get_agents_overview(status="all", offset=0, limit=0, sort=None, search=None):
         agents = []
         if status.lower() == "all":
             agents = execute([common.agent_control, '-j', '-l'])
@@ -72,6 +72,9 @@ class Agent:
             for agent in execute([common.agent_control, '-j', '-l']):
                 if agent['status'].lower() == status.lower():
                     agents.append(agent)
+
+        if search:
+            agents = search_array(agents, search['value'], search['negation'])
 
         if sort:
             agents = sort_array(agents, sort['fields'], sort['order'])

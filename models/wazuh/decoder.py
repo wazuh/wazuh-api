@@ -9,7 +9,7 @@ import xml.etree.ElementTree as ET
 import wazuh.configuration as configuration
 from wazuh.exception import WazuhException
 from wazuh import common
-from wazuh.utils import cut_array, sort_array
+from wazuh.utils import cut_array, sort_array, search_array
 
 
 class Decoder:
@@ -40,7 +40,7 @@ class Decoder:
             self.details[detail] = value
 
     @staticmethod
-    def get_decoders_files(offset=0, limit=0, sort=None):
+    def get_decoders_files(offset=0, limit=0, sort=None, search=None):
         data = []
         decoder_dirs = []
         decoder_files = []
@@ -62,6 +62,9 @@ class Decoder:
         for decoder_file in decoder_files:
             data.append("{0}/{1}".format(common.ossec_path, decoder_file))
 
+        if search:
+            data = search_array(data, search['value'], search['negation'])
+
         if sort:
             data = sort_array(data, order=sort['order'])
         else:
@@ -70,7 +73,7 @@ class Decoder:
         return {'items': cut_array(data, offset, limit), 'totalItems': len(data)}
 
     @staticmethod
-    def get_decoders(file=None, name=None, parents=False, offset=0, limit=0, sort=None):
+    def get_decoders(file=None, name=None, parents=False, offset=0, limit=0, sort=None, search=None):
         all_decoders = []
         decoders = []
 
@@ -85,6 +88,9 @@ class Decoder:
                 decoders.remove(d)
             if parents and 'parent' in d.details:
                 decoders.remove(d)
+
+        if search:
+            decoders = search_array(decoders, search['value'], search['negation'])
 
         if sort:
             decoders = sort_array(decoders, sort['fields'], sort['order'], Decoder.SORT_FIELDS)

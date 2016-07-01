@@ -50,6 +50,14 @@ def execute(command):
     else:
         return output_json['data']
 
+def previous_month(n=1):
+    date = datetime.today().replace(day=1)  # First day of current month
+
+    for i in range(0, int(n)):
+        date = (date - timedelta(days=1)).replace(day=1)  # (first_day - 1) = previous month
+
+    return date.replace(hour=00, minute=00, second=00, microsecond=00)
+
 def cut_array(array, offset, limit):
     if not array:
         return array
@@ -96,10 +104,46 @@ def sort_array(array, sort_by=None, order='asc', allowed_sort_fields=None):
     else:
         return sorted(array, reverse=order_dsc)
 
-def previous_month(n=1):
-    date = datetime.today().replace(day=1)  # First day of current month
+def get_values(o):
+    strings = []
 
-    for i in range(0, int(n)):
-        date = (date - timedelta(days=1)).replace(day=1)  # (first_day - 1) = previous month
+    try:
+        obj = o.to_dict()  # Rule, Decoder, Agent...
+    except:
+        obj = o
 
-    return date.replace(hour=00, minute=00, second=00, microsecond=00)
+    if type(obj) is list:
+        for o in obj:
+            strings.extend(get_values(o))
+    elif type(obj) is dict:
+        for key in obj:
+            strings.extend(get_values(obj[key]))
+    else:
+        strings.append(str(obj).lower())
+
+    return strings
+
+def search_array(array, text, negation=False):
+    found = []
+
+    for item in array:
+
+        values = get_values(item)
+
+        #print("'{0}' in '{1}'?".format(text, values))
+
+        if not negation:
+            for v in values:
+                if text.lower() in v:
+                    found.append(item)
+                    break
+        else:
+            not_in_values = True
+            for v in values:
+                if text.lower() in v:
+                    not_in_values = False
+                    break
+            if not_in_values:
+                found.append(item)
+
+    return found

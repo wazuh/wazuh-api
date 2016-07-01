@@ -21,7 +21,6 @@ import wazuh.rootcheck as rootcheck
 import wazuh.syscheck as syscheck
 
 
-
 def print_json(data, error=0):
     output = {'error': error}
 
