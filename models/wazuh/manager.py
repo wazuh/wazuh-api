@@ -70,7 +70,7 @@ def __get_ossec_log_category(log):
     return category
 
 
-def ossec_log(type_log='error', category='all', months=3, offset=0, limit=0, sort=None, search=None):
+def ossec_log(type_log='all', category='all', months=3, offset=0, limit=0, sort=None, search=None):
     logs = []
 
     first_date = previous_month(months)
