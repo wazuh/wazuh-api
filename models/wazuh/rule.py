@@ -193,7 +193,7 @@ class Rule:
         return {'items': cut_array(groups, offset, limit), 'totalItems': len(groups)}
 
     @staticmethod
-    def get_pci(offset=0, limit=0):
+    def get_pci(offset=0, limit=0, sort=None):
         pci = set()
 
         for rule in Rule.get_rules()['items']:
