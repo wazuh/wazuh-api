@@ -112,7 +112,7 @@ def ossec_log(type_log='all', category='all', months=3, offset=0, limit=0, sort=
     if sort:
         logs = sort_array(logs, order=sort['order'])
     else:
-        logs = sort_array(logs, order='dsc')
+        logs = sort_array(logs, order='desc')
 
     return {'items': cut_array(logs, offset, limit), 'totalItems': len(logs)}
 

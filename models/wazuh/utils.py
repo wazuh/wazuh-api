@@ -79,10 +79,10 @@ def sort_array(array, sort_by=None, order='asc', allowed_sort_fields=None):
     if not array:
         return array
 
-    if order.lower() == 'dsc':
-        order_dsc = True
+    if order.lower() == 'desc':
+        order_desc = True
     elif order.lower() == 'asc':
-        order_dsc = False
+        order_desc = False
     else:
         raise WazuhException(1402)
 
@@ -98,11 +98,11 @@ def sort_array(array, sort_by=None, order='asc', allowed_sort_fields=None):
                 if sort_field not in allowed_sort_fields:
                     raise WazuhException(1403, 'Allowed sort fields: {0}. Field: {1}'.format(allowed_sort_fields, sort_field))
 
-            return sorted(array, key = lambda o: tuple(o.get(a) for a in sort_by), reverse=order_dsc)
+            return sorted(array, key = lambda o: tuple(o.get(a) for a in sort_by), reverse=order_desc)
         else:
-            return sorted(array, key = lambda o: tuple(getattr(o,a) for a in sort_by), reverse=order_dsc)
+            return sorted(array, key = lambda o: tuple(getattr(o,a) for a in sort_by), reverse=order_desc)
     else:
-        return sorted(array, reverse=order_dsc)
+        return sorted(array, reverse=order_desc)
 
 def get_values(o):
     strings = []

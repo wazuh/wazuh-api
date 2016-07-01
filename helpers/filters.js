@@ -49,14 +49,14 @@ exports.check = function (query, filters, res){
 /*
  * filters = "-field1,field2"
  * Return:
- * sort_param = {"fields":["field1", "field1"], "order": "dsc"}
+ * sort_param = {"fields":["field1", "field1"], "order": "desc"}
 */
 exports.sort_param_to_json = function (sort_param){
     var sort = {"fields": [], "order": "asc"};
 
     var all_fields = sort_param;
     if (sort_param[0] == '-'){
-        sort["order"] = "dsc";
+        sort["order"] = "desc";
         all_fields = sort_param.substring(1);
     }
     else if (sort_param[0] == '+' || sort_param[0] == ' '){  // +  is translated as a space
