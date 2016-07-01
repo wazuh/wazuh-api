@@ -20,8 +20,8 @@ var timeout = 30; // seconds
  *   Error: {'error': !=0, 'message': 'Error description'}
  *   OK: {'error': 0, 'data' = 'cmd output'}
  * Output
- *   Error: {'error': !=0, 'data'= "", 'message': 'Error description'}
- *   OK: {'error': 0, 'data' = 'cmd output', 'message': ""}
+ *   Error: {'error': !=0, 'message': 'Error description'}
+ *   OK: {'error': 0, 'data' = 'cmd output'}
  */
 exports.exec = function(cmd, args, stdin, callback) {
     const child_process  = require('child_process');
@@ -51,7 +51,7 @@ exports.exec = function(cmd, args, stdin, callback) {
     child.on('error', function(err) {
         logger.error("CMD - Error executing command: " + err);
         error = true;
-        callback({"error": 1, "data": "", "message": errors.description(1)});  // Error executing internal command
+        callback({"error": 1, "message": errors.description(1)});  // Error executing internal command
     });
 
     child.on('close', (code) => {
@@ -60,7 +60,7 @@ exports.exec = function(cmd, args, stdin, callback) {
             var json_result = {};
 
             if (code != 0){  // Exit code must be 0
-              json_result = {"error": 1, "data": "", "message": errors.description(1) + ". Exit code: " + code};  // Error executing internal command
+              json_result = {"error": 1, "message": errors.description(1) + ". Exit code: " + code};  // Error executing internal command
             }
             else{
                 var json_cmd = {}
@@ -72,7 +72,7 @@ exports.exec = function(cmd, args, stdin, callback) {
 
                 if (!json_cmd){
                     logger.debug("CMD - STDOUT NOT JSON");
-                    json_result = {"error": 2, "data": "", "message": errors.description(2)}; // OUTPUT Not JSON
+                    json_result = {"error": 2, "message": errors.description(2)}; // OUTPUT Not JSON
                 }
                 else{
                     // Check JSON content
@@ -82,16 +82,12 @@ exports.exec = function(cmd, args, stdin, callback) {
 
                         if ( json_cmd.hasOwnProperty('data') )
                             json_result.data = json_cmd.data;
-                        else
-                            json_result.data = "";
 
                         if ( json_cmd.hasOwnProperty('message') )
                             json_result.message = json_cmd.message;
-                        else
-                            json_result.message = "";
                     }
                     else{
-                        json_result = {"error": 1, "data": "", "message": errors.description(1) + ". Wrong keys"}; // JSON Wrong keys
+                        json_result = {"error": 1, "message": errors.description(1) + ". Wrong keys"}; // JSON Wrong keys
                         logger.error("CMD - Wrong keys: " + Object.keys(json_cmd));
                     }
                 }

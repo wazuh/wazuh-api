@@ -21,7 +21,7 @@ exports.send = function(res, json_r, status){
         status = 200;
 
     // Validate json and status
-    if (json_r != null && json_r.error != null && json_r.data != null && json_r.message != null && status >= 100 && status <= 600){
+    if (json_r != null && json_r.error != null && (json_r.data != null || json_r.message != null) && status >= 100 && status <= 600){
 
         // Calculate status
         if (json_r.error >= 1 && json_r.error <= 9)
@@ -29,7 +29,7 @@ exports.send = function(res, json_r, status){
 
     }
     else{
-        json_r = {"error": 3, "data": "", "message": errors.description(3)}; // Internal Error
+        json_r = {"error": 3, "message": errors.description(3)}; // Internal Error
         status = 500;
     }
 
@@ -54,7 +54,7 @@ exports.bad_request = function(internal_error, extra_msg, res){
     if (extra_msg)
         msg = msg + ". " + extra_msg;
 
-    json_res = {'error': internal_error, 'data': "", 'message': msg};
+    json_res = {'error': internal_error, 'message': msg};
 
     this.send(res, json_res, 400);
 }
@@ -74,10 +74,10 @@ exports.send_file = function(rule_name, res){
         readStream.pipe(res)
     } catch (e) {
         if (e.code === 'ENOENT') {
-            json_res = {'error': 700, 'data': "", 'message': errors.description(700) + ": " + filepath};
+            json_res = {'error': 700, 'message': errors.description(700) + ": " + filepath};
             this.send(res, json_res, 404);
         } else {
-            json_res = {'error': 3, 'data': "", 'message': errors.description(3)};
+            json_res = {'error': 3, 'message': errors.description(3)};
             this.send(res, json_res, 500);
         }
     }

@@ -58,21 +58,21 @@ router.use('/decoders', require('./decoders'));
 // Index
 router.get('/',function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /");
-    json_res = {'error': 0, 'data': "OSSEC-API", 'message': "wazuh.com"};
+    json_res = {'error': 0, 'data': "Welcome to Wazuh HIDS API"};
     res_h.send(res, json_res);
 });
 
 // Version
 router.get('/version',function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /version");
-    json_res = {'error': 0, 'data': current_version, 'message': ""};
+    json_res = {'error': 0, 'data': current_version};
     res_h.send(res, json_res);
 });
 
 // ALWAYS Keep this as the last route
 router.all('*',function(req, res) {
     logger.log(req.connection.remoteAddress + " " + req.method + " " + req.path);
-    json_res = { 'error': 603, 'data': "", 'message': errors.description(603)};
+    json_res = { 'error': 603, 'message': errors.description(603)};
     res_h.send(res, json_res, 404);
 });
 
