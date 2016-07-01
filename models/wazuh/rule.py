@@ -266,8 +266,8 @@ class Rule:
                             pci_groups = []
                             ossec_groups = []
                             for g in groups:
-                                if 'pci_' in g:
-                                    pci_groups.append(g)
+                                if 'pci_dss_' in g:
+                                    pci_groups.append(g[8:])
                                 else:
                                     ossec_groups.append(g)
 
