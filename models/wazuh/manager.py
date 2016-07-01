@@ -60,7 +60,7 @@ def __get_ossec_log_category(log):
         category = match.group(1)
 
         if "rootcheck" in category:  # Unify rootcheck category
-            category = "ossec-rootcheck/rootcheck"
+            category = "ossec-rootcheck"
 
         if "(" in category:  # Remove ()
             category = re.sub("\(\d\d\d\d\)", "", category)
@@ -87,7 +87,7 @@ def ossec_log(type_log='error', category='all', months=3, offset=0, limit=0, sor
                 log_category = __get_ossec_log_category(line)
 
                 if log_category:
-                    if category != log_category:
+                    if log_category != category:
                         continue
                 else:
                     continue
@@ -135,9 +135,9 @@ def ossec_log_summary(months=3):
 
             if category:
                 if category in categories:
-                    categories[category]['total'] += 1
+                    categories[category]['all'] += 1
                 else:
-                    categories[category] = {'total': 1, 'info': 0, 'error': 0}
+                    categories[category] = {'all': 1, 'info': 0, 'error': 0}
 
                 if "error" in line.lower():
                     categories[category]['error'] += 1
