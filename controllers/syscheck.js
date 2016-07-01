@@ -43,25 +43,6 @@ router.get('/:agent_id/files/changed', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// GET /syscheck/:agent_id/files/changed/total - Number of modified files for the agent.
-router.get('/:agent_id/files/changed/total', function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/files/changed/total");
-
-    var data_request = {'function': '/syscheck/:agent_id/files/changed/total', 'arguments': {}};
-    var filters = {'filename':'paths'};
-
-    if (!filter.check(req.query, filters, res))  // Filter with error
-        return;
-    if ('filename' in req.query)
-        data_request['arguments']['filename'] = req.query.filename;
-
-    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
-        return;
-    data_request['arguments']['agent_id'] = req.params.agent_id;
-
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
-})
-
 // GET /syscheck/:agent_id/registry/changed - List modified registry entries
 router.get('/:agent_id/registry/changed', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/registry/changed");
@@ -79,25 +60,6 @@ router.get('/:agent_id/registry/changed', function(req, res) {
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('filename' in req.query)
-        data_request['arguments']['filename'] = req.query.filename;
-
-    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
-        return;
-    data_request['arguments']['agent_id'] = req.params.agent_id;
-
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
-})
-
-// GET /syscheck/:agent_id/registry/changed/total - Number of modified registry entries
-router.get('/:agent_id/registry/changed/total', function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/registry/changed/total");
-
-    var data_request = {'function': '/syscheck/:agent_id/registry/changed/total', 'arguments': {}};
-    var filters = {'filename':'paths'};
-
-    if (!filter.check(req.query, filters, res))  // Filter with error
-        return;
     if ('filename' in req.query)
         data_request['arguments']['filename'] = req.query.filename;
 

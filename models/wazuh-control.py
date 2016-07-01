@@ -126,7 +126,6 @@ if __name__ == "__main__":
         '/agents/:agent_id': Agent.get_agent,
         '/agents/:agent_id/key': Agent.get_agent_key,
         '/agents': Agent.get_agents_overview,
-        '/agents/total': Agent.get_total_agents,
         'PUT/agents/:agent_id/restart': Agent.restart_agents,
         'PUT/agents/restart': Agent.restart_agents,
         'PUT/agents/:agent_name': Agent.add_agent,
@@ -166,9 +165,7 @@ if __name__ == "__main__":
 
         '/syscheck/:agent_id/last_scan': syscheck.last_scan,
         '/syscheck/:agent_id/files/changed': syscheck.files_changed,
-        '/syscheck/:agent_id/files/changed/total': syscheck.files_changed_total,
         '/syscheck/:agent_id/registry/changed': syscheck.registry_changed,
-        '/syscheck/:agent_id/registry/changed/total': syscheck.registry_changed_total,
         'PUT/syscheck': syscheck.run,
         'DELETE/syscheck': syscheck.clear
 

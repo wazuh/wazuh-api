@@ -40,26 +40,6 @@ router.get('/', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// GET /agents/total - Get number of agents
-router.get('/total', function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /agents/total");
-
-    var data_request = {'function': '/agents/total', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'status':'alphanumeric_param'};
-
-    if (!filter.check(req.query, filters, res))  // Filter with error
-        return;
-
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
-    if ('status' in req.query)
-        data_request['arguments']['status'] = req.query.status;
-
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
-})
-
 // GET /agents/:agent_id - Get Agent Info
 router.get('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents/:agent_id");
