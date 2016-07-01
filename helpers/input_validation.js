@@ -74,7 +74,7 @@ exports.sort_param = function(param) {
 
 exports.search_param = function(param) {
     if (typeof param != 'undefined'){
-        var regex = /^[a-zA-Z0-9\s!\"]+$/;
+        var regex = /^[a-zA-Z0-9\s!\",\-,_,/,\\]+$/;
         return regex.test(param);
     }
     else
