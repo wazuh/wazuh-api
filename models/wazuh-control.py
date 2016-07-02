@@ -163,6 +163,8 @@ if __name__ == "__main__":
         '/rules/pci': Rule.get_pci,
         '/rules/files': Rule.get_rules_files,
 
+        '/syscheck/files': syscheck.files,
+        '/syscheck/files/total': syscheck.files_total,
         '/syscheck/:agent_id/last_scan': syscheck.last_scan,
         '/syscheck/:agent_id/files/changed': syscheck.files_changed,
         '/syscheck/:agent_id/registry/changed': syscheck.registry_changed,
