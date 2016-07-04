@@ -21,7 +21,7 @@ router.get('/files', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /syscheck/files");
 
     var data_request = {'function': '/syscheck/files', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'event':'names', 'filename':'paths', 'filetype':'names'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'event':'names', 'file':'paths', 'filetype':'names', 'summary':'names'};
 
     if (!filter.check(req.query, filters, res))  // Filter with error
         return;
@@ -35,10 +35,12 @@ router.get('/files', function(req, res) {
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
     if ('event' in req.query)
         data_request['arguments']['event'] = req.query.event;
-    if ('filename' in req.query)
-        data_request['arguments']['filename'] = req.query.filename;
+    if ('file' in req.query)
+        data_request['arguments']['filename'] = req.query.file;
     if ('filetype' in req.query)
         data_request['arguments']['filetype'] = req.query.filetype;
+    if ('summary' in req.query)
+        data_request['arguments']['summary'] = req.query.summary;
 
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
@@ -48,7 +50,7 @@ router.get('/:agent_id/files', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/files");
 
     var data_request = {'function': '/syscheck/files', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'event':'names', 'filename':'paths', 'filetype':'names'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'event':'names', 'filename':'paths', 'filetype':'names', 'summary':'names'};
 
     if (!filter.check(req.query, filters, res))  // Filter with error
         return;
@@ -62,10 +64,12 @@ router.get('/:agent_id/files', function(req, res) {
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
     if ('event' in req.query)
         data_request['arguments']['event'] = req.query.event;
-    if ('filename' in req.query)
-        data_request['arguments']['filename'] = req.query.filename;
+    if ('file' in req.query)
+        data_request['arguments']['filename'] = req.query.file;
     if ('filetype' in req.query)
         data_request['arguments']['filetype'] = req.query.filetype;
+    if ('summary' in req.query)
+        data_request['arguments']['summary'] = req.query.summary;
 
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error

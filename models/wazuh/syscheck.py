@@ -46,7 +46,7 @@ def last_scan(agent_id):
 
     return data
 
-def files(agent_id=None, event=None, filename=None, filetype='file', offset=0, limit=common.database_limit, sort=None, search=None):
+def files(agent_id=None, event=None, filename=None, filetype='file', summary=False, offset=0, limit=common.database_limit, sort=None, search=None):
     '''Return a list of files from the database that match the filters'''
 
     conn = Connection()
@@ -73,8 +73,12 @@ def files(agent_id=None, event=None, filename=None, filetype='file', offset=0, l
         request['search'] = '%{0}%'.format(search['value'])
 
     # Total items
+    if summary:
+        query += ' group by path, event'
+        conn.execute("SELECT COUNT(*) FROM ({0}) AS TEMP".format(query.format("max(datetime(date, 'unixepoch'))")), request)
+    else:
+        conn.execute(query.format('COUNT(*)'), request)
 
-    conn.execute(query.format('COUNT(*)'), request)
     data = {'totalItems': conn.fetch()[0]}
 
     # Sorting
@@ -87,12 +91,19 @@ def files(agent_id=None, event=None, filename=None, filetype='file', offset=0, l
     query += ' LIMIT :offset,:limit'
     request['offset'] = offset
     request['limit'] = limit
-    conn.execute(query.format("datetime(date, 'unixepoch'), id_agent, event, path, size, perm, uid, gid, md5, sha1"), request)
+
+    if summary:
+        conn.execute(query.format("max(datetime(date, 'unixepoch')), id_agent, event, path"), request)
+    else:
+        conn.execute(query.format("datetime(date, 'unixepoch'), id_agent, event, path, size, perm, uid, gid, md5, sha1"), request)
 
     data['items'] = []
 
     for tuple in conn:
-        data['items'].append({'date': tuple[0], 'agentID': tuple[1], 'event': tuple[2], 'file': tuple[3], 'size': tuple[4], 'perm': tuple[5], 'uid': tuple[6], 'gid': tuple[7], 'md5': tuple[8], 'sha1': tuple[9]})
+        if summary:
+            data['items'].append({'date': tuple[0], 'agentID': tuple[1], 'event': tuple[2], 'file': tuple[3]})
+        else:
+            data['items'].append({'date': tuple[0], 'agentID': tuple[1], 'event': tuple[2], 'file': tuple[3], 'size': tuple[4], 'perm': tuple[5], 'uid': tuple[6], 'gid': tuple[7], 'md5': tuple[8], 'sha1': tuple[9]})
 
     return data
 
