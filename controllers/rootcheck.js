@@ -16,6 +16,29 @@ var router = require('express').Router();
 /* GET
 /********************************************/
 
+// GET /rootcheck - Get rootcheck database
+router.get('/', function(req, res) {
+    logger.log(req.connection.remoteAddress + " GET /rootcheck/:agent_id");
+
+    var data_request = {'function': '/rootcheck/:agent_id', 'arguments': {}};
+
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
+
+    if (!filter.check(req.query, filters, res))  // Filter with error
+        return;
+
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+})
+
 // GET /rootcheck/:agent_id - Get rootcheck database
 router.get('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rootcheck/:agent_id");

@@ -65,7 +65,7 @@ def files(agent_id=None, event=None, filename=None, filetype='file', offset=0, l
 
     if filename:
         query += ' AND path = :filename'
-        data['filename'] = filename
+        request['filename'] = filename
 
     if search:
         query += " AND NOT" if bool(search['negation']) else ' AND'
@@ -118,6 +118,7 @@ def files_total(agent_id=None, event=None, filename=None, filetype='file'):
     conn.execute(query, data)
     return conn.fetch()[0]
 
+### Legacy ###
 def files_changed(agent_id, filename=None, filetype='file', offset=0, limit=0, sort=None, search=None):
     cmd = [common.syscheck_control, '-j', '-i', agent_id]
     if filename:
@@ -155,3 +156,5 @@ def registry_changed(agent_id, filename=None, offset=0, limit=0, sort=None, sear
 
 def registry_changed_total(agent_id, filename=None):
     return registry_changed(agent_id, filename)['totalItems']
+
+### ###

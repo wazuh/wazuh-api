@@ -166,8 +166,6 @@ if __name__ == "__main__":
         '/syscheck/files': syscheck.files,
         '/syscheck/files/total': syscheck.files_total,
         '/syscheck/:agent_id/last_scan': syscheck.last_scan,
-        '/syscheck/:agent_id/files/changed': syscheck.files_changed,
-        '/syscheck/:agent_id/registry/changed': syscheck.registry_changed,
         'PUT/syscheck': syscheck.run,
         'DELETE/syscheck': syscheck.clear
 

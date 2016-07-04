@@ -16,12 +16,12 @@ var router = require('express').Router();
 /* GET
 /********************************************/
 
-// GET /syscheck/:agent_id/files/changed - List modified files for the agent.
-router.get('/:agent_id/files/changed', function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/files/changed");
+// GET /syscheck/files
+router.get('/files', function(req, res) {
+    logger.log(req.connection.remoteAddress + " GET /syscheck/files");
 
-    var data_request = {'function': '/syscheck/:agent_id/files/changed', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'filename':'paths'};
+    var data_request = {'function': '/syscheck/files', 'arguments': {}};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'event':'names', 'filename':'paths', 'filetype':'names'};
 
     if (!filter.check(req.query, filters, res))  // Filter with error
         return;
@@ -33,22 +33,22 @@ router.get('/:agent_id/files/changed', function(req, res) {
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+    if ('event' in req.query)
+        data_request['arguments']['event'] = req.query.event;
     if ('filename' in req.query)
         data_request['arguments']['filename'] = req.query.filename;
-
-    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
-        return;
-    data_request['arguments']['agent_id'] = req.params.agent_id;
+    if ('filetype' in req.query)
+        data_request['arguments']['filetype'] = req.query.filetype;
 
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// GET /syscheck/:agent_id/registry/changed - List modified registry entries
-router.get('/:agent_id/registry/changed', function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/registry/changed");
+// GET /syscheck/:agent_id/files
+router.get('/:agent_id/files', function(req, res) {
+    logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/files");
 
-    var data_request = {'function': '/syscheck/:agent_id/registry/changed', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'filename':'paths'};
+    var data_request = {'function': '/syscheck/files', 'arguments': {}};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'event':'names', 'filename':'paths', 'filetype':'names'};
 
     if (!filter.check(req.query, filters, res))  // Filter with error
         return;
@@ -60,8 +60,13 @@ router.get('/:agent_id/registry/changed', function(req, res) {
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+    if ('event' in req.query)
+        data_request['arguments']['event'] = req.query.event;
     if ('filename' in req.query)
         data_request['arguments']['filename'] = req.query.filename;
+    if ('filetype' in req.query)
+        data_request['arguments']['filetype'] = req.query.filetype;
+
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
         return;
