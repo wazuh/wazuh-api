@@ -13,7 +13,7 @@
 errors = require('../helpers/errors');
 filter = require('../helpers/filters');
 execute = require('../helpers/execute');
-wazuh_control = config.api_path + "/models/wazuh-control.py";
+wazuh_control = config.api_path + "/models/wazuh-api.py";
 
 var router = require('express').Router();
 var validator = require('../helpers/input_validation');
