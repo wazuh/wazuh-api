@@ -39,7 +39,7 @@ exports.check = function (query, filters, res){
 
     // No extra fields
     if (Object.keys(query_aux).length != 0){
-      res_h.bad_request("604", filters_to_string(filters), res);
+      res_h.bad_request(604, filters_to_string(filters), res);
       return false; //Error: Allowed fields
     }
 
