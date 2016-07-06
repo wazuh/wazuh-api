@@ -16,41 +16,12 @@ var router = require('express').Router();
 /* GET
 /********************************************/
 
-// GET /syscheck/files
-router.get('/files', function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /syscheck/files");
-
-    var data_request = {'function': '/syscheck/files', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'event':'names', 'file':'paths', 'filetype':'names', 'summary':'names'};
-
-    if (!filter.check(req.query, filters, res))  // Filter with error
-        return;
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('event' in req.query)
-        data_request['arguments']['event'] = req.query.event;
-    if ('file' in req.query)
-        data_request['arguments']['filename'] = req.query.file;
-    if ('filetype' in req.query)
-        data_request['arguments']['filetype'] = req.query.filetype;
-    if ('summary' in req.query)
-        data_request['arguments']['summary'] = req.query.summary;
-
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
-})
-
 // GET /syscheck/:agent_id/files
 router.get('/:agent_id/files', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/files");
 
     var data_request = {'function': '/syscheck/files', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'event':'names', 'filename':'paths', 'filetype':'names', 'summary':'names'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'event':'names', 'file':'paths', 'filetype':'names', 'summary':'names'};
 
     if (!filter.check(req.query, filters, res))  // Filter with error
         return;

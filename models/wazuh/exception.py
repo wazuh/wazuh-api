@@ -32,15 +32,17 @@ class WazuhException(Exception):
         1400: 'Invalid offset',
         1401: 'Invalid limit',
         1402: 'Invalid order. Order must be \'asc\' or \'desc\'',
-        1403: 'Sort field invalid',
+        1403: 'Sort field invalid',  # Also, in DB
 
         # Decoders: 1500 - 1599
         1500: 'Error reading decoders from ossec.conf',
         1501: 'Error reading decoder files',
 
+        # Syscheck: 1600 - 1699
+        1600: 'Empty syscheck database for selected agent',
+
         # Manager:
         # Agents:
-        # Syscheck:
         # Rootcheck:
 
         # Database:

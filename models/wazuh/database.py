@@ -11,13 +11,14 @@ import sqlite3
 class Connection:
     '''Represents a connection against a database'''
 
-    def __init__(self):
+    def __init__(self, db_path=common.database_path_global):
         '''Constructor'''
+        self.db_path = db_path
 
-        if not isfile(common.database_path):
+        if not isfile(db_path):
             raise WazuhException(2000)
 
-        self.__conn = sqlite3.connect(common.database_path)
+        self.__conn = sqlite3.connect(db_path)
         self.__cur = self.__conn.cursor()
 
     def __iter__(self):
