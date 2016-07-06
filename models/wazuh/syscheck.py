@@ -23,14 +23,13 @@ def clear(agent_id=None, all_agents=False):
     # Clear DB
     if int(all_agents):
         db_agents = glob('{0}/*-*.db'.format(common.database_path_agents))
-
     else:
         db_agents = glob('{0}/{1}-*.db'.format(common.database_path_agents, int(agent_id)))
 
+    if not db_agents:
+        raise WazuhException(1600)
+
     for db_agent in db_agents:
-        if not db_agent:
-            raise WazuhException(1600)
-        
         conn = Connection(db_agent)
         conn.begin()
         try:
