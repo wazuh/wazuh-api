@@ -34,10 +34,12 @@ exports.exec = function(cmd, args, stdin, callback) {
 
     var output = [];
     var error = false;
+    var tout = false;
 
     setTimeout(function(){
         logger.debug("Sending SIGTERM to " + full_cmd)
         child.kill('SIGTERM');
+        tout = true;
     }, timeout*1000);
 
     child.stdin.setEncoding('utf-8');
@@ -60,7 +62,10 @@ exports.exec = function(cmd, args, stdin, callback) {
             var json_result = {};
 
             if (code != 0){  // Exit code must be 0
-              json_result = {"error": 1, "message": errors.description(1) + ". Exit code: " + code};  // Error executing internal command
+                if (tout)
+                    json_result = {"error": 1, "message": errors.description(1) + ". Timeout exceeded (" + timeout + "s)."};  // Error executing internal command
+                else
+                    json_result = {"error": 1, "message": errors.description(1) + ". Exit code: " + code};  // Error executing internal command
             }
             else{
                 var json_cmd = {}
