@@ -1,0 +1,384 @@
+/**
+ * API RESTful for OSSEC
+ * Copyright (C) 2015-2016 Wazuh, Inc.All rights reserved.
+ * Wazuh.com
+ *
+ * This program is a free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General Public
+ * License (version 2) as published by the FSF - Free Software
+ * Foundation.
+ */
+
+var should = require('should');
+var assert = require('assert');
+var request = require('supertest');
+var common = require('./common.js');
+
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+describe('Decoders', function() {
+
+    describe('GET/decoders', function() {
+        it('Request', function(done) {
+            request(common.url)
+            .get("/decoders")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                done();
+            });
+        });
+
+        it('Pagination', function(done) {
+            request(common.url)
+            .get("/decoders?offset=0&limit=1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
+                res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                done();
+            });
+        });
+
+        it('Sort', function(done) {
+            request(common.url)
+            .get("/decoders?sort=-name")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                done();
+            });
+        });
+
+        it('Search', function(done) {
+            request(common.url)
+            .get("/decoders?search=apache")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                done();
+            });
+        });
+
+        it('Filters: File', function(done) {
+            request(common.url)
+            .get("/decoders?file=apache_decoders.xml")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                done();
+            });
+        });
+
+        it('Filters: Invalid filter', function(done) {
+            request(common.url)
+                .get("/decoders?random=yes")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(604);
+                res.body.message.should.be.type('string');
+                done();
+            });
+        });
+
+        it('Filters: Invalid filter - Extra field', function(done) {
+            request(common.url)
+                .get("/decoders?file=apache_decoders.xml&random=yes")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(604);
+                res.body.message.should.be.type('string');
+                done();
+            });
+        });
+    });  // GET/decoders
+
+    describe('GET/decoders/files', function() {
+        it('Request', function(done) {
+            request(common.url)
+            .get("/decoders/files")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items[0].should.be.type('string');
+                done();
+            });
+        });
+
+        it('Pagination', function(done) {
+            request(common.url)
+            .get("/decoders/files?offset=0&limit=1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
+                res.body.data.items[0].should.be.type('string');
+                done();
+            });
+        });
+
+        it('Sort', function(done) {
+            request(common.url)
+            .get("/decoders/files?sort=-")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items[0].should.be.type('string');
+                done();
+            });
+        });
+
+        it('Search', function(done) {
+            request(common.url)
+            .get("/decoders/files?search=ssh")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
+                res.body.data.items[0].should.be.type('string');
+                done();
+            });
+        });
+
+    });  // GET/decoders/files
+
+    describe('GET/decoders/parents', function() {
+        it('Request', function(done) {
+            request(common.url)
+            .get("/decoders/parents")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                done();
+            });
+        });
+
+        it('Pagination', function(done) {
+            request(common.url)
+            .get("/decoders/parents?offset=0&limit=1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
+                res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                done();
+            });
+        });
+
+        it('Sort', function(done) {
+            request(common.url)
+            .get("/decoders/parents?sort=-name")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                done();
+            });
+        });
+
+        it('Search', function(done) {
+            request(common.url)
+            .get("/decoders/parents?search=apache")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                done();
+            });
+        });
+
+    });  // GET/decoders/parents
+
+    describe('GET/decoders/:decoder_name', function() {
+
+            it('Request', function(done) {
+                request(common.url)
+                .get("/decoders/ar_log")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(200)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.totalItems.should.be.above(0);
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                    done();
+                });
+            });
+
+            it('Pagination', function(done) {
+                request(common.url)
+                .get("/decoders/ar_log?offset=0&limit=1")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(200)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
+                    res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                    done();
+                });
+            });
+
+            it('Sort', function(done) {
+                request(common.url)
+                .get("/decoders/ar_log?sort=-name")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(200)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.totalItems.should.be.above(0);
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                    done();
+                });
+            });
+
+            it('Search', function(done) {
+                request(common.url)
+                .get("/decoders/ar_log?search=active")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(200)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.totalItems.should.be.above(0);
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                    done();
+                });
+            });
+
+    });  // GET/decoders/:decoder_name
+
+});  // Decoders

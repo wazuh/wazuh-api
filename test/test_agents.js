@@ -132,6 +132,22 @@ describe('Agents', function() {
             });
         });
 
+        it('Filters: Invalid filter - Extra field', function(done) {
+            request(common.url)
+            .get("/agents?status=aCtIvE&random")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(604);
+                done();
+            });
+        });
+
     });  // GET/agents
 
     describe('GET/agents/:agent_id', function() {
