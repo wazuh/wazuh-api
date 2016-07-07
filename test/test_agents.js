@@ -13,7 +13,6 @@ var should = require('should');
 var assert = require('assert');
 var request = require('supertest');
 var common = require('./common.js');
-var agent_id = 0;
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
@@ -30,7 +29,6 @@ describe('Agents', function() {
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.status.should.equal(200);
                 res.body.should.have.properties(['error', 'data']);
 
                 res.body.error.should.equal(0);
@@ -50,7 +48,6 @@ describe('Agents', function() {
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.status.should.equal(200);
                 res.body.should.have.properties(['error', 'data']);
 
                 res.body.error.should.equal(0);
@@ -71,7 +68,6 @@ describe('Agents', function() {
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.status.should.equal(200);
                 res.body.should.have.properties(['error', 'data']);
 
                 res.body.error.should.equal(0);
@@ -91,7 +87,6 @@ describe('Agents', function() {
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.status.should.equal(200);
                 res.body.should.have.properties(['error', 'data']);
 
                 res.body.error.should.equal(0);
@@ -111,7 +106,6 @@ describe('Agents', function() {
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.status.should.equal(200);
                 res.body.should.have.properties(['error', 'data']);
 
                 res.body.error.should.equal(0);
@@ -122,7 +116,7 @@ describe('Agents', function() {
             });
         });
 
-        it('Filters: Wrong filter', function(done) {
+        it('Filters: Invalid filter', function(done) {
             request(common.url)
             .get("/agents?random")
             .auth(common.credentials.user, common.credentials.password)
@@ -131,7 +125,6 @@ describe('Agents', function() {
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.status.should.equal(400);
                 res.body.should.have.properties(['error', 'message']);
 
                 res.body.error.should.equal(604);
@@ -139,7 +132,7 @@ describe('Agents', function() {
             });
         });
 
-    });
+    });  // GET/agents
 
     describe('GET/agents/:agent_id', function() {
 
@@ -152,7 +145,6 @@ describe('Agents', function() {
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.status.should.equal(200);
                 res.body.should.have.properties(['error', 'data']);
 
                 res.body.error.should.equal(0);
@@ -171,13 +163,27 @@ describe('Agents', function() {
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.status.should.equal(400);
                 res.body.should.have.properties(['error', 'message']);
                 res.body.error.should.equal(600);
                 done();
             });
         });
-    });
+
+        it('Errors: No agent', function(done) {
+            request(common.url)
+            .get("/agents/9999999")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(40);
+                done();
+            });
+        });
+    });  // GET/agents/:agent_id
 
     describe('GET/agents/:agent_id/key', function() {
 
@@ -190,7 +196,6 @@ describe('Agents', function() {
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.status.should.equal(200);
                 res.body.should.have.properties(['error', 'data']);
 
                 res.body.error.should.equal(0);
@@ -208,7 +213,6 @@ describe('Agents', function() {
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.status.should.equal(400);
                 res.body.should.have.properties(['error', 'message']);
                 res.body.error.should.equal(600);
                 done();
@@ -224,91 +228,38 @@ describe('Agents', function() {
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.status.should.equal(200);
                 res.body.should.have.properties(['error', 'message']);
                 res.body.error.should.equal(70);
                 done();
             });
         });
-    });
-
-    describe('PUT/agents/restart', function() {
-
-        xit('Request', function(done) {
-            this.timeout(20000);
-
-            request(common.url)
-            .put("/agents/restart")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.status.should.equal(200);
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.should.be.type('string');
-                done();
-            });
-        });
-
-    });
-
-    describe('PUT/agents/:agent_id/restart', function() {
-
-        xit('Request', function(done) {
-            this.timeout(20000);
-
-            request(common.url)
-            .put("/agents/000/restart")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.status.should.equal(200);
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.should.be.type('string');
-                done();
-            });
-        });
-
-        it('Params: Bad agent id', function(done) {
-            request(common.url)
-            .put("/agents/abc/restart")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(400)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.status.should.equal(400);
-                res.body.should.have.properties(['error', 'message']);
-                res.body.error.should.equal(600);
-                done();
-            });
-        });
-
-    });
+    });  // GET/agents/:agent_id/key
 
     describe('PUT/agents/:agent_name', function() {
+        var agent_id = 0;
+
+        after(function(done) {
+            request(common.url)
+            .delete("/agents/" + agent_id)
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) return done(err);
+                done();
+              });
+        });
 
         it('Request', function(done) {
 
             request(common.url)
-            .put("/agents/testingNewAgent")
+            .put("/agents/testingNewAgentPut")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.status.should.equal(200);
                 res.body.should.have.properties(['error', 'data']);
 
                 res.body.error.should.equal(0);
@@ -321,14 +272,13 @@ describe('Agents', function() {
         it('Errors: Name already present', function(done) {
 
             request(common.url)
-            .put("/agents/testingNewAgent")
+            .put("/agents/testingNewAgentPut")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.status.should.equal(200);
                 res.body.should.have.properties(['error', 'message']);
 
                 res.body.error.should.equal(75);
@@ -346,16 +296,29 @@ describe('Agents', function() {
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.status.should.equal(400);
                 res.body.should.have.properties(['error', 'message']);
                 res.body.error.should.equal(601);
                 done();
             });
         });
 
-    });
+    });  // PUT/agents/:agent_name
 
     describe('DELETE/agents/:agent_id', function() {
+        var agent_id = 0;
+
+        before(function(done) {
+            request(common.url)
+            .put("/agents/TestingDeleteAgent")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+                agent_id = res.body.data;
+                done();
+              });
+        });
 
         it('Request', function(done) {
 
@@ -367,16 +330,15 @@ describe('Agents', function() {
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.status.should.equal(200);
                 res.body.should.have.properties(['error', 'data']);
 
                 res.body.error.should.equal(0);
-                res.body.data.should.equal("Agent removed");
+                res.body.data.should.be.type('string');
                 done();
             });
         });
 
-        it('Errors: Name already present', function(done) {
+        it('Errors: ID is not present', function(done) {
 
             request(common.url)
             .delete("/agents/" + agent_id)
@@ -386,7 +348,6 @@ describe('Agents', function() {
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.status.should.equal(200);
                 res.body.should.have.properties(['error', 'message']);
 
                 res.body.error.should.equal(78);
@@ -404,126 +365,301 @@ describe('Agents', function() {
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.status.should.equal(400);
                 res.body.should.have.properties(['error', 'message']);
                 res.body.error.should.equal(600);
                 done();
             });
         });
 
-    });
+    });  // DELETE/agents/:agent_id
 
     describe('POST/agents', function() {
-        var agent_ids = []
+        describe('Any', function() {
+            var agent_id = 0;
 
-        after(function() {
-            for(var i in agent_ids){
-                var aaa = "/agents/" + agent_ids[i]
-                //ToDo
-            }
-        });
+            after(function(done) {
+                request(common.url)
+                .delete("/agents/" + agent_id)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) return done(err);
+                    done();
+                  });
+
+            });
+
+            it('Request', function(done) {
+
+                request(common.url)
+                .post("/agents")
+                .send({'name':'NewAgentPost', 'ip':'any'})
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(200)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.match(/^\d+$/);
+                    agent_id = res.body.data;
+                    done();
+                });
+            });
+
+            it('Errors: Name already present', function(done) {
+                request(common.url)
+                .post("/agents")
+                .send({'name':'NewAgentPost', 'ip':'any'})
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(200)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'message']);
+
+                    res.body.error.should.equal(75);
+                    res.body.message.should.be.type('string');
+                    done();
+                });
+            });
+
+            it('Filters: Missing field name', function(done) {
+
+                request(common.url)
+                .post("/agents")
+                .send({'ip':'any'})
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(400)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'message']);
+
+                    res.body.error.should.equal(604);
+                    done();
+                });
+            });
+
+            it('Filters: Invalid field', function(done) {
+
+                request(common.url)
+                .post("/agents")
+                .send({'extraField': 'invalid', 'name': 'testagentpost', 'ip':'any'})
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(400)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'message']);
+
+                    res.body.error.should.equal(604);
+                    done();
+                });
+            });
+
+        });  // Any
+
+        describe('IP Automatic', function() {
+            var agent_id = 0;
+
+            after(function(done) {
+                request(common.url)
+                .delete("/agents/" + agent_id)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) return done(err);
+                    done();
+                  });
+
+            });
+
+            it('Request: Automatic IP', function(done) {
+
+                request(common.url)
+                .post("/agents")
+                .send({'name':'NewAgentPost2'})
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(200)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.match(/^\d+$/);
+                    agent_id = res.body.data;
+                    done();
+                });
+            });
+
+            it('Errors: Duplicated IP', function(done) {
+                request(common.url)
+                .post("/agents")
+                .send({'name':'NewAgentPost3'})
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(200)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'message']);
+
+                    res.body.error.should.equal(79);
+                    done();
+                });
+            });
+        });  // IP Automatic
+
+        describe('IP', function() {
+            var agent_id = 0;
+
+            afterEach(function(done) {
+                if (agent_id != 0){
+                    request(common.url)
+                    .delete("/agents/" + agent_id)
+                    .auth(common.credentials.user, common.credentials.password)
+                    .expect("Content-type",/json/)
+                    .expect(200)
+                    .end(function(err, res) {
+                        if (err) return done(err);
+                        agent_id = 0;
+                        done();
+                      });
+                }
+                else {
+                    done();
+                }
+
+            });
+
+            it('Request', function(done) {
+
+                request(common.url)
+                .post("/agents")
+                .send({'name':'NewAgentPost4', 'ip': '192.246.247.248'})
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(200)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.match(/^\d+$/);
+                    agent_id = res.body.data;
+                    done();
+                });
+            });
+
+            it('Filters: Bad IP', function(done) {
+
+                request(common.url)
+                .post("/agents")
+                .send({'name':'NewAgentPost4', 'ip': 'A.B.C.D'})
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(400)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'message']);
+
+                    res.body.error.should.equal(606);
+                    done();
+                });
+            });
+
+            it('Filters: Bad IP 2', function(done) {
+
+                request(common.url)
+                .post("/agents")
+                .send({'name':'NewAgentPost4', 'ip': '333.333.333.333'})
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(400)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'message']);
+
+                    res.body.error.should.equal(606);
+                    done();
+                });
+            });
+        });  // IP
+
+    });  //POST/agents
+
+    describe('PUT/agents/restart', function() {
 
         it('Request', function(done) {
+            this.timeout(20000);
 
             request(common.url)
-            .post("/agents")
-            .send({'name':'NewAgentPost', 'ip':'any'})
+            .put("/agents/restart")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.status.should.equal(200);
                 res.body.should.have.properties(['error', 'data']);
 
                 res.body.error.should.equal(0);
-                res.body.data.should.match(/^\d+$/);
-                agent_ids.push(res.body.data)
+                res.body.data.should.be.type('string');
                 done();
             });
         });
 
-        it('Request: Automatic IP', function(done) {
+    });  // PUT/agents/restart
+
+    describe('PUT/agents/:agent_id/restart', function() {
+
+        it('Request', function(done) {
+            this.timeout(20000);
 
             request(common.url)
-            .post("/agents")
-            .send({'name':'NewAgentPost2'})
+            .put("/agents/000/restart")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.status.should.equal(200);
                 res.body.should.have.properties(['error', 'data']);
 
                 res.body.error.should.equal(0);
-                res.body.data.should.match(/^\d+$/);
-                agent_ids.push(res.body.data)
+                res.body.data.should.be.type('string');
                 done();
             });
         });
 
-        it('Errors: Duplicated IP', function(done) {
-
+        it('Params: Bad agent id', function(done) {
             request(common.url)
-            .post("/agents")
-            .send({'name':'NewAgentPost3'})
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.status.should.equal(200);
-                res.body.should.have.properties(['error', 'message']);
-
-                res.body.error.should.equal(79);
-                done();
-            });
-        });
-
-        it('Errors: Name already present', function(done) {
-
-            request(common.url)
-            .post("/agents")
-            .send({'name':'TestingNewAgentPost', 'ip':'any'})
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.status.should.equal(200);
-                res.body.should.have.properties(['error', 'message']);
-
-                res.body.error.should.equal(75);
-                res.body.message.should.be.type('string');
-                done();
-            });
-        });
-
-        it('Filters: Missing field name', function(done) {
-
-            request(common.url)
-            .post("/agents")
-            .send({'ip':'any'})
+            .put("/agents/abc/restart")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(400)
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.status.should.equal(400);
                 res.body.should.have.properties(['error', 'message']);
-
-                res.body.error.should.equal(604);
+                res.body.error.should.equal(600);
                 done();
             });
         });
 
+    });  // PUT/agents/:agent_id/restart
 
-    });
-
-});
+});  // Agents

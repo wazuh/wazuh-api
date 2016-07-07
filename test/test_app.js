@@ -19,22 +19,31 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 describe('App', function() {
 
     describe('Authentication', function() {
-
-        it('should return error due to wrong password', function(done) {
+        it('Wrong USER', function(done) {
             request(common.url)
             .get("/")
-            .auth(common.credentials.user, 'random')
-            .expect("Content-type",/json/)
+            .auth('random', common.credentials.password)
+            .expect("Content-type","text/plain")
             .expect(401)
             .end(function(err,res){
                 if (err) return done(err);
-
-                res.status.should.equal(401);
                 done();
             });
         });
 
-        it('should return home page', function(done) {
+        it('Wrong password', function(done) {
+            request(common.url)
+            .get("/")
+            .auth(common.credentials.user, 'random')
+            .expect("Content-type","text/plain")
+            .expect(401)
+            .end(function(err,res){
+                if (err) return done(err);
+                done();
+            });
+        });
+
+        it('Home', function(done) {
             request(common.url)
             .get("/")
             .auth(common.credentials.user, common.credentials.password)
@@ -43,7 +52,7 @@ describe('App', function() {
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.status.should.equal(200);
+                res.body.should.have.properties(['error', 'data']);
                 res.body.error.should.equal(0);
                 done();
             });
@@ -53,7 +62,7 @@ describe('App', function() {
 
     describe('Requests', function() {
 
-        it('should return error due to inexistent request', function(done) {
+        it('Inexistent request', function(done) {
             request(common.url)
             .get("/random")
             .auth(common.credentials.user, common.credentials.password)
@@ -62,13 +71,13 @@ describe('App', function() {
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.status.should.equal(404);
+                res.body.should.have.properties(['error', 'message']);
                 res.body.error.should.equal(603);
                 done();
             });
         });
 
-        it('should return API version', function(done) {
+        it('API version', function(done) {
             request(common.url)
             .get("/version")
             .auth(common.credentials.user, common.credentials.password)
@@ -77,8 +86,9 @@ describe('App', function() {
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.status.should.equal(200);
+                res.body.should.have.properties(['error', 'data']);
                 res.body.error.should.equal(0);
+                res.body.data.should.be.type('string');
                 done();
             });
         });
