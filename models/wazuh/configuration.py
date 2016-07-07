@@ -71,16 +71,26 @@ def get_ossec_conf(section=None, field=None):
     if import_problem is not None:
         raise WazuhException(1001, import_problem)
     else:
-        with open(common.ossec_conf, 'r') as f_ossec:
-            read_conf = f_ossec.read()
-            read_conf = __prepare_ossecconf(read_conf)
-            json_conf = xml_json.data(fromstring(read_conf))
-            data = __unify_ossecconf(json_conf)
+        try:
+            with open(common.ossec_conf, 'r') as f_ossec:
+                read_conf = f_ossec.read()
+                read_conf = __prepare_ossecconf(read_conf)
+                json_conf = xml_json.data(fromstring(read_conf))
+                data = __unify_ossecconf(json_conf)
+        except:
+            raise WazuhException(1101)
 
     if section:
-        data = data[section]
+        try:
+            data = data[section]
+        except:
+            raise WazuhException(1102)
+
     if section and field:
-        data = data[field] # data[section][field]
+        try:
+            data = data[field] # data[section][field]
+        except:
+            raise WazuhException(1103)
 
     return data
 

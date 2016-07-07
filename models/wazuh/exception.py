@@ -15,6 +15,9 @@ class WazuhException(Exception):
 
         # Configuration: 1100 - 1199
         1100: 'Error checking configuration',
+        1101: 'Error getting configuration',
+        1102: 'Invalid section',
+        1103: 'Invalid field in section',
 
         # Rule: 1200 - 1299
         1200: 'Error reading rules from ossec.conf',
