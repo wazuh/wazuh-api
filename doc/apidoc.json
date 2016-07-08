@@ -1,0 +1,9 @@
+
+{
+  "name": "Wazuh HIDS API",
+  "version": "0.1.0",
+  "description": "Documentation",
+  "template": {
+    "withCompare": false
+  }
+}
