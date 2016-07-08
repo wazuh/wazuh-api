@@ -24,7 +24,7 @@ def clear(agent_id=None, all_agents=False):
     if int(all_agents):
         db_agents = glob('{0}/*-*.db'.format(common.database_path_agents))
     else:
-        db_agents = glob('{0}/{1}-*.db'.format(common.database_path_agents, int(agent_id)))
+        db_agents = glob('{0}/{1}-*.db'.format(common.database_path_agents, agent_id))
 
     if not db_agents:
         raise WazuhException(1600)
@@ -60,7 +60,7 @@ def files(agent_id=None, event=None, filename=None, filetype='file', summary=Fal
     '''Return a list of files from the database that match the filters'''
 
     # Connection
-    db_agent = glob('{0}/{1}-*.db'.format(common.database_path_agents, int(agent_id)))
+    db_agent = glob('{0}/{1}-*.db'.format(common.database_path_agents, agent_id))
     if not db_agent:
         raise WazuhException(1600)
     else:
