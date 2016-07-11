@@ -46,7 +46,7 @@ errors['610'] = "Param not valid. Valid characters: number or interval separated
 errors['ranges'] = 610;
 errors['611'] = "Param not valid. Valid characters: a-z, A-Z, 0-9, _, -, +, ,";  // sort
 errors['sort_param'] = 611;
-errors['612'] = "Param not valid. Valid characters: a-z, A-Z, 0-9, space, !, \", -, _, /,:,@ \\";  // search
+errors['612'] = "Param not valid. Valid characters: a-z, A-Z, 0-9, space, !, \", -, _, /,:,@,~ \\";  // search
 errors['search_param'] = 612;
 
 errors['700'] = "File not found"
