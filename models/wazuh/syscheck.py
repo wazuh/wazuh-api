@@ -4,11 +4,12 @@
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 from wazuh.exception import WazuhException
-from wazuh.utils import execute, cut_array, sort_array, search_array
+from wazuh.utils import execute, cut_array, sort_array, search_array, filemode
 from wazuh.agent import Agent
 from wazuh.database import Connection
 from wazuh import common
 from glob import glob
+
 
 def run(agent_id=None, all_agents=False):
     if all_agents:
@@ -84,8 +85,16 @@ def files(agent_id=None, event=None, filename=None, filetype='file', summary=Fal
 
     if search:
         query += " AND NOT" if bool(search['negation']) else ' AND'
-        query += " (" + " OR ".join(x + ' LIKE :search' for x in ('path', "datetime(date, 'unixepoch')", 'size', 'md5', 'sha1', 'uname', 'gname', 'inode')) + ")"
+        query += " (" + " OR ".join(x + ' LIKE :search' for x in ('path', "datetime(date, 'unixepoch')", 'size', 'md5', 'sha1', 'uname', 'gname', 'inode'))
+        try:
+            search_perm = int(search['value'], 8)
+            request['search_perm'] = '%{0}%'.format(search_perm)
+            query += " OR perm LIKE :search_perm )"
+        except:
+            query += " )"
+
         request['search'] = '%{0}%'.format(search['value'])
+
 
     # Total items
     if summary:
@@ -124,6 +133,8 @@ def files(agent_id=None, event=None, filename=None, filetype='file', summary=Fal
         if summary:
             data['items'].append({'date': tuple[0], 'event': tuple[1], 'file': tuple[2]})
         else:
-            data['items'].append({'date': tuple[0], 'event': tuple[1], 'file': tuple[2], 'size': tuple[3], 'perm': tuple[4], 'uid': tuple[5], 'gid': tuple[6], 'md5': tuple[7], 'sha1': tuple[8], 'user': tuple[9], 'group': tuple[10], 'modificationDate': tuple[11], 'inode': tuple[12]})
+            octalMode = oct(tuple[4])
+            permissions = filemode(tuple[4])
+            data['items'].append({'date': tuple[0], 'event': tuple[1], 'file': tuple[2], 'size': tuple[3], 'octalMode': octalMode, 'uid': tuple[5], 'gid': tuple[6], 'md5': tuple[7], 'sha1': tuple[8], 'user': tuple[9], 'group': tuple[10], 'modificationDate': tuple[11], 'inode': tuple[12], 'permissions': permissions})
 
     return data
