@@ -48,7 +48,7 @@ def clear(agent_id=None, all_agents=False):
 
     return retval
 
-def print_db(agent_id=None, offset=0, limit=common.database_limit, sort=None, search=None):
+def print_db(agent_id=None, status='all', offset=0, limit=common.database_limit, sort=None, search=None):
     '''Return a list of events from the database'''
 
     # Connection
@@ -67,8 +67,15 @@ def print_db(agent_id=None, offset=0, limit=common.database_limit, sort=None, se
         FROM pm_event AS t
         WHERE date_last {1} (SELECT date_last - 86400 FROM pm_event WHERE log = 'Ending rootcheck scan.')"""
 
-    query = "SELECT {0} FROM (" + partial.format("'outstanding'", '>') + ' UNION ' + partial.format("'solved'", '<=') + \
-        ") WHERE log NOT IN ('Starting rootcheck scan.', 'Ending rootcheck scan.', 'Starting syscheck scan.', 'Ending syscheck scan.')"
+    if status == 'all':
+        query = "SELECT {0} FROM (" + partial.format("'outstanding'", '>') + ' UNION ' + partial.format("'solved'", '<=') + \
+            ") WHERE log NOT IN ('Starting rootcheck scan.', 'Ending rootcheck scan.', 'Starting syscheck scan.', 'Ending syscheck scan.')"
+    elif status == 'outstanding':
+        query = "SELECT {0} FROM (" + partial.format("'outstanding'", '>') + \
+            ") WHERE log NOT IN ('Starting rootcheck scan.', 'Ending rootcheck scan.', 'Starting syscheck scan.', 'Ending syscheck scan.')"
+    elif status == 'solved':
+        query = "SELECT {0} FROM (" + partial.format("'solved'", '<=') + \
+            ") WHERE log NOT IN ('Starting rootcheck scan.', 'Ending rootcheck scan.', 'Starting syscheck scan.', 'Ending syscheck scan.')"
 
     if search:
         query += " AND NOT" if bool(search['negation']) else ' AND'
