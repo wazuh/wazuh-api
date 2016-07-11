@@ -68,7 +68,7 @@ def files(agent_id=None, event=None, filename=None, filetype='file', summary=Fal
 
     conn = Connection(db_agent)
 
-    fields = {'date': 'date', 'file': 'path', 'size': 'size'}
+    fields = {'date': 'date', 'modificationDate': 'mtime', 'file': 'path', 'size': 'size', 'user': 'uname', 'group': 'gname'}
 
     # Query
     query = "SELECT {0} FROM fim_event, fim_file WHERE fim_event.id_file = fim_file.id AND fim_file.type = :filetype"
@@ -84,7 +84,7 @@ def files(agent_id=None, event=None, filename=None, filetype='file', summary=Fal
 
     if search:
         query += " AND NOT" if bool(search['negation']) else ' AND'
-        query += " (" + " OR ".join(x + ' LIKE :search' for x in ('path', "datetime(date, 'unixepoch')", 'size', 'md5', 'sha1')) + ")"
+        query += " (" + " OR ".join(x + ' LIKE :search' for x in ('path', "datetime(date, 'unixepoch')", 'size', 'md5', 'sha1', 'uname', 'gname', 'inode')) + ")"
         request['search'] = '%{0}%'.format(search['value'])
 
     # Total items
@@ -114,7 +114,7 @@ def files(agent_id=None, event=None, filename=None, filetype='file', summary=Fal
     if summary:
         select = ["max(datetime(date, 'unixepoch'))", "fim_event.type", "path"]
     else:
-        select = ["datetime(date, 'unixepoch')", "fim_event.type", "path", "size", "perm", "uid", "gid", "md5", "sha1"]
+        select = ["datetime(date, 'unixepoch')", "fim_event.type", "path", "size", "perm", "uid", "gid", "md5", "sha1", "uname", "gname", "datetime(mtime, 'unixepoch')", "inode"]
 
     conn.execute(query.format(','.join(select)), request)
 
@@ -124,6 +124,6 @@ def files(agent_id=None, event=None, filename=None, filetype='file', summary=Fal
         if summary:
             data['items'].append({'date': tuple[0], 'event': tuple[1], 'file': tuple[2]})
         else:
-            data['items'].append({'date': tuple[0], 'event': tuple[1], 'file': tuple[2], 'size': tuple[3], 'perm': tuple[4], 'uid': tuple[5], 'gid': tuple[6], 'md5': tuple[7], 'sha1': tuple[8]})
+            data['items'].append({'date': tuple[0], 'event': tuple[1], 'file': tuple[2], 'size': tuple[3], 'perm': tuple[4], 'uid': tuple[5], 'gid': tuple[6], 'md5': tuple[7], 'sha1': tuple[8], 'user': tuple[9], 'group': tuple[10], 'modificationDate': tuple[11], 'inode': tuple[12]})
 
     return data
