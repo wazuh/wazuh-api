@@ -12,11 +12,27 @@
 
 var router = require('express').Router();
 
-/********************************************/
-/* GET
-/********************************************/
-
-// GET /rules
+/**
+ * @api {get} /rules Get all rules
+ * @apiName GetRules
+ * @apiGroup Info
+ *
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String="enabled","disabled", "all"} [status] Filters files by status.
+ * @apiParam {String} [group] Filters file by group.
+ * @apiParam {Range} [level] Filters file by level. level=2 or level=2-5.
+ * @apiParam {String} [file] Filters by file name.
+ * @apiParam {String} [pci] Filters by pci requirement.
+ *
+ * @apiDescription Returns all rules.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rules?offset=0&limit=2&pretty"
+ *
+ */
 router.get('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rules");
 
@@ -48,7 +64,22 @@ router.get('/', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// GET /rules/groups
+/**
+ * @api {get} /rules/groups Get rule groups
+ * @apiName GetRulesGroups
+ * @apiGroup Info
+ *
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ *
+ * @apiDescription Returns the groups of all rules.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rules/groups?offset=0&limit=10&pretty"
+ *
+ */
 router.get('/groups', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rules/groups");
     var data_request = {'function': '/rules/groups', 'arguments': {}};
@@ -69,7 +100,22 @@ router.get('/groups', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// GET /rules/pci
+/**
+ * @api {get} /rules/pci Get rule pci requirements
+ * @apiName GetRulesPci
+ * @apiGroup Info
+ *
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ *
+ * @apiDescription Returns the PCI requirements of all rules.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rules/pci?offset=0&limit=10&pretty"
+ *
+ */
 router.get('/pci', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rules/pci");
     var data_request = {'function': '/rules/pci', 'arguments': {}};
@@ -90,7 +136,23 @@ router.get('/pci', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// GET /rules/files
+/**
+ * @api {get} /rules/files Get files of rules
+ * @apiName GetRulesFiles
+ * @apiGroup Info
+ *
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String="enabled","disabled", "all"} [status] Filters files by status.
+ *
+ * @apiDescription Returns the files of all rules.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rules/files?offset=0&limit=10&pretty"
+ *
+ */
 router.get('/files', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rules/files");
 
@@ -117,7 +179,23 @@ router.get('/files', function(req, res) {
         execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// GET /rules/:rule_id
+/**
+ * @api {get} /rules Get rules by id
+ * @apiName GetRulesId
+ * @apiGroup Info
+ *
+ * @apiParam {Number} id rule.
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ *
+ * @apiDescription Returns the rules with the specified id.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rules/1002?pretty"
+ *
+ */
 router.get('/:rule_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rules/:rule_id");
 
@@ -143,19 +221,6 @@ router.get('/:rule_id', function(req, res) {
 
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
-/********************************************/
-/* PUT
-/********************************************/
-
-
-/********************************************/
-/* DELETE
-/********************************************/
-
-
-/********************************************/
-/* POST
-/********************************************/
 
 
 

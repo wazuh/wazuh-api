@@ -12,11 +12,19 @@
 
 var router = require('express').Router();
 
-/********************************************/
-/* GET
-/********************************************/
 
-// GET /manager/status - Get manager status
+
+/**
+ * @api {get} /manager/status Get manager status
+ * @apiName GetManagerStatus
+ * @apiGroup Retrieve information
+ *
+ * @apiDescription Returns the Manager processes that are running.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/status?pretty"
+ *
+ */
 router.get('/status', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/status");
 
@@ -24,7 +32,17 @@ router.get('/status', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// GET /manager/info - Get manager info
+/**
+ * @api {get} /manager/info Get manager information
+ * @apiName GetManagerInfo
+ * @apiGroup Retrieve information
+ *
+ * @apiDescription Returns basic information about Manager.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/info?pretty"
+ *
+ */
 router.get('/info', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/info");
 
@@ -32,7 +50,20 @@ router.get('/info', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// GET /manager/configuration - Get manager configuration
+/**
+ * @api {get} /manager/configuration Get manager configuration
+ * @apiName GetManagerConfiguration
+ * @apiGroup Configuration
+ *
+ * @apiParam {String} [section] Indicates the ossec.conf section: global, rules, syscheck, rootcheck, remote, alerts, command, active-response, localfile.
+ * @apiParam {String} [field] Indicates a section child, e.g, fields for rule section are: include, decoder_dir, etc.
+ *
+ * @apiDescription Returns ossec.conf in JSON format.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/configuration?section=global&pretty"
+ *
+ */
 router.get('/configuration', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/configuration");
 
@@ -53,15 +84,19 @@ router.get('/configuration', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// GET /manager/configuration/test - Test configuration
-router.get('/configuration/test', function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /manager/configuration/test");
-
-    var data_request = {'function': '/manager/configuration/test', 'arguments': {}};
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
-})
-
-// GET /manager/stats - Stats
+/**
+ * @api {get} /manager/stats Get manager stats
+ * @apiName GetManagerStats
+ * @apiGroup Stats
+ *
+ * @apiParam {String} [date] Selects the date for getting the statistical information. Format: YYYYMMDD
+ *
+ * @apiDescription Returns OSSEC statistical information of current date.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/stats?pretty"
+ *
+ */
 router.get('/stats', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/stats");
 
@@ -87,7 +122,18 @@ router.get('/stats', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// GET /manager/stats/hourly - Stats hourly averages.
+/**
+ * @api {get} /manager/stats/hourly Get manager stats by hour
+ * @apiName GetManagerStatsHourly
+ * @apiGroup Stats
+ *
+ *
+ * @apiDescription Returns OSSEC statistical information per hour. Each item in averages field represents the average of alerts per hour.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/stats/hourly?pretty"
+ *
+ */
 router.get('/stats/hourly', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/stats/hourly");
 
@@ -95,7 +141,18 @@ router.get('/stats/hourly', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// GET /manager/stats/weekly - Stats weekly-hourly averages
+/**
+ * @api {get} /manager/stats/weekly Get manager stats by week
+ * @apiName GetManagerStatsHourly
+ * @apiGroup Stats
+ *
+ *
+ * @apiDescription Returns OSSEC statistical information per week. Each item in *hours* field represents the average of alerts per hour and week day.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/stats/weekly?pretty"
+ *
+ */
 router.get('/stats/weekly', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/stats/weekly");
 
@@ -103,7 +160,18 @@ router.get('/stats/weekly', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// GET /manager/update-ruleset/backups - Get ruleset backups
+/**
+ * @api {get} /manager/update-ruleset/backups Get ruleset backups
+ * @apiName GetRulesetBackups
+ * @apiGroup Ruleset
+ *
+ *
+ * @apiDescription Returns the ruleset backup list created by ossec_ruleset.py.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/update-ruleset/backups?pretty"
+ *
+ */
 router.get('/update-ruleset/backups', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/update-ruleset/backups");
 
@@ -111,7 +179,24 @@ router.get('/update-ruleset/backups', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// GET /manager/logs - Logs
+/**
+ * @api {get} /manager/logs Get ossec.log
+ * @apiName GetManagerLogs
+ * @apiGroup Logs
+ *
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {string="all","error", "info"} [type_log] Filters by type of log.
+ * @apiParam {string} [category] Filters by category of log.
+ *
+ * @apiDescription Returns the 3 last months of ossec.log.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/logs?offset=0&limit=10&pretty"
+ *
+ */
 router.get('/logs', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/logs");
 
@@ -137,7 +222,18 @@ router.get('/logs', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// GET /manager/logs/summary - ossec.log summary
+/**
+ * @api {get} /manager/logs/summary Get summary of ossec.log
+ * @apiName GetManagerLogsSummary
+ * @apiGroup Logs
+ *
+ *
+ * @apiDescription Returns the 3 last months of ossec.log.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/logs/summary?pretty"
+ *
+ */
 router.get('/logs/summary', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/logs/summary");
 
@@ -145,10 +241,36 @@ router.get('/logs/summary', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-/********************************************/
-/* PUT
-/********************************************/
-// PUT /manager/start - Start manager
+
+/**
+ * @api {put} /manager/configuration/test Test manager configuration
+ * @apiName PutManagerTest
+ * @apiGroup Configuration
+ *
+ * @apiDescription Checks OSSEC Manager configuration.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/manager/configuration/test?pretty"
+ *
+ */
+router.put('/configuration/test', function(req, res) {
+    logger.log(req.connection.remoteAddress + " PUT /manager/configuration/test");
+
+    var data_request = {'function': 'PUT/manager/configuration/test', 'arguments': {}};
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+})
+
+/**
+ * @api {put} /manager/start Start manager
+ * @apiName PutManagerStart
+ * @apiGroup Actions
+ *
+ * @apiDescription Starts the OSSEC Manager processes.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/manager/start?pretty"
+ *
+ */
 router.put('/start', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /manager/start");
 
@@ -156,7 +278,17 @@ router.put('/start', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// PUT /manager/stop - Stop manager
+/**
+ * @api {put} /manager/stop Stop manager
+ * @apiName PutManagerStop
+ * @apiGroup Actions
+ *
+ * @apiDescription Stops the OSSEC Manager processes.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/manager/stop?pretty"
+ *
+ */
 router.put('/stop', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /manager/stop");
 
@@ -164,7 +296,17 @@ router.put('/stop', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// PUT /manager/restart - Restart manager
+/**
+ * @api {put} /manager/restart Restart manager
+ * @apiName PutManagerRestart
+ * @apiGroup Actions
+ *
+ * @apiDescription Restarts the OSSEC Manager processes.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/manager/restart?pretty"
+ *
+ */
 router.put('/restart', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /manager/restart");
 
@@ -172,7 +314,20 @@ router.put('/restart', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// PUT /manager/update-ruleset - update ruleset
+/**
+ * @api {put} /manager/update-ruleset Update ruleset
+ * @apiName PutManagerUpdateRuleset
+ * @apiGroup Ruleset
+ *
+ * @apiParam {string="both","rules", "rootchecks"} [type] Selects ruleset to install.
+ * @apiParam {string="yes","no"} [force] Overwrites all ruleset. OSSEC will be restarted.
+ *
+ * @apiDescription Update OSSEC ruleset. If the update change a file in use, OSSEC will be restarted.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/manager/update-ruleset?pretty"
+ *
+ */
 router.put('/update-ruleset', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /manager/update-ruleset");
 
@@ -191,7 +346,19 @@ router.put('/update-ruleset', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// PUT /manager/update-ruleset/backups/:id- backup ruleset
+/**
+ * @api {put} /manager/update-ruleset/backups/:id Restore rulset backup
+ * @apiName PutManagerRestoreRulesetBackup
+ * @apiGroup Ruleset
+ *
+ * @apiParam {string} id Backup id.
+ *
+ * @apiDescription Restores a ruleset backup.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/manager/update-ruleset/backups/20160711_002?pretty"
+ *
+ */
 router.put('/update-ruleset/backups/:id', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT/manager/update-ruleset/backups/:id");
 
@@ -204,15 +371,6 @@ router.put('/update-ruleset/backups/:id', function(req, res) {
 
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
-
-/********************************************/
-/* DELETE
-/********************************************/
-
-
-/********************************************/
-/* PATCH
-/********************************************/
 
 
 

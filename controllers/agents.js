@@ -21,12 +21,12 @@ var router = require('express').Router();
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {string="active","never connected", "disconnected"} [status] Agent status.
+ * @apiParam {string="active","never connected", "disconnected"} [status] Filters by agent status.
  *
  * @apiDescription Returns a list with the available agents.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET https://127.0.0.1:55000/agents?pretty&offset=0&limit=5&sort=-ip,name
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents?pretty&offset=0&limit=5&sort=-ip,name"
  *
  */
 router.get('/', function(req, res) {
@@ -62,7 +62,7 @@ router.get('/', function(req, res) {
  * @apiDescription Returns the information of an agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET https://127.0.0.1:55000/agents/000?pretty
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/000?pretty"
  *
  */
 router.get('/:agent_id', function(req, res) {
@@ -89,7 +89,7 @@ router.get('/:agent_id', function(req, res) {
  * @apiDescription Returns the key of an agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET https://127.0.0.1:55000/agents/001/key?pretty
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/001/key?pretty"
  *
  */
 router.get('/:agent_id/key', function(req, res) {
@@ -113,7 +113,7 @@ router.get('/:agent_id/key', function(req, res) {
  * @apiDescription Restarts all agents.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X PUT https://127.0.0.1:55000/agents/restart?pretty
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/restart?pretty"
  *
  */
 router.put('/restart', function(req, res) {
@@ -137,7 +137,7 @@ router.put('/restart', function(req, res) {
  * @apiDescription Restarts the agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X PUT https://127.0.0.1:55000/agents/000/restart?pretty
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/000/restart?pretty"
  *
  */
 router.put('/:agent_id/restart', function(req, res) {
@@ -163,7 +163,7 @@ router.put('/:agent_id/restart', function(req, res) {
  * @apiDescription Adds a new agent with name :agent_name. This agent will use ANY as IP.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X PUT https://127.0.0.1:55000/agents/myNewAgent
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/myNewAgent?pretty"
  *
  */
 router.put('/:agent_name', function(req, res) {
@@ -190,7 +190,7 @@ router.put('/:agent_name', function(req, res) {
  * @apiDescription Removes an agent. Internally use manage_agents with option -r <id>. You must restart OSSEC after removing an agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE https://127.0.0.1:55000/agents/002?pretty
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/002?pretty"
  *
  */
 router.delete('/:agent_id', function(req, res) {
@@ -218,7 +218,7 @@ router.delete('/:agent_id', function(req, res) {
  * @apiDescription Add a new agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X POST -d '{"name":"NewHost","ip":"10.0.0.9"}' -H 'Content-Type:application/json' https://127.0.0.1:55000/agents?pretty
+ *     curl -u foo:bar -k -X POST -d '{"name":"NewHost","ip":"10.0.0.9"}' -H 'Content-Type:application/json' "https://127.0.0.1:55000/agents?pretty"
  *
  */
 router.post('/', function(req, res) {

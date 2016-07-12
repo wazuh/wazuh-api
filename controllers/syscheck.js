@@ -12,11 +12,28 @@
 
 var router = require('express').Router();
 
-/********************************************/
-/* GET
-/********************************************/
 
-// GET /syscheck/:agent_id/files
+/**
+ * @api {get} /syscheck/:agent_id/files Get syscheck files
+ * @apiName GetSyscheckAgent
+ * @apiGroup Database
+ *
+ * @apiParam {Number} agent_id Agent ID.
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String="added","readded", "modified", "deleted"} [event] Filters files by event.
+ * @apiParam {String} [file] Filters file by filename.
+ * @apiParam {String="file","registry"} [filetype] Selects type of file.
+ * @apiParam {String} [summary] Returns a summary where each item has: date, event and file.
+ *
+ * @apiDescription Returns the syscheck files of an agent.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscheck/000/files?offset=0&limit=2&pretty"
+ *
+ */
 router.get('/:agent_id/files', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/files");
 
@@ -50,7 +67,19 @@ router.get('/:agent_id/files', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// GET /syscheck/:agent_id/last_scan - Syscheck last scan
+/**
+ * @api {get} /syscheck/:agent_id/last_scan Get last syscheck scan
+ * @apiName GetSyscheckAgentLastScan
+ * @apiGroup Database
+ *
+ * @apiParam {Number} agent_id Agent ID.
+ *
+ * @apiDescription Return the timestamp of the last syscheck scan.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscheck/000/last_scan?pretty"
+ *
+ */
 router.get('/:agent_id/last_scan', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/last_scan");
 
@@ -64,11 +93,18 @@ router.get('/:agent_id/last_scan', function(req, res) {
 })
 
 
-/********************************************/
-/* PUT
-/********************************************/
-
-// PUT /syscheck - Run syscheck in all agents.
+/**
+ * @api {put} /syscheck Run syscheck scan in all agents
+ * @apiName PutSyscheckAgent
+ * @apiGroup Run
+ *
+ *
+ * @apiDescription Runs syscheck/rootcheck on all agents. This request has the same behavior that `PUT /rootcheck`_. Due to OSSEC launches both processes at once.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/syscheck?pretty"
+ *
+ */
 router.put('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /syscheck");
 
@@ -77,7 +113,19 @@ router.put('/', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// PUT /syscheck/:agent_id - Run syscheck in the agent.
+/**
+ * @api {put} /syscheck/:agent_id Run syscheck scan in an agent
+ * @apiName PutSyscheckAgentId
+ * @apiGroup Run
+ *
+ * @apiParam {Number} agent_id Agent ID.
+ *
+ * @apiDescription Runs syscheck/rootcheck on an agent. This request has the same behavior that `PUT /rootcheck/:agent_id`_. Due to OSSEC launches both processes at once.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/syscheck/000?pretty"
+ *
+ */
 router.put('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /syscheck/:agent_id");
 
@@ -91,11 +139,18 @@ router.put('/:agent_id', function(req, res) {
 })
 
 
-/********************************************/
-/* DELETE
-/********************************************/
-
-// DELETE /syscheck - Clear the database for all agent.
+/**
+ * @api {delete} /syscheck Clear syscheck database
+ * @apiName DeleteSyscheckAgent
+ * @apiGroup Clear
+ *
+ *
+ * @apiDescription Clears the syscheck database for all agents.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/syscheck?pretty"
+ *
+ */
 router.delete('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /syscheck");
 
@@ -104,7 +159,19 @@ router.delete('/', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// DELETE /syscheck/:agent_id - Clear the database for the agent.
+/**
+ * @api {delete} /syscheck/:agent_id Clear syscheck database of an agent
+ * @apiName PutSyscheckAgentId
+ * @apiGroup Clear
+ *
+ * @apiParam {Number} agent_id Agent ID.
+ *
+ * @apiDescription Clears the syscheck database for an agent.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/syscheck/000?pretty"
+ *
+ */
 router.delete('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /syscheck/:agent_id");
 

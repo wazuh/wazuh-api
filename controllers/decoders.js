@@ -12,11 +12,23 @@
 
 var router = require('express').Router();
 
-/********************************************/
-/* GET
-/********************************************/
-
-// GET /decoders
+/**
+ * @api {get} /decoders Get all decoders
+ * @apiName GetDecoders
+ * @apiGroup Info
+ *
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String} [file] Filters by filename.
+ *
+ * @apiDescription Returns all decoders included in ossec.conf.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/decoders?pretty&offset=0&limit=2&sort=+file,position"
+ *
+ */
 router.get('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /decoders");
 
@@ -40,8 +52,22 @@ router.get('/', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-
-// GET /decoders/files
+/**
+ * @api {get} /decoders/files Get all decoders files.
+ * @apiName GetDecodersFiles
+ * @apiGroup Info
+ *
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ *
+ * @apiDescription Returns all decoders files included in ossec.conf.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/decoders/files?pretty&offset=0&limit=10&sort=-"
+ *
+ */
 router.get('/files', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /decoders/files");
 
@@ -63,7 +89,22 @@ router.get('/files', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// GET /decoders/parents
+/**
+ * @api {get} /decoders/parents Get all parent decoders
+ * @apiName GetDecodersParents
+ * @apiGroup Info
+ *
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ *
+ * @apiDescription Returns all parent decoders included in ossec.conf
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/decoders/parents?pretty&offset=0&limit=2&sort=-file"
+ *
+ */
 router.get('/parents', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /decoders/parents");
 
@@ -87,11 +128,27 @@ router.get('/parents', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// GET /decoders/:decoder_name
+/**
+ * @api {get} /decoders/:decoder_name Get decoders by name
+ * @apiName GetDecodersName
+ * @apiGroup Info
+ *
+ * @apiParam {String} decoder_name Decoder name.
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ *
+ * @apiDescription Returns the decoders with the specified name.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/decoders/apache-errorlog?pretty"
+ *
+ */
 router.get('/:decoder_name', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /decoders/:decoder_name");
 
-    var data_request = {'function': '/decoders/:decoder_name', 'arguments': {}};
+    var data_request = {'function': '/decoders', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
 
     if (!filter.check(req.query, filters, res))  // Filter with error
@@ -113,19 +170,6 @@ router.get('/:decoder_name', function(req, res) {
 
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
-/********************************************/
-/* PUT
-/********************************************/
-
-
-/********************************************/
-/* DELETE
-/********************************************/
-
-
-/********************************************/
-/* POST
-/********************************************/
 
 
 

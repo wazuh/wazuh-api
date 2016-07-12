@@ -4,6 +4,9 @@
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 import json
+import sys
+
+TIMEOUT = 10  # cURL TIMEOUT. 0 to disable "example response"
 
 try:
     from subprocess import check_output
@@ -51,21 +54,39 @@ def create_table(headers, rows, sizes):
     for row in rows:
         fields = [row['field'], row['type'], row['description'].replace('<p>', '').replace('</p>', '')]
         output += insert_row(fields, sizes, not row['optional'])
+
+        if 'allowedValues' in row:
+            output += insert_row([' ', ' ', ' '], sizes)
+            output += insert_row([' ', ' ', 'Allowed values:'], sizes)
+            output += insert_row([' ', ' ', ' '], sizes)
+            for value in row['allowedValues']:
+                output += insert_row([' ', ' ', '- {0}'.format(value[1:-1])], sizes)
+
         output += insert_separator(sizes)
     return output
 
 
 if __name__ == "__main__":
     docu_file_json = './build/html/api_data.json'
-    output = './build/ossec_api_reference.rst'
-    f = open(output, 'w')
-    f.write('.. _ossec_api_test:\n\n')
 
     try:
+        rst_output = sys.argv[1]
+    except:
+        rst_output = './build/ossec_api_reference.rst'
+
+    try:
+        # wazuh-API: apidoc -i . -o doc/build/html -c doc/ -f js -e node_modules
+        output = check_output(['apidoc', '-i', '../', '-o', './build/html', '-c', '.', '-f', 'js', '-e', 'node_modules'])
+        print("\nAPIDOC:")
+        print(output)
         with open(docu_file_json) as data_file:
             docu = json.load(data_file)
     except Exception as e:
-        f.write("Error opening file '{0}': {1}".format(docu_file_json, e))
+        print("Error: {0}".format(e))
+        sys.exit(1)
+
+    print("\nOutput:")
+    print(rst_output + '\n')
 
     # Group by section and subsection
     sections = {}
@@ -90,13 +111,20 @@ if __name__ == "__main__":
         request_list[s].append(['{0} {1}'.format(req['type'].upper(), req['url']), req['title']])
 
     # Generate RST
+    print("\nRequests: ")
+
+    f = open(rst_output, 'w')
+    f.write('.. _ossec_api_test:\n\n')
+
     introduction = """Reference
 ======================
 This API reference is organized by resources:
 
 * `Agents`_
+* `Decoders`_
 * `Manager`_
 * `Rootcheck`_
+* `Rules`_
 * `Syscheck`_
 
 Also, it is provided an `Request List`_ with all available requests.
@@ -118,7 +146,7 @@ Also, it is provided an `Request List`_ with all available requests.
         for ss in sorted(sections[s].keys()):
             f.write(ss + '\n')
             f.write('+++++++++++++++++++++++++\n\n')
-            for item in sections[s][ss]:
+            for item in sorted(sections[s][ss], key = lambda o: o.get('title')):
                 f.write(item['title'] + '\n')
                 f.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~' + '\n')
                 f.write(item['description'].replace('<p>', '').replace('</p>', '') + '\n')
@@ -138,31 +166,37 @@ Also, it is provided an `Request List`_ with all available requests.
                     f.write('::\n')
                     f.write('\n\t{0}\n\n'.format(example['content']))
 
-                    try:
-                        command = []
-                        for arg in example['content'].split(' '):
-                            start = 0
-                            end = len(arg)
+                    if TIMEOUT != 0:
+                        try:
+                            command = []
+                            for arg in example['content'].split(' '):
+                                start = 0
+                                end = len(arg)
 
-                            if arg[0] == '\'' or arg[0] == '"':
-                                start += 1
-                            if arg[-1] == '\'' or arg[-1] == '"':
-                                end -= 1
+                                if arg[0] == '\'' or arg[0] == '"':
+                                    start += 1
+                                if arg[-1] == '\'' or arg[-1] == '"':
+                                    end -= 1
 
-                            command.append(arg[start:end])
+                                command.append(arg[start:end])
+                            print TIMEOUT
+                            command.extend(['--connect-timeout', str(TIMEOUT)])
 
-                        command.extend(['--connect-timeout', '5'])
-
-                        output = check_output(command)
-                    except Exception as e:
-                        output = "Error: {0}".format(e)
+                            output = check_output(command)
+                        except Exception as e:
+                            output = "Error: {0}\n".format(e)
+                    else:
+                        output = "Testing\nTesting.\n"
 
                     f.write('**Example Response:**' + '\n')
                     f.write('::\n')
                     for line in output.split('\n'):
                         f.write('\n\t{0}'.format(line))
+                    f.write('\n')
                 f.write('\n')
             f.write('\n')
         f.write('\n')
 
 f.close()
+
+print("\nDone.\n\n")

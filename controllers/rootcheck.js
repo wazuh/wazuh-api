@@ -12,11 +12,23 @@
 
 var router = require('express').Router();
 
-/********************************************/
-/* GET
-/********************************************/
-
-// GET /rootcheck/:agent_id - Get rootcheck database
+/**
+ * @api {get} /rootcheck/:agent_id Get rootcheck database
+ * @apiName GetRootcheckAgent
+ * @apiGroup Database
+ *
+ * @apiParam {Number} agent_id Agent ID.
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ *
+ * @apiDescription Returns the rootcheck database of an agent.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rootcheck/000?offset=0&limit=2&pretty"
+ *
+ */
 router.get('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rootcheck/:agent_id");
 
@@ -46,7 +58,19 @@ router.get('/:agent_id', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// GET /rootcheck/:agent_id/last_scan - Rootcheck last scan
+/**
+ * @api {get} /rootcheck/:agent_id/last_scan Get last rootcheck scan
+ * @apiName GetRootcheckAgentLastScan
+ * @apiGroup Database
+ *
+ * @apiParam {Number} agent_id Agent ID.
+ *
+ * @apiDescription Return the timestamp of the last rootcheck scan.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rootcheck/000/last_scan?pretty"
+ *
+ */
 router.get('/:agent_id/last_scan', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rootcheck/:agent_id/last_scan");
 
@@ -61,11 +85,18 @@ router.get('/:agent_id/last_scan', function(req, res) {
 })
 
 
-/********************************************/
-/* PUT
-/********************************************/
-
-// PUT /rootcheck - Run rootcheck in all agents:
+/**
+ * @api {put} /rootcheck Run rootcheck scan in all agents
+ * @apiName PutRootcheckAgent
+ * @apiGroup Run
+ *
+ *
+ * @apiDescription Runs syscheck/rootcheck on all agents. This request has the same behavior that `PUT /syscheck`_. Due to OSSEC launches both processes at once.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/rootcheck?pretty"
+ *
+ */
 router.put('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /rootcheck");
 
@@ -74,7 +105,19 @@ router.put('/', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// PUT /rootcheck/:agent_id - Run rootcheck in the agent.
+/**
+ * @api {put} /rootcheck/:agent_id Run rootcheck scan in an agent
+ * @apiName PutRootcheckAgentId
+ * @apiGroup Run
+ *
+ * @apiParam {Number} agent_id Agent ID.
+ *
+ * @apiDescription Runs syscheck/rootcheck on an agent. This request has the same behavior that `PUT /syscheck/:agent_id`_. Due to OSSEC launches both processes at once.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/rootcheck/000?pretty"
+ *
+ */
 router.put('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /rootcheck/:agent_id");
 
@@ -89,11 +132,18 @@ router.put('/:agent_id', function(req, res) {
 })
 
 
-/********************************************/
-/* DELETE
-/********************************************/
-
-// DELETE /rootcheck - Clear the database for all agent.
+/**
+ * @api {delete} /rootcheck Clear rootcheck database
+ * @apiName DeleteRootcheckAgent
+ * @apiGroup Clear
+ *
+ *
+ * @apiDescription Clears the rootcheck database for all agents.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/rootcheck?pretty"
+ *
+ */
 router.delete('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /rootcheck");
 
@@ -102,7 +152,19 @@ router.delete('/', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// DELETE /rootcheck/:agent_id - Clear the database for the agent.
+/**
+ * @api {delete} /rootcheck/:agent_id Clear rootcheck database of an agent
+ * @apiName PutRootcheckAgentId
+ * @apiGroup Clear
+ *
+ * @apiParam {Number} agent_id Agent ID.
+ *
+ * @apiDescription Clears the rootcheck database for an agent.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/rootcheck/000?pretty"
+ *
+ */
 router.delete('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /rootcheck/:agent_id");
 

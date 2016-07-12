@@ -84,7 +84,7 @@ class Decoder:
         for d in all_decoders:
             if file and file not in d.file:
                 decoders.remove(d)
-            if name and name not in d.name:
+            if name and name != d.name:
                 decoders.remove(d)
             if parents and 'parent' in d.details:
                 decoders.remove(d)
