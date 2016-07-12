@@ -1,0 +1,14 @@
+
+Pre-requisites:
+    $ npm install apidoc -g
+
+Generate docu:
+    $ cd $PATH/wazuh-API
+    $ apidoc -i . -o doc/build/html -c doc/ -f js -e node_modules
+    $ cd doc/
+    $ ./generate_rst.py
+    $ cp build/ossec_api_reference.rst $PATH/wazuh-documentation/source/
+    $ cd $PATH/wazuh-documentation/
+    $ make html
+
+Review ossec_api_reference.html, specially "Example Response:".

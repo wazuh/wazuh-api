@@ -12,11 +12,23 @@
 
 var router = require('express').Router();
 
-/********************************************/
-/* GET
-/********************************************/
-
-// GET /agents - Get agents list
+/**
+ * @api {get} /agents Get all agents
+ * @apiName GetAgents
+ * @apiGroup Info
+ *
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {string="active","never connected", "disconnected"} [status] Agent status.
+ *
+ * @apiDescription Returns a list with the available agents.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET https://127.0.0.1:55000/agents?pretty&offset=0&limit=5&sort=-ip,name
+ *
+ */
 router.get('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents");
 
@@ -40,7 +52,19 @@ router.get('/', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// GET /agents/:agent_id - Get Agent Info
+/**
+ * @api {get} /agents/:agent_id Get an agent
+ * @apiName GetAgentsID
+ * @apiGroup Info
+ *
+ * @apiParam {Number} agent_id Agent ID.
+ *
+ * @apiDescription Returns the information of an agent.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET https://127.0.0.1:55000/agents/000?pretty
+ *
+ */
 router.get('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents/:agent_id");
 
@@ -55,7 +79,19 @@ router.get('/:agent_id', function(req, res) {
 
 })
 
-// GET /agents/:agent_id/key - Get Agent Key
+/**
+ * @api {get} /agents/:agent_id/key Get agent key
+ * @apiName GetAgentsKey
+ * @apiGroup Key
+ *
+ * @apiParam {Number} agent_id Agent ID.
+ *
+ * @apiDescription Returns the key of an agent.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET https://127.0.0.1:55000/agents/001/key?pretty
+ *
+ */
 router.get('/:agent_id/key', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents/:agent_id/key");
 
@@ -69,12 +105,17 @@ router.get('/:agent_id/key', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-
-/********************************************/
-/* PUT
-/********************************************/
-
-// PUT /agents/restart - Restart All Agents
+/**
+ * @api {put} /agents/restart Restart all agents
+ * @apiName PutAgentsRestart
+ * @apiGroup Restart
+ *
+ * @apiDescription Restarts all agents.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X PUT https://127.0.0.1:55000/agents/restart?pretty
+ *
+ */
 router.put('/restart', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /agents/restart");
 
@@ -85,7 +126,20 @@ router.put('/restart', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// PUT /agents/:agent_id/restart - Restart Agent
+
+/**
+ * @api {put} /agents/:agent_id Restart an agent
+ * @apiName PutAgentsRestartId
+ * @apiGroup Restart
+ *
+ * @apiParam {Number} agent_id Agent unique ID.
+ *
+ * @apiDescription Restarts the agent.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X PUT https://127.0.0.1:55000/agents/000/restart?pretty
+ *
+ */
 router.put('/:agent_id/restart', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /agents/:agent_id/restart");
 
@@ -99,7 +153,19 @@ router.put('/:agent_id/restart', function(req, res) {
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
 
-// PUT /agents/:agent_name - Add Agent
+/**
+ * @api {put} /agents/:agent_name Add agent (quick method)
+ * @apiName PutAddAgentName
+ * @apiGroup Add
+ *
+ * @apiParam {String} agent_name Agent name.
+ *
+ * @apiDescription Adds a new agent with name :agent_name. This agent will use ANY as IP.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X PUT https://127.0.0.1:55000/agents/myNewAgent
+ *
+ */
 router.put('/:agent_name', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /agents/:agent_name");
 
@@ -114,11 +180,19 @@ router.put('/:agent_name', function(req, res) {
 })
 
 
-/********************************************/
-/* DELETE
-/********************************************/
-
-// DELETE /agents/:agent_id - Remove Agent
+/**
+ * @api {delete} /agents/:agent_id Delete an agent
+ * @apiName DeleteAgentId
+ * @apiGroup Delete
+ *
+ * @apiParam {Number} agent_id Agent ID.
+ *
+ * @apiDescription Removes an agent. Internally use manage_agents with option -r <id>. You must restart OSSEC after removing an agent.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X DELETE https://127.0.0.1:55000/agents/002?pretty
+ *
+ */
 router.delete('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /agents/:agent_id");
 
@@ -133,11 +207,20 @@ router.delete('/:agent_id', function(req, res) {
 })
 
 
-/********************************************/
-/* POST
-/********************************************/
-
-// POST /agents - Add Agent
+/**
+ * @api {post} /agents/:agent_id Add agent
+ * @apiName PostAddAgentId
+ * @apiGroup Add
+ *
+ * @apiParam {String} name Agent name.
+ * @apiParam {String="IP","IP/NET", "ANY"} [ip] If you do not include this param, the API will get the IP automatically. If you are behind a proxy, you must set the option config.BehindProxyServer to yes at config.js.
+ *
+ * @apiDescription Add a new agent.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X POST -d '{"name":"NewHost","ip":"10.0.0.9"}' -H 'Content-Type:application/json' https://127.0.0.1:55000/agents?pretty
+ *
+ */
 router.post('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " POST /agents");
 
