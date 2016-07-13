@@ -50,8 +50,10 @@ errors['612'] = "Param not valid. Valid characters: a-z, A-Z, 0-9, space, !, \",
 errors['search_param'] = 612;
 errors['613'] = "Param not valid. Valid characters: md5/sha1 hash";  // hashes
 errors['hashes'] = 613;
+errors['614'] = "Invalid request"
 
 errors['700'] = "File not found"
+
 
 exports.description = function(n){
     if (n in errors)
