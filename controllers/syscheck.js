@@ -29,6 +29,7 @@ var router = require('express').Router();
  * @apiParam {String="yes", "no"} [summary] Returns a summary where each item has: scanDate, modificationDate, event and file.
  * @apiParam {String} [md5] Returns the files with the specified md5 hash.
  * @apiParam {String} [sha1] Returns the files with the specified sha1 hash.
+ * @apiParam {String} [hash] Returns the files with the specified hash (md5 or sha1).
  *
  * @apiDescription Returns the syscheck files of an agent.
  *
@@ -40,7 +41,7 @@ router.get('/:agent_id/files', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/files");
 
     var data_request = {'function': '/syscheck/files', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'event':'names', 'file':'paths', 'filetype':'names', 'summary':'names', 'md5':'hashes', 'sha1':'hashes'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'event':'names', 'file':'paths', 'filetype':'names', 'summary':'names', 'md5':'hashes', 'sha1':'hashes', 'hash':'hashes'};
 
     if (!filter.check(req.query, filters, res))  // Filter with error
         return;
@@ -64,6 +65,8 @@ router.get('/:agent_id/files', function(req, res) {
         data_request['arguments']['md5'] = req.query.md5.toLowerCase();
     if ('sha1' in req.query)
         data_request['arguments']['sha1'] = req.query.sha1.toLowerCase();
+    if ('hash' in req.query)
+        data_request['arguments']['hash'] = req.query.hash.toLowerCase();
 
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
