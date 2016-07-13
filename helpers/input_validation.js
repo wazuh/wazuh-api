@@ -89,3 +89,12 @@ exports.ranges = function(range) {
     else
         return false;
 }
+
+exports.hashes = function(hash) {
+    if (typeof hash != 'undefined'){
+        var regex = /^[0-9a-fA-F]{32}(?:[0-9a-fA-F]{8})?$/;  // md5 or sha1
+        return regex.test(hash);
+    }
+    else
+        return false;
+}

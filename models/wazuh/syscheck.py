@@ -57,7 +57,7 @@ def last_scan(agent_id):
 
     return data
 
-def files(agent_id=None, event=None, filename=None, filetype='file', summary=False, offset=0, limit=common.database_limit, sort=None, search=None):
+def files(agent_id=None, event=None, filename=None, filetype='file', md5=None, sha1=None, summary=False, offset=0, limit=common.database_limit, sort=None, search=None):
     '''Return a list of files from the database that match the filters'''
 
     # Connection
@@ -82,6 +82,14 @@ def files(agent_id=None, event=None, filename=None, filetype='file', summary=Fal
     if filename:
         query += ' AND path = :filename'
         request['filename'] = filename
+
+    if md5:
+        query += ' AND md5 = :md5'
+        request['md5'] = md5
+
+    if sha1:
+        query += ' AND sha1 = :sha1'
+        request['sha1'] = sha1
 
     if search:
         query += " AND NOT" if bool(search['negation']) else ' AND'

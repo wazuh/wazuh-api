@@ -26,7 +26,9 @@ var router = require('express').Router();
  * @apiParam {String="added","readded", "modified", "deleted"} [event] Filters files by event.
  * @apiParam {String} [file] Filters file by filename.
  * @apiParam {String="file","registry"} [filetype] Selects type of file.
- * @apiParam {String} [summary] Returns a summary where each item has: date, event and file.
+ * @apiParam {String="yes", "no"} [summary] Returns a summary where each item has: scanDate, modificationDate, event and file.
+ * @apiParam {String} [md5] Returns the files with the specified md5 hash.
+ * @apiParam {String} [sha1] Returns the files with the specified sha1 hash.
  *
  * @apiDescription Returns the syscheck files of an agent.
  *
@@ -38,7 +40,7 @@ router.get('/:agent_id/files', function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/files");
 
     var data_request = {'function': '/syscheck/files', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'event':'names', 'file':'paths', 'filetype':'names', 'summary':'names'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'event':'names', 'file':'paths', 'filetype':'names', 'summary':'names', 'md5':'hashes', 'sha1':'hashes'};
 
     if (!filter.check(req.query, filters, res))  // Filter with error
         return;
@@ -56,8 +58,12 @@ router.get('/:agent_id/files', function(req, res) {
         data_request['arguments']['filename'] = req.query.file;
     if ('filetype' in req.query)
         data_request['arguments']['filetype'] = req.query.filetype;
-    if ('summary' in req.query)
+    if ('summary' in req.query && req.query.summary == "yes")
         data_request['arguments']['summary'] = req.query.summary;
+    if ('md5' in req.query)
+        data_request['arguments']['md5'] = req.query.md5.toLowerCase();
+    if ('sha1' in req.query)
+        data_request['arguments']['sha1'] = req.query.sha1.toLowerCase();
 
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error

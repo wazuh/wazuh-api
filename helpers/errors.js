@@ -48,6 +48,8 @@ errors['611'] = "Param not valid. Valid characters: a-z, A-Z, 0-9, _, -, +, ,"; 
 errors['sort_param'] = 611;
 errors['612'] = "Param not valid. Valid characters: a-z, A-Z, 0-9, space, !, \", -, _, /,:,@,~ \\";  // search
 errors['search_param'] = 612;
+errors['613'] = "Param not valid. Valid characters: md5/sha1 hash";  // hashes
+errors['hashes'] = 613;
 
 errors['700'] = "File not found"
 
