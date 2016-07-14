@@ -53,6 +53,25 @@ router.get('/', function(req, res) {
 })
 
 /**
+ * @api {get} /agents/summary Get agents summary
+ * @apiName GetAgentsSummary
+ * @apiGroup Info
+ *
+ *
+ * @apiDescription Returns a summary of the available agents.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/summary"
+ *
+ */
+router.get('/summary', function(req, res) {
+    logger.log(req.connection.remoteAddress + " GET /agents");
+
+    var data_request = {'function': '/agents/summary', 'arguments': {}};
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+})
+
+/**
  * @api {get} /agents/:agent_id Get an agent
  * @apiName GetAgentsID
  * @apiGroup Info

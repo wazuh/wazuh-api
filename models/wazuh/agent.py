@@ -84,6 +84,25 @@ class Agent:
         return {'items': cut_array(agents, offset, limit), 'totalItems': len(agents)}
 
     @staticmethod
+    def get_agents_summary():
+        agents = Agent.get_agents_overview()
+
+        total = agents['totalItems']
+        active = 0
+        disconnected = 0
+        never = 0
+
+        for agent in agents['items']:
+            if agent['status'].lower() == 'active':
+                active += 1
+            elif agent['status'].lower() == 'disconnected':
+                disconnected += 1
+            elif agent['status'].lower() == 'never connected':
+                never += 1
+
+        return {'total': total, 'active': active, 'disconnected': disconnected, 'neverConnected': never}
+
+    @staticmethod
     def get_total_agents(status="all"):
         return Agent.get_agents_overview(status)['totalItems']
 
