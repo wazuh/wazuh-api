@@ -34,7 +34,8 @@ describe('Syscheck', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['gid', 'uid', 'file', 'date', 'sha1', 'md5', 'event', 'perm', 'size']);
+                res.body.data.items[0].should.have.properties(['uid', 'scanDate', 'user', 'file', 'modificationDate', 'octalMode', 'inode', 'event', 'size', 'sha1', 'group', 'gid', 'permissions', 'md5']);
+
                 done();
             });
         });
@@ -52,14 +53,14 @@ describe('Syscheck', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                res.body.data.items[0].should.have.properties(['gid', 'uid', 'file', 'date', 'sha1', 'md5', 'event', 'perm', 'size']);
+                res.body.data.items[0].should.have.properties(['uid', 'scanDate', 'user', 'file', 'modificationDate', 'octalMode', 'inode', 'event', 'size', 'sha1', 'group', 'gid', 'permissions', 'md5']);
                 done();
             });
         });
 
         it('Sort', function(done) {
             request(common.url)
-            .get("/syscheck/000/files?sort=date&offset=0&limit=10")
+            .get("/syscheck/000/files?sort=scanDate&offset=0&limit=10")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -71,7 +72,7 @@ describe('Syscheck', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['gid', 'uid', 'file', 'date', 'sha1', 'md5', 'event', 'perm', 'size']);
+                res.body.data.items[0].should.have.properties(['uid', 'scanDate', 'user', 'file', 'modificationDate', 'octalMode', 'inode', 'event', 'size', 'sha1', 'group', 'gid', 'permissions', 'md5']);
                 done();
             });
         });
@@ -90,7 +91,7 @@ describe('Syscheck', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['gid', 'uid', 'file', 'date', 'sha1', 'md5', 'event', 'perm', 'size']);
+                res.body.data.items[0].should.have.properties(['uid', 'scanDate', 'user', 'file', 'modificationDate', 'octalMode', 'inode', 'event', 'size', 'sha1', 'group', 'gid', 'permissions', 'md5']);
                 done();
             });
         });
@@ -171,7 +172,7 @@ describe('Syscheck', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['gid', 'uid', 'file', 'date', 'sha1', 'md5', 'event', 'perm', 'size']);
+                res.body.data.items[0].should.have.properties(['uid', 'scanDate', 'user', 'file', 'modificationDate', 'octalMode', 'inode', 'event', 'size', 'sha1', 'group', 'gid', 'permissions', 'md5']);
                 done();
             });
         });
@@ -208,7 +209,7 @@ describe('Syscheck', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['gid', 'uid', 'file', 'date', 'sha1', 'md5', 'event', 'perm', 'size']);
+                res.body.data.items[0].should.have.properties(['uid', 'scanDate', 'user', 'file', 'modificationDate', 'octalMode', 'inode', 'event', 'size', 'sha1', 'group', 'gid', 'permissions', 'md5']);
                 done();
             });
         });
@@ -227,7 +228,61 @@ describe('Syscheck', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['file', 'date', 'event']);
+                res.body.data.items[0].should.have.properties(['modificationDate', 'event', 'file', 'scanDate']);
+                done();
+            });
+        });
+
+        it('Filters: md5', function(done) {
+            request(common.url)
+            .get("/syscheck/000/files?md5=88238db1ba8ce3df2c6d5f5d861b0306")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.an.integer;
+                res.body.data.items.should.be.instanceof(Array)
+                done();
+            });
+        });
+
+        it('Filters: sha1', function(done) {
+            request(common.url)
+            .get("/syscheck/000/files?sha1=fbed7cd200928050bc8d1a8d8ca342dd23723027")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.an.integer;
+                res.body.data.items.should.be.instanceof(Array)
+                done();
+            });
+        });
+
+        it('Filters: hash', function(done) {
+            request(common.url)
+            .get("/syscheck/000/files?hash=fbed7cd200928050bc8d1a8d8ca342dd23723027")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.an.integer;
+                res.body.data.items.should.be.instanceof(Array)
                 done();
             });
         });
@@ -289,7 +344,7 @@ describe('Syscheck', function() {
     describe('DELETE/syscheck/:agent_id', function() {
 
         it('Request', function(done) {
-            this.timeout(20000);
+            this.timeout(common.timeout);
             request(common.url)
             .delete("/syscheck/000")
             .auth(common.credentials.user, common.credentials.password)
@@ -341,7 +396,7 @@ describe('Syscheck', function() {
     describe('DELETE/syscheck', function() {
 
         it('Request', function(done) {
-            this.timeout(20000);
+            this.timeout(common.timeout);
             request(common.url)
             .delete("/syscheck")
             .auth(common.credentials.user, common.credentials.password)

@@ -203,13 +203,13 @@ describe('Manager', function() {
             });
         });
 
-    });  // GET/manager/configuration
+    });  // PUT/manager/configuration
 
-    describe('GET/manager/configuration/test', function() {
+    describe('PUT/manager/configuration/test', function() {
 
         it('Request', function(done) {
             request(common.url)
-            .get("/manager/configuration/test")
+            .put("/manager/configuration/test")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -225,7 +225,7 @@ describe('Manager', function() {
             });
         });
 
-    });  // GET/manager/configuration/test
+    });  // PUT/manager/configuration/test
 
     describe('GET/manager/stats', function() {
 
@@ -568,7 +568,7 @@ describe('Manager', function() {
     describe('PUT/manager/start', function() {
 
         it('Request', function(done) {
-            this.timeout(30000);
+            this.timeout(common.timeout);
 
             request(common.url)
             .put("/manager/start")
@@ -591,7 +591,7 @@ describe('Manager', function() {
     describe('PUT/manager/stop', function() {
 
         it('Request: Stop after start', function(done) {
-            this.timeout(30000);
+            this.timeout(common.timeout);
 
             request(common.url)
             .put("/manager/stop")
@@ -613,7 +613,7 @@ describe('Manager', function() {
 
     describe('PUT/manager/restart', function() {
         it('Request', function(done) {
-            this.timeout(30000);
+            this.timeout(common.timeout);
 
             request(common.url)
             .put("/manager/restart")
@@ -634,7 +634,7 @@ describe('Manager', function() {
 
     describe('PUT/manager/update-ruleset', function() {
         it('Request', function(done) {
-            this.timeout(30000);
+            this.timeout(common.timeout);
 
             request(common.url)
             .put("/manager/update-ruleset")
@@ -654,7 +654,7 @@ describe('Manager', function() {
         });
 
         it('Filters: Force', function(done) {
-            this.timeout(30000);
+            this.timeout(common.timeout);
 
             request(common.url)
             .put("/manager/update-ruleset?force=yes")
@@ -675,7 +675,7 @@ describe('Manager', function() {
         });
 
         it('Filters: Force & Type', function(done) {
-            this.timeout(30000);
+            this.timeout(common.timeout);
 
             request(common.url)
             .put("/manager/update-ruleset?force=yes&type=rules")
@@ -751,7 +751,7 @@ describe('Manager', function() {
         });
 
         it('Request', function(done) {
-            this.timeout(30000);
+            this.timeout(common.timeout);
 
             request(common.url)
             .put("/manager/update-ruleset/backups/" + backup_id)
@@ -788,7 +788,7 @@ describe('Manager', function() {
             });
         });
 
-        xit('Errors: Invalid id', function(done) {
+        it('Errors: Invalid id', function(done) {
             request(common.url)
             .put("/manager/update-ruleset/backups/hi")
             .auth(common.credentials.user, common.credentials.password)
@@ -799,7 +799,7 @@ describe('Manager', function() {
 
                 res.body.should.have.properties(['error', 'message']);
 
-                res.body.error.should.equal(1);
+                res.body.error.should.equal(2);
                 res.body.message.should.be.an.string;
                 done();
             });

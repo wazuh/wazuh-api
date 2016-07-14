@@ -15,5 +15,6 @@ var config = {};
 config.url = 'https://127.0.0.1:55000';
 config.credentials = {'user':'foo', 'password':'bar'};
 
+config.timeout = 30000;
 
 module.exports = config;

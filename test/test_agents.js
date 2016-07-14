@@ -150,6 +150,31 @@ describe('Agents', function() {
 
     });  // GET/agents
 
+    describe('GET/agents/summary', function() {
+
+        it('Request', function(done) {
+            request(common.url)
+            .get("/agents/summary")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.have.properties(['active', 'total', 'disconnected', 'neverConnected']);
+                res.body.data['active'].should.be.above(0);
+                res.body.data['total'].should.be.an.integer;
+                res.body.data['disconnected'].should.be.an.integer;
+                res.body.data['neverConnected'].should.be.an.integer;
+                done();
+            });
+        });
+
+    });  // GET/agents/summary
+
     describe('GET/agents/:agent_id', function() {
 
         it('Request', function(done) {
@@ -620,7 +645,7 @@ describe('Agents', function() {
     describe('PUT/agents/restart', function() {
 
         it('Request', function(done) {
-            this.timeout(20000);
+            this.timeout(common.timeout);
 
             request(common.url)
             .put("/agents/restart")
@@ -643,7 +668,7 @@ describe('Agents', function() {
     describe('PUT/agents/:agent_id/restart', function() {
 
         it('Request', function(done) {
-            this.timeout(20000);
+            this.timeout(common.timeout);
 
             request(common.url)
             .put("/agents/000/restart")
