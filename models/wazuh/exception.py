@@ -42,7 +42,7 @@ class WazuhException(Exception):
         1501: 'Error reading decoder files',
 
         # Syscheck: 1600 - 1699
-        1600: 'Empty syscheck database for selected agent',
+        1600: 'There is no database for selected agent',  # Also, in rootcheck
 
         # Manager:
         # Agents:
