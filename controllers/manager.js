@@ -17,7 +17,7 @@ var router = require('express').Router();
 /**
  * @api {get} /manager/status Get manager status
  * @apiName GetManagerStatus
- * @apiGroup Retrieve information
+ * @apiGroup Info
  *
  * @apiDescription Returns the Manager processes that are running.
  *
@@ -35,7 +35,7 @@ router.get('/status', function(req, res) {
 /**
  * @api {get} /manager/info Get manager information
  * @apiName GetManagerInfo
- * @apiGroup Retrieve information
+ * @apiGroup Info
  *
  * @apiDescription Returns basic information about Manager.
  *
@@ -93,7 +93,7 @@ router.get('/configuration', function(req, res) {
  *
  * @apiDescription Returns OSSEC statistical information of current date.
  *
- * @apiExample {curl} Example usage:
+ * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/stats?pretty"
  *
  */
@@ -130,7 +130,7 @@ router.get('/stats', function(req, res) {
  *
  * @apiDescription Returns OSSEC statistical information per hour. Each item in averages field represents the average of alerts per hour.
  *
- * @apiExample {curl} Example usage:
+ * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/stats/hourly?pretty"
  *
  */
@@ -143,13 +143,13 @@ router.get('/stats/hourly', function(req, res) {
 
 /**
  * @api {get} /manager/stats/weekly Get manager stats by week
- * @apiName GetManagerStatsHourly
+ * @apiName GetManagerStatsWeekly
  * @apiGroup Stats
  *
  *
- * @apiDescription Returns OSSEC statistical information per week. Each item in *hours* field represents the average of alerts per hour and week day.
+ * @apiDescription Returns OSSEC statistical information per week. Each item in hours field represents the average of alerts per hour and week day.
  *
- * @apiExample {curl} Example usage:
+ * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/stats/weekly?pretty"
  *
  */
@@ -168,7 +168,7 @@ router.get('/stats/weekly', function(req, res) {
  *
  * @apiDescription Returns the ruleset backup list created by ossec_ruleset.py.
  *
- * @apiExample {curl} Example usage:
+ * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/update-ruleset/backups?pretty"
  *
  */
@@ -193,8 +193,8 @@ router.get('/update-ruleset/backups', function(req, res) {
  *
  * @apiDescription Returns the 3 last months of ossec.log.
  *
- * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/logs?offset=0&limit=10&pretty"
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/logs?offset=0&limit=5&pretty"
  *
  */
 router.get('/logs', function(req, res) {
@@ -228,7 +228,7 @@ router.get('/logs', function(req, res) {
  * @apiGroup Logs
  *
  *
- * @apiDescription Returns the 3 last months of ossec.log.
+ * @apiDescription Returns a summary about the 3 last months of ossec.log.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/logs/summary?pretty"
@@ -324,7 +324,7 @@ router.put('/restart', function(req, res) {
  *
  * @apiDescription Update OSSEC ruleset. If the update change a file in use, OSSEC will be restarted.
  *
- * @apiExample {curl} Example usage:
+ * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/manager/update-ruleset?pretty"
  *
  */
@@ -355,7 +355,7 @@ router.put('/update-ruleset', function(req, res) {
  *
  * @apiDescription Restores a ruleset backup.
  *
- * @apiExample {curl} Example usage:
+ * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/manager/update-ruleset/backups/20160711_002?pretty"
  *
  */

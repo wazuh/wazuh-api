@@ -61,7 +61,7 @@ router.get('/', function(req, res) {
  * @apiDescription Returns a summary of the available agents.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/summary"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/summary?pretty"
  *
  */
 router.get('/summary', function(req, res) {
@@ -131,7 +131,7 @@ router.get('/:agent_id/key', function(req, res) {
  *
  * @apiDescription Restarts all agents.
  *
- * @apiExample {curl} Example usage:
+ * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/restart?pretty"
  *
  */
@@ -155,7 +155,7 @@ router.put('/restart', function(req, res) {
  *
  * @apiDescription Restarts the agent.
  *
- * @apiExample {curl} Example usage:
+ * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/000/restart?pretty"
  *
  */

@@ -21,11 +21,11 @@ var router = require('express').Router();
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String="enabled","disabled", "all"} [status] Filters files by status.
- * @apiParam {String} [group] Filters file by group.
- * @apiParam {Range} [level] Filters file by level. level=2 or level=2-5.
- * @apiParam {String} [file] Filters by file name.
- * @apiParam {String} [pci] Filters by pci requirement.
+ * @apiParam {String="enabled","disabled", "all"} [status] Filters the rules by status.
+ * @apiParam {String} [group] Filters the rules by group.
+ * @apiParam {Range} [level] Filters the rules by level. level=2 or level=2-5.
+ * @apiParam {String} [file] Filters the rules by file name.
+ * @apiParam {String} [pci] Filters the rules by pci requirement.
  *
  * @apiDescription Returns all rules.
  *

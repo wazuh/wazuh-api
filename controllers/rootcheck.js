@@ -15,7 +15,7 @@ var router = require('express').Router();
 /**
  * @api {get} /rootcheck/:agent_id Get rootcheck database
  * @apiName GetRootcheckAgent
- * @apiGroup Database
+ * @apiGroup Info
  *
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {Number} [offset] First element to return in the collection.
@@ -61,7 +61,7 @@ router.get('/:agent_id', function(req, res) {
 /**
  * @api {get} /rootcheck/:agent_id/last_scan Get last rootcheck scan
  * @apiName GetRootcheckAgentLastScan
- * @apiGroup Database
+ * @apiGroup Info
  *
  * @apiParam {Number} agent_id Agent ID.
  *
@@ -87,13 +87,13 @@ router.get('/:agent_id/last_scan', function(req, res) {
 
 /**
  * @api {put} /rootcheck Run rootcheck scan in all agents
- * @apiName PutRootcheckAgent
+ * @apiName PutRootcheck
  * @apiGroup Run
  *
  *
- * @apiDescription Runs syscheck/rootcheck on all agents. This request has the same behavior that `PUT /syscheck`_. Due to OSSEC launches both processes at once.
+ * @apiDescription Runs syscheck and rootcheck on all agent, due to OSSEC launches both processes at once.
  *
- * @apiExample {curl} Example usage:
+ * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/rootcheck?pretty"
  *
  */
@@ -112,7 +112,7 @@ router.put('/', function(req, res) {
  *
  * @apiParam {Number} agent_id Agent ID.
  *
- * @apiDescription Runs syscheck/rootcheck on an agent. This request has the same behavior that `PUT /syscheck/:agent_id`_. Due to OSSEC launches both processes at once.
+ * @apiDescription Runs syscheck and rootcheck on an agent, due to OSSEC launches both processes at once.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/rootcheck/000?pretty"
@@ -134,13 +134,13 @@ router.put('/:agent_id', function(req, res) {
 
 /**
  * @api {delete} /rootcheck Clear rootcheck database
- * @apiName DeleteRootcheckAgent
+ * @apiName DeleteRootcheck
  * @apiGroup Clear
  *
  *
  * @apiDescription Clears the rootcheck database for all agents.
  *
- * @apiExample {curl} Example usage:
+ * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/rootcheck?pretty"
  *
  */
@@ -154,14 +154,14 @@ router.delete('/', function(req, res) {
 
 /**
  * @api {delete} /rootcheck/:agent_id Clear rootcheck database of an agent
- * @apiName PutRootcheckAgentId
+ * @apiName DeleteRootcheckAgentId
  * @apiGroup Clear
  *
  * @apiParam {Number} agent_id Agent ID.
  *
  * @apiDescription Clears the rootcheck database for an agent.
  *
- * @apiExample {curl} Example usage:
+ * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/rootcheck/000?pretty"
  *
  */
