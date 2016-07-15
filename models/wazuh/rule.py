@@ -5,13 +5,18 @@
 
 
 from glob import glob
-import xml.etree.ElementTree as ET
+from xml.etree.ElementTree import fromstring
 import wazuh.configuration as configuration
 from wazuh.exception import WazuhException
 from wazuh import common
 from wazuh.utils import cut_array, sort_array, search_array
 
+
 class Rule:
+    """
+    Rule Object.
+    """
+
     S_ENABLED = 'enabled'
     S_DISABLED = 'disabled'
     S_ALL = 'all'
@@ -59,13 +64,30 @@ class Rule:
         return dictionary
 
     def set_group(self, group):
+        """
+        Adds a group to the group list.
+        :param group: Group to add (string or list)
+        """
+
         Rule.__add_unique_element(self.groups, group)
 
     def set_pci(self, pci):
+        """
+        Adds a pci requirement to the pci list.
+        :param pci: Requirement to add (string or list).
+        """
+
         Rule.__add_unique_element(self.pci, pci)
 
     def add_detail(self, detail, value):
+        """
+        Add a rule detail (i.e. category, noalert, etc.).
+
+        :param detail: Detail name.
+        :param value: Detail value.
+        """
         if detail in self.details:
+            # If it was an element, we create a list.
             if type(self.details[detail]) is not list:
                 element = self.details[detail]
                 self.details[detail] = [element]
@@ -99,7 +121,17 @@ class Rule:
             raise WazuhException(1202)
 
     @staticmethod
-    def get_rules_files(status=None, offset=0, limit=0, sort=None, search=None):
+    def get_rules_files(status=None, offset=0, limit=common.database_limit, sort=None, search=None):
+        """
+        Gets a list of the rule files.
+
+        :param status: Filters by status: enabled, disabled, all.
+        :param offset: First item to return.
+        :param limit: Maximum number of items to return.
+        :param sort: Sorts the items. Format: {"fields":["field1","field2"],"order":"asc|desc"}.
+        :param search: Looks for items with the specified string.
+        :return: Dictionary: {'items': array of items, 'totalItems': Number of items (without applying the limit)}
+        """
         data = []
 
         status = Rule.__check_status(status)
@@ -144,9 +176,23 @@ class Rule:
         return {'items': cut_array(data, offset, limit), 'totalItems': len(data)}
 
     @staticmethod
-    def get_rules(status=None, group=None, pci=None, file=None, id=None, level=None, offset=0, limit=0, sort=None, search=None):
+    def get_rules(status=None, group=None, pci=None, file=None, id=None, level=None, offset=0, limit=common.database_limit, sort=None, search=None):
+        """
+        Gets a list of rules.
+
+        :param status: Filters by status: enabled, disabled, all.
+        :param group: Filters by group.
+        :param pci: Filters by pci requirement.
+        :param file: Filters by file of the rule.
+        :param id: Filters by rule ID.
+        :param level: Filters by level. It can be an integer or an range (i.e. '2-4' that means levels from 2 to 4).
+        :param offset: First item to return.
+        :param limit: Maximum number of items to return.
+        :param sort: Sorts the items. Format: {"fields":["field1","field2"],"order":"asc|desc"}.
+        :param search: Looks for items with the specified string.
+        :return: Dictionary: {'items': array of items, 'totalItems': Number of items (without applying the limit)}
+        """
         all_rules = []
-        rules = []
 
         if level:
             levels = level.split('-')
@@ -164,7 +210,7 @@ class Rule:
                 rules.remove(r)
             elif file and file != r.file:
                 rules.remove(r)
-            elif id and int(id) != r.id :
+            elif id and int(id) != r.id:
                 rules.remove(r)
             elif level:
                 if len(levels) == 1:
@@ -184,7 +230,16 @@ class Rule:
         return {'items': cut_array(rules, offset, limit), 'totalItems': len(rules)}
 
     @staticmethod
-    def get_groups(offset=0, limit=0, sort=None, search=None):
+    def get_groups(offset=0, limit=common.database_limit, sort=None, search=None):
+        """
+        Get all the groups used in the rules.
+
+        :param offset: First item to return.
+        :param limit: Maximum number of items to return.
+        :param sort: Sorts the items. Format: {"fields":["field1","field2"],"order":"asc|desc"}.
+        :param search: Looks for items with the specified string.
+        :return: Dictionary: {'items': array of items, 'totalItems': Number of items (without applying the limit)}
+        """
         groups = set()
 
         for rule in Rule.get_rules()['items']:
@@ -202,7 +257,16 @@ class Rule:
         return {'items': cut_array(groups, offset, limit), 'totalItems': len(groups)}
 
     @staticmethod
-    def get_pci(offset=0, limit=0, sort=None, search=None):
+    def get_pci(offset=0, limit=common.database_limit, sort=None, search=None):
+        """
+        Get all the PCI requirements used in the rules.
+
+        :param offset: First item to return.
+        :param limit: Maximum number of items to return.
+        :param sort: Sorts the items. Format: {"fields":["field1","field2"],"order":"asc|desc"}.
+        :param search: Looks for items with the specified string.
+        :return: Dictionary: {'items': array of items, 'totalItems': Number of items (without applying the limit)}
+        """
         pci = set()
 
         for rule in Rule.get_rules()['items']:
@@ -230,7 +294,7 @@ class Rule:
             f.close()
             xmldata = '<root_tag>' + data + '</root_tag>'
 
-            root = ET.fromstring(xmldata)
+            root = fromstring(xmldata)
             for xml_group in root.getchildren():
                 if xml_group.tag.lower() == "group":
                     general_groups = xml_group.attrib['name'].split(',')
@@ -253,7 +317,7 @@ class Rule:
                                 value = xml_rule_tags.text
                                 if tag == "group":
                                     groups.extend(value.split(","))
-                                elif tag== "description":
+                                elif tag == "description":
                                     rule.description += value
                                 elif tag == "field":
                                     rule.add_detail(xml_rule_tags.attrib['name'], value)
@@ -273,7 +337,6 @@ class Rule:
 
                             rule.set_group(ossec_groups)
                             rule.set_pci(pci_groups)
-
 
                             rules.append(rule)
         except Exception as e:

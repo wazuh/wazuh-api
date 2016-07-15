@@ -4,7 +4,6 @@
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 from wazuh.exception import WazuhException
-from wazuh.utils import execute
 from wazuh import common
 
 DAYS = "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
@@ -12,12 +11,14 @@ MONTHS = "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "
 
 
 def totals(year, month, day):
-    '''
-    Returns the totals file in JSON-exportable format
-    year:   Year in YYYY format, e.g. 2016
-    month:  Month in number or 3 first letters, e.g. Feb or 2
-    day:    Day, e.g. 9
-    '''
+    """
+    Returns the totals file.
+
+    :param year: Year in YYYY format, e.g. 2016
+    :param month: Month in number or 3 first letters, e.g. Feb or 2
+    :param day: Day, e.g. 9
+    :return: Array of dictionaries. Each dictionary represents an hour.
+    """
 
     try:
         year = int(year)
@@ -40,13 +41,12 @@ def totals(year, month, day):
             raise WazuhException(1307)
 
         try:
-            month = MONTHS[index-1]
+            month = MONTHS[index - 1]
         except IndexError:
             raise WazuhException(1307)
 
     try:
-        stats = open(common.stats_path + "/totals/" + str(year) + '/' + month + \
-                    "/ossec-totals-" + day + ".log", 'r')
+        stats = open(common.stats_path + "/totals/" + str(year) + '/' + month + "/ossec-totals-" + day + ".log", 'r')
     except IOError:
         raise WazuhException(1308)
 
@@ -74,21 +74,23 @@ def totals(year, month, day):
                     raise WazuhException(1309)
 
             hour = int(data[0])
-            totalAlerts = int(data[1])
+            total_alerts = int(data[1])
             events = int(data[2])
             syscheck = int(data[3])
             firewall = int(data[4])
 
-            response.append({'hour': hour, 'alerts': alerts, \
-                             'totalAlerts': totalAlerts, 'events': events, \
-                             'syscheck': syscheck, 'firewall': firewall})
+            response.append({'hour': hour, 'alerts': alerts, 'totalAlerts': total_alerts, 'events': events, 'syscheck': syscheck, 'firewall': firewall})
             alerts = []
 
     return response
 
 
 def hourly():
-    '''Returns the hourly averages in JSON-exportable format'''
+    """
+    Returns the hourly averages.
+
+    :return: Dictionary: averages and interactions.
+    """
 
     averages = []
     interactions = 0
@@ -113,7 +115,11 @@ def hourly():
 
 
 def weekly():
-    '''Returns the weekly averages in JSON-exportable format'''
+    """
+    Returns the weekly averages.
+
+    :return: A dictionary for each week day.
+    """
 
     response = {}
 

@@ -5,7 +5,7 @@
 
 
 from glob import glob
-import xml.etree.ElementTree as ET
+from xml.etree.ElementTree import fromstring
 import wazuh.configuration as configuration
 from wazuh.exception import WazuhException
 from wazuh import common
@@ -13,6 +13,10 @@ from wazuh.utils import cut_array, sort_array, search_array
 
 
 class Decoder:
+    """
+    Decoder object.
+    """
+
     SORT_FIELDS = ['file', 'full_path', 'name', 'position']
 
     def __init__(self):
@@ -30,7 +34,14 @@ class Decoder:
         return dictionary
 
     def add_detail(self, detail, value):
+        """
+        Add a decoder detail (i.e. regex, order, prematch, etc.).
+
+        :param detail: Detail name.
+        :param value: Detail value.
+        """
         if detail in self.details:
+            # If it was an element, we create a list.
             if type(self.details[detail]) is not list:
                 element = self.details[detail]
                 self.details[detail] = [element]
@@ -40,7 +51,17 @@ class Decoder:
             self.details[detail] = value
 
     @staticmethod
-    def get_decoders_files(offset=0, limit=0, sort=None, search=None):
+    def get_decoders_files(offset=0, limit=common.database_limit, sort=None, search=None):
+        """
+        Gets a list of the available decoder files.
+
+        :param offset: First item to return.
+        :param limit: Maximum number of items to return.
+        :param sort: Sorts the items. Format: {"fields":["field1","field2"],"order":"asc|desc"}.
+        :param search: Looks for items with the specified string.
+        :return: Dictionary: {'items': array of items, 'totalItems': Number of items (without applying the limit)}
+        """
+
         data = []
         decoder_dirs = []
         decoder_files = []
@@ -73,9 +94,20 @@ class Decoder:
         return {'items': cut_array(data, offset, limit), 'totalItems': len(data)}
 
     @staticmethod
-    def get_decoders(file=None, name=None, parents=False, offset=0, limit=0, sort=None, search=None):
+    def get_decoders(file=None, name=None, parents=False, offset=0, limit=common.database_limit, sort=None, search=None):
+        """
+        Gets a list of available decoders.
+
+        :param file: Filters by file.
+        :param name: Filters by name.
+        :param parents: Just parent decoders.
+        :param offset: First item to return.
+        :param limit: Maximum number of items to return.
+        :param sort: Sorts the items. Format: {"fields":["field1","field2"],"order":"asc|desc"}.
+        :param search: Looks for items with the specified string.
+        :return: Dictionary: {'items': array of items, 'totalItems': Number of items (without applying the limit)}
+        """
         all_decoders = []
-        decoders = []
 
         for decoder_file in Decoder.get_decoders_files()['items']:
             all_decoders.extend(Decoder.__load_decoders_from_file(decoder_file))
@@ -112,7 +144,7 @@ class Decoder:
             f.close()
             xmldata = '<root_tag>' + data + '</root_tag>'
 
-            root = ET.fromstring(xmldata)
+            root = fromstring(xmldata)
             for xml_decoder in root.getchildren():
                 # New decoder
                 if xml_decoder.tag.lower() == "decoder":

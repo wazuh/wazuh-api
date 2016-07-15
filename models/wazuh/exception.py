@@ -5,6 +5,10 @@
 
 
 class WazuhException(Exception):
+    """
+    Wazuh Exception object.
+    """
+
     ERRORS = {
         # Wazuh: 1000 - 1099
         1000: 'Wazuh-Python Internal Error',
@@ -51,9 +55,16 @@ class WazuhException(Exception):
         # Database:
         2000: 'No such database file',
 
-        }
+    }
 
     def __init__(self, code, extra_message=None, cmd_error=False):
+        """
+        Creates a Wazuh Exception.
+
+        :param code: Exception code.
+        :param extra_message: Adds an extra message to the error description.
+        :param cmd_error: If it is a custom error code (i.e. ossec commands), the error description will be the message.
+        """
         self.code = code
         if not cmd_error:
             if extra_message:

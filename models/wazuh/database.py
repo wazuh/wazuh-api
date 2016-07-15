@@ -8,11 +8,16 @@ from wazuh.exception import WazuhException
 from os.path import isfile
 import sqlite3
 
+
 class Connection:
-    '''Represents a connection against a database'''
+    """
+    Represents a connection against a database
+    """
 
     def __init__(self, db_path=common.database_path_global):
-        '''Constructor'''
+        """
+        Constructor
+        """
         self.db_path = db_path
 
         if not isfile(db_path):
@@ -22,25 +27,40 @@ class Connection:
         self.__cur = self.__conn.cursor()
 
     def __iter__(self):
-        '''Iterating support'''
+        """
+        Iterating support
+        """
         return self.__cur.__iter__()
 
     def begin(self):
-        '''Begin transaction'''
+        """
+        Begin transaction
+        """
         self.__cur.execute('BEGIN')
 
     def commit(self):
-        '''Commit changes'''
+        """
+        Commit changes
+        """
         self.__conn.commit()
 
     def execute(self, query, *args):
-        '''Execute query'''
+        """
+        Execute query
+
+        :param query: Query string.
+        :param args: Query values.
+        """
         self.__cur.execute(query, *args)
 
     def fetch(self):
-        '''Return next tuple'''
+        """
+        Return next tuple
+        """
         return self.__cur.fetchone()
 
     def vacuum(self):
-        '''Rebuild the entire database: reduce size and desfragment'''
+        """
+        Rebuild the entire database: reduce size and desfragment
+        """
         self.__cur.execute('VACUUM')

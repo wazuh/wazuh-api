@@ -4,7 +4,6 @@
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 
-import xml.etree.ElementTree
 import subprocess
 import os
 from xml.etree.ElementTree import fromstring
@@ -53,7 +52,7 @@ def __process_ossecconf(json_conf):
 
 
 def __prepare_ossecconf(json_conf):
-    json_conf = "<root>"+json_conf+"</root>"
+    json_conf = "<root>" + json_conf + "</root>"
     return json_conf
 
 
@@ -68,6 +67,14 @@ def __unify_ossecconf(json_conf):
 
 
 def get_ossec_conf(section=None, field=None):
+    """
+    Returns ossec.conf as dictionary.
+
+    :param section: Filters by section (i.e. rules).
+    :param field: Filters by field in section (i.e. included).
+    :return: ossec.conf as dictionary.
+    """
+
     if import_problem is not None:
         raise WazuhException(1001, import_problem)
     else:
@@ -88,13 +95,20 @@ def get_ossec_conf(section=None, field=None):
 
     if section and field:
         try:
-            data = data[field] # data[section][field]
+            data = data[field]  # data[section][field]
         except:
             raise WazuhException(1103)
 
     return data
 
+
 def check():
+    """
+    Checks OSSEC configuration (ossec-logtest).
+
+    :return: "OK" if there is no problem, error logs otherwise.
+    """
+
     cmd = "{0}/bin/ossec-logtest".format(common.ossec_path)
     p = subprocess.Popen([cmd, "-t"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (output, err) = p.communicate()

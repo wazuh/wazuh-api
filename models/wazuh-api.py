@@ -6,7 +6,6 @@
 
 from sys import argv, exit
 from getopt import getopt, GetoptError
-import re
 import json
 import signal
 
@@ -14,6 +13,7 @@ from wazuh import Wazuh
 from wazuh.agent import Agent
 from wazuh.rule import Rule
 from wazuh.decoder import Decoder
+from wazuh.exception import WazuhException
 import wazuh.configuration as configuration
 import wazuh.manager as manager
 import wazuh.stats as stats
@@ -48,12 +48,15 @@ def encode_json(o):
     print_json("Wazuh-Python Internal Error: data encoding unknown", 1000)
     exit(1)
 
+
 def is_json(myjson):
-  try:
-    json_object = json.loads(myjson)
-  except ValueError, e:
-    return False
-  return json_object
+    try:
+        json_object = json.loads(myjson)
+    except:
+        return False
+
+    return json_object
+
 
 def get_stdin(msg):
     try:
@@ -63,8 +66,10 @@ def get_stdin(msg):
         stdin = input(msg)
     return stdin
 
+
 def signal_handler(n_signal, frame):
     exit(1)
+
 
 def usage():
     help_msg = '''
@@ -167,7 +172,7 @@ if __name__ == "__main__":
         'PUT/syscheck': syscheck.run,
         'DELETE/syscheck': syscheck.clear
 
-        }
+    }
 
     # Main
     try:
@@ -185,10 +190,11 @@ if __name__ == "__main__":
             data = functions[request['function']]()
 
         print_json(data)
+    except WazuhException as e:
+        print_json(e.message, e.code)
+        if debug:
+            raise
     except Exception as e:
-        if e.__class__.__name__ == "WazuhException":
-            print_json(e.message, e.code)
-        else:
-            print_json("Wazuh-Python Internal Error: {0}".format(str(e)), 1000)
+        print_json("Wazuh-Python Internal Error: {0}".format(str(e)), 1000)
         if debug:
             raise

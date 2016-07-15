@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 import json
 import stat
 
+
 try:
     from subprocess import check_output
 except ImportError:
@@ -31,9 +32,35 @@ except ImportError:
         else:
             return cmd_output
 
+
+def previous_month(n=1):
+    """
+    Returns the first date of the previous n month.
+
+    :param n: Number of months.
+    :return: First date of the previous n month.
+    """
+
+    date = datetime.today().replace(day=1)  # First day of current month
+
+    for i in range(0, int(n)):
+        date = (date - timedelta(days=1)).replace(day=1)  # (first_day - 1) = previous month
+
+    return date.replace(hour=00, minute=00, second=00, microsecond=00)
+
+
 def execute(command):
-    try: output = check_output(command)
-    except CalledProcessError as error: output = error.output
+    """
+    Executes a command. It is used to execute ossec commands.
+
+    :param command: Command as list.
+    :return: If output.error !=0 returns output.data, otherwise launches a WazuhException with output.error as error code and output.message as description.
+    """
+
+    try:
+        output = check_output(command)
+    except CalledProcessError as error:
+        output = error.output
     except Exception as e:
         raise WazuhException(1002, "{0}: {1}".format(command, e))  # Error executing command
 
@@ -42,7 +69,7 @@ def execute(command):
     except Exception as e:
         raise WazuhException(1003, command)  # Command output not in json
 
-    keys = output_json.keys() # error and (data or message)
+    keys = output_json.keys()  # error and (data or message)
     if 'error' not in keys or ('data' not in keys and 'message' not in keys):
         raise WazuhException(1004, command)  # Malformed command output
 
@@ -51,15 +78,16 @@ def execute(command):
     else:
         return output_json['data']
 
-def previous_month(n=1):
-    date = datetime.today().replace(day=1)  # First day of current month
-
-    for i in range(0, int(n)):
-        date = (date - timedelta(days=1)).replace(day=1)  # (first_day - 1) = previous month
-
-    return date.replace(hour=00, minute=00, second=00, microsecond=00)
 
 def cut_array(array, offset, limit):
+    """
+    Returns a part of the array: from offset to offset + limit.
+    :param array: Array to cut.
+    :param offset: First element to return.
+    :param limit: Maximum number of elements to return.
+    :return: cut array.
+    """
+
     if not array:
         return array
 
@@ -74,9 +102,20 @@ def cut_array(array, offset, limit):
     elif limit <= 0 or limit > common.database_limit:
         raise WazuhException(1401)
     else:
-        return array[offset:offset+limit]
+        return array[offset:offset + limit]
+
 
 def sort_array(array, sort_by=None, order='asc', allowed_sort_fields=None):
+    """
+    Sorts an array.
+
+    :param array: Array to sort.
+    :param sort_by: Array of fields.
+    :param order: asc or desc.
+    :param allowed_sort_fields: Check sort_by with allowed_sort_fields (array).
+    :return: sorted array.
+    """
+
     if not array:
         return array
 
@@ -99,13 +138,19 @@ def sort_array(array, sort_by=None, order='asc', allowed_sort_fields=None):
                 if sort_field not in allowed_sort_fields:
                     raise WazuhException(1403, 'Allowed sort fields: {0}. Field: {1}'.format(allowed_sort_fields, sort_field))
 
-            return sorted(array, key = lambda o: tuple(o.get(a) for a in sort_by), reverse=order_desc)
+            return sorted(array, key=lambda o: tuple(o.get(a) for a in sort_by), reverse=order_desc)
         else:
-            return sorted(array, key = lambda o: tuple(getattr(o,a) for a in sort_by), reverse=order_desc)
+            return sorted(array, key=lambda o: tuple(getattr(o, a) for a in sort_by), reverse=order_desc)
     else:
         return sorted(array, reverse=order_desc)
 
+
 def get_values(o):
+    """
+    Converts the values of an object to an array of strings.
+    :param o: Object.
+    :return: Array of strings.
+    """
     strings = []
 
     try:
@@ -124,14 +169,24 @@ def get_values(o):
 
     return strings
 
+
 def search_array(array, text, negation=False):
+    """
+    Looks for the string 'text' in the elements of the array.
+
+    :param array: Array.
+    :param text: Text to search.
+    :param negation: the text must not be in the array.
+    :return: True or False.
+    """
+
     found = []
 
     for item in array:
 
         values = get_values(item)
 
-        #print("'{0}' in '{1}'?".format(text, values))
+        # print("'{0}' in '{1}'?".format(text, values))
 
         if not negation:
             for v in values:
@@ -150,34 +205,40 @@ def search_array(array, text, negation=False):
     return found
 
 _filemode_table = (
-    ((stat.S_IFLNK,         "l"),
-     (stat.S_IFREG,         "-"),
-     (stat.S_IFBLK,         "b"),
-     (stat.S_IFDIR,         "d"),
-     (stat.S_IFCHR,         "c"),
-     (stat.S_IFIFO,         "p")),
+    ((stat.S_IFLNK, "l"),
+     (stat.S_IFREG, "-"),
+     (stat.S_IFBLK, "b"),
+     (stat.S_IFDIR, "d"),
+     (stat.S_IFCHR, "c"),
+     (stat.S_IFIFO, "p")),
 
-    ((stat.S_IRUSR,         "r"),),
-    ((stat.S_IWUSR,         "w"),),
-    ((stat.S_IXUSR|stat.S_ISUID, "s"),
-     (stat.S_ISUID,         "S"),
-     (stat.S_IXUSR,         "x")),
+    ((stat.S_IRUSR, "r"),),
+    ((stat.S_IWUSR, "w"),),
+    ((stat.S_IXUSR | stat.S_ISUID, "s"),
+     (stat.S_ISUID, "S"),
+     (stat.S_IXUSR, "x")),
 
-    ((stat.S_IRGRP,         "r"),),
-    ((stat.S_IWGRP,         "w"),),
-    ((stat.S_IXGRP|stat.S_ISGID, "s"),
-     (stat.S_ISGID,         "S"),
-     (stat.S_IXGRP,         "x")),
+    ((stat.S_IRGRP, "r"),),
+    ((stat.S_IWGRP, "w"),),
+    ((stat.S_IXGRP | stat.S_ISGID, "s"),
+     (stat.S_ISGID, "S"),
+     (stat.S_IXGRP, "x")),
 
-    ((stat.S_IROTH,         "r"),),
-    ((stat.S_IWOTH,         "w"),),
-    ((stat.S_IXOTH|stat.S_ISVTX, "t"),
-     (stat.S_ISVTX,         "T"),
-     (stat.S_IXOTH,         "x"))
+    ((stat.S_IROTH, "r"),),
+    ((stat.S_IWOTH, "w"),),
+    ((stat.S_IXOTH | stat.S_ISVTX, "t"),
+     (stat.S_ISVTX, "T"),
+     (stat.S_IXOTH, "x"))
 )
 
+
 def filemode(mode):
-    """Convert a file's mode to a string of the form '-rwxrwxrwx'."""
+    """
+    Convert a file's mode to a string of the form '-rwxrwxrwx'.
+    :param mode: Mode.
+    :return: String.
+    """
+
     perm = []
     for table in _filemode_table:
         for bit, char in table:
