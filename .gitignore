@@ -2,3 +2,4 @@ node_modules
 scripts/*.tmp
 *.pyc
 doc/build/
+models/docs/build/
