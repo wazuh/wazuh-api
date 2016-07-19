@@ -34,7 +34,7 @@ describe('Rootcheck', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'oldDay', 'readDay', 'event']);
+                res.body.data.items[0].should.have.properties(['status', 'oldDay', 'cis', 'event', 'pci', 'readDay']);
                 done();
             });
         });
@@ -52,7 +52,7 @@ describe('Rootcheck', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                res.body.data.items[0].should.have.properties(['status', 'oldDay', 'readDay', 'event']);
+                res.body.data.items[0].should.have.properties(['status', 'oldDay', 'cis', 'event', 'pci', 'readDay']);
                 done();
             });
         });
@@ -71,7 +71,7 @@ describe('Rootcheck', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'oldDay', 'readDay', 'event']);
+                res.body.data.items[0].should.have.properties(['status', 'oldDay', 'cis', 'event', 'pci', 'readDay']);
                 res.body.data.items[0]['status'].should.equal('outstanding');
                 done();
             });
@@ -91,7 +91,7 @@ describe('Rootcheck', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'oldDay', 'readDay', 'event']);
+                res.body.data.items[0].should.have.properties(['status', 'oldDay', 'cis', 'event', 'pci', 'readDay']);
                 done();
             });
         });
@@ -125,7 +125,314 @@ describe('Rootcheck', function() {
                 done();
             });
         });
+
+        it('Filters: Invalid filter', function(done) {
+            request(common.url)
+            .get("/rootcheck/000?random")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(604);
+                done();
+            });
+        });
+
+        it('Filters: Invalid filter - Extra field', function(done) {
+            request(common.url)
+            .get("/rootcheck/000?event=outstanding&random")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(604);
+                done();
+            });
+        });
+
+        it('Filters: status', function(done) {
+            request(common.url)
+            .get("/rootcheck/000?status=outstanding&offset=0&limit=10")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items[0].should.have.properties(['status', 'oldDay', 'cis', 'event', 'pci', 'readDay']);
+                done();
+            });
+        });
+
+        it('Filters: PCI', function(done) {
+            request(common.url)
+            .get("/rootcheck/000?pci=2.2.4&offset=0&limit=10")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.integer;;
+                res.body.data.items.should.be.instanceof(Array);
+                done();
+            });
+        });
+
+        it('Filters: CIS', function(done) {
+            request(common.url)
+            .get("/rootcheck/000?cis=1&offset=0&limit=10")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.integer;;
+                res.body.data.items.should.be.instanceof(Array);
+                done();
+            });
+        });
     });  // GET/rootcheck/:agent_id
+
+    describe('GET/rootcheck/:agent_id/pci', function() {
+
+        it('Request', function(done) {
+            request(common.url)
+            .get("/rootcheck/000/pci")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.be.string;
+                done();
+            });
+        });
+
+        it('Pagination', function(done) {
+            request(common.url)
+            .get("/rootcheck/000/pci?offset=0&limit=1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.be.string;
+                done();
+            });
+        });
+
+        it('Sort', function(done) {
+            request(common.url)
+            .get("/rootcheck/000/pci?sort=-")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.be.string;
+                done();
+            });
+        });
+
+        it('Search', function(done) {
+            request(common.url)
+            .get("/rootcheck/000/pci?search=2")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.be.string;
+                done();
+            });
+        });
+
+        it('Params: Bad agent id', function(done) {
+            request(common.url)
+            .get("/rootcheck/abc/pci")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(600);
+                done();
+            });
+        });
+
+        it('Errors: No agent', function(done) {
+            request(common.url)
+            .get("/rootcheck/9999999/pci")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1600);
+                done();
+            });
+        });
+
+    });  // GET/rootcheck/:agent_id/pci
+
+    describe('GET/rootcheck/:agent_id/cis', function() {
+
+        it('Request', function(done) {
+            request(common.url)
+            .get("/rootcheck/000/cis")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.be.string;
+                done();
+            });
+        });
+
+        it('Pagination', function(done) {
+            request(common.url)
+            .get("/rootcheck/000/cis?offset=0&limit=1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.be.string;
+                done();
+            });
+        });
+
+        it('Sort', function(done) {
+            request(common.url)
+            .get("/rootcheck/000/cis?sort=-")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.be.string;
+                done();
+            });
+        });
+
+        it('Search', function(done) {
+            request(common.url)
+            .get("/rootcheck/000/cis?search=1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.be.string;
+                done();
+            });
+        });
+
+        it('Params: Bad agent id', function(done) {
+            request(common.url)
+            .get("/rootcheck/abc/cis")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(600);
+                done();
+            });
+        });
+
+        it('Errors: No agent', function(done) {
+            request(common.url)
+            .get("/rootcheck/9999999/cis")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1600);
+                done();
+            });
+        });
+
+    });  // GET/rootcheck/:agent_id/cis
 
     describe('GET/rootcheck/:agent_id/last_scan', function() {
 

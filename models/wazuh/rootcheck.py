@@ -64,12 +64,14 @@ def clear(agent_id=None, all_agents=False):
     return retval
 
 
-def print_db(agent_id=None, status='all', offset=0, limit=common.database_limit, sort=None, search=None):
+def print_db(agent_id=None, status='all', pci=None, cis=None, offset=0, limit=common.database_limit, sort=None, search=None):
     """
     Returns a list of events from the database.
 
     :param agent_id: Agent ID.
     :param status: Filters by status: outstanding, solved, all.
+    :param pci: Filters by PCI DSS requirement.
+    :param cis: Filters by CIS.
     :param offset: First item to return.
     :param limit: Maximum number of items to return.
     :param sort: Sorts the items. Format: {"fields":["field1","field2"],"order":"asc|desc"}.
@@ -89,7 +91,7 @@ def print_db(agent_id=None, status='all', offset=0, limit=common.database_limit,
     request = {}
     fields = {'status': 'status', 'event': 'log', 'oldDay': 'date_first', 'readDay': 'date_last'}
 
-    partial = """SELECT {0} AS status, datetime(date_first, 'unixepoch') AS date_first, datetime(date_last, 'unixepoch') AS date_last, log
+    partial = """SELECT {0} AS status, datetime(date_first, 'unixepoch') AS date_first, datetime(date_last, 'unixepoch') AS date_last, log, pci_dss, cis
         FROM pm_event AS t
         WHERE date_last {1} (SELECT date_last - 86400 FROM pm_event WHERE log = 'Ending rootcheck scan.')"""
 
@@ -102,6 +104,14 @@ def print_db(agent_id=None, status='all', offset=0, limit=common.database_limit,
     elif status == 'solved':
         query = "SELECT {0} FROM (" + partial.format("'solved'", '<=') + \
             ") WHERE log NOT IN ('Starting rootcheck scan.', 'Ending rootcheck scan.', 'Starting syscheck scan.', 'Ending syscheck scan.')"
+
+    if pci:
+        query += ' AND pci_dss = :pci'
+        request['pci'] = pci
+
+    if cis:
+        query += ' AND cis = :cis'
+        request['cis'] = cis
 
     if search:
         query += " AND NOT" if bool(search['negation']) else ' AND'
@@ -124,13 +134,135 @@ def print_db(agent_id=None, status='all', offset=0, limit=common.database_limit,
     else:
         query += ' ORDER BY date_last DESC'
 
+    query += ' LIMIT :offset,:limit'
     request['offset'] = offset
     request['limit'] = limit
-    conn.execute(query.format('*') + ' LIMIT :offset,:limit', request)
-    data['items'] = []
 
+    select = ["status", "date_first", "date_last", "log", "pci_dss", "cis"]
+
+    conn.execute(query.format(','.join(select)), request)
+
+    data['items'] = []
     for tuple in conn:
-        data['items'].append({'status': tuple[0], 'oldDay': tuple[1], 'readDay': tuple[2], 'event': tuple[3]})
+        data['items'].append({'status': tuple[0], 'oldDay': tuple[1], 'readDay': tuple[2], 'event': tuple[3], 'pci': tuple[4], 'cis': tuple[5]})
+
+    return data
+
+
+def get_pci(agent_id=None, offset=0, limit=common.database_limit, sort=None, search=None):
+    """
+    Get all the PCI requirements used in the rootchecks of the agent.
+
+    :param agent_id: Agent ID.
+    :param offset: First item to return.
+    :param limit: Maximum number of items to return.
+    :param sort: Sorts the items. Format: {"fields":["field1","field2"],"order":"asc|desc"}.
+    :param search: Looks for items with the specified string.
+    :return: Dictionary: {'items': array of items, 'totalItems': Number of items (without applying the limit)}
+    """
+
+    query = "SELECT {0} FROM pm_event WHERE pci_dss IS NOT NULL"
+    fields = {}
+    request = {}
+
+    # Connection
+    db_agent = glob('{0}/{1}-*.db'.format(common.database_path_agents, agent_id))
+    if not db_agent:
+        raise WazuhException(1600)
+    else:
+        db_agent = db_agent[0]
+
+    conn = Connection(db_agent)
+
+    # Search
+    if search:
+        query += " AND NOT" if bool(search['negation']) else ' AND'
+        query += " pci_dss LIKE :search"
+        request['search'] = '%{0}%'.format(search['value'])
+
+    # Total items
+    conn.execute(query.format('COUNT(DISTINCT pci_dss)'), request)
+    data = {'totalItems': conn.fetch()[0]}
+
+    # Sorting
+    if sort:
+        allowed_sort_fields = fields.keys()
+        for sf in sort['fields']:
+            if sf not in allowed_sort_fields:
+                raise WazuhException(1403, 'Allowed sort fields: {0}. Field: {1}'.format(allowed_sort_fields, sf))
+        query += ' ORDER BY pci_dss ' + sort['order']
+    else:
+        query += ' ORDER BY pci_dss ASC'
+
+    query += ' LIMIT :offset,:limit'
+    request['offset'] = offset
+    request['limit'] = limit
+
+
+    conn.execute(query.format('DISTINCT pci_dss'), request)
+
+    data['items'] = []
+    for tuple in conn:
+        data['items'].append(tuple[0])
+
+    return data
+
+
+def get_cis(agent_id=None, offset=0, limit=common.database_limit, sort=None, search=None):
+    """
+    Get all the CIS requirements used in the rootchecks of the agent.
+
+    :param agent_id: Agent ID.
+    :param offset: First item to return.
+    :param limit: Maximum number of items to return.
+    :param sort: Sorts the items. Format: {"fields":["field1","field2"],"order":"asc|desc"}.
+    :param search: Looks for items with the specified string.
+    :return: Dictionary: {'items': array of items, 'totalItems': Number of items (without applying the limit)}
+    """
+
+    query = "SELECT {0} FROM pm_event WHERE cis IS NOT NULL"
+    fields = {}
+    request = {}
+
+    # Connection
+    db_agent = glob('{0}/{1}-*.db'.format(common.database_path_agents, agent_id))
+    if not db_agent:
+        raise WazuhException(1600)
+    else:
+        db_agent = db_agent[0]
+
+    conn = Connection(db_agent)
+
+    # Search
+    if search:
+        query += " AND NOT" if bool(search['negation']) else ' AND'
+        query += " cis LIKE :search"
+        request['search'] = '%{0}%'.format(search['value'])
+
+    # Total items
+    conn.execute(query.format('COUNT(DISTINCT cis)'), request)
+    data = {'totalItems': conn.fetch()[0]}
+
+    # Sorting
+    if sort:
+        allowed_sort_fields = fields.keys()
+        for sf in sort['fields']:
+            if sf not in allowed_sort_fields:
+                raise WazuhException(1403, 'Allowed sort fields: {0}. Field: {1}'.format(allowed_sort_fields, sf))
+        query += ' ORDER BY cis ' + sort['order']
+    else:
+        query += ' ORDER BY cis ASC'
+
+    query += ' LIMIT :offset,:limit'
+    request['offset'] = offset
+    request['limit'] = limit
+
+
+    conn.execute(query.format('DISTINCT cis'), request)
+
+    data['items'] = []
+    for tuple in conn:
+        data['items'].append(tuple[0])
 
     return data
 

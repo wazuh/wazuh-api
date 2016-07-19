@@ -158,6 +158,8 @@ if __name__ == "__main__":
         'PUT/manager/update-ruleset/backups/:id': manager.restore_ruleset_backups,
 
         '/rootcheck/:agent_id': rootcheck.print_db,
+        '/rootcheck/:agent_id/pci': rootcheck.get_pci,
+        '/rootcheck/:agent_id/cis': rootcheck.get_cis,
         '/rootcheck/:agent_id/last_scan': rootcheck.last_scan,
         'PUT/rootcheck': rootcheck.run,
         'DELETE/rootcheck': rootcheck.clear,
