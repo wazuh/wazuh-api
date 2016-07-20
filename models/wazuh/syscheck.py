@@ -175,7 +175,11 @@ def files(agent_id=None, event=None, filename=None, filetype='file', md5=None, s
         if summary:
             data['items'].append({'scanDate': tuple[0], 'modificationDate': tuple[1], 'event': tuple[2], 'file': tuple[3]})
         else:
-            permissions = filemode(int(tuple[4], 8))
+            try:
+                permissions = filemode(int(tuple[4], 8))
+            except TypeError:
+                permissions = None
+
             data['items'].append({'scanDate': tuple[0], 'event': tuple[1], 'file': tuple[2], 'size': tuple[3], 'octalMode': tuple[4], 'uid': tuple[5], 'gid': tuple[6], 'md5': tuple[7], 'sha1': tuple[8], 'user': tuple[9], 'group': tuple[10], 'modificationDate': tuple[11], 'inode': tuple[12], 'permissions': permissions})
 
     return data
