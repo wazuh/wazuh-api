@@ -129,7 +129,10 @@ def ossec_log(type_log='all', category='all', months=3, offset=0, limit=common.d
 
     with open(common.ossec_log) as f:
         for line in f:
-            log_date = datetime.strptime(line[:10], '%Y/%m/%d')
+            try:
+                log_date = datetime.strptime(line[:10], '%Y/%m/%d')
+            except ValueError:
+                continue
 
             if log_date < first_date:
                 continue
@@ -182,8 +185,10 @@ def ossec_log_summary(months=3):
     with open(common.ossec_log) as f:
 
         for line in f:
-
-            log_date = datetime.strptime(line[:10], '%Y/%m/%d')
+            try:
+                log_date = datetime.strptime(line[:10], '%Y/%m/%d')
+            except ValueError:
+                continue
 
             if log_date < first_date:
                 continue
