@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v1.2.1] - 2016-07-25
+### Fixed
+- Issue installing API as service.
+
+
 ## [v1.2] - 2016-04-13
 ### Added
 - Run API as service
