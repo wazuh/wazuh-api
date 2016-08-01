@@ -4,7 +4,7 @@
   "description": "Wazuh OSSEC API.",
   "main": "app.js",
   "author": "Wazuh",
-  "license": "GPL",
+  "license": "GPL-2.0",
   "dependencies": {
     "body-parser": "^1.0.2",
     "cors": "^2.7.1",
