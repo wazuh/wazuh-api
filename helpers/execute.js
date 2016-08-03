@@ -34,6 +34,7 @@ exports.exec = function(cmd, args, stdin, callback) {
 
     var output = [];
     var error = false;
+    var close = false;
     var tout = false;
 
     setTimeout(function(){
@@ -42,8 +43,13 @@ exports.exec = function(cmd, args, stdin, callback) {
         tout = true;
     }, timeout*1000);
 
-    child.stdin.setEncoding('utf-8');
-    child.stdin.write(JSON.stringify(stdin) +"\n");
+    // Delay to prevent write stdin when the pipe is closed.
+    setTimeout(function(){
+        if (!close){
+            child.stdin.setEncoding('utf-8');
+            child.stdin.write(JSON.stringify(stdin) +"\n");
+        }
+    }, 20);
 
     child.stdout.on('data', (chunk) => {
         output.push(chunk)
@@ -58,6 +64,7 @@ exports.exec = function(cmd, args, stdin, callback) {
 
     child.on('close', (code) => {
         logger.debug("CMD - Exit code: " + code);
+        close = true;
         if (!error){
             var json_result = {};
 
