@@ -9,17 +9,20 @@ from getopt import getopt, GetoptError
 import json
 import signal
 
-from wazuh import Wazuh
-from wazuh.agent import Agent
-from wazuh.rule import Rule
-from wazuh.decoder import Decoder
-from wazuh.exception import WazuhException
-import wazuh.configuration as configuration
-import wazuh.manager as manager
-import wazuh.stats as stats
-import wazuh.rootcheck as rootcheck
-import wazuh.syscheck as syscheck
-
+error_wazuh_package = False
+try:
+    from wazuh import Wazuh
+    from wazuh.agent import Agent
+    from wazuh.rule import Rule
+    from wazuh.decoder import Decoder
+    from wazuh.exception import WazuhException
+    import wazuh.configuration as configuration
+    import wazuh.manager as manager
+    import wazuh.stats as stats
+    import wazuh.rootcheck as rootcheck
+    import wazuh.syscheck as syscheck
+except:
+    error_wazuh_package = True
 
 def print_json(data, error=0):
     output = {'error': error}
@@ -88,6 +91,10 @@ if __name__ == "__main__":
     pretty = False
     debug = False
     list_f = False
+
+    if error_wazuh_package:
+        print_json("Internal Error: wazuh-framework not found.", 1000)
+        exit(0)
 
     # Read and check arguments
     try:
