@@ -151,6 +151,13 @@ setup_api() {
     print "Installing NodeJS modules."
     exec_cmd "cd $API_PATH && npm install"
 
+    if [ "X${DIRECTORY}" != "X/var/ossec" ]; then
+        repl="\\\/"
+        escaped_ossec_path=`echo "$DIRECTORY" | sed -e "s#\/#$repl#g"`
+        # config.js: config.ossec_path
+        exec_cmd "sed -i 's/^config.ossec_path\s=.*/config.ossec_path = \"$escaped_ossec_path\";/g' $API_PATH/configuration/config.js"
+    fi
+
     print "Installing API as service."
     exec_cmd_output "$API_PATH/scripts/install_daemon.sh"
 
