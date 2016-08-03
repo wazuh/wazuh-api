@@ -38,8 +38,8 @@ var options;
 if (config.https.toLowerCase() == "yes"){
     var fs = require('fs');
     options = {
-      key: fs.readFileSync(__dirname + '/ssl/server.key'),
-      cert: fs.readFileSync(__dirname + '/ssl/server.crt')
+      key: fs.readFileSync(__dirname + '/configuration/ssl/server.key'),
+      cert: fs.readFileSync(__dirname + '/configuration/ssl/server.crt')
     };
 }
 
@@ -52,7 +52,7 @@ if (config.cors.toLowerCase() == "yes"){
 if (config.basic_auth.toLowerCase() == "yes"){
     var auth_secure = auth.basic({
         realm: "OSSEC API",
-        file: __dirname + "/ssl/htpasswd"
+        file: __dirname + "/configuration/auth/htpasswd"
     });
     app.use(auth.connect(auth_secure));
 }
