@@ -21,16 +21,17 @@ try {
     process.exit(1);
 }
 
-config = require('./config.js');
+config = require('./configuration/config');
 logger = require('./helpers/logger');
 res_h = require('./helpers/response_handler');
+api_path = __dirname;
 
 /********************************************/
 /* Config APP
 /********************************************/
 current_version = "v1.2";
 
-port = process.env.PORT || config.port;
+var port = process.env.PORT || config.port;
 
 var app = express();
 // Certs

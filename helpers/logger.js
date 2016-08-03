@@ -10,7 +10,7 @@
  */
 
 var moment = require('moment');
-var config = require('../config.js');
+var config = require('../configuration/config');
 var fs = require('fs');
 
 var tag = config.logs_tag;
