@@ -17,7 +17,7 @@
 
 arg=$1
 
-DOWNLOAD_PATH_RELEASE="https://github.com/wazuh/wazuh-API/archive/master.zip"
+DOWNLOAD_PATH_RELEASE="https://github.com/wazuh/wazuh-API/archive/stable.zip"
 DOWNLOAD_PATH_DEV="https://github.com/wazuh/wazuh-API/archive/development.zip"
 
 print() {
