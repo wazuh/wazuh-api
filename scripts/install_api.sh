@@ -149,7 +149,7 @@ setup_api() {
     exec_cmd "rm -r /tmp/wazuh-API"
 
     print "Installing NodeJS modules."
-    exec_cmd "cd $API_PATH && npm install"
+    exec_cmd "cd $API_PATH && npm install --only=production"
 
     if [ "X${DIRECTORY}" != "X/var/ossec" ]; then
         repl="\\\/"
