@@ -92,10 +92,6 @@ if __name__ == "__main__":
     debug = False
     list_f = False
 
-    if error_wazuh_package:
-        print_json("Internal Error: wazuh-framework not found.", 1000)
-        exit(0)
-
     # Read and check arguments
     try:
         opts, args = getopt(argv[1:], "pdlh", ["pretty", "debug", "list", "help"])
@@ -132,66 +128,74 @@ if __name__ == "__main__":
             print_json("Wazuh-Python Internal Error: Bad JSON input", 1000)
             exit(1)
 
-    wazuh = Wazuh()
+    if error_wazuh_package:
+        print_json("Internal Error: wazuh-framework not found.", 1000)
+        exit(0)  # error code 0 shows the msg in the API response.
 
-    functions = {
-        '/agents/:agent_id': Agent.get_agent,
-        '/agents/:agent_id/key': Agent.get_agent_key,
-        '/agents': Agent.get_agents_overview,
-        '/agents/summary': Agent.get_agents_summary,
-        'PUT/agents/:agent_id/restart': Agent.restart_agents,
-        'PUT/agents/restart': Agent.restart_agents,
-        'PUT/agents/:agent_name': Agent.add_agent,
-        'POST/agents': Agent.add_agent,
-        'DELETE/agents/:agent_id': Agent.remove_agent,
+    if 'function' not in request:
+        print_json("Wazuh-Python Internal Error: 'JSON input' must have the 'function' key", 1000)
+        exit(1)
 
-        '/decoders': Decoder.get_decoders,
-        '/decoders/files': Decoder.get_decoders_files,
-
-        '/manager/info': wazuh.get_ossec_init,
-        '/manager/status': manager.status,
-        '/manager/configuration': configuration.get_ossec_conf,
-        '/manager/stats': stats.totals,
-        '/manager/stats/hourly': stats.hourly,
-        '/manager/stats/weekly': stats.weekly,
-        '/manager/update-ruleset/backups': manager.get_ruleset_backups,
-        '/manager/logs/summary': manager.ossec_log_summary,
-        '/manager/logs': manager.ossec_log,
-        'PUT/manager/configuration/test': configuration.check,
-        'PUT/manager/start': manager.start,
-        'PUT/manager/stop': manager.stop,
-        'PUT/manager/restart': manager.restart,
-        'PUT/manager/update-ruleset': manager.update_ruleset,
-        'PUT/manager/update-ruleset/backups/:id': manager.restore_ruleset_backups,
-
-        '/rootcheck/:agent_id': rootcheck.print_db,
-        '/rootcheck/:agent_id/pci': rootcheck.get_pci,
-        '/rootcheck/:agent_id/cis': rootcheck.get_cis,
-        '/rootcheck/:agent_id/last_scan': rootcheck.last_scan,
-        'PUT/rootcheck': rootcheck.run,
-        'DELETE/rootcheck': rootcheck.clear,
-
-        '/rules': Rule.get_rules,
-        '/rules/groups': Rule.get_groups,
-        '/rules/pci': Rule.get_pci,
-        '/rules/files': Rule.get_rules_files,
-
-        '/syscheck/files': syscheck.files,
-        '/syscheck/:agent_id/last_scan': syscheck.last_scan,
-        'PUT/syscheck': syscheck.run,
-        'DELETE/syscheck': syscheck.clear
-
-    }
+    if 'ossec_path' not in request:
+        print_json("Wazuh-Python Internal Error: 'JSON input' must have the 'ossec_path' key", 1000)
+        exit(1)
 
     # Main
     try:
+        wazuh = Wazuh(ossec_path=request['ossec_path'])
+
+        functions = {
+            '/agents/:agent_id': Agent.get_agent,
+            '/agents/:agent_id/key': Agent.get_agent_key,
+            '/agents': Agent.get_agents_overview,
+            '/agents/summary': Agent.get_agents_summary,
+            'PUT/agents/:agent_id/restart': Agent.restart_agents,
+            'PUT/agents/restart': Agent.restart_agents,
+            'PUT/agents/:agent_name': Agent.add_agent,
+            'POST/agents': Agent.add_agent,
+            'DELETE/agents/:agent_id': Agent.remove_agent,
+
+            '/decoders': Decoder.get_decoders,
+            '/decoders/files': Decoder.get_decoders_files,
+
+            '/manager/info': wazuh.get_ossec_init,
+            '/manager/status': manager.status,
+            '/manager/configuration': configuration.get_ossec_conf,
+            '/manager/stats': stats.totals,
+            '/manager/stats/hourly': stats.hourly,
+            '/manager/stats/weekly': stats.weekly,
+            '/manager/update-ruleset/backups': manager.get_ruleset_backups,
+            '/manager/logs/summary': manager.ossec_log_summary,
+            '/manager/logs': manager.ossec_log,
+            'PUT/manager/configuration/test': configuration.check,
+            'PUT/manager/start': manager.start,
+            'PUT/manager/stop': manager.stop,
+            'PUT/manager/restart': manager.restart,
+            'PUT/manager/update-ruleset': manager.update_ruleset,
+            'PUT/manager/update-ruleset/backups/:id': manager.restore_ruleset_backups,
+
+            '/rootcheck/:agent_id': rootcheck.print_db,
+            '/rootcheck/:agent_id/pci': rootcheck.get_pci,
+            '/rootcheck/:agent_id/cis': rootcheck.get_cis,
+            '/rootcheck/:agent_id/last_scan': rootcheck.last_scan,
+            'PUT/rootcheck': rootcheck.run,
+            'DELETE/rootcheck': rootcheck.clear,
+
+            '/rules': Rule.get_rules,
+            '/rules/groups': Rule.get_groups,
+            '/rules/pci': Rule.get_pci,
+            '/rules/files': Rule.get_rules_files,
+
+            '/syscheck/files': syscheck.files,
+            '/syscheck/:agent_id/last_scan': syscheck.last_scan,
+            'PUT/syscheck': syscheck.run,
+            'DELETE/syscheck': syscheck.clear
+
+        }
+
         if list_f:
             print_json(sorted(functions.keys()))
             exit(0)
-
-        if 'function' not in request:
-            print_json("Wazuh-Python Internal Error: 'JSON input' must have the 'function' key", 1000)
-            exit(1)
 
         if 'arguments' in request and request['arguments']:
             data = functions[request['function']](**request['arguments'])

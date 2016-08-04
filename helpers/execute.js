@@ -26,8 +26,11 @@ var timeout = 30; // seconds
 exports.exec = function(cmd, args, stdin, callback) {
     const child_process  = require('child_process');
 
+    if (stdin != null)
+        stdin['ossec_path'] = config.ossec_path;
+
     // log
-    var full_cmd = "CMD - Command: " + cmd + " args:" + args.join(' ') + " stdin:" + JSON.stringify(stdin)
+    var full_cmd = "CMD - Command: " + cmd + " args:" + args.join(' ') + " stdin:" + JSON.stringify(stdin);
     logger.debug(full_cmd);
 
     const child = child_process.spawn(cmd, args);
@@ -38,7 +41,7 @@ exports.exec = function(cmd, args, stdin, callback) {
     var tout = false;
 
     setTimeout(function(){
-        logger.debug("Sending SIGTERM to " + full_cmd)
+        logger.debug("Sending SIGTERM to " + full_cmd);
         child.kill('SIGTERM');
         tout = true;
     }, timeout*1000);
@@ -49,7 +52,7 @@ exports.exec = function(cmd, args, stdin, callback) {
             child.stdin.setEncoding('utf-8');
             child.stdin.write(JSON.stringify(stdin) +"\n");
         }
-    }, 20);
+    }, 50);
 
     child.stdout.on('data', (chunk) => {
         output.push(chunk)
