@@ -10,6 +10,7 @@ After=network-online.target
 [Service]
 Type=simple
 ExecStart=
+Environment=NODE_ENV=production
 
 [Install]
 WantedBy=multi-user.target
