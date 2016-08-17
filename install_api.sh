@@ -12,6 +12,7 @@
 # Instructions:
 #  - ./install_api.sh dependencies: List dependencies.
 #  - ./install_api.sh dev: Install API from development branch.
+#  - ./install_api.sh local: Install API from current path.
 #  - ./install_api.sh: Install API from release.
 
 
@@ -54,6 +55,8 @@ check_arguments() {
     else
         if [ "X${arg}" == "Xdev" ]; then
             DOWNLOAD_PATH=$DOWNLOAD_PATH_DEV
+        elif [ "X${arg}" == "Xlocal" ]; then
+            SOURCE_PATH=`pwd`
         else
             DOWNLOAD_PATH=$DOWNLOAD_PATH_RELEASE
         fi
@@ -84,7 +87,7 @@ previous_checks() {
 
     API_PATH="${DIRECTORY}/api"
 
-    exec_cmd_no_exit "python -c 'import wazuh'"
+    exec_cmd_no_exit "$DIRECTORY/framework/env/bin/python -c 'import wazuh'"
     RC=$?
 
     if [[ $RC != 0 ]]; then
@@ -108,11 +111,15 @@ required_packages() {
 }
 
 setup_api() {
-    # Download API
-    print "Downloading API from $DOWNLOAD_PATH"
-    exec_cmd "wget $DOWNLOAD_PATH -O /tmp/wazuh-API.zip"
-    exec_cmd "unzip -o /tmp/wazuh-API.zip -d /tmp/wazuh-API"
-    exec_cmd "rm /tmp/wazuh-API.zip"
+    if [ "X${arg}" != "Xlocal" ]; then
+        # Download API
+        print "Downloading API from $DOWNLOAD_PATH"
+        exec_cmd "wget $DOWNLOAD_PATH -O /tmp/wazuh-API.zip"
+        exec_cmd "unzip -o /tmp/wazuh-API.zip -d /tmp/wazuh-API"
+        exec_cmd "rm /tmp/wazuh-API.zip"
+    else
+        print "Wazuh-API [$SOURCE_PATH]\n"
+    fi
 
     # Install API
     if [ -d $API_PATH ]; then
@@ -139,14 +146,20 @@ setup_api() {
     fi
 
     exec_cmd "mkdir $API_PATH"
-    exec_cmd "cp -r /tmp/wazuh-API/*/* $API_PATH"
+    if [ "X${arg}" != "Xlocal" ]; then
+        exec_cmd "cp -r /tmp/wazuh-API/*/* $API_PATH"
+    else
+        exec_cmd "cp -r $SOURCE_PATH/* $API_PATH"
+    fi
 
     if [ "X${update}" == "Xyes" ]; then
         exec_cmd "rm -r $API_PATH/configuration"
         exec_cmd "mv $DIRECTORY/api_config_backup $API_PATH/configuration"
     fi
 
-    exec_cmd "rm -r /tmp/wazuh-API"
+    if [ "X${arg}" != "Xlocal" ]; then
+        exec_cmd "rm -r /tmp/wazuh-API"
+    fi
 
     print "Installing NodeJS modules."
     exec_cmd "cd $API_PATH && npm install --only=production"
