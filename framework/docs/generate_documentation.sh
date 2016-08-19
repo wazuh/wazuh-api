@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+source /var/ossec/framework/env/bin/activate
+echo -e "Required packages:"
+echo "------"
+pip install sphinx
+pip install sphinx_rtd_theme
+echo "------"
+
 echo -e "\nsphinx-apidoc:"
 sphinx-apidoc --force --module-first --no-toc -H "Wazuh Framework Reference" -o source/ ../wazuh/ || exit 1
 
@@ -14,4 +21,5 @@ if [ "X$1" != "X" ]; then
     cp -r source/wazuh_framework* $1/source/ || exit 1
 fi
 
+`deactivate`
 echo -e "\n[Done]"
