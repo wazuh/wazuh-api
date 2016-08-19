@@ -1,5 +1,19 @@
+
+# NodeJS
 node_modules
+
+# Temp files
 scripts/*.tmp
-*.pyc
+
+# Documentation
 doc/build/
-models/docs/build/
+
+# Python
+*.pyc
+*.egg-info
+*.egg
+
+# Framework
+framework/docs/build/
+framework/dist/
+framework/build/
