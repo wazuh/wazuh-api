@@ -9,17 +9,26 @@
 
 # Installer for Wazuh-API
 # Wazuh Inc.
+#
 # Instructions:
-#  - ./install_api.sh dependencies: List dependencies.
-#  - ./install_api.sh dev: Install API from development branch.
-#  - ./install_api.sh local: Install API from current path.
-#  - ./install_api.sh: Install API from release.
+#  List dependencies.
+#    ./install_api.sh dependencies
+#  Install last release (download last release)
+#    ./install_api.sh
+#  Install from current path
+#    git clone https://github.com/wazuh/wazuh-API.git
+#    cd wazuh-API
+#    [git checkout <branch>]
+#    Options:
+#      ./install_api.sh local : Install API from current path
+#      ./install_api.sh dev   : Install API from current path, development mode
 
+
+# Configuration
+API_SOURCES="/root"
+DOWNLOAD_PATH_RELEASE="https://github.com/wazuh/wazuh-API/archive/stable.zip"
 
 arg=$1
-
-DOWNLOAD_PATH_RELEASE="https://github.com/wazuh/wazuh-API/archive/stable.zip"
-DOWNLOAD_PATH_DEV="https://github.com/wazuh/wazuh-API/archive/development.zip"
 
 print() {
     echo -e $1
@@ -32,20 +41,23 @@ error_and_exit() {
 }
 
 exec_cmd() {
-    bash -c "$1" > /dev/null 2>&1 || error_and_exit "$1"
+    $1 > /dev/null 2>&1 || error_and_exit "$1"
 }
 
-exec_cmd_no_exit() {
-    bash -c "$1" > /dev/null 2>&1
-}
-
-exec_cmd_output() {
+exec_cmd_bash() {
     bash -c "$1" || error_and_exit "$1"
 }
 
-exec_cmd_debug() {
-    echo $1
-    bash -c "$1"
+edit_configuration() { # $1 -> setting,  $2 -> value
+    sed -i "s/^config.$1\s=.*/config.$1 = \"$2\";/g" "$API_PATH/configuration/config.js" || error_and_exit "sed (editing configuration)"
+}
+
+get_type_service() {
+    if [ -n "$(ps -e | egrep ^\ *1\ .*systemd$)" ]; then
+        echo "systemctl"
+    else
+        echo "service"
+    fi
 }
 
 check_arguments() {
@@ -53,14 +65,30 @@ check_arguments() {
         required_packages
         exit 0
     else
-        if [ "X${arg}" == "Xdev" ]; then
-            DOWNLOAD_PATH=$DOWNLOAD_PATH_DEV
-        elif [ "X${arg}" == "Xlocal" ]; then
-            SOURCE_PATH=`pwd`
+        if [ "X${arg}" == "Xdev" ] || [ "X${arg}" == "Xlocal" ]; then
+            API_SOURCES=`pwd`
         else
             DOWNLOAD_PATH=$DOWNLOAD_PATH_RELEASE
         fi
     fi
+}
+
+required_packages() {
+    print "\nDebian and Ubuntu based Linux distributions:"
+    print "\tsudo apt-get install -y unzip wget apache2-utils python-pip"
+    print "\tpip:"
+    print "\t\tpip install virtualenv"
+    print "\tNodeJS and npm:"
+    print "\t\tcurl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -"
+    print "\t\tsudo apt-get install -y nodejs"
+
+    print "\nRed Hat, CentOS and Fedora:"
+    print "\tsudo yum install -y unzip wget httpd-tools python-pip"
+    print "\tpip:"
+    print "\t\tpip install virtualenv"
+    print "\tNodeJS and npm:"
+    print "\t\tcurl --silent --location https://rpm.nodesource.com/setup_4.x | bash -"
+    print "\t\tsudo yum -y install nodejs"
 }
 
 previous_checks() {
@@ -86,52 +114,77 @@ previous_checks() {
     fi
 
     API_PATH="${DIRECTORY}/api"
+    FRAMEWORK_PATH="${DIRECTORY}/framework"
+    serv_type=$(get_type_service)
+}
 
-    exec_cmd_no_exit "$DIRECTORY/framework/env/bin/python -c 'import wazuh'"
-    RC=$?
+download_api () {
+    if [ "X$DOWNLOAD_PATH" != "X" ]; then
+        print "\nDownloading API from $DOWNLOAD_PATH"
 
-    if [[ $RC != 0 ]]; then
-        print "wazuh-framework not found. It should have been installed with ossec-wazuh.\nExiting."
-        exit 1
+        if [ -d "$API_SOURCES/wazuh-API" ]; then
+            exec_cmd "rm -rf $API_SOURCES/wazuh-API"
+        fi
+
+        exec_cmd "wget $DOWNLOAD_PATH -O $API_SOURCES/wazuh-API.zip"
+        exec_cmd "unzip -o $API_SOURCES/wazuh-API.zip -d $API_SOURCES/wazuh-API"
+        exec_cmd "rm $API_SOURCES/wazuh-API.zip"
+
+        API_SOURCES="$API_SOURCES/wazuh-API/wazuh-API-stable"
+    else
+        if [ "X${arg}" == "Xdev" ]; then
+            print "\nInstalling Wazuh-API from current directory [$API_SOURCES] [DEV MODE]"
+        else
+            print "\nInstalling Wazuh-API from current directory [$API_SOURCES]"
+        fi
     fi
 }
 
-required_packages() {
-    print "\nDebian and Ubuntu based Linux distributions:"
-    print "\tsudo apt-get install -y unzip wget apache2-utils"
-    print "\tNodeJS and npm:"
-    print "\t\tcurl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -"
-    print "\t\tsudo apt-get install -y nodejs"
+install_framework() {
+    FRAMEWORK_SOURCES="$API_SOURCES/framework"
 
-    print "\nRed Hat, CentOS and Fedora:"
-    print "\tyum install -y unzip wget httpd-tools"
-    print "\tNodeJS and npm:"
-    print "\t\tcurl --silent --location https://rpm.nodesource.com/setup_4.x | bash -"
-    print "\t\tsudo yum -y install nodejs"
+    print "\nInstalling Framework in '$FRAMEWORK_PATH'."
+    e_msg="installed"
+    exec_cmd "mkdir -p $FRAMEWORK_PATH"
+    exec_cmd "cd $FRAMEWORK_PATH"
+    if [ -d "$FRAMEWORK_PATH/env" ]; then
+        exec_cmd "rm -rf $FRAMEWORK_PATH/env"
+    fi
+    exec_cmd "virtualenv env"
+    echo "----------------------------------------------------------------"
+    if [ "X${arg}" == "Xdev" ]; then
+        exec_cmd_bash "source env/bin/activate && pip install -e $FRAMEWORK_SOURCES && deactivate"
+    else
+        exec_cmd_bash "source env/bin/activate && pip install $FRAMEWORK_SOURCES && deactivate"
+    fi
+    echo "----------------------------------------------------------------"
+    #fi
+
+    # Check
+    $FRAMEWORK_PATH/env/bin/python -c 'import wazuh'
+    RC=$?
+    if [[ $RC != 0 ]]; then
+        print "Error installing Wazuh Framework.\nExiting."
+        exit 1
+    fi
+
+    print "Wazuh Framework $e_msg."
 }
 
 setup_api() {
-    if [ "X${arg}" != "Xlocal" ]; then
-        # Download API
-        print "Downloading API from $DOWNLOAD_PATH"
-        exec_cmd "wget $DOWNLOAD_PATH -O /tmp/wazuh-API.zip"
-        exec_cmd "unzip -o /tmp/wazuh-API.zip -d /tmp/wazuh-API"
-        exec_cmd "rm /tmp/wazuh-API.zip"
-    else
-        print "Wazuh-API [$SOURCE_PATH]\n"
-    fi
-
-    # Install API
+    # Check if API is installed
     if [ -d $API_PATH ]; then
+        print ""
         while true; do
             read -p "Wazuh-API is installed. Do you want to update it? [y/n]: " yn
             case $yn in
                 [Yy] ) update="yes"; break;;
-                [Nn] ) break;;
+                [Nn] ) update="no"; break;;
             esac
         done
     fi
 
+    # Backup configuration and remove api directory
     if [ "X${update}" == "Xyes" ]; then
         print "Updating API at '$API_PATH'."
         exec_cmd "cp -r $API_PATH/configuration $DIRECTORY/api_config_backup"
@@ -145,40 +198,39 @@ setup_api() {
         exec_cmd "rm -r $API_PATH"
     fi
 
-    exec_cmd "mkdir $API_PATH"
-    if [ "X${arg}" != "Xlocal" ]; then
-        exec_cmd "cp -r /tmp/wazuh-API/*/* $API_PATH"
+    # Install API
+    if [ "X${arg}" == "Xdev" ]; then
+        exec_cmd "ln -s $API_SOURCES $API_PATH"
     else
-        exec_cmd "cp -r $SOURCE_PATH/* $API_PATH"
+        exec_cmd "mkdir $API_PATH"
+        exec_cmd "cp -r $API_SOURCES/* $API_PATH"
     fi
 
+    # Restore configuration
     if [ "X${update}" == "Xyes" ]; then
         exec_cmd "rm -r $API_PATH/configuration"
         exec_cmd "mv $DIRECTORY/api_config_backup $API_PATH/configuration"
     fi
 
-    if [ "X${arg}" != "Xlocal" ]; then
-        exec_cmd "rm -r /tmp/wazuh-API"
-    fi
-
     print "Installing NodeJS modules."
     exec_cmd "cd $API_PATH && npm install --only=production"
 
+    # Set OSSEC directory in API configuration
     if [ "X${DIRECTORY}" != "X/var/ossec" ]; then
         repl="\\\/"
         escaped_ossec_path=`echo "$DIRECTORY" | sed -e "s#\/#$repl#g"`
-        # config.js: config.ossec_path
-        exec_cmd "sed -i 's/^config.ossec_path\s=.*/config.ossec_path = \"$escaped_ossec_path\";/g' $API_PATH/configuration/config.js"
+        edit_configuration "ossec_path" $escaped_ossec_path
     fi
 
     print "Installing API as service."
-    exec_cmd_output "$API_PATH/scripts/install_daemon.sh"
+    echo "----------------------------------------------------------------"
+    exec_cmd_bash "$API_PATH/scripts/install_daemon.sh"
+    echo "----------------------------------------------------------------"
 
-    print "API $e_msg."
+    print "API $e_msg.\n"
 }
 
 configure_api() {
-    print ""
     while true; do
         read -p "Wazuh-API is installed. Do you want to configure it? [y/n]: " yn
         case $yn in
@@ -197,23 +249,25 @@ configure_api() {
         else
             print "Changing TCP port to $port."
         fi
-        exec_cmd "sed -i 's/^config.port\s=.*/config.port = $port;/g' $API_PATH/configuration/config.js"
+
+        edit_configuration "port" $port
+
         print ""
 
         read -p "Use HTTPS? [Y/n]: " https
         if [ "X${https,,}" == "X" ] || [ "X${https,,}" == "Xy" ]; then
             protocol="https"
-            exec_cmd "sed -i 's/^config.https\s=.*/config.https = \"yes\";/g' $API_PATH/configuration/config.js"
+            edit_configuration "https" "yes"
 
             read -p "Do you want to use out-of-the-box certificates? [y/N]: " certs
             if [ "X${certs,,}" == "X" ] || [ "X${certs,,}" == "Xn" ]; then
                 print ""
                 read -p "Create key [ENTER]" enter
-                exec_cmd_output "cd $API_PATH/configuration/ssl && openssl genrsa -des3 -out server.key 1024 && cp server.key server.key.org && openssl rsa -in server.key.org -out server.key"
+                exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl genrsa -des3 -out server.key 1024 && cp server.key server.key.org && openssl rsa -in server.key.org -out server.key"
 
                 print ""
                 read -p "Create certificate signing request (CSR) [ENTER]" enter
-                exec_cmd_output "cd $API_PATH/configuration/ssl && openssl req -new -key server.key -out server.csr"
+                exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl req -new -key server.key -out server.csr"
 
                 print ""
                 read -p "Create self-signed certificate [ENTER]" enter
@@ -231,7 +285,7 @@ configure_api() {
         else
             protocol="http"
             print "Using HTTP (not secure)."
-            exec_cmd "sed -i 's/^config.https\s=.*/config.https = \"no\";/g' $API_PATH/configuration/config.js"
+            edit_configuration "https" "no"
         fi
         print ""
 
@@ -239,41 +293,45 @@ configure_api() {
         read -p "Use user authentication? [Y/n]: " auth
         if [ "X${auth,,}" == "X" ] || [ "X${auth,,}" == "Xy" ]; then
             auth="y"
-            exec_cmd "sed -i 's/^config.basic_auth\s=.*/config.basic_auth = \"yes\";/g' $API_PATH/configuration/config.js"
+            edit_configuration "basic_auth" "yes"
 
             read -p "Do you want to use out-of-the-box users? [y/N]: " users
             if [ "X${users,,}" == "X" ] || [ "X${users,,}" == "Xn" ]; then
                 read -p "API user: " user
-                exec_cmd_output "cd $API_PATH/configuration/auth && htpasswd -c htpasswd $user"
+                exec_cmd_bash "cd $API_PATH/configuration/auth && htpasswd -c htpasswd $user"
             else
                 print "Using out-of-the-box user/password (not secure)."
             fi
         else
             auth="n"
             print "Disabling authentication (not secure)."
-            exec_cmd "sed -i 's/^config.basic_auth\s=.*/config.basic_auth = \"no\";/g' $API_PATH/configuration/config.js"
+            edit_configuration "basic_auth" "no"
         fi
         print ""
 
         read -p "is the API running behind a proxy server? [y/N]: " proxy
         if [ "X${proxy,,}" == "Xy" ]; then
             print "API running behind proxy server."
-            exec_cmd "sed -i 's/^config.BehindProxyServer\s=.*/config.BehindProxyServer = \"yes\";/g' $API_PATH/configuration/config.js"
+            edit_configuration "BehindProxyServer" "yes"
         else
-            exec_cmd "sed -i 's/^config.BehindProxyServer\s=.*/config.BehindProxyServer = \"no\";/g' $API_PATH/configuration/config.js"
+            edit_configuration "BehindProxyServer" "no"
         fi
 
         print "\nConfiguration is done."
 
         print "\nRestarting API."
-        systemctl restart wazuh-api
+        if [ $serv_type == "systemctl" ]; then
+            exec_cmd "systemctl restart wazuh-api"
+        else
+            exec_cmd "service wazuh-api restart"
+        fi
     else
         protocol="https"
         auth="y"
         port="55000"
     fi
 
-    print "\nYou can manually change the configuration by editing the file $API_PATH/config.js."
+    print "\nYou can manually change the configuration by editing the file $API_PATH/configuration/config.js."
 
     print "\n\nAPI URL: $protocol://localhost:$port/"
     if [ "X${auth,,}" == "Xy" ]; then
@@ -287,6 +345,12 @@ configure_api() {
     else
         print "Authentication disabled (not secure)."
     fi
+
+    if [ $serv_type == "systemctl" ]; then
+        print "Service: systemctl status wazuh-api"
+    else
+        print "Service: service wazuh-api status"
+    fi
     print ""
 }
 
@@ -294,11 +358,13 @@ main() {
     print "### Wazuh-API ###"
     check_arguments
     previous_checks
+    download_api
+    install_framework
     setup_api
     if [ "X${update}" != "Xyes" ]; then
         configure_api
     fi
-    print "### [API $e_msg successfully] ###\n"
+    print "### [API $e_msg successfully] ###"
     exit 0
 }
 
