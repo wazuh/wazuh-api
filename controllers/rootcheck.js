@@ -31,8 +31,10 @@ var router = require('express').Router();
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rootcheck/000?offset=0&limit=2&pretty"
  *
  */
-router.get('/:agent_id', function(req, res) {
+router.get('/:agent_id', cache(config.cache_max_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rootcheck/:agent_id");
+
+    req.apicacheGroup = "rootcheck";
 
     var data_request = {'function': '/rootcheck/:agent_id', 'arguments': {}};
 
@@ -80,8 +82,11 @@ router.get('/:agent_id', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rootchecks/000/pci?offset=0&limit=10&pretty"
  *
  */
-router.get('/:agent_id/pci', function(req, res) {
+router.get('/:agent_id/pci', cache(config.cache_max_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rootchecks/:agent_id/pci");
+
+    req.apicacheGroup = "rootcheck";
+
     var data_request = {'function': '/rootcheck/:agent_id/pci', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
 
@@ -121,8 +126,11 @@ router.get('/:agent_id/pci', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rootchecks/:agent_id/cis?offset=0&limit=10&pretty"
  *
  */
-router.get('/:agent_id/cis', function(req, res) {
+router.get('/:agent_id/cis', cache(config.cache_max_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rootchecks/:agent_id/cis");
+
+    req.apicacheGroup = "rootcheck";
+
     var data_request = {'function': '/rootcheck/:agent_id/cis', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
 
@@ -159,8 +167,10 @@ router.get('/:agent_id/cis', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rootcheck/000/last_scan?pretty"
  *
  */
-router.get('/:agent_id/last_scan', function(req, res) {
+router.get('/:agent_id/last_scan', cache(config.cache_min_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rootcheck/:agent_id/last_scan");
+
+    req.apicacheGroup = "rootcheck";
 
     var data_request = {'function': '/rootcheck/:agent_id/last_scan', 'arguments': {}};
 
@@ -235,6 +245,8 @@ router.put('/:agent_id', function(req, res) {
 router.delete('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /rootcheck");
 
+    apicache.clear("rootcheck");
+
     var data_request = {'function': 'DELETE/rootcheck', 'arguments': {}};
     data_request['arguments']['all_agents'] = 1;
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
@@ -255,6 +267,8 @@ router.delete('/', function(req, res) {
  */
 router.delete('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /rootcheck/:agent_id");
+
+    apicache.clear("rootcheck");
 
     var data_request = {'function': 'DELETE/rootcheck', 'arguments': {}};
 

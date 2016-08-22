@@ -33,8 +33,10 @@ var router = require('express').Router();
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rules?offset=0&limit=2&pretty"
  *
  */
-router.get('/', function(req, res) {
+router.get('/', cache(config.cache_min_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rules");
+
+    req.apicacheGroup = "rules";
 
     var data_request = {'function': '/rules', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'group':'alphanumeric_param', 'level':'ranges', 'file':'alphanumeric_param', 'pci':'alphanumeric_param'};
@@ -80,8 +82,11 @@ router.get('/', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rules/groups?offset=0&limit=10&pretty"
  *
  */
-router.get('/groups', function(req, res) {
+router.get('/groups', cache(config.cache_min_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rules/groups");
+
+    req.apicacheGroup = "rules";
+
     var data_request = {'function': '/rules/groups', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
 
@@ -116,8 +121,11 @@ router.get('/groups', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rules/pci?offset=0&limit=10&pretty"
  *
  */
-router.get('/pci', function(req, res) {
+router.get('/pci', cache(config.cache_min_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rules/pci");
+
+    req.apicacheGroup = "rules";
+
     var data_request = {'function': '/rules/pci', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
 
@@ -153,8 +161,10 @@ router.get('/pci', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rules/files?offset=0&limit=10&pretty"
  *
  */
-router.get('/files', function(req, res) {
+router.get('/files', cache(config.cache_min_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rules/files");
+
+    req.apicacheGroup = "rules";
 
     var data_request = {'function': '/rules/files', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'download':'alphanumeric_param'};
@@ -196,8 +206,10 @@ router.get('/files', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rules/1002?pretty"
  *
  */
-router.get('/:rule_id', function(req, res) {
+router.get('/:rule_id', cache(config.cache_min_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rules/:rule_id");
+
+    req.apicacheGroup = "rules";
 
     var data_request = {'function': '/rules', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};

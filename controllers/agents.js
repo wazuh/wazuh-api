@@ -29,8 +29,10 @@ var router = require('express').Router();
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents?pretty&offset=0&limit=5&sort=-ip,name"
  *
  */
-router.get('/', function(req, res) {
+router.get('/', cache(config.cache_min_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents");
+
+    req.apicacheGroup = "agents";
 
     var data_request = {'function': '/agents', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param'};
@@ -64,8 +66,10 @@ router.get('/', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/summary?pretty"
  *
  */
-router.get('/summary', function(req, res) {
+router.get('/summary', cache(config.cache_min_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents");
+
+    req.apicacheGroup = "agents";
 
     var data_request = {'function': '/agents/summary', 'arguments': {}};
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
@@ -84,8 +88,10 @@ router.get('/summary', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/000?pretty"
  *
  */
-router.get('/:agent_id', function(req, res) {
+router.get('/:agent_id', cache(config.cache_min_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents/:agent_id");
+
+    req.apicacheGroup = "agents";
 
     var data_request = {'function': '/agents/:agent_id', 'arguments': {}};
 

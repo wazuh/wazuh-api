@@ -29,8 +29,10 @@ var router = require('express').Router();
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/decoders?pretty&offset=0&limit=2&sort=+file,position"
  *
  */
-router.get('/', function(req, res) {
+router.get('/', cache(config.cache_min_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /decoders");
+
+    req.apicacheGroup = "decoders";
 
     var data_request = {'function': '/decoders', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'file':'paths'};
@@ -68,8 +70,10 @@ router.get('/', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/decoders/files?pretty&offset=0&limit=10&sort=-"
  *
  */
-router.get('/files', function(req, res) {
+router.get('/files', cache(config.cache_min_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /decoders/files");
+
+    req.apicacheGroup = "decoders";
 
     var data_request = {'function': '/decoders/files', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
@@ -105,8 +109,10 @@ router.get('/files', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/decoders/parents?pretty&offset=0&limit=2&sort=-file"
  *
  */
-router.get('/parents', function(req, res) {
+router.get('/parents', cache(config.cache_min_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /decoders/parents");
+
+    req.apicacheGroup = "decoders";
 
     var data_request = {'function': '/decoders', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
@@ -145,8 +151,10 @@ router.get('/parents', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/decoders/apache-errorlog?pretty"
  *
  */
-router.get('/:decoder_name', function(req, res) {
+router.get('/:decoder_name', cache(config.cache_min_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /decoders/:decoder_name");
+
+    req.apicacheGroup = "decoders";
 
     var data_request = {'function': '/decoders', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};

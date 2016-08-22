@@ -37,8 +37,10 @@ var router = require('express').Router();
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscheck/000/files?offset=0&limit=2&pretty"
  *
  */
-router.get('/:agent_id/files', function(req, res) {
+router.get('/:agent_id/files', cache(config.cache_min_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/files");
+
+    req.apicacheGroup = "syscheck";
 
     var data_request = {'function': '/syscheck/files', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'event':'names', 'file':'paths', 'filetype':'names', 'summary':'names', 'md5':'hashes', 'sha1':'hashes', 'hash':'hashes'};
@@ -89,8 +91,10 @@ router.get('/:agent_id/files', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscheck/000/last_scan?pretty"
  *
  */
-router.get('/:agent_id/last_scan', function(req, res) {
+router.get('/:agent_id/last_scan', cache(config.cache_min_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/last_scan");
+
+    req.apicacheGroup = "syscheck";
 
     var data_request = {'function': '/syscheck/:agent_id/last_scan', 'arguments': {}};
 
@@ -163,6 +167,8 @@ router.put('/:agent_id', function(req, res) {
 router.delete('/', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /syscheck");
 
+    apicache.clear("syscheck");
+
     var data_request = {'function': 'DELETE/syscheck', 'arguments': {}};
     data_request['arguments']['all_agents'] = 1;
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
@@ -183,6 +189,8 @@ router.delete('/', function(req, res) {
  */
 router.delete('/:agent_id', function(req, res) {
     logger.log(req.connection.remoteAddress + " DELETE /syscheck/:agent_id");
+
+    apicache.clear("syscheck");
 
     var data_request = {'function': 'DELETE/syscheck', 'arguments': {}};
 

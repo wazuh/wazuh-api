@@ -25,8 +25,10 @@ var router = require('express').Router();
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/status?pretty"
  *
  */
-router.get('/status', function(req, res) {
+router.get('/status', cache(config.cache_min_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/status");
+
+    req.apicacheGroup = "manager";
 
     var data_request = {'function': '/manager/status', 'arguments': {}};
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
@@ -43,8 +45,10 @@ router.get('/status', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/info?pretty"
  *
  */
-router.get('/info', function(req, res) {
+router.get('/info', cache(config.cache_min_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/info");
+
+    req.apicacheGroup = "manager";
 
     var data_request = {'function': '/manager/info', 'arguments': {}};
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
@@ -64,8 +68,10 @@ router.get('/info', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/configuration?section=global&pretty"
  *
  */
-router.get('/configuration', function(req, res) {
+router.get('/configuration', cache(config.cache_min_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/configuration");
+
+    req.apicacheGroup = "manager";
 
     var data_request = {'function': '/manager/configuration', 'arguments': {}};
     var filters = {'section':'names', 'field': 'names'};
@@ -97,8 +103,10 @@ router.get('/configuration', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/stats?pretty"
  *
  */
-router.get('/stats', function(req, res) {
+router.get('/stats', cache(config.cache_min_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/stats");
+
+    req.apicacheGroup = "manager";
 
     var data_request = {'function': '/manager/stats', 'arguments': {}};
     var filters = {'date':'dates'};
@@ -134,8 +142,10 @@ router.get('/stats', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/stats/hourly?pretty"
  *
  */
-router.get('/stats/hourly', function(req, res) {
+router.get('/stats/hourly', cache(config.cache_min_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/stats/hourly");
+
+    req.apicacheGroup = "manager";
 
     var data_request = {'function': '/manager/stats/hourly', 'arguments': {}};
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
@@ -153,8 +163,10 @@ router.get('/stats/hourly', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/stats/weekly?pretty"
  *
  */
-router.get('/stats/weekly', function(req, res) {
+router.get('/stats/weekly', cache(config.cache_min_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/stats/weekly");
+
+    req.apicacheGroup = "manager";
 
     var data_request = {'function': '/manager/stats/weekly', 'arguments': {}};
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
@@ -172,8 +184,10 @@ router.get('/stats/weekly', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/update-ruleset/backups?pretty"
  *
  */
-router.get('/update-ruleset/backups', function(req, res) {
+router.get('/update-ruleset/backups', cache(config.cache_min_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/update-ruleset/backups");
+
+    req.apicacheGroup = "manager";
 
     var data_request = {'function': '/manager/update-ruleset/backups', 'arguments': {}};
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
@@ -197,8 +211,10 @@ router.get('/update-ruleset/backups', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/logs?offset=0&limit=5&pretty"
  *
  */
-router.get('/logs', function(req, res) {
+router.get('/logs', cache(config.cache_min_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/logs");
+
+    req.apicacheGroup = "manager";
 
     var data_request = {'function': '/manager/logs', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'type_log':'names', 'category': 'names'};
@@ -234,8 +250,10 @@ router.get('/logs', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/logs/summary?pretty"
  *
  */
-router.get('/logs/summary', function(req, res) {
+router.get('/logs/summary', cache(config.cache_min_time + " seconds"), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/logs/summary");
+
+    req.apicacheGroup = "manager";
 
     var data_request = {'function': '/manager/logs/summary', 'arguments': {}};
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });

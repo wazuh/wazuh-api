@@ -25,8 +25,7 @@ config.cors = "yes";
 config.cache_enabled = "yes"
 config.cache_debug = "yes"
 config.cache_min_time = "2"
-config.cache_max_time = "5"
-config.cache_long_time = "300"
+config.cache_max_time = "4"
 // Log path
 config.log_path = config.ossec_path + "/logs/api.log";
 
