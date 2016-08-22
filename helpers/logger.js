@@ -13,7 +13,7 @@ var moment = require('moment');
 var config = require('../configuration/config');
 var fs = require('fs');
 
-var tag = config.logs_tag;
+var tag = "WazuhAPI";
 var f_log = config.log_path;
 var LEVEL_DISABLED = 0;
 var LEVEL_INFO = 1;

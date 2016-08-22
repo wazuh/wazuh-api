@@ -6,6 +6,7 @@
   "author": "Wazuh",
   "license": "GPL-2.0",
   "dependencies": {
+    "apicache": "^0.0.14",
     "body-parser": "^1.15.2",
     "cors": "^2.7.1",
     "express": "^4.14.0",

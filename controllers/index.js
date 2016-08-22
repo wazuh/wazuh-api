@@ -13,10 +13,26 @@
 errors = require('../helpers/errors');
 filter = require('../helpers/filters');
 execute = require('../helpers/execute');
+apicache  = require('apicache');
+cache     = apicache.middleware;
 wazuh_control = api_path + "/models/wazuh-api.py";
 
 var router = require('express').Router();
 var validator = require('../helpers/input_validation');
+
+
+// Cache options
+if (config.cache_enabled.toLowerCase() == "yes"){
+    if (config.cache_debug.toLowerCase() == "yes")
+        cache_debug = true;
+    else
+        cache_debug = false;
+    cache_opt = { debug: cache_debug, defaultDuration: config.cache_min_time * 1000};
+}
+else
+    cache_opt = { enabled: false };
+
+apicache.options(cache_opt);
 
 // Content-type
 router.post("*", function(req, res, next) {
@@ -54,6 +70,7 @@ router.use('/syscheck', require('./syscheck'));
 router.use('/rootcheck', require('./rootcheck'));
 router.use('/rules', require('./rules'));
 router.use('/decoders', require('./decoders'));
+router.use('/cache', require('./cache'));
 
 // Index
 router.get('/',function(req, res) {
