@@ -29,7 +29,7 @@ api_path = __dirname;
 /********************************************/
 /* Config APP
 /********************************************/
-current_version = "v1.2";
+current_version = "v1.3.0";
 
 var port = process.env.PORT || config.port;
 
@@ -65,12 +65,12 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 /**
  * Versioning
- * Using: Header: "api-version: vX.Y" or URL: /v1.2/
+ * Using: Header: "api-version: vX.Y" or URL: /v1.3.0/
  */
 app.use(function(req, res, next) {
     var api_version_header = req.get('api-version');
     var api_version_url = req.path.split('/')[1];
-    var regex_version = /^v\d+(?:\.\d+){0,1}$/i;
+    var regex_version = /^v\d+(?:\.\d+){0,2}$/i;
     var new_url = "";
 
     if (api_version_url && regex_version.test(api_version_url))
