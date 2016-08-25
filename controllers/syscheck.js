@@ -37,7 +37,7 @@ var router = require('express').Router();
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscheck/000/files?offset=0&limit=2&pretty"
  *
  */
-router.get('/:agent_id/files', cache(config.cache_min_time + " seconds"), function(req, res) {
+router.get('/:agent_id/files', cache(), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/files");
 
     req.apicacheGroup = "syscheck";
@@ -91,7 +91,7 @@ router.get('/:agent_id/files', cache(config.cache_min_time + " seconds"), functi
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscheck/000/last_scan?pretty"
  *
  */
-router.get('/:agent_id/last_scan', cache(config.cache_min_time + " seconds"), function(req, res) {
+router.get('/:agent_id/last_scan', cache(), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/last_scan");
 
     req.apicacheGroup = "syscheck";

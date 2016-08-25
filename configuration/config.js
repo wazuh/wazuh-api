@@ -21,11 +21,11 @@ config.BehindProxyServer = "no";
 config.logs = "debug";
 // Cross-origin resource sharing. Values: yes, no.
 config.cors = "yes";
-// Cache (time in seconds)
+// Cache (time in milliseconds)
 config.cache_enabled = "yes"
-config.cache_debug = "yes"
-config.cache_min_time = "2"
-config.cache_max_time = "4"
+config.cache_debug = "no"
+config.cache_time = "750"
+config.cache_clear_time = "300000"
 // Log path
 config.log_path = config.ossec_path + "/logs/api.log";
 

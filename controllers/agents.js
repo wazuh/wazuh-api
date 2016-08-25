@@ -29,7 +29,7 @@ var router = require('express').Router();
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents?pretty&offset=0&limit=5&sort=-ip,name"
  *
  */
-router.get('/', cache(config.cache_min_time + " seconds"), function(req, res) {
+router.get('/', cache(), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents");
 
     req.apicacheGroup = "agents";
@@ -66,7 +66,7 @@ router.get('/', cache(config.cache_min_time + " seconds"), function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/summary?pretty"
  *
  */
-router.get('/summary', cache(config.cache_min_time + " seconds"), function(req, res) {
+router.get('/summary', cache(), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents");
 
     req.apicacheGroup = "agents";
@@ -88,7 +88,7 @@ router.get('/summary', cache(config.cache_min_time + " seconds"), function(req, 
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/000?pretty"
  *
  */
-router.get('/:agent_id', cache(config.cache_min_time + " seconds"), function(req, res) {
+router.get('/:agent_id', cache(), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /agents/:agent_id");
 
     req.apicacheGroup = "agents";

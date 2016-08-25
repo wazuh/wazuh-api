@@ -31,7 +31,7 @@ var router = require('express').Router();
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rootcheck/000?offset=0&limit=2&pretty"
  *
  */
-router.get('/:agent_id', cache(config.cache_max_time + " seconds"), function(req, res) {
+router.get('/:agent_id', cache(), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rootcheck/:agent_id");
 
     req.apicacheGroup = "rootcheck";
@@ -82,7 +82,7 @@ router.get('/:agent_id', cache(config.cache_max_time + " seconds"), function(req
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rootchecks/000/pci?offset=0&limit=10&pretty"
  *
  */
-router.get('/:agent_id/pci', cache(config.cache_max_time + " seconds"), function(req, res) {
+router.get('/:agent_id/pci', cache(), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rootchecks/:agent_id/pci");
 
     req.apicacheGroup = "rootcheck";
@@ -126,7 +126,7 @@ router.get('/:agent_id/pci', cache(config.cache_max_time + " seconds"), function
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rootchecks/:agent_id/cis?offset=0&limit=10&pretty"
  *
  */
-router.get('/:agent_id/cis', cache(config.cache_max_time + " seconds"), function(req, res) {
+router.get('/:agent_id/cis', cache(), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rootchecks/:agent_id/cis");
 
     req.apicacheGroup = "rootcheck";
@@ -167,7 +167,7 @@ router.get('/:agent_id/cis', cache(config.cache_max_time + " seconds"), function
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rootcheck/000/last_scan?pretty"
  *
  */
-router.get('/:agent_id/last_scan', cache(config.cache_min_time + " seconds"), function(req, res) {
+router.get('/:agent_id/last_scan', cache(), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /rootcheck/:agent_id/last_scan");
 
     req.apicacheGroup = "rootcheck";

@@ -27,12 +27,15 @@ if (config.cache_enabled.toLowerCase() == "yes"){
         cache_debug = true;
     else
         cache_debug = false;
-    cache_opt = { debug: cache_debug, defaultDuration: config.cache_min_time * 1000};
+    cache_opt = { debug: cache_debug, defaultDuration: config.cache_time};
 }
 else
     cache_opt = { enabled: false };
 
 apicache.options(cache_opt);
+
+// Clear cache each cache_clear_time
+setInterval(function() { apicache.clear(); }, config.cache_clear_time);
 
 // Content-type
 router.post("*", function(req, res, next) {

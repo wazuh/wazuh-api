@@ -29,7 +29,7 @@ var router = require('express').Router();
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/decoders?pretty&offset=0&limit=2&sort=+file,position"
  *
  */
-router.get('/', cache(config.cache_min_time + " seconds"), function(req, res) {
+router.get('/', cache(), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /decoders");
 
     req.apicacheGroup = "decoders";
@@ -70,7 +70,7 @@ router.get('/', cache(config.cache_min_time + " seconds"), function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/decoders/files?pretty&offset=0&limit=10&sort=-"
  *
  */
-router.get('/files', cache(config.cache_min_time + " seconds"), function(req, res) {
+router.get('/files', cache(), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /decoders/files");
 
     req.apicacheGroup = "decoders";
@@ -109,7 +109,7 @@ router.get('/files', cache(config.cache_min_time + " seconds"), function(req, re
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/decoders/parents?pretty&offset=0&limit=2&sort=-file"
  *
  */
-router.get('/parents', cache(config.cache_min_time + " seconds"), function(req, res) {
+router.get('/parents', cache(), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /decoders/parents");
 
     req.apicacheGroup = "decoders";
@@ -151,7 +151,7 @@ router.get('/parents', cache(config.cache_min_time + " seconds"), function(req, 
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/decoders/apache-errorlog?pretty"
  *
  */
-router.get('/:decoder_name', cache(config.cache_min_time + " seconds"), function(req, res) {
+router.get('/:decoder_name', cache(), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /decoders/:decoder_name");
 
     req.apicacheGroup = "decoders";

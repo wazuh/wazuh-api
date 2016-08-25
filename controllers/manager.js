@@ -25,7 +25,7 @@ var router = require('express').Router();
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/status?pretty"
  *
  */
-router.get('/status', cache(config.cache_min_time + " seconds"), function(req, res) {
+router.get('/status', cache(), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/status");
 
     req.apicacheGroup = "manager";
@@ -45,7 +45,7 @@ router.get('/status', cache(config.cache_min_time + " seconds"), function(req, r
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/info?pretty"
  *
  */
-router.get('/info', cache(config.cache_min_time + " seconds"), function(req, res) {
+router.get('/info', cache(), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/info");
 
     req.apicacheGroup = "manager";
@@ -68,7 +68,7 @@ router.get('/info', cache(config.cache_min_time + " seconds"), function(req, res
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/configuration?section=global&pretty"
  *
  */
-router.get('/configuration', cache(config.cache_min_time + " seconds"), function(req, res) {
+router.get('/configuration', cache(), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/configuration");
 
     req.apicacheGroup = "manager";
@@ -103,7 +103,7 @@ router.get('/configuration', cache(config.cache_min_time + " seconds"), function
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/stats?pretty"
  *
  */
-router.get('/stats', cache(config.cache_min_time + " seconds"), function(req, res) {
+router.get('/stats', cache(), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/stats");
 
     req.apicacheGroup = "manager";
@@ -142,7 +142,7 @@ router.get('/stats', cache(config.cache_min_time + " seconds"), function(req, re
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/stats/hourly?pretty"
  *
  */
-router.get('/stats/hourly', cache(config.cache_min_time + " seconds"), function(req, res) {
+router.get('/stats/hourly', cache(), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/stats/hourly");
 
     req.apicacheGroup = "manager";
@@ -163,7 +163,7 @@ router.get('/stats/hourly', cache(config.cache_min_time + " seconds"), function(
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/stats/weekly?pretty"
  *
  */
-router.get('/stats/weekly', cache(config.cache_min_time + " seconds"), function(req, res) {
+router.get('/stats/weekly', cache(), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/stats/weekly");
 
     req.apicacheGroup = "manager";
@@ -184,7 +184,7 @@ router.get('/stats/weekly', cache(config.cache_min_time + " seconds"), function(
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/update-ruleset/backups?pretty"
  *
  */
-router.get('/update-ruleset/backups', cache(config.cache_min_time + " seconds"), function(req, res) {
+router.get('/update-ruleset/backups', cache(), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/update-ruleset/backups");
 
     req.apicacheGroup = "manager";
@@ -211,7 +211,7 @@ router.get('/update-ruleset/backups', cache(config.cache_min_time + " seconds"),
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/logs?offset=0&limit=5&pretty"
  *
  */
-router.get('/logs', cache(config.cache_min_time + " seconds"), function(req, res) {
+router.get('/logs', cache(), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/logs");
 
     req.apicacheGroup = "manager";
@@ -250,7 +250,7 @@ router.get('/logs', cache(config.cache_min_time + " seconds"), function(req, res
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/logs/summary?pretty"
  *
  */
-router.get('/logs/summary', cache(config.cache_min_time + " seconds"), function(req, res) {
+router.get('/logs/summary', cache(), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/logs/summary");
 
     req.apicacheGroup = "manager";
