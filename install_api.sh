@@ -60,6 +60,15 @@ get_type_service() {
     fi
 }
 
+check_program_installed() {
+    hash $1 > /dev/null 2>&1
+    if [ "$?" != "0" ]; then
+        print "$1 not found. is it installed?."
+        print "Review the dependencies executing: ./install_api.sh dependencies"
+        exit 1
+    fi
+}
+
 check_arguments() {
     if [ "X${arg}" == "Xdependencies" ]; then
         required_packages
@@ -78,7 +87,7 @@ required_packages() {
     print "\tsudo apt-get install -y unzip wget apache2-utils python-pip"
     print "\tpip:"
     print "\t\tpip install virtualenv"
-    print "\tNodeJS and npm:"
+    print "\tNodeJS 4.x or newer:"
     print "\t\tcurl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -"
     print "\t\tsudo apt-get install -y nodejs"
 
@@ -86,7 +95,7 @@ required_packages() {
     print "\tsudo yum install -y unzip wget httpd-tools python-pip"
     print "\tpip:"
     print "\t\tpip install virtualenv"
-    print "\tNodeJS and npm:"
+    print "\tNodeJS 4.x or newer:"
     print "\t\tcurl --silent --location https://rpm.nodesource.com/setup_4.x | bash -"
     print "\t\tsudo yum -y install nodejs"
 }
@@ -116,6 +125,36 @@ previous_checks() {
     API_PATH="${DIRECTORY}/api"
     FRAMEWORK_PATH="${DIRECTORY}/framework"
     serv_type=$(get_type_service)
+}
+
+dependency_checks () {
+    check_program_installed "unzip"
+    check_program_installed "wget"
+    check_program_installed "pip"
+    check_program_installed "virtualenv"
+    check_program_installed "htpasswd"
+    check_program_installed "openssl"
+
+    NODE_DIR=$(which nodejs 2> /dev/null)
+
+    if [ "X$NODE_DIR" = "X" ]; then
+        NODE_DIR=$(which node 2> /dev/null)
+
+        if [ "X$NODE_DIR" = "X" ]; then
+            echo "NodeJS binaries not found. Is NodeJS installed?"
+            exit 1
+        fi
+    fi
+
+    NODE_VERSION=`$NODE_DIR --version | grep -P '^v\d+' -o | grep -P '\d+' -o`
+
+    if [ $NODE_VERSION -lt 4 ]; then
+        print "The current version of NodeJS installed is not supported. Wazuh-API requires NodeJS 4.x or newer."
+        print "Review the dependencies executing: ./install_api.sh dependencies"
+        exit 1
+    fi
+
+    check_program_installed "npm"
 }
 
 download_api () {
@@ -358,6 +397,7 @@ main() {
     print "### Wazuh-API ###"
     check_arguments
     previous_checks
+    dependency_checks
     download_api
     install_framework
     setup_api
