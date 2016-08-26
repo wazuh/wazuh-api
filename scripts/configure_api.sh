@@ -90,12 +90,12 @@ change_port () {
     print ""
     read -p "TCP port [55000]: " port
     if [ "X${port}" == "X" ] || [ "X${port}" == "X55000" ]; then
+        edit_configuration "port" "55000"
         print "Using TCP port 55000."
     else
+        edit_configuration "port" $port
         print "Changing TCP port to $port."
     fi
-
-    edit_configuration "port" $port
 }
 
 change_https () {
