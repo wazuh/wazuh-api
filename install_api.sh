@@ -45,6 +45,10 @@ exec_cmd_bash() {
     bash -c "$1" || error_and_exit "$1"
 }
 
+get_configuration_value () { # $1 setting
+    cat "$API_PATH/configuration/config.js" | grep -P "config.$1\s*=\s*\"" | grep -P '".*"' -o | tr -d '"'
+}
+
 edit_configuration() { # $1 -> setting,  $2 -> value
     sed -i "s/^config.$1\s=.*/config.$1 = \"$2\";/g" "$API_PATH/configuration/config.js" || error_and_exit "sed (editing configuration)"
 }
@@ -76,15 +80,25 @@ check_program_installed() {
 # END Aux functions
 
 show_info () {
-    print "\nAPI URL: http://localhost:55000/"
-    print "user: 'foo'"
-    print "password: 'bar'"
-    print "Configuration: $API_PATH/configuration/config.js."
-    if [ $serv_type == "systemctl" ]; then
-        print "Service: systemctl status wazuh-api"
+    https=$(get_configuration_value "https")
+    port=$(get_configuration_value "port")
+    basic_auth=$(get_configuration_value "basic_auth")
+
+    if [ "X${https}" == "Xyes" ]; then
+        proto="https"
     else
-        print "Service: service wazuh-api status"
+        proto="http"
     fi
+
+    print "\nAPI URL: $proto://localhost:$port/"
+    if [ "X${update}" != "Xyes" ]; then
+        print "user: 'foo'"
+        print "password: 'bar'"
+    fi
+    if [ "X${basic_auth}" == "Xno" ]; then
+        print "Authentication disabled (not secure)."
+    fi
+    print "Configuration: $API_PATH/configuration"
 }
 
 required_packages() {
@@ -299,20 +313,15 @@ main() {
     previous_checks
     get_api
     setup_api
+    show_info
 
-    if [ "X${update}" == "Xno" ]; then
-        show_info
-    else
-        if [ "X${RESTORE_WARNING}" == "X1" ]; then
-            show_info
-            print "Backup directory: $API_PATH_BACKUP."
-            print "\nWarning: Some problems occured when restoring your previous configuration ($API_PATH/configuration/config.js). Please, review it manually."
-        elif [ "X${RESTORE_WARNING}" == "X2" ]; then
-            show_info
-            print "Backup directory: $API_PATH_BACKUP."
-            print "\nWarning: Some problems occured when restoring your previous configuration. Please, review it manually."
-        fi
+    if [ "X${RESTORE_WARNING}" == "X1" ]; then
+        print "\nWarning: Some problems occured when restoring your previous configuration ($API_PATH/configuration/config.js). Please, review it manually. Backup directory: $API_PATH_BACKUP."
+    elif [ "X${RESTORE_WARNING}" == "X2" ]; then
+        print "\nWarning: Some problems occured when restoring your previous configuration. Please, review it manually. Backup directory: $API_PATH_BACKUP."
     fi
+
+    print "Note: You can configure the API executing $API_PATH/scripts/configure_api.sh"
 
     print "\n### [API $e_msg successfully] ###"
     exit 0

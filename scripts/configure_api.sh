@@ -77,6 +77,7 @@ previous_checks() {
         DIRECTORY=$DEF_OSSDIR
     fi
 
+    serv_type=$(get_type_service)
     API_PATH="${DIRECTORY}/api"
 
 
@@ -166,7 +167,7 @@ main () {
     print "\nConfiguration changed."
 
     print "\nRestarting API."
-    if [ "$serv_type" == "systemctl" ]; then
+    if [ $serv_type == "systemctl" ]; then
         exec_cmd "systemctl restart wazuh-api"
     else
         exec_cmd "service wazuh-api restart"
