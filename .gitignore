@@ -2,8 +2,6 @@
 # NodeJS
 node_modules
 
-# SSL
-configuration/ssl
 
 # Temp files
 scripts/*.tmp
