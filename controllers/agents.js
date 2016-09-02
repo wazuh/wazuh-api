@@ -153,7 +153,7 @@ router.put('/restart', function(req, res) {
 
 
 /**
- * @api {put} /agents/:agent_id Restart an agent
+ * @api {put} /agents/:agent_id/restart Restart an agent
  * @apiName PutAgentsRestartId
  * @apiGroup Restart
  *

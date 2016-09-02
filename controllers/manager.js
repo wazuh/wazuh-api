@@ -365,7 +365,7 @@ router.put('/update-ruleset', function(req, res) {
 })
 
 /**
- * @api {put} /manager/update-ruleset/backups/:id Restore rulset backup
+ * @api {put} /manager/update-ruleset/backups/:id Restore ruleset backup
  * @apiName PutManagerRestoreRulesetBackup
  * @apiGroup Ruleset
  *

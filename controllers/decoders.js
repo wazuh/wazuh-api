@@ -55,7 +55,7 @@ router.get('/', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /decoders/files Get all decoders files.
+ * @api {get} /decoders/files Get all decoders files
  * @apiName GetDecodersFiles
  * @apiGroup Info
  *
