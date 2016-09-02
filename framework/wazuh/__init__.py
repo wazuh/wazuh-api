@@ -5,6 +5,7 @@
 
 import common
 from wazuh.exception import WazuhException
+from wazuh.utils import execute
 import re
 
 """
@@ -35,6 +36,7 @@ class Wazuh:
         self.installation_date = None
         self.type = None
         self.path = ossec_path
+        self.max_agents = 'N/A'
 
         if get_init:
             self.get_ossec_init()
@@ -45,7 +47,7 @@ class Wazuh:
         return str(self.to_dict())
 
     def to_dict(self):
-        return {'path': self.path, 'version': self.version, 'installation_date': self.installation_date, 'type': self.type}
+        return {'path': self.path, 'version': self.version, 'installation_date': self.installation_date, 'type': self.type, 'max_agents': self.max_agents}
 
     def get_ossec_init(self):
         """
@@ -74,6 +76,8 @@ class Wazuh:
                             self.type = match.group(2)
         except:
             raise WazuhException(1005, self.OSSEC_INIT)
+
+        self.max_agents = execute([common.agent_control, '-j', '-m'])['max_agents']
 
         return self.to_dict()
 
