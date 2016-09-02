@@ -32,8 +32,7 @@ print() {
 }
 
 error_and_exit() {
-    echo "Error executing command: '$1'."
-    echo 'Exiting.'
+    print "Error executing command: '$1'.\nExiting."
     exit 1
 }
 
@@ -46,7 +45,7 @@ exec_cmd_bash() {
 }
 
 get_configuration_value () { # $1 setting
-    cat "$API_PATH/configuration/config.js" | grep -P "config.$1\s*=\s*\"" | grep -P '".*"' -o | tr -d '"'
+    cat "$API_PATH/configuration/config.js" | grep -P "config.$1\s*=\s*\"" | grep -P '".*"' -o | tr -d '"' 
 }
 
 edit_configuration() { # $1 -> setting,  $2 -> value
@@ -126,7 +125,6 @@ previous_checks() {
         API_SOURCES="/root"
         DOWNLOAD_PATH=$(url_lastest_release "wazuh" "Wazuh-API")
     else
-        echo $arg
         API_SOURCES=$arg  # Path argument
     fi
 
@@ -204,26 +202,30 @@ get_api () {
 }
 
 install_framework() {
-    FRAMEWORK_SOURCES="$API_SOURCES/framework"
-
-    print "\nFramework."
+    print "\nInstalling dependencies: xmljson."
     print "-----------------------------------------------------------------"
-    if [ "X${arg}" == "Xdev" ]; then
-        exec_cmd_bash "pip install -e $FRAMEWORK_SOURCES"
-    else
-        exec_cmd_bash "pip install $FRAMEWORK_SOURCES --ignore-installed"
-    fi
+    exec_cmd_bash "pip install xmljson --ignore-installed"
     print "-----------------------------------------------------------------"
+    #FRAMEWORK_SOURCES="$API_SOURCES/framework"
 
-    # Check
-    `python -c 'import wazuh'`
-    RC=$?
-    if [[ $RC != 0 ]]; then
-        print "Error installing Wazuh Framework.\nExiting."
-        exit 1
-    fi
+    #print "\nFramework."
+    #print "-----------------------------------------------------------------"
+    #if [ "X${arg}" == "Xdev" ]; then
+    #    exec_cmd_bash "pip install -e $FRAMEWORK_SOURCES"
+    #else
+    #    exec_cmd_bash "pip install $FRAMEWORK_SOURCES --ignore-installed"
+    #fi
+    #print "-----------------------------------------------------------------"
 
-    print "Framework ready."
+    ## Check
+    #`python -c 'import wazuh'`
+    #RC=$?
+    #if [[ $RC != 0 ]]; then
+    #    print "Error installing Wazuh Framework.\nExiting."
+    #    exit 1
+    #fi
+
+    #print "Framework ready."
 }
 
 backup_api () {
@@ -262,8 +264,11 @@ setup_api() {
                 [Nn] ) update="no"; break;;
             esac
         done
+
+        exec_cmd "rm -rf $API_PATH"
     fi
 
+    # Copy files
     if [ "X${update}" == "Xyes" ]; then
         print "\nUpdating API ['$API_PATH']."
         e_msg="updated"
@@ -271,15 +276,6 @@ setup_api() {
         print "\nInstalling API ['$API_PATH']."
         e_msg="installed"
     fi
-
-    install_framework
-
-    if [ -d $API_PATH ]; then
-        exec_cmd "rm -rf $API_PATH"
-    fi
-
-    # Copy files
-    print "Copying files."
     if [ "X${arg}" == "Xdev" ]; then
         exec_cmd "ln -s $API_SOURCES $API_PATH"
     else
@@ -291,7 +287,9 @@ setup_api() {
         restore_configuration
     fi
 
-    print "NodeJS modules."
+    install_framework
+
+    print "\nInstalling NodeJS modules."
     exec_cmd "cd $API_PATH && npm install --only=production"
 
     # Set OSSEC directory in API configuration
@@ -301,11 +299,10 @@ setup_api() {
         edit_configuration "ossec_path" $escaped_ossec_path
     fi
 
-    print "API as service."
+    print "\nInstalling service."
     echo "----------------------------------------------------------------"
     exec_cmd_bash "$API_PATH/scripts/install_daemon.sh"
     echo "----------------------------------------------------------------"
-
 }
 
 main() {

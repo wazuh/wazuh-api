@@ -4,13 +4,14 @@
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 
-from sys import argv, exit
+from sys import argv, exit, path
 from getopt import getopt, GetoptError
 import json
 import signal
 
 error_wazuh_package = False
 try:
+    path.append('../framework/')
     from wazuh import Wazuh
     from wazuh.agent import Agent
     from wazuh.rule import Rule
