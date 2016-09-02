@@ -3,7 +3,7 @@
 # Created by Wazuh, Inc. <info@wazuh.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
-from wazuh.utils import execute, previous_month, cut_array, sort_array, search_array
+from wazuh.utils import execute, previous_month, cut_array, sort_array, search_array, tail
 from wazuh import common
 from datetime import datetime
 import re
@@ -127,38 +127,37 @@ def ossec_log(type_log='all', category='all', months=3, offset=0, limit=common.d
     first_date = previous_month(months)
     statfs_error = "ERROR: statfs('******') produced error: No such file or directory"
 
-    with open(common.ossec_log) as f:
-        for line in f:
-            try:
-                log_date = datetime.strptime(line[:10], '%Y/%m/%d')
-            except ValueError:
-                continue
+    for line in tail(common.ossec_log, 2000):
+        try:
+            log_date = datetime.strptime(line[:10], '%Y/%m/%d')
+        except ValueError:
+            continue
 
-            if log_date < first_date:
-                continue
+        if log_date < first_date:
+            continue
 
-            if category != 'all':
-                log_category = __get_ossec_log_category(line)
+        if category != 'all':
+            log_category = __get_ossec_log_category(line)
 
-                if log_category:
-                    if log_category != category:
-                        continue
-                else:
+            if log_category:
+                if log_category != category:
                     continue
+            else:
+                continue
 
-            line = line.replace('\n', '')
-            if type_log == 'all':
-                logs.append(line)
-            elif type_log == 'error' and "error:" in line.lower():
-                if "ERROR: statfs(" in line:
-                    if statfs_error in logs:
-                        continue
-                    else:
-                        logs.append(statfs_error)
+        line = line.replace('\n', '')
+        if type_log == 'all':
+            logs.append(line)
+        elif type_log == 'error' and "error:" in line.lower():
+            if "ERROR: statfs(" in line:
+                if statfs_error in logs:
+                    continue
                 else:
-                    logs.append(line)
-            elif type_log == 'info' and "error:" not in line.lower():
+                    logs.append(statfs_error)
+            else:
                 logs.append(line)
+        elif type_log == 'info' and "error:" not in line.lower():
+            logs.append(line)
 
     if search:
         logs = search_array(logs, search['value'], search['negation'])
