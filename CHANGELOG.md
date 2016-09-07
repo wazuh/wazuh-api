@@ -52,7 +52,7 @@ All notable changes to this project will be documented in this file.
  - Now /manager/configuration/test use PUT method instead of GET.
  - Improved:
   - GET /rootcheck/:agent_id (Get rootcheck database)
-  - GET /syscheck/:agent_id/files (Get syscheck files)
+  - GET /syscheck/:agent_id (Get syscheck files)
 
 
 ## [v1.2.1] - 2016-07-25

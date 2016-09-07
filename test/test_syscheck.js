@@ -18,11 +18,11 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 describe('Syscheck', function() {
 
-    describe('GET/syscheck/:agent_id/files', function() {
+    describe('GET/syscheck/:agent_id', function() {
 
         it('Request', function(done) {
             request(common.url)
-            .get("/syscheck/000/files")
+            .get("/syscheck/000")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -42,7 +42,7 @@ describe('Syscheck', function() {
 
         it('Pagination', function(done) {
             request(common.url)
-            .get("/syscheck/000/files?offset=0&limit=1")
+            .get("/syscheck/000?offset=0&limit=1")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -60,7 +60,7 @@ describe('Syscheck', function() {
 
         it('Sort', function(done) {
             request(common.url)
-            .get("/syscheck/000/files?sort=scanDate&offset=0&limit=10")
+            .get("/syscheck/000?sort=scanDate&offset=0&limit=10")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -79,7 +79,7 @@ describe('Syscheck', function() {
 
         it('Search', function(done) {
             request(common.url)
-            .get("/syscheck/000/files?search=a&offset=0&limit=10")
+            .get("/syscheck/000?search=a&offset=0&limit=10")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -98,7 +98,7 @@ describe('Syscheck', function() {
 
         it('Params: Bad agent id', function(done) {
             request(common.url)
-            .get("/syscheck/abc/files")
+            .get("/syscheck/abc")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(400)
@@ -113,7 +113,7 @@ describe('Syscheck', function() {
 
         it('Errors: No agent', function(done) {
             request(common.url)
-            .get("/syscheck/9999999/files")
+            .get("/syscheck/9999999")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -128,7 +128,7 @@ describe('Syscheck', function() {
 
         it('Filters: Invalid filter', function(done) {
             request(common.url)
-            .get("/syscheck/000/files?random")
+            .get("/syscheck/000?random")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(400)
@@ -144,7 +144,7 @@ describe('Syscheck', function() {
 
         it('Filters: Invalid filter - Extra field', function(done) {
             request(common.url)
-            .get("/syscheck/000/files?search=added&random")
+            .get("/syscheck/000?search=added&random")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(400)
@@ -160,7 +160,7 @@ describe('Syscheck', function() {
 
         it('Filters: event', function(done) {
             request(common.url)
-            .get("/syscheck/000/files?event=added&offset=0&limit=10")
+            .get("/syscheck/000?event=added&offset=0&limit=10")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -179,7 +179,7 @@ describe('Syscheck', function() {
 
         it('Filters: file', function(done) {
             request(common.url)
-            .get("/syscheck/000/files?file=/var/ossec/etc/ossec.conf&offset=0&limit=10")
+            .get("/syscheck/000?file=/var/ossec/etc/ossec.conf&offset=0&limit=10")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -197,7 +197,7 @@ describe('Syscheck', function() {
 
         it('Filters: filetype', function(done) {
             request(common.url)
-            .get("/syscheck/000/files?filetype=file&offset=0&limit=10")
+            .get("/syscheck/000?filetype=file&offset=0&limit=10")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -216,7 +216,7 @@ describe('Syscheck', function() {
 
         it('Filters: summary', function(done) {
             request(common.url)
-            .get("/syscheck/000/files?summary=yes&offset=0&limit=10")
+            .get("/syscheck/000?summary=yes&offset=0&limit=10")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -235,7 +235,7 @@ describe('Syscheck', function() {
 
         it('Filters: md5', function(done) {
             request(common.url)
-            .get("/syscheck/000/files?md5=88238db1ba8ce3df2c6d5f5d861b0306")
+            .get("/syscheck/000?md5=88238db1ba8ce3df2c6d5f5d861b0306")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -253,7 +253,7 @@ describe('Syscheck', function() {
 
         it('Filters: sha1', function(done) {
             request(common.url)
-            .get("/syscheck/000/files?sha1=fbed7cd200928050bc8d1a8d8ca342dd23723027")
+            .get("/syscheck/000?sha1=fbed7cd200928050bc8d1a8d8ca342dd23723027")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -271,7 +271,7 @@ describe('Syscheck', function() {
 
         it('Filters: hash', function(done) {
             request(common.url)
-            .get("/syscheck/000/files?hash=fbed7cd200928050bc8d1a8d8ca342dd23723027")
+            .get("/syscheck/000?hash=fbed7cd200928050bc8d1a8d8ca342dd23723027")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)

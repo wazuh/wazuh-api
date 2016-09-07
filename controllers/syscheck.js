@@ -14,7 +14,7 @@ var router = require('express').Router();
 
 
 /**
- * @api {get} /syscheck/:agent_id/files Get syscheck files
+ * @api {get} /syscheck/:agent_id Get syscheck files
  * @apiName GetSyscheckAgent
  * @apiGroup Info
  *
@@ -34,15 +34,15 @@ var router = require('express').Router();
  * @apiDescription Returns the syscheck files of an agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscheck/000/files?offset=0&limit=2&pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscheck/000?offset=0&limit=2&pretty"
  *
  */
-router.get('/:agent_id/files', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/files");
+router.get('/:agent_id', cache(), function(req, res) {
+    logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id");
 
     req.apicacheGroup = "syscheck";
 
-    var data_request = {'function': '/syscheck/files', 'arguments': {}};
+    var data_request = {'function': '/syscheck/:agent_id', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'event':'names', 'file':'paths', 'filetype':'names', 'summary':'names', 'md5':'hashes', 'sha1':'hashes', 'hash':'hashes'};
 
     if (!filter.check(req.query, filters, res))  // Filter with error

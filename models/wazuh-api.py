@@ -192,7 +192,7 @@ if __name__ == "__main__":
             '/rules/pci': Rule.get_pci,
             '/rules/files': Rule.get_rules_files,
 
-            '/syscheck/files': syscheck.files,
+            '/syscheck/:agent_id': syscheck.files,
             '/syscheck/:agent_id/last_scan': syscheck.last_scan,
             'PUT/syscheck': syscheck.run,
             'DELETE/syscheck': syscheck.clear
