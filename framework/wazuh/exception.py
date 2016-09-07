@@ -47,10 +47,12 @@ class WazuhException(Exception):
         1501: 'Error reading decoder files',
 
         # Syscheck: 1600 - 1699
-        1600: 'There is no database for selected agent',  # Also, in rootcheck
+        1600: 'There is no database for selected agent',  # Also, in rootcheck, agent
 
-        # Manager:
         # Agents:
+        1700: 'Bad arguments. Accepted arguments: [id] or [name and ip]',
+        1701: 'Agent does not exist',
+        # Manager:
         # Rootcheck:
 
         # Database:

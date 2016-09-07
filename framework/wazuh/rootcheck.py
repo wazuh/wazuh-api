@@ -274,8 +274,26 @@ def last_scan(agent_id):
     :param agent_id: Agent ID.
     :return: Dictionary: rootcheckEndTime, rootcheckTime.
     """
-    agent = Agent(agent_id)
-    agent.get()
-    data = {'rootcheckTime': agent.rootcheckTime, 'rootcheckEndTime': agent.rootcheckEndTime}
+    # Connection
+    db_agent = glob('{0}/{1}-*.db'.format(common.database_path_agents, agent_id))
+    if not db_agent:
+        raise WazuhException(1600)
+    else:
+        db_agent = db_agent[0]
+
+    conn = Connection(db_agent)
+
+    data = {}
+    # end time
+    query = "SELECT datetime(max(date_first), 'unixepoch') FROM pm_event WHERE log = 'Ending rootcheck scan.'"
+    conn.execute(query)
+    for tuple in conn:
+        data['rootcheckEndTime'] = tuple[0]
+
+    # start time
+    query = "SELECT datetime(max(date_first), 'unixepoch') FROM pm_event WHERE log = 'Starting rootcheck scan.'"
+    conn.execute(query)
+    for tuple in conn:
+        data['rootcheckTime'] = tuple[0]
 
     return data

@@ -80,7 +80,7 @@ describe('Agents', function() {
 
         it('Search', function(done) {
             request(common.url)
-            .get("/agents?search=aCtIvE")
+            .get("/agents?search=1")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -177,7 +177,7 @@ describe('Agents', function() {
 
     describe('GET/agents/:agent_id', function() {
 
-        it('Request', function(done) {
+        it('Request (manager)', function(done) {
             request(common.url)
             .get("/agents/000")
             .auth(common.credentials.user, common.credentials.password)
@@ -190,7 +190,25 @@ describe('Agents', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.should.be.an.Object;
-                res.body.data.should.have.properties(['status', 'ip', 'id', 'name', 'syscheckEndTime', 'rootcheckEndTime', 'version', 'syscheckTime', 'lastKeepAlive', 'os', 'rootcheckTime']);
+                res.body.data.should.have.properties(['status', 'name', 'ip', 'dateAdd', 'version', 'os', 'id']);
+                done();
+            });
+        });
+
+        it('Request (agent)', function(done) {
+            request(common.url)
+            .get("/agents/001")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.Object;
+                res.body.data.should.have.properties(['status', 'name', 'ip', 'dateAdd', 'version', 'lastKeepAlive', 'os', 'id']);
                 done();
             });
         });
@@ -220,7 +238,7 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'message']);
-                res.body.error.should.equal(40);
+                res.body.error.should.equal(1701);
                 done();
             });
         });
@@ -262,7 +280,7 @@ describe('Agents', function() {
 
         it('Errors: No key', function(done) {
             request(common.url)
-            .get("/agents/000/key")
+            .get("/agents/999999/key")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -270,7 +288,7 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'message']);
-                res.body.error.should.equal(70);
+                res.body.error.should.equal(1701);
                 done();
             });
         });

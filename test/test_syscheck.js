@@ -334,7 +334,7 @@ describe('Syscheck', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'message']);
-                res.body.error.should.equal(40);
+                res.body.error.should.equal(1600);
                 done();
             });
         });

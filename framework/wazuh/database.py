@@ -51,7 +51,10 @@ class Connection:
         :param query: Query string.
         :param args: Query values.
         """
-        self.__cur.execute(query, *args)
+        if args:
+            self.__cur.execute(query, *args)
+        else:
+            self.__cur.execute(query)
 
     def fetch(self):
         """

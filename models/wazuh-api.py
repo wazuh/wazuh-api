@@ -9,7 +9,7 @@ from getopt import getopt, GetoptError
 import json
 import signal
 
-error_wazuh_package = False
+error_wazuh_package = 0
 try:
     path.append('../framework/')
     from wazuh import Wazuh
@@ -22,8 +22,10 @@ try:
     import wazuh.stats as stats
     import wazuh.rootcheck as rootcheck
     import wazuh.syscheck as syscheck
+except ImportError:
+    error_wazuh_package = -1
 except:
-    error_wazuh_package = True
+    error_wazuh_package = -2
 
 def print_json(data, error=0):
     output = {'error': error}
@@ -129,8 +131,11 @@ if __name__ == "__main__":
             print_json("Wazuh-Python Internal Error: Bad JSON input", 1000)
             exit(1)
 
-    if error_wazuh_package:
-        print_json("Internal Error: wazuh-framework not found.", 1000)
+    if error_wazuh_package < 0:
+        if error_wazuh_package == -1:
+            print_json("Wazuh-Python Internal Error: wazuh-framework not found.", 1000)
+        if error_wazuh_package == -2:
+            print_json("Wazuh-Python Internal Error: Unknown", 1000)
         exit(0)  # error code 0 shows the msg in the API response.
 
     if 'function' not in request:

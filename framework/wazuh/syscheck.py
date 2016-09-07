@@ -69,12 +69,30 @@ def last_scan(agent_id):
     Gets the last scan of the agent.
 
     :param agent_id: Agent ID.
-    :return: Dictionary: rootcheckEndTime, rootcheckTime.
+    :return: Dictionary: syscheckEndTime, syscheckTime.
     """
 
-    agent = Agent(agent_id)
-    agent.get()
-    data = {'syscheckTime': agent.syscheckTime, 'syscheckEndTime': agent.syscheckEndTime}
+    # Connection
+    db_agent = glob('{0}/{1}-*.db'.format(common.database_path_agents, agent_id))
+    if not db_agent:
+        raise WazuhException(1600)
+    else:
+        db_agent = db_agent[0]
+
+    conn = Connection(db_agent)
+
+    data = {}
+    # end time
+    query = "SELECT datetime(max(date_first), 'unixepoch') FROM pm_event WHERE log = 'Ending syscheck scan.'"
+    conn.execute(query)
+    for tuple in conn:
+        data['syscheckEndTime'] = tuple[0]
+
+    # start time
+    query = "SELECT datetime(max(date_first), 'unixepoch') FROM pm_event WHERE log = 'Starting syscheck scan.'"
+    conn.execute(query)
+    for tuple in conn:
+        data['syscheckTime'] = tuple[0]
 
     return data
 
@@ -106,6 +124,13 @@ def files(agent_id=None, event=None, filename=None, filetype='file', md5=None, s
         db_agent = db_agent[0]
 
     conn = Connection(db_agent)
+
+    agent_os = Agent(agent_id).get_basic_information()['os']
+
+    if "windows" in agent_os.lower():
+        windows_agent = True
+    else:
+        windows_agent = False
 
     fields = {'scanDate': 'date', 'modificationDate': 'mtime', 'file': 'path', 'size': 'size', 'user': 'uname', 'group': 'gname'}
 
@@ -165,21 +190,58 @@ def files(agent_id=None, event=None, filename=None, filetype='file', md5=None, s
     if summary:
         select = ["max(datetime(date, 'unixepoch'))", "datetime(mtime, 'unixepoch')", "fim_event.type", "path"]
     else:
-        select = ["datetime(date, 'unixepoch')", "fim_event.type", "path", "size", "perm", "uid", "gid", "md5", "sha1", "uname", "gname", "datetime(mtime, 'unixepoch')", "inode"]
+        select = ["datetime(date, 'unixepoch')", "datetime(mtime, 'unixepoch')", "fim_event.type", "path", "size", "perm", "uid", "gid", "md5", "sha1", "uname", "gname", "inode"]
 
     conn.execute(query.format(','.join(select)), request)
 
     data['items'] = []
 
     for tuple in conn:
-        if summary:
-            data['items'].append({'scanDate': tuple[0], 'modificationDate': tuple[1], 'event': tuple[2], 'file': tuple[3]})
+        data_tuple = {}
+
+        if tuple[0] != None:
+            data_tuple['scanDate'] = tuple[0]
+        if tuple[1] != None:
+            data_tuple['modificationDate'] = tuple[1]  # modificationDate
         else:
+            data_tuple['modificationDate'] = tuple[0]  # scanDate
+        if tuple[2] != None:
+            data_tuple['event'] = tuple[2]
+        if tuple[3] != None:
+            data_tuple['file'] = tuple[3]
+
+        if not summary:
             try:
-                permissions = filemode(int(tuple[4], 8))
+                permissions = filemode(int(tuple[5], 8))
             except TypeError:
                 permissions = None
 
-            data['items'].append({'scanDate': tuple[0], 'event': tuple[1], 'file': tuple[2], 'size': tuple[3], 'octalMode': tuple[4], 'uid': tuple[5], 'gid': tuple[6], 'md5': tuple[7], 'sha1': tuple[8], 'user': tuple[9], 'group': tuple[10], 'modificationDate': tuple[11], 'inode': tuple[12], 'permissions': permissions})
+            if tuple[4] != None:
+                data_tuple['size'] = tuple[4]
+            if tuple[8] != None:
+                data_tuple['md5'] = tuple[8]
+            if tuple[9] != None:
+                data_tuple['sha1'] = tuple[9]
+            if tuple[12] != None:
+                data_tuple['inode'] = tuple[12]
+
+            if not windows_agent:
+                if tuple[6] != None:
+                    data_tuple['uid'] = tuple[6]
+                if tuple[7] != None:
+                    data_tuple['gid'] = tuple[7]
+
+                if tuple[10] != None:
+                    data_tuple['user'] = tuple[10]
+                if tuple[11] != None:
+                    data_tuple['group'] = tuple[11]
+
+                if tuple[5] != None:
+                    data_tuple['octalMode'] = tuple[5]
+                if permissions:
+                    data_tuple['permissions'] = permissions
+
+
+        data['items'].append(data_tuple)
 
     return data
