@@ -11,7 +11,7 @@ import signal
 
 error_wazuh_package = 0
 try:
-    path.append('../framework/')
+    path.append(path[0].replace('models','framework'))
     from wazuh import Wazuh
     from wazuh.agent import Agent
     from wazuh.rule import Rule
