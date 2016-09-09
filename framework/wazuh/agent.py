@@ -64,9 +64,9 @@ class Agent:
             difference = (datetime.now() - last_date).total_seconds()
 
             if difference < limit_seconds:
-                return "Active"
+                return "active"
             else:
-                return "Disconnected"
+                return "disconnected"
 
     def _load_info_from_DB(self):
         """
@@ -114,7 +114,7 @@ class Agent:
             if self.id != "000":
                 self.status = Agent.calculate_status(self.lastKeepAlive)
             else:
-                self.status = 'Active'
+                self.status = 'active'
 
         if no_result:
             raise WazuhException(1701, self.id)
@@ -290,7 +290,7 @@ class Agent:
                 lastKeepAlive = 0
 
             if data_tuple['id'] == "000":
-                data_tuple['status'] = "Active"
+                data_tuple['status'] = "active"
             else:
                 data_tuple['status'] = Agent.calculate_status(lastKeepAlive)
 
