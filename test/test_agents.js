@@ -54,7 +54,7 @@ describe('Agents', function() {
                 res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
                 res.body.data.items[0].should.have.properties(['status', 'ip', 'id', 'name']);
                 res.body.data.items[0].id.should.have.equal('000');
-                res.body.data.items[0].status.should.have.equal('Active');
+                res.body.data.items[0].status.should.have.equal('active');
                 done();
             });
         });

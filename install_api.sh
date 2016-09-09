@@ -45,7 +45,7 @@ exec_cmd_bash() {
 }
 
 get_configuration_value () { # $1 setting
-    cat "$API_PATH/configuration/config.js" | grep -P "config.$1\s*=\s*\"" | grep -P '".*"' -o | tr -d '"' 
+    cat "$API_PATH/configuration/config.js" | grep -P "config.$1\s*=\s*\"" | grep -P '".*"' -o | tr -d '"'
 }
 
 edit_configuration() { # $1 -> setting,  $2 -> value
@@ -204,7 +204,7 @@ get_api () {
 install_framework() {
     print "\nInstalling dependencies: xmljson."
     print "-----------------------------------------------------------------"
-    exec_cmd_bash "pip install xmljson --ignore-installed"
+    exec_cmd_bash "pip install xmljson"
     print "-----------------------------------------------------------------"
     #FRAMEWORK_SOURCES="$API_SOURCES/framework"
 
@@ -234,6 +234,8 @@ backup_api () {
     fi
 
     exec_cmd "cp -rLf $API_PATH $API_PATH_BACKUP"
+    exec_cmd "chown -R root:ossec $API_PATH_BACKUP"
+    exec_cmd "chmod -R 660 $API_PATH_BACKUP"
 }
 
 restore_configuration () {
@@ -265,6 +267,17 @@ setup_api() {
             esac
         done
 
+        if [ "X${update}" == "Xno" ]; then
+            while true; do
+                print ""
+                read -p "The installation directory already exists. Should I delete it? [y/n]: " yn
+                case $yn in
+                    [Yy] ) break;;
+                    [Nn] ) print "Not possible to install the API.\nExiting."; exit 1; break;;
+                esac
+            done
+        fi
+
         exec_cmd "rm -rf $API_PATH"
     fi
 
@@ -280,7 +293,21 @@ setup_api() {
         exec_cmd "ln -s $API_SOURCES $API_PATH"
     else
         exec_cmd "mkdir $API_PATH"
-        exec_cmd "cp -r $API_SOURCES/* $API_PATH"
+        exec_cmd "cp --parents -r app.js configuration controllers examples framework/examples framework/wazuh helpers models package.json scripts $API_PATH"
+
+        # General permissions
+        exec_cmd "chown -R root:ossec $API_PATH"
+        exec_cmd "chmod -R 660 $API_PATH"
+
+        # Execution permissions
+        exec_cmd "chmod -R 770 $API_PATH/app.js"
+        exec_cmd "chmod -R 770 $API_PATH/configuration/auth/htpasswd"
+        exec_cmd "chmod -R 770 $API_PATH/controllers"
+        exec_cmd "chmod -R 770 $API_PATH/framework/wazuh"
+        exec_cmd "chmod -R 770 $API_PATH/helpers"
+        exec_cmd "chmod -R 770 $API_PATH/models/wazuh-api.py"
+        exec_cmd "chmod -R 770 $API_PATH/scripts/configure_api.sh"
+        exec_cmd "chmod -R 770 $API_PATH/scripts/install_daemon.sh"
     fi
 
     if [ "X${update}" == "Xyes" ]; then
@@ -290,7 +317,14 @@ setup_api() {
     install_framework
 
     print "\nInstalling NodeJS modules."
-    exec_cmd "cd $API_PATH && npm install --only=production"
+    if [ "X${arg}" == "Xdev" ]; then
+        exec_cmd "cd $API_PATH && npm install"
+    else
+        exec_cmd "cd $API_PATH && npm install --production"
+    fi
+    exec_cmd "chown -R root:ossec $API_PATH/node_modules"
+    exec_cmd "chmod -R o-rwx $API_PATH/node_modules"
+
 
     # Set OSSEC directory in API configuration
     if [ "X${DIRECTORY}" != "X/var/ossec" ]; then
