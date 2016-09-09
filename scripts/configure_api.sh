@@ -100,27 +100,23 @@ change_port () {
 
 change_https () {
     print ""
-    read -p "Enable HTTPS? [Y/n]: " https
+    read -p "Enable HTTPS and generate SSL certificate? [Y/n]: " https
     if [ "X${https,,}" == "X" ] || [ "X${https,,}" == "Xy" ]; then
         edit_configuration "https" "yes"
 
-        read -p "Generate private key and certificate [ENTER]" enter
-
         print ""
-        read -p "Create key [ENTER]" enter
+        read -p "Step 1: Create key [ENTER]" enter
         exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl genrsa -des3 -out server.key 1024 && cp server.key server.key.org && openssl rsa -in server.key.org -out server.key"
 
         print ""
-        read -p "Create certificate signing request (CSR) [ENTER]" enter
+        read -p "Step 2: Create self-signed certificate [ENTER]" enter
         exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl req -new -key server.key -out server.csr"
-
-        print ""
-        read -p "Create self-signed certificate [ENTER]" enter
         exec_cmd "cd $API_PATH/configuration/ssl && openssl x509 -req -days 2048 -in server.csr -signkey server.key -out server.crt"
         exec_cmd "cd $API_PATH/configuration/ssl && rm -f server.csr && rm -f server.key.org"
 
         print "\nKey: $API_PATH/configuration/ssl/server.key.\nCertificate: $API_PATH/configuration/ssl/server.crt\n"
-        read -p "Continue with the next section [ENTER]" enter
+
+        read -p "Continue with next section [ENTER]" enter
     else
         edit_configuration "https" "no"
         print "Using HTTP (not secure)."
@@ -133,7 +129,6 @@ change_auth () {
     if [ "X${auth,,}" == "X" ] || [ "X${auth,,}" == "Xy" ]; then
         auth="y"
         edit_configuration "basic_auth" "yes"
-        read -p "Create user and password [ENTER]" enter
         read -p "API user: " user
         exec_cmd_bash "cd $API_PATH/configuration/auth && htpasswd -c htpasswd $user"
     else
