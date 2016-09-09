@@ -220,7 +220,8 @@ class Agent:
 
         # Query
         query = "SELECT {0} FROM agent"
-        fields = {'id': 'id', 'name': 'name', 'ip': 'ip'}
+        fields = {'id': 'id', 'name': 'name', 'ip': 'ip', 'status': 'last_keepalive'}
+        sort_by_status_manually = False
         select = ["id", "name", "ip", "last_keepalive"]
         request = {}
 
@@ -256,7 +257,12 @@ class Agent:
                 if sf not in allowed_sort_fields:
                     raise WazuhException(1403, 'Allowed sort fields: {0}. Field: {1}'.format(allowed_sort_fields, sf))
 
-            query += ' ORDER BY ' + ','.join(['{0} {1}'.format(fields[i], sort['order']) for i in sort['fields']])
+            if 'status' in sort['fields']:
+                sort_by_status_manually = True
+                sort['fields'].remove('status')
+
+            if sort['fields']:
+                query += ' ORDER BY ' + ','.join(['{0} {1}'.format(fields[i], sort['order']) for i in sort['fields']])
         else:
             query += ' ORDER BY id ASC'
 
@@ -289,6 +295,9 @@ class Agent:
                 data_tuple['status'] = Agent.calculate_status(lastKeepAlive)
 
             data['items'].append(data_tuple)
+
+        if sort_by_status_manually:
+            data['items'] = sort_array(data['items'], ['status'], sort['order'])
 
         return data
 
