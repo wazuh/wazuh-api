@@ -83,13 +83,13 @@ def last_scan(agent_id):
 
     data = {}
     # end time
-    query = "SELECT datetime(max(date_first), 'unixepoch') FROM pm_event WHERE log = 'Ending syscheck scan.'"
+    query = "SELECT max(date_first) FROM pm_event WHERE log = 'Ending syscheck scan.'"
     conn.execute(query)
     for tuple in conn:
         data['syscheckEndTime'] = tuple[0]
 
     # start time
-    query = "SELECT datetime(max(date_first), 'unixepoch') FROM pm_event WHERE log = 'Starting syscheck scan.'"
+    query = "SELECT max(date_first) FROM pm_event WHERE log = 'Starting syscheck scan.'"
     conn.execute(query)
     for tuple in conn:
         data['syscheckTime'] = tuple[0]
@@ -160,13 +160,13 @@ def files(agent_id=None, event=None, filename=None, filetype='file', md5=None, s
 
     if search:
         query += " AND NOT" if bool(search['negation']) else ' AND'
-        query += " (" + " OR ".join(x + ' LIKE :search' for x in ('path', "datetime(date, 'unixepoch')", 'size', 'md5', 'sha1', 'uname', 'gname', 'inode', 'perm')) + " )"
+        query += " (" + " OR ".join(x + ' LIKE :search' for x in ('path', "date", 'size', 'md5', 'sha1', 'uname', 'gname', 'inode', 'perm')) + " )"
         request['search'] = '%{0}%'.format(search['value'])
 
     # Total items
     if summary:
         query += ' group by path'
-        conn.execute("SELECT COUNT(*) FROM ({0}) AS TEMP".format(query.format("max(datetime(date, 'unixepoch'))")), request)
+        conn.execute("SELECT COUNT(*) FROM ({0}) AS TEMP".format(query.format("max(date)")), request)
     else:
         conn.execute(query.format('COUNT(*)'), request)
 
@@ -188,9 +188,9 @@ def files(agent_id=None, event=None, filename=None, filetype='file', md5=None, s
     request['limit'] = limit
 
     if summary:
-        select = ["max(datetime(date, 'unixepoch'))", "datetime(mtime, 'unixepoch')", "fim_event.type", "path"]
+        select = ["max(date)", "mtime", "fim_event.type", "path"]
     else:
-        select = ["datetime(date, 'unixepoch')", "datetime(mtime, 'unixepoch')", "fim_event.type", "path", "size", "perm", "uid", "gid", "md5", "sha1", "uname", "gname", "inode"]
+        select = ["date", "mtime", "fim_event.type", "path", "size", "perm", "uid", "gid", "md5", "sha1", "uname", "gname", "inode"]
 
     conn.execute(query.format(','.join(select)), request)
 

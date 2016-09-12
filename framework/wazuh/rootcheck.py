@@ -91,9 +91,9 @@ def print_db(agent_id=None, status='all', pci=None, cis=None, offset=0, limit=co
     request = {}
     fields = {'status': 'status', 'event': 'log', 'oldDay': 'date_first', 'readDay': 'date_last'}
 
-    partial = """SELECT {0} AS status, datetime(date_first, 'unixepoch') AS date_first, datetime(date_last, 'unixepoch') AS date_last, log, pci_dss, cis
+    partial = """SELECT {0} AS status, date_first, date_last, log, pci_dss, cis
         FROM pm_event AS t
-        WHERE date_last {1} (SELECT date_last - 86400 FROM pm_event WHERE log = 'Ending rootcheck scan.')"""
+        WHERE date_last {1} (SELECT datetime(date_last, '-86400 seconds') FROM pm_event WHERE log = 'Ending rootcheck scan.')"""
 
     if status == 'all':
         query = "SELECT {0} FROM (" + partial.format("'outstanding'", '>') + ' UNION ' + partial.format("'solved'", '<=') + \
@@ -144,7 +144,22 @@ def print_db(agent_id=None, status='all', pci=None, cis=None, offset=0, limit=co
 
     data['items'] = []
     for tuple in conn:
-        data['items'].append({'status': tuple[0], 'oldDay': tuple[1], 'readDay': tuple[2], 'event': tuple[3], 'pci': tuple[4], 'cis': tuple[5]})
+        data_tuple = {}
+
+        if tuple[0] != None:
+            data_tuple['status'] = tuple[0]
+        if tuple[1] != None:
+            data_tuple['oldDay'] = tuple[1]
+        if tuple[2] != None:
+            data_tuple['readDay'] = tuple[2]
+        if tuple[3] != None:
+            data_tuple['event'] = tuple[3]
+        if tuple[4] != None:
+            data_tuple['pci'] = tuple[4]
+        if tuple[5] != None:
+            data_tuple['cis'] = tuple[5]
+
+        data['items'].append(data_tuple)
 
     return data
 
@@ -285,13 +300,13 @@ def last_scan(agent_id):
 
     data = {}
     # end time
-    query = "SELECT datetime(max(date_first), 'unixepoch') FROM pm_event WHERE log = 'Ending rootcheck scan.'"
+    query = "SELECT max(date_first) FROM pm_event WHERE log = 'Ending rootcheck scan.'"
     conn.execute(query)
     for tuple in conn:
         data['rootcheckEndTime'] = tuple[0]
 
     # start time
-    query = "SELECT datetime(max(date_first), 'unixepoch') FROM pm_event WHERE log = 'Starting rootcheck scan.'"
+    query = "SELECT max(date_first) FROM pm_event WHERE log = 'Starting rootcheck scan.'"
     conn.execute(query)
     for tuple in conn:
         data['rootcheckTime'] = tuple[0]
