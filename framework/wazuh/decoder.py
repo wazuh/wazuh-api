@@ -70,9 +70,15 @@ class Decoder:
 
         if 'rules' in ossec_conf:
             if 'decoder_dir' in ossec_conf['rules']:
-                decoder_dirs.extend(ossec_conf['rules']['decoder_dir'])
+                if type(ossec_conf['rules']['decoder_dir']) is list:
+                    decoder_dirs.extend(ossec_conf['rules']['decoder_dir'])
+                else:
+                    decoder_dirs.append(ossec_conf['rules']['decoder_dir'])
             if 'decoder' in ossec_conf['rules']:
-                decoder_files.append(ossec_conf['rules']['decoder'])
+                if type(ossec_conf['rules']['decoder']) is list:
+                    decoder_files.extend(ossec_conf['rules']['decoder'])
+                else:
+                    decoder_files.append(ossec_conf['rules']['decoder'])
         else:
             raise WazuhException(1500)
 
