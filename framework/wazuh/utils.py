@@ -84,7 +84,7 @@ def cut_array(array, offset, limit):
     Returns a part of the array: from offset to offset + limit.
     :param array: Array to cut.
     :param offset: First element to return.
-    :param limit: Maximum number of elements to return.
+    :param limit: Maximum number of elements to return. 0 means no cut array.
     :return: cut array.
     """
 
@@ -95,11 +95,11 @@ def cut_array(array, offset, limit):
     limit = int(limit)
 
     if limit == 0:
-        limit = common.database_limit
+        return array
 
     if offset < 0 or offset >= len(array):
         raise WazuhException(1400)
-    elif limit <= 0 or limit > common.database_limit:
+    elif limit < 1:
         raise WazuhException(1401)
     else:
         return array[offset:offset + limit]

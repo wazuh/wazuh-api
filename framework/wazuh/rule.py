@@ -199,7 +199,7 @@ class Rule:
             if len(levels) < 0 or len(levels) > 2:
                 raise WazuhException(1203)
 
-        for rule_file in Rule.get_rules_files(status)['items']:
+        for rule_file in Rule.get_rules_files(status=status, limit=0)['items']:
             all_rules.extend(Rule.__load_rules_from_file(rule_file['name'], rule_file['status']))
 
         rules = list(all_rules)
@@ -242,7 +242,7 @@ class Rule:
         """
         groups = set()
 
-        for rule in Rule.get_rules()['items']:
+        for rule in Rule.get_rules(limit=0)['items']:
             for group in rule.groups:
                 groups.add(group)
 
@@ -269,7 +269,7 @@ class Rule:
         """
         pci = set()
 
-        for rule in Rule.get_rules()['items']:
+        for rule in Rule.get_rules(limit=0)['items']:
             for pci_item in rule.pci:
                 pci.add(pci_item)
 
@@ -331,7 +331,7 @@ class Rule:
                             ossec_groups = []
                             for g in groups:
                                 if 'pci_dss_' in g:
-                                    pci_groups.append(g[8:])
+                                    pci_groups.append(g.strip()[8:])
                                 else:
                                     ossec_groups.append(g)
 

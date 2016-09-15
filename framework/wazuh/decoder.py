@@ -115,7 +115,7 @@ class Decoder:
         """
         all_decoders = []
 
-        for decoder_file in Decoder.get_decoders_files()['items']:
+        for decoder_file in Decoder.get_decoders_files(limit=0)['items']:
             all_decoders.extend(Decoder.__load_decoders_from_file(decoder_file))
 
         decoders = list(all_decoders)
