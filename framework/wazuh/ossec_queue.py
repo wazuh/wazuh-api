@@ -18,6 +18,7 @@ class OssecQueue:
 
     # Messages
     HC_SK_RESTART = "syscheck restart"  # syscheck and rootcheck restart
+    RESTART_AGENTS = "restart-ossec0"  # Agents, not manager (000)
 
     # Sizes
     OS_MAXSTR = 6144  # OS_SIZE_6144
@@ -50,34 +51,42 @@ class OssecQueue:
         self.socket.close()
 
     def send_msg_to_agent(self, msg, agent_id=None):
+        # Build message
         ALL_AGENTS_C = 'A'
         NONE_C = 'N'
         SPECIFIC_AGENT_C = 'S'
         NO_AR_C = '!'
 
+        if agent_id:
+            str_all_agents = NONE_C
+            str_agent = SPECIFIC_AGENT_C
+            str_agent_id = agent_id
+        else:
+            str_all_agents = ALL_AGENTS_C
+            str_agent = NONE_C
+            str_agent_id = "(null)"
+
         if msg == OssecQueue.HC_SK_RESTART:
-            try:
-                if agent_id:
-                    str_all_agents = NONE_C
-                    str_agent = SPECIFIC_AGENT_C
-                    str_agent_id = agent_id
-                else:
-                    str_all_agents = ALL_AGENTS_C
-                    str_agent = NONE_C
-                    str_agent_id = "(null)"
+            socket_msg = "{0} {1}{2}{3} {4} {5}".format("(msg_to_agent) []", str_all_agents, NO_AR_C, str_agent, str_agent_id, OssecQueue.HC_SK_RESTART)
+        elif msg == OssecQueue.RESTART_AGENTS:
+            socket_msg = "{0} {1}{2}{3} {4} {5} - {6} (from_the_server) (no_rule_id)".format("(msg_to_agent) []", str_all_agents, NONE_C, str_agent, str_agent_id, OssecQueue.RESTART_AGENTS, "null")
+        else:
+            raise WazuhException(1012, msg)
 
-                socket_msg = "{0} {1}{2}{3} {4} {5}".format("(msg_to_agent) []", str_all_agents, NO_AR_C, str_agent, str_agent_id, msg)
-
-                self._send(socket_msg)
-
-                if agent_id:
-                    return "Restarting Syscheck/Rootcheck on agent"
-                else:
-                    return "Restarting Syscheck/Rootcheck on all agents"
-            except:
+        # Send message
+        try:
+            self._send(socket_msg)
+        except:
+            if msg == OssecQueue.HC_SK_RESTART:
                 if agent_id:
                     raise WazuhException(1601, "on agent")
                 else:
                     raise WazuhException(1601, "on all agents")
-        else:
-            raise WazuhException(1012, msg)
+            elif msg == OssecQueue.RESTART_AGENTS:
+                raise WazuhException(1702)
+
+        # Return message
+        if msg == OssecQueue.HC_SK_RESTART:
+            return "Restarting Syscheck/Rootcheck on agent" if agent_id else "Restarting Syscheck/Rootcheck on all agents"
+        elif msg == OssecQueue.RESTART_AGENTS:
+            return "Restarting agent" if agent_id else "Restarting all agents"
