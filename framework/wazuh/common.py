@@ -22,12 +22,6 @@ def set_paths_based_on_ossec(o_path='/var/ossec'):
     global ossec_control
     ossec_control = '{0}/bin/ossec-control'.format(ossec_path)
 
-    global rootcheck_control
-    rootcheck_control = '{0}/bin/rootcheck_control'.format(ossec_path)
-
-    global syscheck_control
-    syscheck_control = '{0}/bin/syscheck_control'.format(ossec_path)
-
     global ruleset_py
     ruleset_py = '{0}/update/ruleset/ossec_ruleset.py'.format(ossec_path)
 

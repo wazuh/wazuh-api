@@ -17,6 +17,9 @@ class WazuhException(Exception):
         1003: 'Command output not in json',
         1004: 'Malformed command output ',
         1005: 'Error reading file',
+        1010: 'Unable to connect to queue',
+        1011: 'Error communicating with queue',
+        1012: 'Invalid message to queue',
 
         # Configuration: 1100 - 1199
         1100: 'Error checking configuration',
@@ -48,6 +51,7 @@ class WazuhException(Exception):
 
         # Syscheck: 1600 - 1699
         1600: 'There is no database for selected agent',  # Also, in rootcheck, agent
+        1601: 'Unable to restart syscheck/rootcheck',  # Also, in rootcheck
 
         # Agents:
         1700: 'Bad arguments. Accepted arguments: [id] or [name and ip]',
@@ -76,3 +80,6 @@ class WazuhException(Exception):
                 self.message = "{0}.".format(self.ERRORS[code])
         else:
             self.message = extra_message
+
+    def __str__(self):
+        print(': ' + self.message)
