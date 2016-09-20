@@ -81,6 +81,7 @@ def get_ossec_conf(section=None, field=None):
         try:
             with open(common.ossec_conf, 'r') as f_ossec:
                 read_conf = f_ossec.read()
+                read_conf = read_conf.replace(" -- ", " -INVALID_CHAR ")  # Remove invalid characters for XML Parser
                 read_conf = __prepare_ossecconf(read_conf)
                 json_conf = xml_json.data(fromstring(read_conf))
                 data = __unify_ossecconf(json_conf)
