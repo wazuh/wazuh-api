@@ -19,19 +19,14 @@ def status():
 
     processes = ['ossec-monitord', 'ossec-logcollector', 'ossec-remoted', 'ossec-syscheckd', 'ossec-analysisd', 'ossec-maild', 'ossec-execd', 'wazuh-moduled', 'ossec-authd']
 
-    data = []
+    data = {}
     for process in processes:
-        data_process = {'daemon': process}
-
-
         process_path = glob("{0}/var/run/{1}-*.pid".format(common.ossec_path, process))
 
         if process_path and exists(process_path[0]):
-            data_process['status'] = 'running'
+            data[process] = 'running'
         else:
-            data_process['status'] = 'stopped'
-
-        data.append(data_process)
+            data[process] = 'stopped'
 
     return data
 

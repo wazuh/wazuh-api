@@ -58,6 +58,9 @@ class WazuhException(Exception):
         1701: 'Agent does not exist',
         1702: 'Unable to restart agent(s)',
         1703: 'Action not available for Manager (Agent 000)',
+        1704: 'Adding/removing agents via API when ossec-authd is running is not compatible',
+        1705: 'There is an agent with the same name',
+        1706: 'There is an agent with the same IP',
         # Manager:
         # Rootcheck:
 

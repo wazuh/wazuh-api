@@ -13,12 +13,6 @@ def set_paths_based_on_ossec(o_path='/var/ossec'):
     global ossec_path
     ossec_path = o_path
 
-    global manage_agents
-    manage_agents = '{0}/bin/manage_agents'.format(ossec_path)
-
-    #global ossec_control
-    #ossec_control = '{0}/bin/ossec-control'.format(ossec_path)
-
     global ruleset_py
     ruleset_py = '{0}/update/ruleset/ossec_ruleset.py'.format(ossec_path)
 
