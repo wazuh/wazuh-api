@@ -176,9 +176,9 @@ if __name__ == "__main__":
             '/manager/logs/summary': manager.ossec_log_summary,
             '/manager/logs': manager.ossec_log,
             'PUT/manager/configuration/test': configuration.check,
-            'PUT/manager/start': manager.start,
-            'PUT/manager/stop': manager.stop,
-            'PUT/manager/restart': manager.restart,
+            #'PUT/manager/start': manager.start,
+            #'PUT/manager/stop': manager.stop,
+            #'PUT/manager/restart': manager.restart,
             'PUT/manager/update-ruleset': manager.update_ruleset,
             'PUT/manager/update-ruleset/backups/:id': manager.restore_ruleset_backups,
 

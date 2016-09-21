@@ -289,12 +289,14 @@ router.put('/configuration/test', function(req, res) {
  *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/manager/start?pretty"
  *
  */
+/*
 router.put('/start', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /manager/start");
 
     var data_request = {'function': 'PUT/manager/start', 'arguments': {}};
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
+*/
 
 /**
  * @api {put} /manager/stop Stop manager
@@ -307,12 +309,14 @@ router.put('/start', function(req, res) {
  *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/manager/stop?pretty"
  *
  */
+/*
 router.put('/stop', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /manager/stop");
 
     var data_request = {'function': 'PUT/manager/stop', 'arguments': {}};
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
+*/
 
 /**
  * @api {put} /manager/restart Restart manager
@@ -325,12 +329,14 @@ router.put('/stop', function(req, res) {
  *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/manager/restart?pretty"
  *
  */
+/*
 router.put('/restart', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /manager/restart");
 
     var data_request = {'function': 'PUT/manager/restart', 'arguments': {}};
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
+*/
 
 /**
  * @api {put} /manager/update-ruleset Update ruleset

@@ -6,6 +6,8 @@
 from wazuh.utils import execute, previous_month, cut_array, sort_array, search_array, tail
 from wazuh import common
 from datetime import datetime
+from os.path import exists
+from glob import glob
 import re
 
 
@@ -15,34 +17,50 @@ def status():
     :return: Array of dictionaries (keys: status, daemon).
     """
 
-    return execute([common.ossec_control, '-j', 'status'])
+    processes = ['ossec-monitord', 'ossec-logcollector', 'ossec-remoted', 'ossec-syscheckd', 'ossec-analysisd', 'ossec-maild', 'ossec-execd', 'wazuh-moduled', 'ossec-authd']
+
+    data = []
+    for process in processes:
+        data_process = {'daemon': process}
 
 
-def start():
-    """
-    Starts the OSSEC Manager processes.
-    :return: Array of dictionaries (keys: status, daemon).
-    """
+        process_path = glob("{0}/var/run/{1}-*.pid".format(common.ossec_path, process))
 
-    return execute([common.ossec_control, '-j', 'start'])
+        if process_path and exists(process_path[0]):
+            data_process['status'] = 'running'
+        else:
+            data_process['status'] = 'stopped'
 
+        data.append(data_process)
 
-def stop():
-    """
-    Stops the OSSEC Manager processes.
-    :return: Array of dictionaries (keys: status, daemon).
-    """
-
-    return execute([common.ossec_control, '-j', 'stop'])
+    return data
 
 
-def restart():
-    """
-    Restarts the OSSEC Manager processes.
-    :return: Array of dictionaries (keys: status, daemon).
-    """
-
-    return execute([common.ossec_control, '-j', 'restart'])
+#def start():
+#    """
+#    Starts the OSSEC Manager processes.
+#    :return: Array of dictionaries (keys: status, daemon).
+#    """
+#
+#    return execute([common.ossec_control, '-j', 'start'])
+#
+#
+#def stop():
+#    """
+#    Stops the OSSEC Manager processes.
+#    :return: Array of dictionaries (keys: status, daemon).
+#    """
+#
+#    return execute([common.ossec_control, '-j', 'stop'])
+#
+#
+#def restart():
+#    """
+#    Restarts the OSSEC Manager processes.
+#    :return: Array of dictionaries (keys: status, daemon).
+#    """
+#
+#    return execute([common.ossec_control, '-j', 'restart'])
 
 
 def update_ruleset(type='both', force=False):

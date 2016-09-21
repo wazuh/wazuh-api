@@ -5,7 +5,6 @@
 
 from wazuh.exception import WazuhException
 from wazuh import common
-from os.path import exists
 import socket
 
 class OssecQueue:
