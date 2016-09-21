@@ -6,6 +6,7 @@
 import common
 from wazuh.exception import WazuhException
 from wazuh.utils import execute
+from wazuh.database import Connection
 import re
 
 """
@@ -37,6 +38,7 @@ class Wazuh:
         self.type = None
         self.path = ossec_path
         self.max_agents = 'N/A'
+        self.openssl_support = 'N/A'
 
         if get_init:
             self.get_ossec_init()
@@ -47,7 +49,7 @@ class Wazuh:
         return str(self.to_dict())
 
     def to_dict(self):
-        return {'path': self.path, 'version': self.version, 'installation_date': self.installation_date, 'type': self.type, 'max_agents': self.max_agents}
+        return {'path': self.path, 'version': self.version, 'installation_date': self.installation_date, 'type': self.type, 'max_agents': self.max_agents, 'openssl_support': self.openssl_support}
 
     def get_ossec_init(self):
         """
@@ -63,7 +65,7 @@ class Wazuh:
                     match = line_regex.match(line)
                     if match and len(match.groups()) == 2:
                         key = match.group(1).lower()
-                        if key == "wazuh_version":
+                        if key == "version":
                             self.version = match.group(2)
                         elif key == "directory":
                             # Read 'directory' when ossec_path (__init__) is set by default.
@@ -77,7 +79,17 @@ class Wazuh:
         except:
             raise WazuhException(1005, self.OSSEC_INIT)
 
-        self.max_agents = execute([common.agent_control, '-j', '-m'])['max_agents']
+        # info DB
+        conn = Connection(common.database_path_global)
+
+        query = "SELECT * FROM info"
+        conn.execute(query)
+
+        for tuple in conn:
+            if tuple[0] == 'max_agents':
+                self.max_agents = tuple[1]
+            elif tuple[0] == 'openssl_support':
+                self.openssl_support = tuple[1]
 
         return self.to_dict()
 

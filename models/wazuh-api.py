@@ -10,6 +10,7 @@ import json
 import signal
 
 error_wazuh_package = 0
+exception_error = None
 try:
     path.append(path[0].replace('models','framework'))
     from wazuh import Wazuh
@@ -24,8 +25,9 @@ try:
     import wazuh.syscheck as syscheck
 except ImportError:
     error_wazuh_package = -1
-except:
+except Exception as e:
     error_wazuh_package = -2
+    exception_error = e
 
 def print_json(data, error=0):
     output = {'error': error}
@@ -135,7 +137,7 @@ if __name__ == "__main__":
         if error_wazuh_package == -1:
             print_json("Wazuh-Python Internal Error: wazuh-framework not found.", 1000)
         if error_wazuh_package == -2:
-            print_json("Wazuh-Python Internal Error: Unknown", 1000)
+            print_json("Wazuh-Python Internal Error: uncaught exception: {0}".format(exception_error), 1000)
         exit(0)  # error code 0 shows the msg in the API response.
 
     if 'function' not in request:

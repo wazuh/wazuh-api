@@ -16,9 +16,6 @@ def set_paths_based_on_ossec(o_path='/var/ossec'):
     global manage_agents
     manage_agents = '{0}/bin/manage_agents'.format(ossec_path)
 
-    global agent_control
-    agent_control = '{0}/bin/agent_control'.format(ossec_path)
-
     global ossec_control
     ossec_control = '{0}/bin/ossec-control'.format(ossec_path)
 
