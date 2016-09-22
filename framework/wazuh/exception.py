@@ -49,9 +49,10 @@ class WazuhException(Exception):
         1500: 'Error reading decoders from ossec.conf',
         1501: 'Error reading decoder files',
 
-        # Syscheck: 1600 - 1699
-        1600: 'There is no database for selected agent',  # Also, in rootcheck, agent
-        1601: 'Unable to restart syscheck/rootcheck',  # Also, in rootcheck
+        # Syscheck/Rootcheck: 1600 - 1699
+        1600: 'There is no database for selected agent',  # Also, agent
+        1601: 'Unable to restart syscheck/rootcheck',
+        1602: 'Impossible to run syscheck/run due to agent is not active',
 
         # Agents:
         1700: 'Bad arguments. Accepted arguments: [id] or [name and ip]',
@@ -62,7 +63,6 @@ class WazuhException(Exception):
         1705: 'There is an agent with the same name',
         1706: 'There is an agent with the same IP',
         # Manager:
-        # Rootcheck:
 
         # Database:
         2000: 'No such database file',

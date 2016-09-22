@@ -16,6 +16,9 @@ var common = require('./common.js');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
+
+
+
 describe('Rootcheck', function() {
 
     describe('GET/rootcheck/:agent_id', function() {
@@ -34,7 +37,7 @@ describe('Rootcheck', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'oldDay', 'cis', 'event', 'pci', 'readDay']);
+                res.body.data.items[0].should.have.properties(['status', 'oldDay', 'event', 'readDay']);  //cis, pci
                 done();
             });
         });
@@ -52,7 +55,7 @@ describe('Rootcheck', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                res.body.data.items[0].should.have.properties(['status', 'oldDay', 'cis', 'event', 'pci', 'readDay']);
+                res.body.data.items[0].should.have.properties(['status', 'oldDay', 'event', 'readDay']);
                 done();
             });
         });
@@ -71,7 +74,7 @@ describe('Rootcheck', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'oldDay', 'cis', 'event', 'pci', 'readDay']);
+                res.body.data.items[0].should.have.properties(['status', 'oldDay', 'event', 'readDay']);
                 res.body.data.items[0]['status'].should.equal('outstanding');
                 done();
             });
@@ -91,7 +94,7 @@ describe('Rootcheck', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'oldDay', 'cis', 'event', 'pci', 'readDay']);
+                res.body.data.items[0].should.have.properties(['status', 'oldDay', 'event', 'readDay']);
                 done();
             });
         });
@@ -172,7 +175,7 @@ describe('Rootcheck', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'oldDay', 'cis', 'event', 'pci', 'readDay']);
+                res.body.data.items[0].should.have.properties(['status', 'oldDay', 'event', 'readDay']);
                 done();
             });
         });
@@ -602,7 +605,7 @@ describe('Rootcheck', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'message']);
-                res.body.error.should.equal(40);
+                res.body.error.should.equal(1701);
                 done();
             });
         });
@@ -629,4 +632,4 @@ describe('Rootcheck', function() {
 
     });  // PUT/rootcheck
 
-});  // Decoders
+});  // Rootcheck

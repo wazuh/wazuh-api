@@ -32,8 +32,8 @@ describe('Manager', function() {
                 res.body.should.have.properties(['error', 'data']);
 
                 res.body.error.should.equal(0);
-                res.body.data.should.be.instanceof(Array)
-                res.body.data[0].should.have.properties(['status', 'daemon']);
+
+                res.body.data.should.have.properties(['wazuh-moduled', 'ossec-authd', 'ossec-monitord', 'ossec-logcollector', 'ossec-execd', 'ossec-remoted', 'ossec-syscheckd', 'ossec-analysisd', 'ossec-maild']);
                 done();
             });
         });
@@ -112,8 +112,7 @@ describe('Manager', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.should.be.an.Object;
-                res.body.data.should.have.properties(['decoder_dir', 'include']);
-                res.body.data.decoder_dir.should.be.instanceof(Array)
+                res.body.data.should.have.properties(['decoder_dir', 'include', 'decoder']);
                 res.body.data.include.should.be.instanceof(Array)
                 done();
             });
@@ -360,6 +359,7 @@ describe('Manager', function() {
 
     });  // GET/manager/stats/weekly
 
+    /*
     describe('GET/manager/update-ruleset/backups', function() {
 
         it('Request', function(done) {
@@ -380,6 +380,7 @@ describe('Manager', function() {
         });
 
     });  // GET/manager/update-ruleset/backups
+    */
 
     describe('GET/manager/logs', function() {
 
@@ -565,6 +566,7 @@ describe('Manager', function() {
 
     });  // PUT/manager/logs/summary
 
+    /*
     describe('PUT/manager/start', function() {
 
         it('Request', function(done) {
@@ -806,5 +808,5 @@ describe('Manager', function() {
         });
 
     });  // PUT/manager/update-ruleset/backups/:id
-
+    */
 });  // Manager

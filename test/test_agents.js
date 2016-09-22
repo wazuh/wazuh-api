@@ -208,7 +208,7 @@ describe('Agents', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.should.be.an.Object;
-                res.body.data.should.have.properties(['status', 'name', 'ip', 'dateAdd', 'version', 'lastKeepAlive', 'os', 'id']);
+                res.body.data.should.have.properties(['status', 'name', 'ip', 'dateAdd', 'id']);  //version, lastKeepAlive, os
                 done();
             });
         });
@@ -340,7 +340,7 @@ describe('Agents', function() {
 
                 res.body.should.have.properties(['error', 'message']);
 
-                res.body.error.should.equal(75);
+                res.body.error.should.equal(1705);
                 res.body.message.should.be.type('string');
                 done();
             });
@@ -409,7 +409,7 @@ describe('Agents', function() {
 
                 res.body.should.have.properties(['error', 'message']);
 
-                res.body.error.should.equal(78);
+                res.body.error.should.equal(1701);
                 res.body.message.should.be.type('string');
                 done();
             });
@@ -481,7 +481,7 @@ describe('Agents', function() {
 
                     res.body.should.have.properties(['error', 'message']);
 
-                    res.body.error.should.equal(75);
+                    res.body.error.should.equal(1705);
                     res.body.message.should.be.type('string');
                     done();
                 });
@@ -573,7 +573,7 @@ describe('Agents', function() {
 
                     res.body.should.have.properties(['error', 'message']);
 
-                    res.body.error.should.equal(79);
+                    res.body.error.should.equal(1706);
                     done();
                 });
             });
@@ -689,7 +689,7 @@ describe('Agents', function() {
             this.timeout(common.timeout);
 
             request(common.url)
-            .put("/agents/000/restart")
+            .put("/agents/001/restart")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -715,6 +715,24 @@ describe('Agents', function() {
 
                 res.body.should.have.properties(['error', 'message']);
                 res.body.error.should.equal(600);
+                done();
+            });
+        });
+
+        it('Request', function(done) {
+            this.timeout(common.timeout);
+
+            request(common.url)
+            .put("/agents/000/restart")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(1703);
                 done();
             });
         });

@@ -315,6 +315,8 @@ class Rule:
                             for xml_rule_tags in xml_rule.getchildren():
                                 tag = xml_rule_tags.tag.lower()
                                 value = xml_rule_tags.text
+                                if value == None:
+                                    value = ''
                                 if tag == "group":
                                     groups.extend(value.split(","))
                                 elif tag == "description":

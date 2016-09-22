@@ -30,7 +30,7 @@ class Agent:
         """
         Initialize an agent.
 
-        :param args: 'AgentID' in case it is known, or 'name' and 'ip' to add the agent.
+        :param args: 'id' in case it is known, or 'name' and 'ip' to add the agent.
         """
         self.id = None
         self.name = None
@@ -125,6 +125,7 @@ class Agent:
                 self.status = Agent.calculate_status(self.lastKeepAlive)
             else:
                 self.status = 'active'
+                self.ip = '127.0.0.1'
 
         if no_result:
             raise WazuhException(1701, self.id)
@@ -397,6 +398,7 @@ class Agent:
 
             if data_tuple['id'] == "000":
                 data_tuple['status'] = "active"
+                data_tuple['ip'] = '127.0.0.1'
             else:
                 data_tuple['status'] = Agent.calculate_status(lastKeepAlive)
 
