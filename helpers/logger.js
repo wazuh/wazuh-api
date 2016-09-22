@@ -12,6 +12,7 @@
 var moment = require('moment');
 var config = require('../configuration/config');
 var fs = require('fs');
+var posix = require('posix');
 
 var tag = "WazuhAPI";
 var f_log = config.log_path;
@@ -41,6 +42,10 @@ switch(config.logs) {
     default:
         logger_level = LEVEL_INFO;
 }
+
+fs.openSync(f_log, 'a');
+fs.chmodSync(f_log, 0640);
+fs.chownSync(f_log, posix.getpwnam('ossec').uid, posix.getgrnam('ossec').gid);
 
 function header(){
     return tag + " " + moment().format('YYYY-MM-DD HH:mm:ss') + ": ";

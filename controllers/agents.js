@@ -212,7 +212,7 @@ router.put('/:agent_name', function(req, res) {
  *
  * @apiParam {Number} agent_id Agent ID.
  *
- * @apiDescription Removes an agent. Internally use manage_agents with option -r <id>. You must restart OSSEC after removing an agent.
+ * @apiDescription Removes an agent. You must restart OSSEC after removing an agent.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/002?pretty"

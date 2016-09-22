@@ -16,14 +16,6 @@ errors['1'] = "Error executing internal command";
 errors['2'] = "Command output not in JSON";
 errors['3'] = "Internal error";
 
-// 10 - 19 rootcheck_control
-// 20 - 29 ossec-control
-// 30 - 39 syscheck_control
-// 40 - 49 agent_control
-// 50 - 59 get_conf.py
-// 60 - 69 stats.py
-// 70 - 79 manage_agents
-// 80 - 89 check_config.py
 
 
 // 600 - 699 Requests

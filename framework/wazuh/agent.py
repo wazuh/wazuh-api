@@ -204,12 +204,11 @@ class Agent:
         if manager.status()['ossec-authd'] == 'running':
             raise WazuhException(1704)
 
-        f_keys = '{0}/etc/client.keys'.format(common.ossec_path)
-        f_keys_temp = '{0}.tmp'.format(f_keys)
+        f_keys_temp = '{0}.tmp'.format(common.client_keys)
 
         f_tmp = open(f_keys_temp, 'w')
         agent_found = False
-        with open(f_keys) as f_k:
+        with open(common.client_keys) as f_k:
             for line in f_k.readlines():
                 line_data = line.strip().split(' ')  # 0 -> id, 1 -> name, 2 -> ip, 3 -> key
 
@@ -222,11 +221,11 @@ class Agent:
 
         if agent_found:
             # Overwrite client.keys
-            move(f_keys_temp, f_keys)
+            move(f_keys_temp, common.client_keys)
             root_uid = getpwnam("ossec").pw_uid
             ossec_gid = getgrnam("ossec").gr_gid
-            chown(f_keys, root_uid, ossec_gid)
-            chmod(f_keys, 0640)
+            chown(common.client_keys, root_uid, ossec_gid)
+            chmod(common.client_keys, 0640)
         else:
             remove(f_keys_temp)
             raise WazuhException(1701, self.id)
@@ -247,9 +246,8 @@ class Agent:
             raise WazuhException(1704)
 
         # Check if ip or name exist in client.keys
-        f_keys = '{0}/etc/client.keys'.format(common.ossec_path)
         last_id = 0
-        with open(f_keys) as f_k:
+        with open(common.client_keys) as f_k:
             for line in f_k.readlines():
                 if line[0] in ('# '):  # starts with # or ' '
                     continue
@@ -271,8 +269,8 @@ class Agent:
         last_id = str(last_id + 1).zfill(3)
 
         # Tmp file
-        f_keys_temp = '{0}.tmp'.format(f_keys)
-        copyfile(f_keys, f_keys_temp)
+        f_keys_temp = '{0}.tmp'.format(common.client_keys)
+        copyfile(common.client_keys, f_keys_temp)
 
         # Generate key
         random_number = randrange(1, 999999)
@@ -291,11 +289,11 @@ class Agent:
             f_kt.write('{0} {1} {2} {3}\n'.format(last_id, name, ip, new_key))
 
         # Overwrite client.keys
-        move(f_keys_temp, f_keys)
+        move(f_keys_temp, common.client_keys)
         root_uid = getpwnam("ossec").pw_uid
         ossec_gid = getgrnam("ossec").gr_gid
-        chown(f_keys, root_uid, ossec_gid)
-        chmod(f_keys, 0640)
+        chown(common.client_keys, root_uid, ossec_gid)
+        chmod(common.client_keys, 0640)
 
         self.id = last_id
 

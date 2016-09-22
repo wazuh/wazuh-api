@@ -61,7 +61,7 @@ exports.bad_request = function(internal_error, extra_msg, res){
 
 exports.send_file = function(rule_name, res){
     try {
-        var filepath = "/var/ossec/rules/" +rule_name;
+        var filepath = config.ossec_path + "/rules/" + rule_name;
         var stat = fileSystem.statSync(filepath);
 
         res.writeHead(200, {

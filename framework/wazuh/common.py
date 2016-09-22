@@ -19,6 +19,12 @@ def set_paths_based_on_ossec(o_path='/var/ossec'):
     global ossec_log
     ossec_log = "{0}/logs/ossec.log".format(ossec_path)
 
+    global ossec_logtest
+    ossec_logtest = "{0}/bin/ossec-logtest".format(ossec_path)
+
+    global client_keys
+    client_keys = '{0}/etc/client.keys'.format(ossec_path)
+
     global stats_path
     stats_path = '{0}/stats'.format(ossec_path)
 

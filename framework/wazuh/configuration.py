@@ -110,8 +110,7 @@ def check():
     :return: "OK" if there is no problem, error logs otherwise.
     """
 
-    cmd = "{0}/bin/ossec-logtest".format(common.ossec_path)
-    p = subprocess.Popen([cmd, "-t"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p = subprocess.Popen([common.ossec_logtest, "-t"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (output, err) = p.communicate()
 
     lines = err.split(os.linesep)
