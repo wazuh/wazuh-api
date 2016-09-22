@@ -233,9 +233,8 @@ backup_api () {
         exec_cmd "rm -rf $API_PATH_BACKUP"
     fi
 
-    exec_cmd "cp -rLf $API_PATH $API_PATH_BACKUP"
-    exec_cmd "chown -R root:ossec $API_PATH_BACKUP"
-    exec_cmd "chmod -R 660 $API_PATH_BACKUP"
+    exec_cmd "cp -rLfp $API_PATH $API_PATH_BACKUP"
+    exec_cmd "chown root:root $API_PATH_BACKUP"
 }
 
 restore_configuration () {
@@ -243,10 +242,10 @@ restore_configuration () {
 
     if [ "X${API_OLD_VERSION}" == "X1.3.0" ]; then
         exec_cmd "rm -rf $API_PATH/configuration"
-        exec_cmd "cp -rf $API_PATH_BACKUP/configuration $API_PATH/configuration"
+        exec_cmd "cp -rfp $API_PATH_BACKUP/configuration $API_PATH/configuration"
     elif [ "X${API_OLD_VERSION}" == "X1.1" ] || [ "X${API_OLD_VERSION}" == "X1.2.0" ] || [ "X${API_OLD_VERSION}" == "X1.2.1" ]; then
-        exec_cmd "cp -rf $API_PATH_BACKUP/ssl/htpasswd $API_PATH/configuration/auth/htpasswd"
-        exec_cmd "cp $API_PATH_BACKUP/ssl/*.key $API_PATH_BACKUP/ssl/*.crt $API_PATH/configuration/ssl/"
+        exec_cmd "cp -rfp $API_PATH_BACKUP/ssl/htpasswd $API_PATH/configuration/auth/htpasswd"
+        exec_cmd "cp -p $API_PATH_BACKUP/ssl/*.key $API_PATH_BACKUP/ssl/*.crt $API_PATH/configuration/ssl/"
         RESTORE_WARNING="1"
     else
         RESTORE_WARNING="2"
@@ -296,18 +295,14 @@ setup_api() {
         exec_cmd "cp --parents -r app.js configuration controllers examples framework/examples framework/wazuh helpers models package.json scripts $API_PATH"
 
         # General permissions
-        exec_cmd "chown -R root:ossec $API_PATH"
-        exec_cmd "chmod -R 660 $API_PATH"
+        exec_cmd "chown -R ossec:ossec $API_PATH"
+        exec_cmd "chown -R root:root $API_PATH/scripts"
+        exec_cmd "chmod -R 500 $API_PATH"
 
-        # Execution permissions
-        exec_cmd "chmod -R 770 $API_PATH/app.js"
-        exec_cmd "chmod -R 770 $API_PATH/configuration/auth/htpasswd"
-        exec_cmd "chmod -R 770 $API_PATH/controllers"
-        exec_cmd "chmod -R 770 $API_PATH/framework/wazuh"
-        exec_cmd "chmod -R 770 $API_PATH/helpers"
-        exec_cmd "chmod -R 770 $API_PATH/models/wazuh-api.py"
-        exec_cmd "chmod -R 770 $API_PATH/scripts/configure_api.sh"
-        exec_cmd "chmod -R 770 $API_PATH/scripts/install_daemon.sh"
+        # Remove execution permissions
+        exec_cmd "chmod u-x $API_PATH/package.json"
+        exec_cmd "chmod u-x $API_PATH/configuration/ssl/*"
+        exec_cmd "chmod u-x $API_PATH/scripts/wazuh-api*"
     fi
 
     if [ "X${update}" == "Xyes" ]; then
@@ -322,8 +317,9 @@ setup_api() {
     else
         exec_cmd "cd $API_PATH && npm install --production"
     fi
-    exec_cmd "chown -R root:ossec $API_PATH/node_modules"
-    exec_cmd "chmod -R o-rwx $API_PATH/node_modules"
+    exec_cmd "chown -R ossec:ossec $API_PATH/node_modules"
+    exec_cmd "chmod -R go-rwx $API_PATH/node_modules"
+    exec_cmd "chmod -R u-w $API_PATH/node_modules"
 
 
     # Set OSSEC directory in API configuration

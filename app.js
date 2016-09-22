@@ -9,13 +9,39 @@
  * Foundation.
  */
 
+ /********************************************/
+ /* Drop privileges
+ /********************************************/
+ try {
+     var posix = require('posix');
 
+ } catch (e) {
+     console.log("Dependencies not found. Try 'npm install' in /var/ossec/api. Exiting...");
+     process.exit(1);
+ }
+if (process.getuid() !== 0 || posix.geteuid() !== 0){
+    console.log('A root user is required to start the API.');
+    process.exit(1);
+}
+
+try {
+    process.setgid('ossec');
+    process.setuid('ossec');
+} catch(err) {
+    console.log('Drop privileges failed: ' + err.message);
+    process.exit(1);
+}
+
+/********************************************/
+/* Modules, vars and global vars
+/********************************************/
 try {
     var express = require('express');
     var bodyParser = require('body-parser');
     var cors = require('cors')
     var auth = require("http-auth");
     var moment = require('moment');
+
 } catch (e) {
     console.log("Dependencies not found. Try 'npm install' in /var/ossec/api. Exiting...");
     process.exit(1);
