@@ -13,9 +13,6 @@ def set_paths_based_on_ossec(o_path='/var/ossec'):
     global ossec_path
     ossec_path = o_path
 
-    global ruleset_py
-    ruleset_py = '{0}/update/ruleset/ossec_ruleset.py'.format(ossec_path)
-
     global ossec_conf
     ossec_conf = "{0}/etc/ossec.conf".format(ossec_path)
 

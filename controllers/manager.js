@@ -184,6 +184,7 @@ router.get('/stats/weekly', cache(), function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/update-ruleset/backups?pretty"
  *
  */
+/*
 router.get('/update-ruleset/backups', cache(), function(req, res) {
     logger.log(req.connection.remoteAddress + " GET /manager/update-ruleset/backups");
 
@@ -192,6 +193,7 @@ router.get('/update-ruleset/backups', cache(), function(req, res) {
     var data_request = {'function': '/manager/update-ruleset/backups', 'arguments': {}};
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
+*/
 
 /**
  * @api {get} /manager/logs Get ossec.log
@@ -352,6 +354,7 @@ router.put('/restart', function(req, res) {
  *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/manager/update-ruleset?pretty"
  *
  */
+/*
 router.put('/update-ruleset', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /manager/update-ruleset");
 
@@ -369,7 +372,7 @@ router.put('/update-ruleset', function(req, res) {
 
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
-
+*/
 /**
  * @api {put} /manager/update-ruleset/backups/:id Restore ruleset backup
  * @apiName PutManagerRestoreRulesetBackup
@@ -383,6 +386,7 @@ router.put('/update-ruleset', function(req, res) {
  *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/manager/update-ruleset/backups/20160711_002?pretty"
  *
  */
+/*
 router.put('/update-ruleset/backups/:id', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT/manager/update-ruleset/backups/:id");
 
@@ -395,7 +399,7 @@ router.put('/update-ruleset/backups/:id', function(req, res) {
 
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
-
+*/
 
 
 module.exports = router;
