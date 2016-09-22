@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 
-## [v1.3.0] - 2016-09-??
+## [v1.3.0] - 2016-10-??
 ### Added
 - Scripts:
  - install_api.sh
@@ -20,9 +20,6 @@ All notable changes to this project will be documented in this file.
   - GET /manager/info (Get manager information)
   - GET /manager/logs (Get ossec.log)
   - GET /manager/logs/summary (Get summary of ossec.log)
-  - GET /manager/update-ruleset/backups (Get ruleset backups)
-  - PUT /manager/update-ruleset (Update ruleset)
-  - PUT /manager/update-ruleset/backups/:id (Restore ruleset backup)
  - Decoders
   - GET /decoders (Get all decoders)
   - GET /decoders/:decoder_name (Get decoders by name)
@@ -46,13 +43,17 @@ All notable changes to this project will be documented in this file.
 - Improved API service.
 - Improved input validation.
 - Improved Error Handling.
-- Configuration in /api/configuration.
+- Settings in /api/configuration.
 - By default, API is installed using HTTP.
 - Requests:
- - Now /manager/configuration/test use PUT method instead of GET.
  - Improved:
   - GET /rootcheck/:agent_id (Get rootcheck database)
   - GET /syscheck/:agent_id (Get syscheck files)
+
+### Removed
+- Requests that require root privileges:
+ - /manager/configuration/test
+ - /manager/start,stop,restart
 
 
 ## [v1.2.1] - 2016-07-25
