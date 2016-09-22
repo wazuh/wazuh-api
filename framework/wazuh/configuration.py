@@ -103,30 +103,30 @@ def get_ossec_conf(section=None, field=None):
     return data
 
 
-def check():
-    """
-    Checks OSSEC configuration (ossec-logtest).
-
-    :return: "OK" if there is no problem, error logs otherwise.
-    """
-
-    p = subprocess.Popen([common.ossec_logtest, "-t"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    (output, err) = p.communicate()
-
-    lines = err.split(os.linesep)
-    error_line = 0
-    for l in lines:
-        if "error" in l.lower():
-            break
-        else:
-            error_line += 1
-
-    if err:
-        if "Error" in err:
-            data = "{0}".format(lines[error_line:-1])
-        else:
-            data = "OK"
-    else:
-        raise WazuhException(1100)
-
-    return data
+#def check():
+#    """
+#    Checks OSSEC configuration (ossec-logtest).
+#
+#    :return: "OK" if there is no problem, error logs otherwise.
+#    """
+#
+#    p = subprocess.Popen([common.ossec_logtest, "-t"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+#    (output, err) = p.communicate()
+#
+#    lines = err.split(os.linesep)
+#    error_line = 0
+#    for l in lines:
+#        if "error" in l.lower():
+#            break
+#        else:
+#            error_line += 1
+#
+#    if err:
+#        if "Error" in err:
+#            data = "{0}".format(lines[error_line:-1])
+#        else:
+#            data = "OK"
+#    else:
+#        raise WazuhException(1100)
+#
+#    return data

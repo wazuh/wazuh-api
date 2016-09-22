@@ -273,12 +273,14 @@ router.get('/logs/summary', cache(), function(req, res) {
  *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/manager/configuration/test?pretty"
  *
  */
+/*
 router.put('/configuration/test', function(req, res) {
     logger.log(req.connection.remoteAddress + " PUT /manager/configuration/test");
 
     var data_request = {'function': 'PUT/manager/configuration/test', 'arguments': {}};
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
 })
+*/
 
 /**
  * @api {put} /manager/start Start manager
