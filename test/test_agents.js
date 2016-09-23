@@ -54,7 +54,7 @@ describe('Agents', function() {
                 res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
                 res.body.data.items[0].should.have.properties(['status', 'ip', 'id', 'name']);
                 res.body.data.items[0].id.should.have.equal('000');
-                res.body.data.items[0].status.should.have.equal('active');
+                res.body.data.items[0].status.should.have.equal('Active');
                 done();
             });
         });
@@ -165,10 +165,10 @@ describe('Agents', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.should.have.properties(['Active', 'Total', 'Disconnected', 'Never connected']);
-                res.body.data['active'].should.be.above(0);
-                res.body.data['total'].should.be.an.integer;
-                res.body.data['disconnected'].should.be.an.integer;
-                res.body.data['neverConnected'].should.be.an.integer;
+                res.body.data['Active'].should.be.above(0);
+                res.body.data['Total'].should.be.an.integer;
+                res.body.data['Disconnected'].should.be.an.integer;
+                res.body.data['Never connected'].should.be.an.integer;
                 done();
             });
         });

@@ -3,11 +3,12 @@
 # Created by Wazuh, Inc. <info@wazuh.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
-import common
+from wazuh import common
 from wazuh.exception import WazuhException
 from wazuh.utils import execute
 from wazuh.database import Connection
 import re
+
 
 """
 Wazuh HIDS Python package

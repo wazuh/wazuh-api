@@ -257,7 +257,7 @@ def tail(filename, n=20):
     :param n: number of lines.
     :return: Array of last lines.
     """
-    f = open(filename)
+    f = open(filename, 'rb')
     total_lines_wanted = n
 
     BLOCK_SIZE = 1024
@@ -270,12 +270,12 @@ def tail(filename, n=20):
         if (block_end_byte - BLOCK_SIZE > 0):
             # read the last block we haven't yet read
             f.seek(block_number*BLOCK_SIZE, 2)
-            blocks.append(f.read(BLOCK_SIZE))
+            blocks.append(f.read(BLOCK_SIZE).decode())
         else:
             # file too small, start from begining
             f.seek(0,0)
             # only read what was not read
-            blocks.append(f.read(block_end_byte))
+            blocks.append(f.read(block_end_byte).decode())
         lines_found = blocks[-1].count('\n')
         lines_to_go -= lines_found
         block_end_byte -= BLOCK_SIZE

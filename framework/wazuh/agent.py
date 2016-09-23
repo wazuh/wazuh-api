@@ -171,7 +171,7 @@ class Agent:
         self._load_info_from_DB()
         if self.id != "000":
             str_key = "{0} {1} {2} {3}".format(self.id, self.name, self.ip, self.internal_key)
-            self.key = b64encode(str_key)
+            self.key = b64encode(str_key.encode()).decode()
         else:
             self.key = ""
 
@@ -225,7 +225,7 @@ class Agent:
             root_uid = getpwnam("ossec").pw_uid
             ossec_gid = getgrnam("ossec").gr_gid
             chown(common.client_keys, root_uid, ossec_gid)
-            chmod(common.client_keys, 0640)
+            chmod(common.client_keys, 0o640)
         else:
             remove(f_keys_temp)
             raise WazuhException(1701, self.id)
@@ -279,9 +279,9 @@ class Agent:
         random_number = randrange(1, 999999)
         str2 = "{0}{1}{2}".format(ip, last_id, random_number)
         hash1 = md5()
-        hash1.update(str1)
+        hash1.update(str1.encode())
         hash2 = md5()
-        hash2.update(str2)
+        hash2.update(str2.encode())
         new_key = hash1.hexdigest() + hash2.hexdigest()
 
         # Write key
@@ -293,7 +293,7 @@ class Agent:
         root_uid = getpwnam("ossec").pw_uid
         ossec_gid = getgrnam("ossec").gr_gid
         chown(common.client_keys, root_uid, ossec_gid)
-        chmod(common.client_keys, 0640)
+        chmod(common.client_keys, 0o640)
 
         self.id = last_id
 

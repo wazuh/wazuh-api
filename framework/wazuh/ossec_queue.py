@@ -74,7 +74,7 @@ class OssecQueue:
 
         # Send message
         try:
-            self._send(socket_msg)
+            self._send(socket_msg.encode())
         except:
             if msg == OssecQueue.HC_SK_RESTART:
                 if agent_id:
