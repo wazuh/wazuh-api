@@ -79,11 +79,11 @@ router.get('/:agent_id', cache(), function(req, res) {
  * @apiDescription Returns the PCI requirements of all rootchecks of the agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rootchecks/000/pci?offset=0&limit=10&pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rootcheck/000/pci?offset=0&limit=10&pretty"
  *
  */
 router.get('/:agent_id/pci', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /rootchecks/:agent_id/pci");
+    logger.log(req.connection.remoteAddress + " GET /rootcheck/:agent_id/pci");
 
     req.apicacheGroup = "rootcheck";
 
@@ -123,11 +123,11 @@ router.get('/:agent_id/pci', cache(), function(req, res) {
  * @apiDescription Returns the CIS requirements of all rootchecks of the agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rootchecks/:agent_id/cis?offset=0&limit=10&pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rootcheck/000/cis?offset=0&limit=10&pretty"
  *
  */
 router.get('/:agent_id/cis', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /rootchecks/:agent_id/cis");
+    logger.log(req.connection.remoteAddress + " GET /rootcheck/:agent_id/cis");
 
     req.apicacheGroup = "rootcheck";
 

@@ -70,6 +70,14 @@ wazuh.manager module
     :undoc-members:
     :show-inheritance:
 
+wazuh.ossec_queue module
+------------------------
+
+.. automodule:: wazuh.ossec_queue
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 wazuh.rootcheck module
 ----------------------
 

@@ -26,15 +26,6 @@ hardcoded_items = {
         # GET - /manager/logs
         'GetManagerLogs': {"error":0,"data":{"totalItems":16480,"items":["2016/07/15 09:33:49 ossec-syscheckd: INFO: Syscheck scan frequency: 3600 seconds","2016/07/15 09:33:49 ossec-syscheckd: INFO: Starting syscheck scan (forwarding database).","2016/07/15 09:33:49 ossec-syscheckd: INFO: Starting syscheck database (pre-scan).","2016/07/15 09:33:42 ossec-logcollector: INFO: Started (pid: 2832).","2016/07/15 09:33:42 ossec-logcollector: INFO: Monitoring output of command(360): df -P"]}},
 
-        # GET - /manager/update-ruleset/backups
-        'GetRulesetBackups': {"error":0,"data":["20160713_005","20160713_004","20160713_003","20160713_002","20160713_001"]},
-
-        # PUT - /manager/update-ruleset/backups/:id
-        'PutManagerRestoreRulesetBackup': {"error":0,"data":{"msg":"Backup successfully","need_restart":"yes","restart_status":"success","manual_steps":"no","restarted":"yes"}},
-
-        # PUT - /manager/update-ruleset
-        'PutManagerUpdateRuleset': {"error":0,"data":{"msg":"Ruleset(1.09) updated successfully","need_restart":"yes","restart_status":"success","manual_steps":"no","restarted":"yes"}},
-
         # GET - /manager/stats
         'GetManagerStats': {"error":0,"data":[{"hour":5,"firewall":0,"alerts":[{"times":4,"sigid":5715,"level":3},{"times":2,"sigid":1002,"level":2},{"...":"..."}],"totalAlerts":107,"syscheck":1257,"events":1483},{"...":"..."}]},
 
@@ -51,16 +42,16 @@ hardcoded_items = {
         'PutAgentsRestartId': {"error":0,"data":"Restarting agent"},
 
         # DELETE - /rootcheck
-        'DeleteRootcheck': {"error":0,"data":"Policy and auditing database updated"},
+        'DeleteRootcheck': {"error":0,"data":"Rootcheck database deleted"},
 
         # DELETE - /rootcheck/:agent_id
-        'DeleteRootcheckAgentId': {"error":0,"data":"Policy and auditing database updated"},
+        'DeleteRootcheckAgentId': {"error":0,"data":"Rootcheck database deleted"},
 
         # DELETE - /syscheck
-        'DeleteSyscheck': {"error":0,"data":"Integrity check database updated"},
+        'DeleteSyscheck': {"error":0,"data":"Syscheck database deleted"},
 
         # DELETE - /syscheck/:agent_id
-        'DeleteSyscheckAgentId': {"error":0,"data":"Integrity check database updated"},
+        'DeleteSyscheckAgentId': {"error":0,"data":"Syscheck database deleted"},
 
         # PUT /syscheck
         'PutSyscheck' : {"error":0,"data":"Restarting Syscheck/Rootcheck on all agents"},
@@ -137,7 +128,7 @@ if __name__ == "__main__":
 
     # Generate docu with apidoc
     try:
-        # wazuh-API: apidoc -i . -o doc/build/html -c doc/ -f js -e node_modules
+        # wazuh-API: apidoc -i ../ -o ./build/html -c . -f js -e node_modules
         output = check_output(['apidoc', '-i', '../', '-o', './build/html', '-c', '.', '-f', 'js', '-e', 'node_modules'])
         print("\nAPIDOC:")
         print(output)
@@ -185,6 +176,9 @@ if __name__ == "__main__":
     # Introduction
     secs = ""
     for req in sorted(request_list.keys()):
+        if req.lower() == "cache":  # ignore cache requests
+            continue
+
         secs += '* `{0}`_\n'.format(req.title())
     f.write(introduction.format(secs))
 
@@ -192,6 +186,8 @@ if __name__ == "__main__":
     f.write('\n{0}\n'.format(str_request_list))
     f.write('---------------------------------' + '\n\n')
     for req in sorted(request_list.keys()):
+        if req.lower() == "cache":  # ignore cache requests
+            continue
         f.write('`{0}`_\n'.format(req.title()))
         for item in sorted(request_list[req]):
             f.write('\t* {0}  (`{1}`_)\n'.format(item[0], item[1]))
@@ -199,6 +195,9 @@ if __name__ == "__main__":
 
     for s in sorted(sections.keys()):
         print(s.title())
+
+        if s.lower() == "cache":  # ignore cache requests
+            continue
 
         # Section
         f.write(s.title() + '\n')
