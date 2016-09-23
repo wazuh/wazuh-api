@@ -187,6 +187,12 @@ class Agent:
         if self.id == "000":
             raise WazuhException(1703)
         else:
+            # Check if agent exists and it is active
+            agent_info = self.get_basic_information()
+
+            if self.status != 'active':
+                raise WazuhException(1707, '{0} - {1}'.format(self.id, self.status))
+
             oq = OssecQueue(OssecQueue.ARQUEUE)
             ret_msg = oq.send_msg_to_agent(OssecQueue.RESTART_AGENTS, self.id)
             oq.close()

@@ -62,6 +62,7 @@ class WazuhException(Exception):
         1704: 'Adding/removing agents via API when ossec-authd is running is not compatible',
         1705: 'There is an agent with the same name',
         1706: 'There is an agent with the same IP',
+        1707: 'Impossible to restart agent due to it is not active',
         # Manager:
 
         # Database:

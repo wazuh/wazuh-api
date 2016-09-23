@@ -10,7 +10,7 @@ from wazuh.database import Connection
 from wazuh.ossec_queue import OssecQueue
 from wazuh import common
 from glob import glob
-from os import remove
+from os import remove, path
 
 
 def run(agent_id=None, all_agents=False):
@@ -91,7 +91,8 @@ def clear(agent_id=None, all_agents=False):
             rootcheck_files = glob('{0}/queue/rootcheck/({1}) {2}->rootcheck'.format(common.ossec_path, agent_info['name'], agent_info['ip']))
 
     for rootcheck_file in rootcheck_files:
-        remove(rootcheck_file)
+        if path.exists(rootcheck_file):
+            remove(rootcheck_file)
 
     return "Rootcheck database deleted"
 

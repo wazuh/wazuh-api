@@ -10,7 +10,7 @@ from wazuh.database import Connection
 from wazuh.ossec_queue import OssecQueue
 from wazuh import common
 from glob import glob
-from os import remove
+from os import remove, path
 
 
 def run(agent_id=None, all_agents=False):
@@ -92,7 +92,8 @@ def clear(agent_id=None, all_agents=False):
             syscheck_files = glob('{0}/queue/syscheck/({1}) {2}->syscheck'.format(common.ossec_path, agent_info['name'], agent_info['ip']))
 
     for syscheck_file in syscheck_files:
-        remove(syscheck_file)
+        if path.exists(syscheck_file):
+            remove(syscheck_file)
 
     return "Syscheck database deleted"
 
