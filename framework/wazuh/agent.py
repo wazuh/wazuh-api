@@ -67,16 +67,16 @@ class Agent:
         Calculates state based on last keep alive
         """
         if last_keep_alive == 0:
-            return "neverConnected"
+            return "Never connected"
         else:
             limit_seconds = 600*3 + 30
             last_date = datetime.strptime(last_keep_alive, '%Y-%m-%d %H:%M:%S')
             difference = (datetime.now() - last_date).total_seconds()
 
             if difference < limit_seconds:
-                return "active"
+                return "Active"
             else:
-                return "disconnected"
+                return "Disconnected"
 
     def _load_info_from_DB(self):
         """
@@ -124,7 +124,7 @@ class Agent:
             if self.id != "000":
                 self.status = Agent.calculate_status(self.lastKeepAlive)
             else:
-                self.status = 'active'
+                self.status = 'Active'
                 self.ip = '127.0.0.1'
 
         if no_result:
@@ -302,7 +302,7 @@ class Agent:
         """
         Gets a list of available agents with basic attributes.
 
-        :param status: Filters by agent status: active, disconnected or neverConnected.
+        :param status: Filters by agent status: Active, Disconnected or Never connected.
         :param offset: First item to return.
         :param limit: Maximum number of items to return.
         :param sort: Sorts the items. Format: {"fields":["field1","field2"],"order":"asc|desc"}.
@@ -331,7 +331,7 @@ class Agent:
                 query += ' AND (last_keepalive >= :time_active or id = 0)'
             elif status.lower() == 'disconnected':
                 query += ' AND last_keepalive < :time_active'
-            elif status.lower() == "neverconnected":
+            elif status.lower() == "never connected":
                 query += ' AND last_keepalive IS NULL AND id != 0'
 
         # Search
@@ -395,7 +395,7 @@ class Agent:
                 lastKeepAlive = 0
 
             if data_tuple['id'] == "000":
-                data_tuple['status'] = "active"
+                data_tuple['status'] = "Active"
                 data_tuple['ip'] = '127.0.0.1'
             else:
                 data_tuple['status'] = Agent.calculate_status(lastKeepAlive)
@@ -409,7 +409,7 @@ class Agent:
         """
         Counts the number of agents by status.
 
-        :return: Dictionary with keys: total, active, disconnected, neverConnected
+        :return: Dictionary with keys: total, Active, Disconnected, Never connected
         """
 
         db_global = glob(common.database_path_global)
@@ -443,7 +443,7 @@ class Agent:
         conn.execute(query_never, request)
         never = conn.fetch()[0]
 
-        return {'total': total, 'active': active, 'disconnected': disconnected, 'neverConnected': never}
+        return {'Total': total, 'Active': active, 'Disconnected': disconnected, 'Never connected': never}
 
     @staticmethod
     def restart_agents(agent_id=None, restart_all=False):

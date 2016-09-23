@@ -164,7 +164,7 @@ describe('Agents', function() {
                 res.body.should.have.properties(['error', 'data']);
 
                 res.body.error.should.equal(0);
-                res.body.data.should.have.properties(['active', 'total', 'disconnected', 'neverConnected']);
+                res.body.data.should.have.properties(['Active', 'Total', 'Disconnected', 'Never connected']);
                 res.body.data['active'].should.be.above(0);
                 res.body.data['total'].should.be.an.integer;
                 res.body.data['disconnected'].should.be.an.integer;

@@ -41,7 +41,7 @@ def run(agent_id=None, all_agents=False):
         # Check if agent exists and it is active
         agent_info = Agent(agent_id).get_basic_information()
 
-        if agent_info['status'] != 'active':
+        if agent_info['status'].lower() != 'active':
             raise WazuhException(1602, '{0} - {1}'.format(agent_id, agent_info['status']))
 
         oq = OssecQueue(OssecQueue.ARQUEUE)
