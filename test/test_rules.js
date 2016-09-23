@@ -476,7 +476,7 @@ describe('Rules', function() {
 
         it('Sort', function(done) {
             request(common.url)
-            .get("/rules/files?sort=-")
+            .get("/rules/files?sort=-name")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)

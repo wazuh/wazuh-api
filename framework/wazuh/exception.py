@@ -44,6 +44,7 @@ class WazuhException(Exception):
         1401: 'Invalid limit',
         1402: 'Invalid order. Order must be \'asc\' or \'desc\'',
         1403: 'Sort field invalid',  # Also, in DB
+        1404: 'A field must be specified to order the data',
 
         # Decoders: 1500 - 1599
         1500: 'Error reading decoders from ossec.conf',

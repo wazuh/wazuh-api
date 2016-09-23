@@ -142,7 +142,10 @@ def sort_array(array, sort_by=None, order='asc', allowed_sort_fields=None):
         else:
             return sorted(array, key=lambda o: tuple(getattr(o, a) for a in sort_by), reverse=order_desc)
     else:
-        return sorted(array, reverse=order_desc)
+        if type(array) is set or (type(array[0]) is not dict and 'class \'wazuh' not in str(type(array[0]))):
+            return sorted(array, reverse=order_desc)
+        else:
+            raise WazuhException(1404)
 
 
 def get_values(o):
