@@ -29,6 +29,12 @@ Wazuh API capabilities:
 
 [Full documentation](http://documentation.wazuh.com/en/latest/ossec_api.html)
 
+## Branches
+
+* `stable` branch on correspond to the last Wazuh API stable version.
+* `master` branch contains the latest code, be aware of possible bugs on this branch.
+* `development` branch includes all the new features we're adding and testing.
+
 ## Contribute
 
 If you want to contribute to our project please don't hesitate to send a pull request. You can also join our users [mailing list](https://groups.google.com/d/forum/wazuh), by sending an email to [wazuh+subscribe@googlegroups.com](mailto:wazuh+subscribe@googlegroups.com), to ask questions and participate in discussions.
