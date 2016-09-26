@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [v1.3.0] - 2016-10-??
 ### Added
+- **Wazuh v1.2** is required to run the API.
+- API must be launched with root user, but it is run with ossec user.
 - Scripts:
  - install_api.sh
  - configure_api.sh
@@ -34,6 +36,8 @@ All notable changes to this project will be documented in this file.
  - Rootcheck
   - GET /rootcheck/:agent_id/cis (Get rootcheck CIS requirements)
   - GET /rootcheck/:agent_id/pci (Get rootcheck pci requirements)
+ - API
+  - GET /version
 
 - Wazuh framework: Manage OSSEC Wazuh from python.
 - Unit tests

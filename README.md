@@ -1,19 +1,19 @@
 # OSSEC Wazuh RESTful API
 
-OSSEC Wazuh RESTful API provides a new mechanism to manage OSSEC Wazuh. The goal is to manage your OSSEC deployment remotely (e.g. through a web browser), or to control OSSEC with external systems.
+Wazuh API is an open source RESTful API to interact with OSSEC from your own application or with a simple web browser or tools like cURL.
 
-Perform everyday actions like adding an agent, restart OSSEC, or check the configuration are now simplest using Wazuh RESTful API.
+Our goal is to completely manage OSSEC remotely. Perform everyday actions like adding an agent, check configuration, or look for syscheck files are now simplest using Wazuh API.
 
-OSSEC Wazuh API RESTful capabilities:
+Wazuh API capabilities:
 
 - Agents management
-- Manager control & overview
-- Rootcheck control
-- Syscheck control
+- Manager overview
+- Rootcheck control & search
+- Syscheck control & search
+- Ruleset information
 - Statistical Information
 - HTTPS and User authentication
 - Error Handling
-
 
 ## Documentation
 
