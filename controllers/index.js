@@ -39,8 +39,8 @@ router.post("*", function(req, res, next) {
     var content_type = req.get('Content-Type');
 
     if (!content_type || !(content_type == 'application/json' || content_type == 'application/x-www-form-urlencoded')){
-        logger.log(req.connection.remoteAddress + " POST " + req.path);
-        res_h.bad_request("607", "", res);
+        logger.debug(req.connection.remoteAddress + " POST " + req.path);
+        res_h.bad_request(req, res, "607");
     }
     else
         next();
@@ -74,23 +74,23 @@ router.use('/cache', require('./cache'));
 
 // Index
 router.get('/',function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /");
+    logger.debug(req.connection.remoteAddress + " GET /");
     json_res = {'error': 0, 'data': "Welcome to Wazuh HIDS API"};
-    res_h.send(res, json_res);
+    res_h.send(req, res, json_res);
 });
 
 // Version
 router.get('/version',function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /version");
+    logger.debug(req.connection.remoteAddress + " GET /version");
     json_res = {'error': 0, 'data': current_version};
-    res_h.send(res, json_res);
+    res_h.send(req, res, json_res);
 });
 
 // ALWAYS Keep this as the last route
 router.all('*',function(req, res) {
-    logger.log(req.connection.remoteAddress + " " + req.method + " " + req.path);
+    logger.debug(req.connection.remoteAddress + " " + req.method + " " + req.path);
     json_res = { 'error': 603, 'message': errors.description(603)};
-    res_h.send(res, json_res, 404);
+    res_h.send(req, res, json_res, 404);
 });
 
 

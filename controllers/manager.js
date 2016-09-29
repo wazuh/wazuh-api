@@ -26,12 +26,12 @@ var router = require('express').Router();
  *
  */
 router.get('/status', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /manager/status");
+    logger.debug(req.connection.remoteAddress + " GET /manager/status");
 
     req.apicacheGroup = "manager";
 
     var data_request = {'function': '/manager/status', 'arguments': {}};
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -46,12 +46,12 @@ router.get('/status', cache(), function(req, res) {
  *
  */
 router.get('/info', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /manager/info");
+    logger.debug(req.connection.remoteAddress + " GET /manager/info");
 
     req.apicacheGroup = "manager";
 
     var data_request = {'function': '/manager/info', 'arguments': {}};
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -69,14 +69,14 @@ router.get('/info', cache(), function(req, res) {
  *
  */
 router.get('/configuration', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /manager/configuration");
+    logger.debug(req.connection.remoteAddress + " GET /manager/configuration");
 
     req.apicacheGroup = "manager";
 
     var data_request = {'function': '/manager/configuration', 'arguments': {}};
     var filters = {'section':'names', 'field': 'names'};
 
-    if (!filter.check(req.query, filters, res))  // Filter with error
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
 
     if ('section' in req.query)
@@ -85,9 +85,9 @@ router.get('/configuration', cache(), function(req, res) {
         if ('section' in req.query)
             data_request['arguments']['field'] = req.query.field;
         else
-            res_h.bad_request(604, "Missing field: 'section'", res);
+            res_h.bad_request(req, res, 604, "Missing field: 'section'");
     }
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -104,14 +104,14 @@ router.get('/configuration', cache(), function(req, res) {
  *
  */
 router.get('/stats', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /manager/stats");
+    logger.debug(req.connection.remoteAddress + " GET /manager/stats");
 
     req.apicacheGroup = "manager";
 
     var data_request = {'function': '/manager/stats', 'arguments': {}};
     var filters = {'date':'dates'};
 
-    if (!filter.check(req.query, filters, res))  // Filter with error
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
 
     if ('date' in req.query){
@@ -127,7 +127,7 @@ router.get('/stats', cache(), function(req, res) {
         data_request['arguments']['day'] = date.substring(6, 8);
     }
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -143,12 +143,12 @@ router.get('/stats', cache(), function(req, res) {
  *
  */
 router.get('/stats/hourly', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /manager/stats/hourly");
+    logger.debug(req.connection.remoteAddress + " GET /manager/stats/hourly");
 
     req.apicacheGroup = "manager";
 
     var data_request = {'function': '/manager/stats/hourly', 'arguments': {}};
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -164,12 +164,12 @@ router.get('/stats/hourly', cache(), function(req, res) {
  *
  */
 router.get('/stats/weekly', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /manager/stats/weekly");
+    logger.debug(req.connection.remoteAddress + " GET /manager/stats/weekly");
 
     req.apicacheGroup = "manager";
 
     var data_request = {'function': '/manager/stats/weekly', 'arguments': {}};
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -191,14 +191,14 @@ router.get('/stats/weekly', cache(), function(req, res) {
  *
  */
 router.get('/logs', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /manager/logs");
+    logger.debug(req.connection.remoteAddress + " GET /manager/logs");
 
     req.apicacheGroup = "manager";
 
     var data_request = {'function': '/manager/logs', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'type_log':'names', 'category': 'names'};
 
-    if (!filter.check(req.query, filters, res))  // Filter with error
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
 
     if ('offset' in req.query)
@@ -214,7 +214,7 @@ router.get('/logs', cache(), function(req, res) {
     if ('category' in req.query)
         data_request['arguments']['category'] = req.query.category;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -230,12 +230,12 @@ router.get('/logs', cache(), function(req, res) {
  *
  */
 router.get('/logs/summary', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /manager/logs/summary");
+    logger.debug(req.connection.remoteAddress + " GET /manager/logs/summary");
 
     req.apicacheGroup = "manager";
 
     var data_request = {'function': '/manager/logs/summary', 'arguments': {}};
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 module.exports = router;

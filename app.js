@@ -118,14 +118,14 @@ app.use("/" + current_version, require('./controllers'));
 app.use (function (err, req, res, next){
 
     if ( err == "Error: invalid json" ){
-        logger.log(req.connection.remoteAddress + " " + req.method + " " + req.path);
-        res_h.bad_request("607", "", res);
+        logger.debug(req.connection.remoteAddress + " " + req.method + " " + req.path);
+        res_h.bad_request(req, res, "607");
     }
     else if ('status' in err && err.status == 400){
         var msg = "";
         if ('body' in err)
             msg = "Body: " + err.body;
-        res_h.bad_request("614", msg, res);
+        res_h.bad_request(req, res, "614", msg);
     }
     else{
         logger.log("Internal Error");

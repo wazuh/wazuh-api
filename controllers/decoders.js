@@ -30,14 +30,14 @@ var router = require('express').Router();
  *
  */
 router.get('/', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /decoders");
+    logger.debug(req.connection.remoteAddress + " GET /decoders");
 
     req.apicacheGroup = "decoders";
 
     var data_request = {'function': '/decoders', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'file':'paths'};
 
-    if (!filter.check(req.query, filters, res))  // Filter with error
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
 
     if ('offset' in req.query)
@@ -51,7 +51,7 @@ router.get('/', cache(), function(req, res) {
     if ('file' in req.query)
         data_request['arguments']['file'] = req.query.file;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -71,14 +71,14 @@ router.get('/', cache(), function(req, res) {
  *
  */
 router.get('/files', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /decoders/files");
+    logger.debug(req.connection.remoteAddress + " GET /decoders/files");
 
     req.apicacheGroup = "decoders";
 
     var data_request = {'function': '/decoders/files', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
 
-    if (!filter.check(req.query, filters, res))  // Filter with error
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
 
     if ('offset' in req.query)
@@ -90,7 +90,7 @@ router.get('/files', cache(), function(req, res) {
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -110,14 +110,14 @@ router.get('/files', cache(), function(req, res) {
  *
  */
 router.get('/parents', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /decoders/parents");
+    logger.debug(req.connection.remoteAddress + " GET /decoders/parents");
 
     req.apicacheGroup = "decoders";
 
     var data_request = {'function': '/decoders', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
 
-    if (!filter.check(req.query, filters, res))  // Filter with error
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
 
     if ('offset' in req.query)
@@ -131,7 +131,7 @@ router.get('/parents', cache(), function(req, res) {
 
     data_request['arguments']['parents'] = "True";
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -152,14 +152,14 @@ router.get('/parents', cache(), function(req, res) {
  *
  */
 router.get('/:decoder_name', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /decoders/:decoder_name");
+    logger.debug(req.connection.remoteAddress + " GET /decoders/:decoder_name");
 
     req.apicacheGroup = "decoders";
 
     var data_request = {'function': '/decoders', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
 
-    if (!filter.check(req.query, filters, res))  // Filter with error
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
 
     if ('offset' in req.query)
@@ -171,12 +171,12 @@ router.get('/:decoder_name', cache(), function(req, res) {
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
 
-    if (!filter.check(req.params, {'decoder_name':'names'}, res))  // Filter with error
+    if (!filter.check(req.params, {'decoder_name':'names'}, req, res))  // Filter with error
         return;
 
     data_request['arguments']['name'] = req.params.decoder_name;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 

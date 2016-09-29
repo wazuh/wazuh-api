@@ -22,7 +22,7 @@ var errors = require('../helpers/errors');
  *  True, if matched filter
  *  False: Error in filter. Also, it sends a response!*
 */
-exports.check = function (query, filters, res){
+exports.check = function (query, filters, req, res){
     var query_aux = (JSON.parse(JSON.stringify(query)));  // Clone query
 
     for(var field in filters){
@@ -30,7 +30,7 @@ exports.check = function (query, filters, res){
             var type = filters[field]
             if(!validator[type](query[field])){ // Bad type
                 var erro_code = errors.description(type);
-                res_h.bad_request(erro_code, " Field: " + field, res);
+                res_h.bad_request(req, res, erro_code, " Field: " + field);
                 return false;
             }
             delete query_aux[field];
@@ -39,7 +39,7 @@ exports.check = function (query, filters, res){
 
     // No extra fields
     if (Object.keys(query_aux).length != 0){
-      res_h.bad_request(604, filters_to_string(filters), res);
+      res_h.bad_request(req, res, 604, filters_to_string(filters));
       return false; //Error: Allowed fields
     }
 

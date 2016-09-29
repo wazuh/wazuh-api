@@ -25,8 +25,8 @@ var router = require('express').Router();
  *
  */
 router.get('/', function(req, res, next) {
-    logger.log(req.connection.remoteAddress + " GET /cache");
-    res_h.send(res, { 'error': 0, 'data': apicache.getIndex() });
+    logger.debug(req.connection.remoteAddress + " GET /cache");
+    res_h.send(req, res, { 'error': 0, 'data': apicache.getIndex() });
 });
 
 /**
@@ -42,8 +42,8 @@ router.get('/', function(req, res, next) {
  *
  */
 router.get('/config', function(req, res, next) {
-    logger.log(req.connection.remoteAddress + " GET /cache/config");
-    res_h.send(res, { 'error': 0, 'data': apicache.options() });
+    logger.debug(req.connection.remoteAddress + " GET /cache/config");
+    res_h.send(req, res, { 'error': 0, 'data': apicache.options() });
 });
 
 /**
@@ -59,8 +59,8 @@ router.get('/config', function(req, res, next) {
   *
   */
 router.delete('/', function(req, res, next) {
-    logger.log(req.connection.remoteAddress + " DELETE /cache");
-    res_h.send(res, { 'error': 0, 'data': apicache.clear() });
+    logger.debug(req.connection.remoteAddress + " DELETE /cache");
+    res_h.send(req, res, { 'error': 0, 'data': apicache.clear() });
 });
 
 /**
@@ -77,12 +77,12 @@ router.delete('/', function(req, res, next) {
  *
  */
 router.delete('/:group', function(req, res, next) {
-    logger.log(req.connection.remoteAddress + " DELETE /cache/:group");
+    logger.debug(req.connection.remoteAddress + " DELETE /cache/:group");
 
-    if (!filter.check(req.params, {'group':'alphanumeric_param'}, res))  // Filter with error
+    if (!filter.check(req.params, {'group':'alphanumeric_param'}, req, res))  // Filter with error
         return;
 
-    res_h.send(res, { 'error': 0, 'data': apicache.clear(req.params.group) });
+    res_h.send(req, res, { 'error': 0, 'data': apicache.clear(req.params.group) });
 });
 
 

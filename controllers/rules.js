@@ -34,14 +34,14 @@ var router = require('express').Router();
  *
  */
 router.get('/', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /rules");
+    logger.debug(req.connection.remoteAddress + " GET /rules");
 
     req.apicacheGroup = "rules";
 
     var data_request = {'function': '/rules', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'group':'alphanumeric_param', 'level':'ranges', 'file':'alphanumeric_param', 'pci':'alphanumeric_param'};
 
-    if (!filter.check(req.query, filters, res))  // Filter with error
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
 
     if ('offset' in req.query)
@@ -63,7 +63,7 @@ router.get('/', cache(), function(req, res) {
     if ('pci' in req.query)
         data_request['arguments']['pci'] = req.query.pci;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -83,14 +83,14 @@ router.get('/', cache(), function(req, res) {
  *
  */
 router.get('/groups', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /rules/groups");
+    logger.debug(req.connection.remoteAddress + " GET /rules/groups");
 
     req.apicacheGroup = "rules";
 
     var data_request = {'function': '/rules/groups', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
 
-    if (!filter.check(req.query, filters, res))  // Filter with error
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
 
     if ('offset' in req.query)
@@ -102,7 +102,7 @@ router.get('/groups', cache(), function(req, res) {
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -122,14 +122,14 @@ router.get('/groups', cache(), function(req, res) {
  *
  */
 router.get('/pci', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /rules/pci");
+    logger.debug(req.connection.remoteAddress + " GET /rules/pci");
 
     req.apicacheGroup = "rules";
 
     var data_request = {'function': '/rules/pci', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
 
-    if (!filter.check(req.query, filters, res))  // Filter with error
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
 
     if ('offset' in req.query)
@@ -141,7 +141,7 @@ router.get('/pci', cache(), function(req, res) {
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -162,14 +162,14 @@ router.get('/pci', cache(), function(req, res) {
  *
  */
 router.get('/files', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /rules/files");
+    logger.debug(req.connection.remoteAddress + " GET /rules/files");
 
     req.apicacheGroup = "rules";
 
     var data_request = {'function': '/rules/files', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'download':'alphanumeric_param'};
 
-    if (!filter.check(req.query, filters, res))  // Filter with error
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
 
     if ('offset' in req.query)
@@ -184,9 +184,9 @@ router.get('/files', cache(), function(req, res) {
         data_request['arguments']['status'] = req.query.status;
 
     if ('download' in req.query)
-        res_h.send_file(req.query.download, res);
+        res_h.send_file(req, res, req.query.download);
     else
-        execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+        execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -207,14 +207,14 @@ router.get('/files', cache(), function(req, res) {
  *
  */
 router.get('/:rule_id', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /rules/:rule_id");
+    logger.debug(req.connection.remoteAddress + " GET /rules/:rule_id");
 
     req.apicacheGroup = "rules";
 
     var data_request = {'function': '/rules', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
 
-    if (!filter.check(req.query, filters, res))  // Filter with error
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
 
     if ('offset' in req.query)
@@ -226,12 +226,12 @@ router.get('/:rule_id', cache(), function(req, res) {
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
 
-    if (!filter.check(req.params, {'rule_id':'numbers'}, res))  // Filter with error
+    if (!filter.check(req.params, {'rule_id':'numbers'}, req, res))  // Filter with error
         return;
 
     data_request['arguments']['id'] = req.params.rule_id;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 

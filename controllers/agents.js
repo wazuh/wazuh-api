@@ -30,14 +30,14 @@ var router = require('express').Router();
  *
  */
 router.get('/', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /agents");
+    logger.debug(req.connection.remoteAddress + " GET /agents");
 
     req.apicacheGroup = "agents";
 
     var data_request = {'function': '/agents', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param'};
 
-    if (!filter.check(req.query, filters, res))  // Filter with error
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
 
     if ('offset' in req.query)
@@ -51,7 +51,7 @@ router.get('/', cache(), function(req, res) {
     if ('status' in req.query)
         data_request['arguments']['status'] = req.query.status;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -67,12 +67,12 @@ router.get('/', cache(), function(req, res) {
  *
  */
 router.get('/summary', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /agents");
+    logger.debug(req.connection.remoteAddress + " GET /agents");
 
     req.apicacheGroup = "agents";
 
     var data_request = {'function': '/agents/summary', 'arguments': {}};
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -89,18 +89,18 @@ router.get('/summary', cache(), function(req, res) {
  *
  */
 router.get('/:agent_id', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /agents/:agent_id");
+    logger.debug(req.connection.remoteAddress + " GET /agents/:agent_id");
 
     req.apicacheGroup = "agents";
 
     var data_request = {'function': '/agents/:agent_id', 'arguments': {}};
 
-    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
+    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
         return;
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 
 })
 
@@ -118,16 +118,16 @@ router.get('/:agent_id', cache(), function(req, res) {
  *
  */
 router.get('/:agent_id/key', function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /agents/:agent_id/key");
+    logger.debug(req.connection.remoteAddress + " GET /agents/:agent_id/key");
 
     var data_request = {'function': '/agents/:agent_id/key', 'arguments': {}};
 
-    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
+    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
         return;
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -142,13 +142,13 @@ router.get('/:agent_id/key', function(req, res) {
  *
  */
 router.put('/restart', function(req, res) {
-    logger.log(req.connection.remoteAddress + " PUT /agents/restart");
+    logger.debug(req.connection.remoteAddress + " PUT /agents/restart");
 
     var data_request = {'function': 'PUT/agents/restart', 'arguments': {}};
 
     data_request['arguments']['restart_all'] = 'True';
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 
@@ -166,16 +166,16 @@ router.put('/restart', function(req, res) {
  *
  */
 router.put('/:agent_id/restart', function(req, res) {
-    logger.log(req.connection.remoteAddress + " PUT /agents/:agent_id/restart");
+    logger.debug(req.connection.remoteAddress + " PUT /agents/:agent_id/restart");
 
     var data_request = {'function': 'PUT/agents/:agent_id/restart', 'arguments': {}};
 
-    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
+    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
         return;
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -192,16 +192,16 @@ router.put('/:agent_id/restart', function(req, res) {
  *
  */
 router.put('/:agent_name', function(req, res) {
-    logger.log(req.connection.remoteAddress + " PUT /agents/:agent_name");
+    logger.debug(req.connection.remoteAddress + " PUT /agents/:agent_name");
 
     var data_request = {'function': 'PUT/agents/:agent_name', 'arguments': {}};
 
-    if (!filter.check(req.params, {'agent_name':'names'}, res))  // Filter with error
+    if (!filter.check(req.params, {'agent_name':'names'}, req, res))  // Filter with error
         return;
 
     data_request['arguments']['name'] = req.params.agent_name;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 
@@ -219,16 +219,16 @@ router.put('/:agent_name', function(req, res) {
  *
  */
 router.delete('/:agent_id', function(req, res) {
-    logger.log(req.connection.remoteAddress + " DELETE /agents/:agent_id");
+    logger.debug(req.connection.remoteAddress + " DELETE /agents/:agent_id");
 
     var data_request = {'function': 'DELETE/agents/:agent_id', 'arguments': {}};
 
-    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
+    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
         return;
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 
@@ -247,7 +247,7 @@ router.delete('/:agent_id', function(req, res) {
  *
  */
 router.post('/', function(req, res) {
-    logger.log(req.connection.remoteAddress + " POST /agents");
+    logger.debug(req.connection.remoteAddress + " POST /agents");
 
     // If not IP set, we will use source IP.
     var ip = req.body.ip;
@@ -255,7 +255,7 @@ router.post('/', function(req, res) {
         // If we hare behind a proxy server, use headers.
         if (config.BehindProxyServer.toLowerCase() == "yes")
             if (!req.headers.hasOwnProperty('x-forwarded-for')){
-                res_h.bad_request(800, "", res);
+                res_h.bad_request(req, res, 800);
                 return;
             }
             else
@@ -276,16 +276,16 @@ router.post('/', function(req, res) {
     var data_request = {'function': 'POST/agents', 'arguments': {}};
     var filters = {'name':'names', 'ip':'ips'};
 
-    if (!filter.check(req.body, filters, res))  // Filter with error
+    if (!filter.check(req.body, filters, req, res))  // Filter with error
         return;
 
     data_request['arguments']['ip'] = req.body.ip;
 
     if ('name' in req.body){
         data_request['arguments']['name'] = req.body.name;
-        execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+        execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
     }else
-        res_h.bad_request(604, "Missing field: 'name'", res);
+        res_h.bad_request(req, res, 604, "Missing field: 'name'");
 })
 
 

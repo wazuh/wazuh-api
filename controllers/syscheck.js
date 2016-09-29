@@ -38,14 +38,14 @@ var router = require('express').Router();
  *
  */
 router.get('/:agent_id', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id");
+    logger.debug(req.connection.remoteAddress + " GET /syscheck/:agent_id");
 
     req.apicacheGroup = "syscheck";
 
     var data_request = {'function': '/syscheck/:agent_id', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'event':'names', 'file':'paths', 'filetype':'names', 'summary':'names', 'md5':'hashes', 'sha1':'hashes', 'hash':'hashes'};
 
-    if (!filter.check(req.query, filters, res))  // Filter with error
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
     if ('offset' in req.query)
         data_request['arguments']['offset'] = req.query.offset;
@@ -71,11 +71,11 @@ router.get('/:agent_id', cache(), function(req, res) {
         data_request['arguments']['hash'] = req.query.hash.toLowerCase();
 
 
-    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
+    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
         return;
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -92,17 +92,17 @@ router.get('/:agent_id', cache(), function(req, res) {
  *
  */
 router.get('/:agent_id/last_scan', cache(), function(req, res) {
-    logger.log(req.connection.remoteAddress + " GET /syscheck/:agent_id/last_scan");
+    logger.debug(req.connection.remoteAddress + " GET /syscheck/:agent_id/last_scan");
 
     req.apicacheGroup = "syscheck";
 
     var data_request = {'function': '/syscheck/:agent_id/last_scan', 'arguments': {}};
 
-    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
+    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
         return;
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 
@@ -119,11 +119,11 @@ router.get('/:agent_id/last_scan', cache(), function(req, res) {
  *
  */
 router.put('/', function(req, res) {
-    logger.log(req.connection.remoteAddress + " PUT /syscheck");
+    logger.debug(req.connection.remoteAddress + " PUT /syscheck");
 
     var data_request = {'function': 'PUT/syscheck', 'arguments': {}};
     data_request['arguments']['all_agents'] = 1;
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -140,15 +140,15 @@ router.put('/', function(req, res) {
  *
  */
 router.put('/:agent_id', function(req, res) {
-    logger.log(req.connection.remoteAddress + " PUT /syscheck/:agent_id");
+    logger.debug(req.connection.remoteAddress + " PUT /syscheck/:agent_id");
 
     var data_request = {'function': 'PUT/syscheck', 'arguments': {}};
 
-    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
+    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
         return;
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 
@@ -165,13 +165,13 @@ router.put('/:agent_id', function(req, res) {
  *
  */
 router.delete('/', function(req, res) {
-    logger.log(req.connection.remoteAddress + " DELETE /syscheck");
+    logger.debug(req.connection.remoteAddress + " DELETE /syscheck");
 
     apicache.clear("syscheck");
 
     var data_request = {'function': 'DELETE/syscheck', 'arguments': {}};
     data_request['arguments']['all_agents'] = 1;
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -188,17 +188,17 @@ router.delete('/', function(req, res) {
  *
  */
 router.delete('/:agent_id', function(req, res) {
-    logger.log(req.connection.remoteAddress + " DELETE /syscheck/:agent_id");
+    logger.debug(req.connection.remoteAddress + " DELETE /syscheck/:agent_id");
 
     apicache.clear("syscheck");
 
     var data_request = {'function': 'DELETE/syscheck', 'arguments': {}};
 
-    if (!filter.check(req.params, {'agent_id':'numbers'}, res))  // Filter with error
+    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
         return;
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(res, data); });
+    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 
