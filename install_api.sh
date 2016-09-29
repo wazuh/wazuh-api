@@ -32,7 +32,21 @@ print() {
 }
 
 error_and_exit() {
-    print "Error executing command: '$1'.\nExiting."
+    print "Error executing command: '$1'.\n"
+
+    if [ "X${API_BACKUP}" == "Xyes" ]; then
+        print "Backup directory: $API_PATH_BACKUP"
+        print "Restore backup:"
+        print "\t1. rm -r $API_PATH"
+        print "\t2. mv $API_PATH_BACKUP $API_PATH"
+        print "\t3. chown ossec:ossec $API_PATH"
+    fi
+
+    if [ -d "/root/wazuh-API-tmp" ]; then
+        exec_cmd "rm -rf /root/wazuh-API-tmp"
+    fi
+
+    print "\nExiting."
     exit 1
 }
 
@@ -124,6 +138,8 @@ previous_checks() {
     elif [ "X${arg}" == "X" ]; then   # No argument
         API_SOURCES="/root"
         DOWNLOAD_PATH=$(url_lastest_release "wazuh" "Wazuh-API")
+        print "API v1.3 is not released. Please, use './install_api.sh /path/to/api_sources'"
+        exit 1
     else
         API_SOURCES=$arg  # Path argument
     fi
@@ -152,6 +168,7 @@ previous_checks() {
     API_PATH="${DIRECTORY}/api"
     API_PATH_BACKUP="${DIRECTORY}/~api"
     FRAMEWORK_PATH="${DIRECTORY}/framework"
+    API_BACKUP='no'
     serv_type=$(get_type_service)
 
     # Dependencies
@@ -185,13 +202,13 @@ get_api () {
     if [ "X$DOWNLOAD_PATH" != "X" ]; then
         print "\nDownloading API from $DOWNLOAD_PATH"
 
-        if [ -d "$API_SOURCES/wazuh-API" ]; then
-            exec_cmd "rm -rf $API_SOURCES/wazuh-API"
+        if [ -d "$API_SOURCES/wazuh-API-tmp" ]; then
+            exec_cmd "rm -rf $API_SOURCES/wazuh-API-tmp"
         fi
 
-        exec_cmd "mkdir -p $API_SOURCES/wazuh-API && curl -sL $DOWNLOAD_PATH | tar xvz -C $API_SOURCES/wazuh-API"
+        exec_cmd "mkdir -p $API_SOURCES/wazuh-API-tmp && curl -sL $DOWNLOAD_PATH | tar xvz -C $API_SOURCES/wazuh-API-tmp"
 
-        API_SOURCES="$API_SOURCES/wazuh-API/wazuh-API-*.*"
+        API_SOURCES="$API_SOURCES/wazuh-API-tmp/wazuh-API-*.*"
     else
         if [ "X${arg}" == "Xdev" ]; then
             print "\nInstalling Wazuh-API from current directory [$API_SOURCES] [DEV MODE]"
@@ -235,6 +252,7 @@ backup_api () {
 
     exec_cmd "cp -rLfp $API_PATH $API_PATH_BACKUP"
     exec_cmd "chown root:root $API_PATH_BACKUP"
+    API_BACKUP='yes'
 }
 
 restore_configuration () {
@@ -292,7 +310,7 @@ setup_api() {
         exec_cmd "ln -s $API_SOURCES $API_PATH"
     else
         exec_cmd "mkdir $API_PATH"
-        exec_cmd "cp --parents -r app.js configuration controllers examples framework/examples framework/wazuh helpers models package.json scripts $API_PATH"
+        exec_cmd "cp --parents -r $API_SOURCES/app.js $API_SOURCES/configuration $API_SOURCES/controllers $API_SOURCES/examples $API_SOURCES/framework/examples $API_SOURCES/framework/wazuh $API_SOURCES/helpers $API_SOURCES/models $API_SOURCES/package.json $API_SOURCES/scripts $API_PATH"
 
         # General permissions
         exec_cmd "chown -R ossec:ossec $API_PATH"
@@ -301,7 +319,6 @@ setup_api() {
 
         # Remove execution permissions
         exec_cmd "chmod u-x $API_PATH/package.json"
-        exec_cmd "chmod u-x $API_PATH/configuration/ssl/*"
         exec_cmd "chmod u-x $API_PATH/scripts/wazuh-api*"
     fi
 
