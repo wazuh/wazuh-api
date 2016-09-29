@@ -346,6 +346,14 @@ setup_api() {
         edit_configuration "ossec_path" $escaped_ossec_path
     fi
 
+    # Create/check api.log
+    APILOG_PATH="${DIRECTORY}/logs/api.log"
+    if [ ! -f $APILOG_PATH ]; then
+        touch $APILOG_PATH
+    fi
+    exec_cmd "chown ossec:ossec $APILOG_PATH"
+    exec_cmd "chmod 640 $APILOG_PATH"
+
     print "\nInstalling service."
     echo "----------------------------------------------------------------"
     exec_cmd_bash "$API_PATH/scripts/install_daemon.sh"

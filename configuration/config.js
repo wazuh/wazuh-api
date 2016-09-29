@@ -18,14 +18,13 @@ config.BehindProxyServer = "no";
 // Advanced configuration
 
 // Values for API log: disabled, info, warning, error, debug (each level includes the previous level).
-config.logs = "debug";
+config.logs = "info";
 // Cross-origin resource sharing. Values: yes, no.
 config.cors = "yes";
 // Cache (time in milliseconds)
 config.cache_enabled = "yes"
 config.cache_debug = "no"
 config.cache_time = "750"
-config.cache_clear_time = "300000"
 // Log path
 config.log_path = config.ossec_path + "/logs/api.log";
 

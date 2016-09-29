@@ -11,8 +11,7 @@
     "cors": "^2.7.1",
     "express": "^4.14.0",
     "http-auth": "^2.4.4",
-    "moment": "^2.15.0",
-    "posix": "^4.1.1"
+    "moment": "^2.15.0"
   },
   "repository": {
     "type": "git",

@@ -12,14 +12,8 @@
  /********************************************/
  /* Drop privileges
  /********************************************/
- try {
-     var posix = require('posix');
 
- } catch (e) {
-     console.log("Dependencies not found. Try 'npm install' in /var/ossec/api. Exiting...");
-     process.exit(1);
- }
-if (process.getuid() !== 0 || posix.geteuid() !== 0){
+if (process.getuid() !== 0){
     console.log('A root user is required to start the API.');
     process.exit(1);
 }
