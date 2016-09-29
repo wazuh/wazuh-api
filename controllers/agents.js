@@ -255,7 +255,7 @@ router.post('/', function(req, res) {
         // If we hare behind a proxy server, use headers.
         if (config.BehindProxyServer.toLowerCase() == "yes")
             if (!req.headers.hasOwnProperty('x-forwarded-for')){
-                res_h.bad_request(4, "", res);
+                res_h.bad_request(800, "", res);
                 return;
             }
             else

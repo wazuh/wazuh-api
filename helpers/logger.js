@@ -15,6 +15,7 @@ var fs = require('fs');
 
 var tag = "WazuhAPI";
 var f_log = config.log_path;
+var foreground = false;
 var LEVEL_DISABLED = 0;
 var LEVEL_INFO = 1;
 var LEVEL_WARNING = 2;
@@ -42,11 +43,17 @@ switch(config.logs) {
         logger_level = LEVEL_INFO;
 }
 
+exports.set_foreground = function() {
+    foreground = true;
+}
+
 function header(){
     return tag + " " + moment().format('YYYY-MM-DD HH:mm:ss') + ": ";
 }
 
 function write_log(msg){
+    if(foreground)
+        console.log(msg);
     fs.appendFile(f_log, msg + "\n", {'mode': 0o640}, function(err) {
         if(err) {
             return console.error(err);

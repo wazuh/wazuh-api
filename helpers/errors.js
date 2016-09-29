@@ -15,9 +15,6 @@ var errors = {};
 errors['1'] = "Error executing internal command";
 errors['2'] = "Command output not in JSON";
 errors['3'] = "Internal error";
-errors['4'] = "Error adding agent due to header 'x-forwarded-for' is not present";
-
-
 
 // 600 - 699 Requests
 errors['600'] = "Param not valid. Integer expected";  // Integer
@@ -46,6 +43,9 @@ errors['hashes'] = 613;
 errors['614'] = "Invalid request"
 
 errors['700'] = "File not found"
+
+// Headers
+errors['800'] = "Error adding agent due to header 'x-forwarded-for' is not present";
 
 
 exports.description = function(n){

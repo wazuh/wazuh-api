@@ -56,7 +56,7 @@ exports.exec = function(cmd, args, stdin, callback) {
 
     child.stdout.on('data', (chunk) => {
         output.push(chunk)
-        //console.log("Chunk: " + Buffer.byteLength(chunk, 'utf8') + " bytes");
+        //logger.debug("Chunk: " + Buffer.byteLength(chunk, 'utf8') + " bytes");
     });
 
     child.on('error', function(err) {

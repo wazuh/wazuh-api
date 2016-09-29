@@ -51,6 +51,9 @@ api_path = __dirname;
 /********************************************/
 current_version = "v1.3.0";
 
+if (process.argv.length == 3 && process.argv[2] == "-f")
+    logger.set_foreground();
+
 var port = process.env.PORT || config.port;
 
 var app = express();
