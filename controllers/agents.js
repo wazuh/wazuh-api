@@ -254,7 +254,12 @@ router.post('/', function(req, res) {
     if ( !ip ){
         // If we hare behind a proxy server, use headers.
         if (config.BehindProxyServer.toLowerCase() == "yes")
-            ip = req.headers['x-forwarded-for'];
+            if (!req.headers.hasOwnProperty('x-forwarded-for')){
+                res_h.bad_request(4, "", res);
+                return;
+            }
+            else
+                ip = req.headers['x-forwarded-for'];
         else
             ip = req.connection.remoteAddress;
 

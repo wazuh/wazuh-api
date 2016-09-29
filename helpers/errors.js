@@ -15,6 +15,7 @@ var errors = {};
 errors['1'] = "Error executing internal command";
 errors['2'] = "Command output not in JSON";
 errors['3'] = "Internal error";
+errors['4'] = "Error adding agent due to header 'x-forwarded-for' is not present";
 
 
 
