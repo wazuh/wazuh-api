@@ -190,7 +190,7 @@ class Agent:
             # Check if agent exists and it is active
             agent_info = self.get_basic_information()
 
-            if self.status != 'active':
+            if self.status.lower() != 'active':
                 raise WazuhException(1707, '{0} - {1}'.format(self.id, self.status))
 
             oq = OssecQueue(OssecQueue.ARQUEUE)
