@@ -46,9 +46,10 @@ def totals(year, month, day):
             raise WazuhException(1307)
 
     try:
-        stats = open(common.stats_path + "/totals/" + str(year) + '/' + month + "/ossec-totals-" + day + ".log", 'r')
+        stat_filename = common.stats_path + "/totals/" + str(year) + '/' + month + "/ossec-totals-" + day + ".log"
+        stats = open(stat_filename, 'r')
     except IOError:
-        raise WazuhException(1308)
+        raise WazuhException(1308, stat_filename)
 
     response = []
     alerts = []

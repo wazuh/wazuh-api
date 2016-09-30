@@ -36,7 +36,7 @@ class WazuhException(Exception):
 
         # Stats: 1300 - 1399
         1307: 'Invalid parameters',
-        1308: 'Couldn\'t open stats file',
+        1308: 'Stats file has not been created yet',
         1309: 'Statistics file damaged',
 
         # Utils: 1400 - 1499
