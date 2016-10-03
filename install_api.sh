@@ -265,6 +265,9 @@ restore_configuration () {
     elif [ "X${API_OLD_VERSION}" == "X1.1" ] || [ "X${API_OLD_VERSION}" == "X1.2.0" ] || [ "X${API_OLD_VERSION}" == "X1.2.1" ]; then
         exec_cmd "cp -rfp $API_PATH_BACKUP/ssl/htpasswd $API_PATH/configuration/auth/htpasswd"
         exec_cmd "cp -p $API_PATH_BACKUP/ssl/*.key $API_PATH_BACKUP/ssl/*.crt $API_PATH/configuration/ssl/"
+        exec_cmd "chown -R ossec:ossec $API_PATH/configuration"
+        exec_cmd "chmod -R 500 $API_PATH/configuration"
+        exec_cmd "chmod u-x $API_PATH/configuration/ssl/*"
         RESTORE_WARNING="1"
     else
         RESTORE_WARNING="2"
