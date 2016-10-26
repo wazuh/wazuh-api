@@ -35,7 +35,7 @@ exports.send = function(req, res, json_r, status){
 
     // Logging
     var base_url = req.baseUrl.replace("/" + current_version, "");
-    var log_msg = "[" + req.connection.remoteAddress + "] " + base_url + req.url + " - " + status + " - error: '" + json_r.error + "'.";
+    var log_msg = "[" + req.connection.remoteAddress + "] " + req.method + " " + base_url + req.url + " - " + status + " - error: '" + json_r.error + "'.";
     logger.log(log_msg);
 
     if (status != 200)
@@ -77,7 +77,7 @@ exports.send_file = function(req, res, rule_name){
 
         // Logging
         var base_url = req.baseUrl.replace("/" + current_version, "");
-        var log_msg = "[" + req.connection.remoteAddress + "] " + base_url + req.url + " - 200 - error: '0'.";
+        var log_msg = "[" + req.connection.remoteAddress + "] " + req.method + " " + base_url + req.url + " - 200 - error: '0'.";
         logger.log(log_msg);
     } catch (e) {
         if (e.code === 'ENOENT') {
