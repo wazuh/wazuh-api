@@ -9,15 +9,43 @@
  * Foundation.
  */
 
- /********************************************/
- /* Drop privileges
- /********************************************/
-
 if (process.getuid() !== 0){
     console.log('A root user is required to start the API.');
     process.exit(1);
 }
 
+// Actions before dropping privileges
+try {
+    var auth = require("http-auth");
+} catch (e) {
+    console.log("Dependencies not found. Try 'npm install' in /var/ossec/api. Exiting...");
+    process.exit(1);
+}
+
+//  Get configuration
+config = require('./configuration/config');
+
+//  Get credentials
+if (config.basic_auth.toLowerCase() == "yes"){
+    var auth_secure = auth.basic({
+        realm: "OSSEC API",
+        file: __dirname + "/configuration/auth/user"
+    });
+}
+
+//  Get Certs
+var options;
+if (config.https.toLowerCase() == "yes"){
+    var fs = require('fs');
+    options = {
+      key: fs.readFileSync(__dirname + '/configuration/ssl/server.key'),
+      cert: fs.readFileSync(__dirname + '/configuration/ssl/server.crt')
+    };
+}
+
+/********************************************/
+/* Drop privileges
+/********************************************/
 try {
     process.setgid('ossec');
     process.setuid('ossec');
@@ -33,15 +61,12 @@ try {
     var express = require('express');
     var bodyParser = require('body-parser');
     var cors = require('cors')
-    var auth = require("http-auth");
     var moment = require('moment');
-
 } catch (e) {
     console.log("Dependencies not found. Try 'npm install' in /var/ossec/api. Exiting...");
     process.exit(1);
 }
 
-config = require('./configuration/config');
 logger = require('./helpers/logger');
 res_h = require('./helpers/response_handler');
 api_path = __dirname;
@@ -57,15 +82,6 @@ if (process.argv.length == 3 && process.argv[2] == "-f")
 var port = process.env.PORT || config.port;
 
 var app = express();
-// Certs
-var options;
-if (config.https.toLowerCase() == "yes"){
-    var fs = require('fs');
-    options = {
-      key: fs.readFileSync(__dirname + '/configuration/ssl/server.key'),
-      cert: fs.readFileSync(__dirname + '/configuration/ssl/server.crt')
-    };
-}
 
 // CORS
 if (config.cors.toLowerCase() == "yes"){
@@ -74,13 +90,18 @@ if (config.cors.toLowerCase() == "yes"){
 
 // Basic authentication
 if (config.basic_auth.toLowerCase() == "yes"){
-    var auth_secure = auth.basic({
-        realm: "OSSEC API",
-        file: __dirname + "/configuration/auth/htpasswd"
-    });
     app.use(auth.connect(auth_secure));
 }
 
+auth_secure.on('fail', (result, req) => {
+    var log_msg = "[" + req.connection.remoteAddress + "] " + "User: \"" + result.user + "\" - Authentication failed.";
+    logger.log(log_msg);
+});
+
+auth_secure.on('error', (error, req) => {
+    var log_msg = "[" + req.connection.remoteAddress + "] Authentication error: " + error.code + " - " + error.message;
+    logger.log(log_msg);
+});
 
 // Body
 app.use(bodyParser.json());

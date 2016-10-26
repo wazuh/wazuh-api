@@ -263,9 +263,9 @@ restore_configuration () {
         exec_cmd "rm -rf $API_PATH/configuration"
         exec_cmd "cp -rfp $API_PATH_BACKUP/configuration $API_PATH/configuration"
     elif [ "X${API_OLD_VERSION}" == "X1.1" ] || [ "X${API_OLD_VERSION}" == "X1.2.0" ] || [ "X${API_OLD_VERSION}" == "X1.2.1" ]; then
-        exec_cmd "cp -rfp $API_PATH_BACKUP/ssl/htpasswd $API_PATH/configuration/auth/htpasswd"
+        exec_cmd "cp -rfp $API_PATH_BACKUP/ssl/htpasswd $API_PATH/configuration/auth/user"
         exec_cmd "cp -p $API_PATH_BACKUP/ssl/*.key $API_PATH_BACKUP/ssl/*.crt $API_PATH/configuration/ssl/"
-        exec_cmd "chown -R ossec:ossec $API_PATH/configuration"
+        exec_cmd "chown -R root:root $API_PATH/configuration"
         exec_cmd "chmod -R 500 $API_PATH/configuration"
         exec_cmd "chmod u-x $API_PATH/configuration/ssl/*"
         RESTORE_WARNING="1"
@@ -319,6 +319,7 @@ setup_api() {
         # General permissions
         exec_cmd "chown -R ossec:ossec $API_PATH"
         exec_cmd "chown -R root:root $API_PATH/scripts"
+        exec_cmd "chown -R root:root $API_PATH/configuration"
         exec_cmd "chmod -R 500 $API_PATH"
 
         # Remove execution permissions
@@ -342,6 +343,9 @@ setup_api() {
     exec_cmd "chmod -R go-rwx $API_PATH/node_modules"
     exec_cmd "chmod -R u-w $API_PATH/node_modules"
 
+    if [ ! -f $API_PATH/configuration/auth/htpasswd ]; then
+        exec_cmd "ln -s $API_PATH/node_modules/htpasswd/bin/htpasswd $API_PATH/configuration/auth/htpasswd"
+    fi
 
     # Set OSSEC directory in API configuration
     if [ "X${DIRECTORY}" != "X/var/ossec" ]; then

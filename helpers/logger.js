@@ -10,7 +10,6 @@
  */
 
 var moment = require('moment');
-var config = require('../configuration/config');
 var fs = require('fs');
 
 var tag = "WazuhAPI";

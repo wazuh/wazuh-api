@@ -42,14 +42,24 @@ get_type_service() {
     fi
 }
 
+get_node(){
+    NODE_DIR=$(which nodejs 2> /dev/null)
+
+    if [ "X$NODE_DIR" = "X" ]; then
+        NODE_DIR=$(which node 2> /dev/null)
+
+        if [ "X$NODE_DIR" = "X" ]; then
+            echo "NodeJS binaries not found. Is NodeJS installed?"
+            exit 1
+        fi
+    fi
+    echo $NODE_DIR
+}
+
 check_program_installed() {
     hash $1 > /dev/null 2>&1
     if [ "$?" != "0" ]; then
         print "command $1 not found. is it installed?."
-        if [ "$1" == "htpasswd" ]; then
-            print "\nDebian and Ubuntu based Linux distributions: sudo apt-get install -y apache2-utils"
-            print "\nRed Hat, CentOS and Fedora: sudo yum install -y httpd-tools"
-        fi
         exit 1
     fi
 }
@@ -78,12 +88,12 @@ previous_checks() {
     fi
 
     serv_type=$(get_type_service)
+    node_dir=$(get_node)
     API_PATH="${DIRECTORY}/api"
 
 
     # Dependencies
     check_program_installed "openssl"
-    check_program_installed "htpasswd"
 }
 
 change_port () {
@@ -105,18 +115,19 @@ change_https () {
         edit_configuration "https" "yes"
 
         print ""
-        read -p "Step 1: Create key [ENTER]" enter
+        read -p "Step 1: Create key [Press Enter]" enter
         exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl genrsa -des3 -out server.key 1024 && cp server.key server.key.org && openssl rsa -in server.key.org -out server.key"
 
         print ""
-        read -p "Step 2: Create self-signed certificate [ENTER]" enter
+        read -p "Step 2: Create self-signed certificate [Press Enter]" enter
         exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl req -new -key server.key -out server.csr"
         exec_cmd "cd $API_PATH/configuration/ssl && openssl x509 -req -days 2048 -in server.csr -signkey server.key -out server.crt"
         exec_cmd "cd $API_PATH/configuration/ssl && rm -f server.csr && rm -f server.key.org"
 
+        exec_cmd "chmod 400 $API_PATH/configuration/ssl/server.*"
         print "\nKey: $API_PATH/configuration/ssl/server.key.\nCertificate: $API_PATH/configuration/ssl/server.crt\n"
 
-        read -p "Continue with next section [ENTER]" enter
+        read -p "Continue with next section [Press Enter]" enter
     else
         edit_configuration "https" "no"
         print "Using HTTP (not secure)."
@@ -130,7 +141,8 @@ change_auth () {
         auth="y"
         edit_configuration "basic_auth" "yes"
         read -p "API user: " user
-        exec_cmd_bash "cd $API_PATH/configuration/auth && htpasswd -c htpasswd $user"
+
+        exec_cmd_bash "cd $API_PATH/configuration/auth && $node_dir htpasswd -c user $user"
     else
         auth="n"
         print "Disabling authentication (not secure)."
