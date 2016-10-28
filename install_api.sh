@@ -118,14 +118,14 @@ required_packages() {
     print "\nDebian and Ubuntu based Linux distributions:"
     print "\tsudo apt-get install -y python-pip"
     print "\tNodeJS 4.x or newer:"
-    print "\t\tcurl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -"
+    print "\t\tcurl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -"
     print "\t\tsudo apt-get install -y nodejs"
 
     print "\nRed Hat, CentOS and Fedora:"
     print "\tsudo yum install epel-release"
     print "\tsudo yum install -y python-pip"
     print "\tNodeJS 4.x or newer:"
-    print "\t\tcurl --silent --location https://rpm.nodesource.com/setup_4.x | bash -"
+    print "\t\tcurl --silent --location https://rpm.nodesource.com/setup_6.x | bash -"
     print "\t\tsudo yum -y install nodejs"
 }
 
