@@ -146,7 +146,7 @@ previous_checks() {
     fi
 
     # Test root permissions
-    if [ "$USER" != "root" ]; then
+    if [ "$EUID" -ne 0 ]; then
         print "Please run this script with root permissions.\nExiting."
         exit 1
     fi

@@ -23,7 +23,7 @@ DEF_OSSDIR="/var/ossec"
 
 # Test root permissions
 
-if [ "$USER" != "root" ]; then
+if [ "$EUID" -ne 0 ]; then
     echo "Warning: Please run this script with root permissions."
 fi
 

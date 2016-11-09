@@ -67,7 +67,7 @@ check_program_installed() {
 
 previous_checks() {
     # Test root permissions
-    if [ "$USER" != "root" ]; then
+    if [ "$EUID" -ne 0 ]; then
         print "Please run this script with root permissions.\nExiting."
         exit 1
     fi
