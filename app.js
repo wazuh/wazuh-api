@@ -81,6 +81,9 @@ if (process.argv.length == 3 && process.argv[2] == "-f")
 
 var port = process.env.PORT || config.port;
 
+if (config.host != "0.0.0.0")
+    var host = config.host;
+
 var app = express();
 
 // CORS
@@ -159,17 +162,16 @@ app.use (function (err, req, res, next){
 
 /********************************************/
 
-
 // Create server
 if (config.https.toLowerCase() == "yes"){
     var https = require('https');
-    var server = https.createServer(options, app).listen(port, function(){
+    var server = https.createServer(options, app).listen(port, host, function(){
         logger.log("Listening on: https://" + server.address().address + ":" + port);
     });
 }
 else{
     var http = require('http');
-    var server = http.createServer(app).listen(port, function(){
+    var server = http.createServer(app).listen(port, host, function(){
         logger.log("Listening on: http://" + server.address().address + ":" + port);
     });
 }
