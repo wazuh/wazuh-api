@@ -7,7 +7,7 @@
 # License (version 2) as published by the FSF - Free Software
 # Foundation.
 
-# Installer for Wazuh-API
+# Installer for Wazuh API
 # Wazuh Inc.
 #
 # Instructions:
@@ -18,8 +18,8 @@
 #  Install API from path
 #    ./install_api.sh /path/to/api
 #  Install API development mode
-#    git clone https://github.com/wazuh/wazuh-API.git
-#    cd wazuh-API
+#    git clone https://github.com/wazuh/wazuh-api.git
+#    cd wazuh-api
 #    [git checkout <branch>]
 #    ./install_api.sh dev  : Install API from current path, development mode
 
@@ -42,8 +42,8 @@ error_and_exit() {
         print "\t3. chown ossec:ossec $API_PATH"
     fi
 
-    if [ -d "/root/wazuh-API-tmp" ]; then
-        exec_cmd "rm -rf /root/wazuh-API-tmp"
+    if [ -d "/root/wazuh-api-tmp" ]; then
+        exec_cmd "rm -rf /root/wazuh-api-tmp"
     fi
 
     print "\nExiting."
@@ -138,7 +138,7 @@ previous_checks() {
         API_SOURCES=`pwd`
     elif [ "X${arg}" == "X" ]; then   # No argument
         API_SOURCES="/root"
-        DOWNLOAD_PATH=$(url_lastest_release "wazuh" "Wazuh-API")
+        DOWNLOAD_PATH=$(url_lastest_release "wazuh" "wazuh-api")
         print "API v1.3 is not released. Please, use './install_api.sh /path/to/api_sources'"
         exit 1
     else
@@ -191,7 +191,7 @@ previous_checks() {
     NODE_VERSION=`$NODE_DIR --version | grep -P '^v\d+' -o | grep -P '\d+' -o`
 
     if [ $NODE_VERSION -lt 4 ]; then
-        print "The current version of NodeJS installed is not supported. Wazuh-API requires NodeJS 4.x or newer."
+        print "The current version of NodeJS installed is not supported. Wazuh API requires NodeJS 4.x or newer."
         print "Review the dependencies executing: ./install_api.sh dependencies"
         exit 1
     fi
@@ -203,18 +203,18 @@ get_api () {
     if [ "X$DOWNLOAD_PATH" != "X" ]; then
         print "\nDownloading API from $DOWNLOAD_PATH"
 
-        if [ -d "$API_SOURCES/wazuh-API-tmp" ]; then
-            exec_cmd "rm -rf $API_SOURCES/wazuh-API-tmp"
+        if [ -d "$API_SOURCES/wazuh-api-tmp" ]; then
+            exec_cmd "rm -rf $API_SOURCES/wazuh-api-tmp"
         fi
 
-        exec_cmd "mkdir -p $API_SOURCES/wazuh-API-tmp && curl -sL $DOWNLOAD_PATH | tar xvz -C $API_SOURCES/wazuh-API-tmp"
+        exec_cmd "mkdir -p $API_SOURCES/wazuh-api-tmp && curl -sL $DOWNLOAD_PATH | tar xvz -C $API_SOURCES/wazuh-api-tmp"
 
-        API_SOURCES="$API_SOURCES/wazuh-API-tmp/wazuh-API-*.*"
+        API_SOURCES="$API_SOURCES/wazuh-api-tmp/wazuh-api-*.*"
     else
         if [ "X${arg}" == "Xdev" ]; then
-            print "\nInstalling Wazuh-API from current directory [$API_SOURCES] [DEV MODE]"
+            print "\nInstalling Wazuh API from current directory [$API_SOURCES] [DEV MODE]"
         else
-            print "\nInstalling Wazuh-API from current directory [$API_SOURCES]"
+            print "\nInstalling Wazuh API from current directory [$API_SOURCES]"
         fi
     fi
 }
@@ -281,7 +281,7 @@ setup_api() {
         backup_api
         print ""
         while true; do
-            read -p "Wazuh-API is already installed. Do you want to update it? [y/n]: " yn
+            read -p "Wazuh API is already installed. Do you want to update it? [y/n]: " yn
             case $yn in
                 [Yy] ) update="yes"; break;;
                 [Nn] ) update="no"; break;;
@@ -369,7 +369,7 @@ setup_api() {
 }
 
 main() {
-    print "### Wazuh-API ###"
+    print "### Wazuh API ###"
     previous_checks
     get_api
     setup_api

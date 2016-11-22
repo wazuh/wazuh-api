@@ -7,7 +7,7 @@
 # License (version 2) as published by the FSF - Free Software
 # Foundation.
 
-# Installer for Wazuh-API daemon
+# Installer for Wazuh API daemon
 # Wazuh Inc.
 
 
@@ -44,7 +44,7 @@ APP_PATH="${DIRECTORY}/api/app.js"
 SCRIPTS_PATH="${DIRECTORY}/api/scripts"
 
 if ! [ -f $APP_PATH ]; then
-    echo "Can't find $APP_PATH. Is Wazuh-API installed?"
+    echo "Can't find $APP_PATH. Is Wazuh API installed?"
     exit 1
 fi
 

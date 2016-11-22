@@ -5,7 +5,7 @@ Pre-requisites:
 
 Generate documentation:
 
-    $ cd $PATH/wazuh-API/doc
+    $ cd $PATH/wazuh-api/doc
     $ ./generate_rst.py /$PATH/wazuh-documentation/source/ossec_api_reference.rst
     $ cd /$PATH/wazuh-documentation/
     $ make html

@@ -164,7 +164,7 @@ change_proxy () {
 main () {
     previous_checks
 
-    print "### Wazuh-API Configuration ###"
+    print "### Wazuh API Configuration ###"
 
     change_port
     change_https

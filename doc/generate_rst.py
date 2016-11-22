@@ -128,7 +128,7 @@ if __name__ == "__main__":
 
     # Generate docu with apidoc
     try:
-        # wazuh-API: apidoc -i ../ -o ./build/html -c . -f js -e node_modules
+        # wazuh-api: apidoc -i ../ -o ./build/html -c . -f js -e node_modules
         output = check_output(['apidoc', '-i', '../', '-o', './build/html', '-c', '.', '-f', 'js', '-e', 'node_modules'])
         print("\nAPIDOC:")
         print(output)
