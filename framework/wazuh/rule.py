@@ -194,10 +194,13 @@ class Rule:
         for d in tmp_data:
             if status and status != 'all' and status != d['status']:
                 data.remove(d)
+                continue
             if path and path != d['path']:
                 data.remove(d)
+                continue
             if file and file != d['file']:
                 data.remove(d)
+                continue
 
         if search:
             data = search_array(data, search['value'], search['negation'])
@@ -241,20 +244,27 @@ class Rule:
         for r in all_rules:
             if group and group not in r.groups:
                 rules.remove(r)
+                continue
             elif pci and pci not in r.pci:
                 rules.remove(r)
+                continue
             elif path and path != r.path:
                 rules.remove(r)
+                continue
             elif file and file != r.file:
                 rules.remove(r)
+                continue
             elif id and int(id) != r.id:
                 rules.remove(r)
+                continue
             elif level:
                 if len(levels) == 1:
                     if int(levels[0]) != r.level:
                         rules.remove(r)
+                        continue
                 elif not (int(levels[0]) <= r.level <= int(levels[1])):
                         rules.remove(r)
+                        continue
 
         if search:
             rules = search_array(rules, search['value'], search['negation'])

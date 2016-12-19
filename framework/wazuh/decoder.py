@@ -134,10 +134,13 @@ class Decoder:
         for d in tmp_data:
             if status and status != 'all' and status != d['status']:
                 data.remove(d)
+                continue
             if path and path != d['path']:
                 data.remove(d)
+                continue
             if file and file != d['file']:
                 data.remove(d)
+                continue
 
         if search:
             data = search_array(data, search['value'], search['negation'])
@@ -175,12 +178,16 @@ class Decoder:
         for d in all_decoders:
             if path and path != d.path:
                 decoders.remove(d)
+                continue
             if file and file != d.file:
                 decoders.remove(d)
+                continue
             if name and name != d.name:
                 decoders.remove(d)
+                continue
             if parents and 'parent' in d.details:
                 decoders.remove(d)
+                continue
 
         if search:
             decoders = search_array(decoders, search['value'], search['negation'])
