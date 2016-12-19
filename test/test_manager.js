@@ -77,7 +77,7 @@ describe('Manager', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.should.be.an.Object;
-                res.body.data.should.have.properties(['global', 'rules', 'syscheck', 'rootcheck', 'remote', 'localfile']);
+                res.body.data.should.have.properties(['global', 'ruleset', 'syscheck', 'rootcheck', 'remote', 'localfile']);
                 done();
             });
         });
@@ -101,7 +101,7 @@ describe('Manager', function() {
 
         it('Filters: Section', function(done) {
             request(common.url)
-            .get("/manager/configuration?section=rules")
+            .get("/manager/configuration?section=ruleset")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -112,8 +112,8 @@ describe('Manager', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.should.be.an.Object;
-                res.body.data.should.have.properties(['decoder_dir', 'include', 'decoder']);
-                res.body.data.include.should.be.instanceof(Array)
+                res.body.data.should.have.properties(['decoder_dir', 'rule_dir', 'rule_exclude', 'list']);
+                res.body.data.rule_dir.should.be.instanceof(Array)
                 done();
             });
         });
@@ -137,7 +137,7 @@ describe('Manager', function() {
 
         it('Filters: Section - field', function(done) {
             request(common.url)
-            .get("/manager/configuration?section=rules&field=include")
+            .get("/manager/configuration?section=ruleset&field=rule_dir")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -155,7 +155,7 @@ describe('Manager', function() {
 
         it('Errors: Invalid field', function(done) {
             request(common.url)
-            .get("/manager/configuration?section=rules&field=includedd")
+            .get("/manager/configuration?section=ruleset&field=includedd")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -188,7 +188,7 @@ describe('Manager', function() {
 
         it('Filters: Invalid filter - Extra field', function(done) {
             request(common.url)
-            .get("/manager/configuration?section=rules&field=included&random")
+            .get("/manager/configuration?section=ruleset&field=rule_dir&random")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(400)
