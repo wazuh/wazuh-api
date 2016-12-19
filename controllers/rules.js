@@ -24,6 +24,7 @@ var router = require('express').Router();
  * @apiParam {String="enabled","disabled", "all"} [status] Filters the rules by status.
  * @apiParam {String} [group] Filters the rules by group.
  * @apiParam {Range} [level] Filters the rules by level. level=2 or level=2-5.
+ * @apiParam {String} [path] Filters the rules by path.
  * @apiParam {String} [file] Filters the rules by file name.
  * @apiParam {String} [pci] Filters the rules by pci requirement.
  *
@@ -39,7 +40,7 @@ router.get('/', cache(), function(req, res) {
     req.apicacheGroup = "rules";
 
     var data_request = {'function': '/rules', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'group':'alphanumeric_param', 'level':'ranges', 'file':'alphanumeric_param', 'pci':'alphanumeric_param'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'group':'alphanumeric_param', 'level':'ranges', 'path':'paths', 'file':'alphanumeric_param', 'pci':'alphanumeric_param'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -58,6 +59,8 @@ router.get('/', cache(), function(req, res) {
         data_request['arguments']['group'] = req.query.group;
     if ('level' in req.query)
         data_request['arguments']['level'] = req.query.level;
+    if ('path' in req.query)
+        data_request['arguments']['path'] = req.query.path;
     if ('file' in req.query)
         data_request['arguments']['file'] = req.query.file;
     if ('pci' in req.query)
@@ -154,6 +157,8 @@ router.get('/pci', cache(), function(req, res) {
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String="enabled","disabled", "all"} [status] Filters files by status.
+ * @apiParam {String} [path] Filters the rules by path.
+ * @apiParam {String} [file] Filters the rules by filefile.
  *
  * @apiDescription Returns the files of all rules.
  *
@@ -167,7 +172,7 @@ router.get('/files', cache(), function(req, res) {
     req.apicacheGroup = "rules";
 
     var data_request = {'function': '/rules/files', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'download':'alphanumeric_param'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'download':'alphanumeric_param','path':'paths', 'file':'alphanumeric_param'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -182,6 +187,10 @@ router.get('/files', cache(), function(req, res) {
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
     if ('status' in req.query)
         data_request['arguments']['status'] = req.query.status;
+    if ('path' in req.query)
+        data_request['arguments']['path'] = req.query.path;
+    if ('file' in req.query)
+        data_request['arguments']['file'] = req.query.file;
 
     if ('download' in req.query)
         res_h.send_file(req, res, req.query.download);

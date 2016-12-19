@@ -62,31 +62,34 @@ exports.bad_request = function(req, res, internal_error, extra_msg){
 }
 
 exports.send_file = function(req, res, rule_name){
-    try {
-        var filepath = config.ossec_path + "/rules/" + rule_name;
-        var stat = fileSystem.statSync(filepath);
+    var data_request = {'function': '/rules/files', 'arguments': {'file': rule_name}};
 
-        res.writeHead(200, {
-        'Content-Type': 'text/xml',
-        'Content-Length': stat.size
-        });
+    execute.exec(wazuh_control, [], data_request, function (data) {
+        try {
+            var filepath = data.data.items[0].path + "/" + rule_name;
+            var stat = fileSystem.statSync(filepath);
 
-        var readStream = fileSystem.createReadStream(filepath);
+            res.writeHead(200, {
+            'Content-Type': 'text/xml',
+            'Content-Length': stat.size
+            });
 
-        readStream.pipe(res)
+            var readStream = fileSystem.createReadStream(filepath);
 
-        // Logging
-        var base_url = req.baseUrl.replace("/" + current_version, "");
-        var log_msg = "[" + req.connection.remoteAddress + "] " + req.method + " " + base_url + req.url + " - 200 - error: '0'.";
-        logger.log(log_msg);
-    } catch (e) {
-        if (e.code === 'ENOENT') {
-            json_res = {'error': 700, 'message': errors.description(700) + ": " + filepath};
-            this.send(req, res, json_res, 404);
-        } else {
-            json_res = {'error': 3, 'message': errors.description(3)};
-            this.send(req, res, json_res, 500);
+            readStream.pipe(res)
+
+            // Logging
+            var base_url = req.baseUrl.replace("/" + current_version, "");
+            var log_msg = "[" + req.connection.remoteAddress + "] " + req.method + " " + base_url + req.url + " - 200 - error: '0'.";
+            logger.log(log_msg);
+        } catch (e) {
+            if (e.code === 'ENOENT') {
+                json_res = {'error': 700, 'message': errors.description(700) + ": " + filepath};
+                send(req, res, json_res, 404);
+            } else {
+                json_res = {'error': 3, 'message': errors.description(3)};
+                send(req, res, json_res, 500);
+            }
         }
-    }
-
+    });
 }

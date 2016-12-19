@@ -33,7 +33,7 @@ describe('Decoders', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
                 done();
             });
         });
@@ -51,7 +51,7 @@ describe('Decoders', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
                 done();
             });
         });
@@ -70,7 +70,7 @@ describe('Decoders', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
                 done();
             });
         });
@@ -89,14 +89,14 @@ describe('Decoders', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
                 done();
             });
         });
 
         it('Filters: File', function(done) {
             request(common.url)
-            .get("/decoders?file=apache_decoders.xml")
+            .get("/decoders?file=local_decoder.xml")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -108,7 +108,26 @@ describe('Decoders', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
+                done();
+            });
+        });
+
+        it('Filters: Path', function(done) {
+            request(common.url)
+            .get("/decoders?path=/var/ossec/etc/decoders")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
                 done();
             });
         });
@@ -161,7 +180,7 @@ describe('Decoders', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.be.type('string');
+                res.body.data.items[0].should.have.properties(['status', 'path', 'file']);
                 done();
             });
         });
@@ -179,14 +198,14 @@ describe('Decoders', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                res.body.data.items[0].should.be.type('string');
+                res.body.data.items[0].should.have.properties(['status', 'path', 'file']);
                 done();
             });
         });
 
         it('Sort', function(done) {
             request(common.url)
-            .get("/decoders/files?sort=-")
+            .get("/decoders/files?sort=-file")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -198,7 +217,7 @@ describe('Decoders', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.be.type('string');
+                res.body.data.items[0].should.have.properties(['status', 'path', 'file']);
                 done();
             });
         });
@@ -217,7 +236,7 @@ describe('Decoders', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                res.body.data.items[0].should.be.type('string');
+                res.body.data.items[0].should.have.properties(['status', 'path', 'file']);
                 done();
             });
         });
@@ -239,7 +258,7 @@ describe('Decoders', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
                 done();
             });
         });
@@ -257,7 +276,7 @@ describe('Decoders', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
                 done();
             });
         });
@@ -276,7 +295,7 @@ describe('Decoders', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
                 done();
             });
         });
@@ -295,7 +314,7 @@ describe('Decoders', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
                 done();
             });
         });
@@ -318,7 +337,7 @@ describe('Decoders', function() {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                    res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
                     done();
                 });
             });
@@ -336,7 +355,7 @@ describe('Decoders', function() {
 
                     res.body.error.should.equal(0);
                     res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                    res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                    res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
                     done();
                 });
             });
@@ -355,7 +374,7 @@ describe('Decoders', function() {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                    res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
                     done();
                 });
             });
@@ -374,7 +393,7 @@ describe('Decoders', function() {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['position', 'details', 'full_path', 'file', 'name']);
+                    res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
                     done();
                 });
             });

@@ -20,10 +20,11 @@ class Rule:
     S_ENABLED = 'enabled'
     S_DISABLED = 'disabled'
     S_ALL = 'all'
-    SORT_FIELDS = ['file', 'description', 'id', 'level', 'status']
+    SORT_FIELDS = ['file', 'path', 'description', 'id', 'level', 'status']
 
     def __init__(self):
         self.file = None
+        self.path = None
         self.description = ""
         self.id = None
         self.level = None
@@ -60,7 +61,7 @@ class Rule:
             raise WazuhException(1204)
 
     def to_dict(self):
-        dictionary = {'file': self.file, 'id': self.id, 'level': self.level, 'description': self.description, 'status': self.status, 'groups': self.groups, 'pci': self.pci, 'details': self.details}
+        dictionary = {'file': self.file, 'path': self.path, 'id': self.id, 'level': self.level, 'description': self.description, 'status': self.status, 'groups': self.groups, 'pci': self.pci, 'details': self.details}
         return dictionary
 
     def set_group(self, group):
@@ -121,11 +122,13 @@ class Rule:
             raise WazuhException(1202)
 
     @staticmethod
-    def get_rules_files(status=None, offset=0, limit=common.database_limit, sort=None, search=None):
+    def get_rules_files(status=None, path=None, file=None, offset=0, limit=common.database_limit, sort=None, search=None):
         """
         Gets a list of the rule files.
 
         :param status: Filters by status: enabled, disabled, all.
+        :param path: Filters by path.
+        :param file: Filters by filename.
         :param offset: First item to return.
         :param limit: Maximum number of items to return.
         :param sort: Sorts the items. Format: {"fields":["field1","field2"],"order":"asc|desc"}.
@@ -133,37 +136,68 @@ class Rule:
         :return: Dictionary: {'items': array of items, 'totalItems': Number of items (without applying the limit)}
         """
         data = []
-
         status = Rule.__check_status(status)
 
-        # Enabled rules
-        ossec_conf = configuration.get_ossec_conf()
-
-        if 'rules' in ossec_conf and 'include' in ossec_conf['rules']:
-            data_enabled = ossec_conf['rules']['include']
-        else:
+        # Rules configuration
+        ruleset_conf = configuration.get_ossec_conf(section='ruleset')
+        if not ruleset_conf:
             raise WazuhException(1200)
 
-        if status == Rule.S_ENABLED:
-            for f in data_enabled:
-                data.append({'name': f, 'status': 'enabled'})
-        else:
-            # All rules
-            data_all = []
-            rule_paths = sorted(glob("{0}/*_rules.xml".format(common.rules_path)))
-            for rule_path in rule_paths:
-                data_all.append(rule_path.split('/')[-1])
+        tmp_data = []
+        tags = ['rule_include', 'rule_exclude']
+        exclude_filenames =[]
+        for tag in tags:
+            if tag in ruleset_conf:
+                item_status = Rule.S_DISABLED if tag == 'rule_exclude' else Rule.S_ENABLED
 
-            # Disabled
-            for r in data_enabled:
-                if r in data_all:
-                    data_all.remove(r)
-            for f in data_all:  # data_all = disabled
-                data.append({'name': f, 'status': 'disabled'})
+                if type(ruleset_conf[tag]) is list:
+                    items = ruleset_conf[tag]
+                else:
+                    items = [ruleset_conf[tag]]
 
-            if status == Rule.S_ALL:
-                for f in data_enabled:
-                    data.append({'name': f, 'status': 'enabled'})
+                for item in items:
+                    if '/' in item:
+                        item_split = item.split('/')
+                        item_name = item_split[-1]
+                        item_dir = "{0}/{1}".format(common.ossec_path, "/".join(item_split[:-1]))
+                    else:
+                        item_name = item
+                        item_dir = "{0}/{1}".format(common.ruleset_rules_path, item)
+
+                    if tag == 'rule_exclude':
+                        exclude_filenames.append(item_name)
+                        # tmp_data.append({'file': item_name, 'path': '-', 'status': item_status})
+                    else:
+                        tmp_data.append({'file': item_name, 'path': item_dir, 'status': item_status})
+
+        tag = 'rule_dir'
+        if tag in ruleset_conf:
+            if type(ruleset_conf[tag]) is list:
+                items = ruleset_conf[tag]
+            else:
+                items = [ruleset_conf[tag]]
+
+            for item_dir in items:
+                all_rules = "{0}/{1}/*.xml".format(common.ossec_path, item_dir)
+
+                for item in glob(all_rules):
+                    item_split = item.split('/')
+                    item_name = item_split[-1]
+                    item_dir = "/".join(item_split[:-1])
+                    if item_name in exclude_filenames:
+                        item_status = Rule.S_DISABLED
+                    else:
+                        item_status = Rule.S_ENABLED
+                    tmp_data.append({'file': item_name, 'path': item_dir, 'status': item_status})
+
+        data = list(tmp_data)
+        for d in tmp_data:
+            if status and status != 'all' and status != d['status']:
+                data.remove(d)
+            if path and path != d['path']:
+                data.remove(d)
+            if file and file != d['file']:
+                data.remove(d)
 
         if search:
             data = search_array(data, search['value'], search['negation'])
@@ -171,12 +205,12 @@ class Rule:
         if sort:
             data = sort_array(data, sort['fields'], sort['order'])
         else:
-            data = sort_array(data, ['name'], 'asc')
+            data = sort_array(data, ['file'], 'asc')
 
         return {'items': cut_array(data, offset, limit), 'totalItems': len(data)}
 
     @staticmethod
-    def get_rules(status=None, group=None, pci=None, file=None, id=None, level=None, offset=0, limit=common.database_limit, sort=None, search=None):
+    def get_rules(status=None, group=None, pci=None, path=None, file=None, id=None, level=None, offset=0, limit=common.database_limit, sort=None, search=None):
         """
         Gets a list of rules.
 
@@ -184,6 +218,7 @@ class Rule:
         :param group: Filters by group.
         :param pci: Filters by pci requirement.
         :param file: Filters by file of the rule.
+        :param path: Filters by file of the path.
         :param id: Filters by rule ID.
         :param level: Filters by level. It can be an integer or an range (i.e. '2-4' that means levels from 2 to 4).
         :param offset: First item to return.
@@ -200,13 +235,15 @@ class Rule:
                 raise WazuhException(1203)
 
         for rule_file in Rule.get_rules_files(status=status, limit=0)['items']:
-            all_rules.extend(Rule.__load_rules_from_file(rule_file['name'], rule_file['status']))
+            all_rules.extend(Rule.__load_rules_from_file(rule_file['file'], rule_file['path'], rule_file['status']))
 
         rules = list(all_rules)
         for r in all_rules:
             if group and group not in r.groups:
                 rules.remove(r)
             elif pci and pci not in r.pci:
+                rules.remove(r)
+            elif path and path != r.path:
                 rules.remove(r)
             elif file and file != r.file:
                 rules.remove(r)
@@ -284,11 +321,11 @@ class Rule:
         return {'items': cut_array(pci, offset, limit), 'totalItems': len(pci)}
 
     @staticmethod
-    def __load_rules_from_file(rule_path, rule_status):
+    def __load_rules_from_file(rule_file, rule_path, rule_status):
         try:
             rules = []
             # wrap the data
-            f = open("{0}/{1}".format(common.rules_path, rule_path))
+            f = open("{0}/{1}".format(rule_path, rule_file))
             data = f.read()
             data = data.replace(" -- ", " -INVALID_CHAR ")
             f.close()
@@ -303,7 +340,8 @@ class Rule:
                         if xml_rule.tag.lower() == "rule":
                             groups = []
                             rule = Rule()
-                            rule.file = rule_path
+                            rule.file = rule_file
+                            rule.path = rule_path
                             rule.id = int(xml_rule.attrib['id'])
                             rule.level = int(xml_rule.attrib['level'])
                             rule.status = rule_status
@@ -342,6 +380,6 @@ class Rule:
 
                             rules.append(rule)
         except Exception as e:
-            raise WazuhException(1201, "{0}. Error: {1}".format(rule_path, str(e)))
+            raise WazuhException(1201, "{0}. Error: {1}".format(rule_file, str(e)))
 
         return rules

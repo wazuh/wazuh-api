@@ -34,7 +34,7 @@ describe('Rules', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'file', 'level', 'groups', 'id', 'details']);
+                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'path', 'file', 'level', 'groups', 'id', 'details']);
                 done();
             });
         });
@@ -52,7 +52,7 @@ describe('Rules', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'file', 'level', 'groups', 'id', 'details']);
+                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'path', 'file', 'level', 'groups', 'id', 'details']);
                 res.body.data.items[0].id.should.equal(1);
                 done();
             });
@@ -72,8 +72,7 @@ describe('Rules', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'file', 'level', 'groups', 'id', 'details']);
-                res.body.data.items[0].file.should.equal("zeus_rules.xml");
+                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'path', 'file', 'level', 'groups', 'id', 'details']);
                 done();
             });
         });
@@ -92,7 +91,7 @@ describe('Rules', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'file', 'level', 'groups', 'id', 'details']);
+                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'path', 'file', 'level', 'groups', 'id', 'details']);
                 done();
             });
         });
@@ -143,7 +142,7 @@ describe('Rules', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'file', 'level', 'groups', 'id', 'details']);
+                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'path', 'file', 'level', 'groups', 'id', 'details']);
                 done();
             });
         });
@@ -162,7 +161,7 @@ describe('Rules', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'file', 'level', 'groups', 'id', 'details']);
+                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'path', 'file', 'level', 'groups', 'id', 'details']);
                 done();
             });
         });
@@ -181,7 +180,7 @@ describe('Rules', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'file', 'level', 'groups', 'id', 'details']);
+                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'path', 'file', 'level', 'groups', 'id', 'details']);
                 done();
             });
         });
@@ -200,14 +199,14 @@ describe('Rules', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'file', 'level', 'groups', 'id', 'details']);
+                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'path', 'file', 'level', 'groups', 'id', 'details']);
                 done();
             });
         });
 
-        it('Filters: file', function(done) {
+        it('Filters: path', function(done) {
             request(common.url)
-            .get("/rules?file=amazon-ec2_rules.xml")
+            .get("/rules?path=/var/ossec/ruleset/rules")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -219,7 +218,26 @@ describe('Rules', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'file', 'level', 'groups', 'id', 'details']);
+                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'path', 'file', 'level', 'groups', 'id', 'details']);
+                done();
+            });
+        });
+
+        it('Filters: file', function(done) {
+            request(common.url)
+            .get("/rules?file=0350-amazon_rules.xml")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'path', 'file', 'level', 'groups', 'id', 'details']);
                 done();
             });
         });
@@ -238,7 +256,7 @@ describe('Rules', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'file', 'level', 'groups', 'id', 'details']);
+                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'path', 'file', 'level', 'groups', 'id', 'details']);
                 done();
             });
         });
@@ -451,7 +469,7 @@ describe('Rules', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'name']);
+                res.body.data.items[0].should.have.properties(['status', 'file', 'path']);
                 done();
             });
         });
@@ -469,14 +487,14 @@ describe('Rules', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                res.body.data.items[0].should.have.properties(['status', 'name']);
+                res.body.data.items[0].should.have.properties(['status', 'file', 'path']);
                 done();
             });
         });
 
         it('Sort', function(done) {
             request(common.url)
-            .get("/rules/files?sort=-name")
+            .get("/rules/files?sort=-file")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -488,7 +506,7 @@ describe('Rules', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'name']);
+                res.body.data.items[0].should.have.properties(['status', 'file', 'path']);
                 done();
             });
         });
@@ -507,7 +525,7 @@ describe('Rules', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'name']);
+                res.body.data.items[0].should.have.properties(['status', 'file', 'path']);
                 done();
             });
         });
@@ -558,14 +576,14 @@ describe('Rules', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'name']);
+                res.body.data.items[0].should.have.properties(['status', 'file', 'path']);
                 done();
             });
         });
 
         it('Filters: download', function(done) {
             request(common.url)
-            .get("/rules/files?download=amazon_rules.xml")
+            .get("/rules/files?download=0350-amazon_rules.xml")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type","text/xml")
             .expect(200)
@@ -593,7 +611,7 @@ describe('Rules', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'file', 'level', 'groups', 'id', 'details']);
+                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'path', 'file', 'level', 'groups', 'id', 'details']);
                 res.body.data.items[0].id.should.equal(1002);
                 done();
             });
@@ -612,7 +630,7 @@ describe('Rules', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'file', 'level', 'groups', 'id', 'details']);
+                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'path', 'file', 'level', 'groups', 'id', 'details']);
                 res.body.data.items[0].id.should.equal(1002);
                 done();
             });
@@ -632,7 +650,7 @@ describe('Rules', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'file', 'level', 'groups', 'id', 'details']);
+                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'path', 'file', 'level', 'groups', 'id', 'details']);
                 res.body.data.items[0].id.should.equal(1002);
                 done();
             });
@@ -652,7 +670,7 @@ describe('Rules', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'file', 'level', 'groups', 'id', 'details']);
+                res.body.data.items[0].should.have.properties(['status', 'pci', 'description', 'path', 'file', 'level', 'groups', 'id', 'details']);
                 res.body.data.items[0].id.should.equal(1002);
                 done();
             });

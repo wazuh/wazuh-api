@@ -22,6 +22,8 @@ var router = require('express').Router();
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [file] Filters by filename.
+ * @apiParam {String} [path] Filters by path.
+ * @apiParam {String="enabled","disabled", "all"} [status] Filters the decoders by status.
  *
  * @apiDescription Returns all decoders included in ossec.conf.
  *
@@ -35,7 +37,7 @@ router.get('/', cache(), function(req, res) {
     req.apicacheGroup = "decoders";
 
     var data_request = {'function': '/decoders', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'file':'paths'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'path':'paths', 'file':'alphanumeric_param'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -48,8 +50,12 @@ router.get('/', cache(), function(req, res) {
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+    if ('status' in req.query)
+        data_request['arguments']['status'] = req.query.status;
     if ('file' in req.query)
         data_request['arguments']['file'] = req.query.file;
+    if ('path' in req.query)
+        data_request['arguments']['path'] = req.query.path;
 
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -63,6 +69,9 @@ router.get('/', cache(), function(req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String="enabled","disabled", "all"} [status] Filters the decoders by status.
+ * @apiParam {String} [file] Filters by filename.
+ * @apiParam {String} [path] Filters by path.
  *
  * @apiDescription Returns all decoders files included in ossec.conf.
  *
@@ -76,7 +85,7 @@ router.get('/files', cache(), function(req, res) {
     req.apicacheGroup = "decoders";
 
     var data_request = {'function': '/decoders/files', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'path':'paths', 'file':'alphanumeric_param'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -89,6 +98,12 @@ router.get('/files', cache(), function(req, res) {
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+    if ('status' in req.query)
+        data_request['arguments']['status'] = req.query.status;
+    if ('file' in req.query)
+        data_request['arguments']['file'] = req.query.file;
+    if ('path' in req.query)
+        data_request['arguments']['path'] = req.query.path;
 
     execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })

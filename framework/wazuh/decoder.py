@@ -17,11 +17,14 @@ class Decoder:
     Decoder object.
     """
 
-    SORT_FIELDS = ['file', 'full_path', 'name', 'position']
+    S_ENABLED = 'enabled'
+    S_DISABLED = 'disabled'
+    S_ALL = 'all'
+    SORT_FIELDS = ['file', 'path', 'name', 'position', 'status']
 
     def __init__(self):
         self.file = None
-        self.full_path = None
+        self.path = None
         self.name = None
         self.position = None
         self.details = {}
@@ -30,7 +33,7 @@ class Decoder:
         return str(self.to_dict())
 
     def to_dict(self):
-        dictionary = {'file': self.file, 'full_path': self.full_path, 'name': self.name, 'position': self.position, 'details': self.details}
+        dictionary = {'file': self.file, 'path': self.path, 'name': self.name, 'position': self.position, 'details': self.details}
         return dictionary
 
     def add_detail(self, detail, value):
@@ -51,10 +54,22 @@ class Decoder:
             self.details[detail] = value
 
     @staticmethod
-    def get_decoders_files(offset=0, limit=common.database_limit, sort=None, search=None):
+    def __check_status(status):
+        if status is None:
+            return Decoder.S_ALL
+        elif status in [Decoder.S_ALL, Decoder.S_ENABLED, Decoder.S_DISABLED]:
+            return status
+        else:
+            raise WazuhException(1202)
+
+    @staticmethod
+    def get_decoders_files(status=None, path=None, file=None, offset=0, limit=common.database_limit, sort=None, search=None):
         """
         Gets a list of the available decoder files.
 
+        :param status: Filters by status: enabled, disabled, all.
+        :param path: Filters by path.
+        :param file: Filters by filename.
         :param offset: First item to return.
         :param limit: Maximum number of items to return.
         :param sort: Sorts the items. Format: {"fields":["field1","field2"],"order":"asc|desc"}.
@@ -62,48 +77,85 @@ class Decoder:
         :return: Dictionary: {'items': array of items, 'totalItems': Number of items (without applying the limit)}
         """
 
-        data = []
-        decoder_dirs = []
-        decoder_files = []
+        status = Decoder.__check_status(status)
 
-        ossec_conf = configuration.get_ossec_conf()
-
-        if 'rules' in ossec_conf:
-            if 'decoder_dir' in ossec_conf['rules']:
-                if type(ossec_conf['rules']['decoder_dir']) is list:
-                    decoder_dirs.extend(ossec_conf['rules']['decoder_dir'])
-                else:
-                    decoder_dirs.append(ossec_conf['rules']['decoder_dir'])
-            if 'decoder' in ossec_conf['rules']:
-                if type(ossec_conf['rules']['decoder']) is list:
-                    decoder_files.extend(ossec_conf['rules']['decoder'])
-                else:
-                    decoder_files.append(ossec_conf['rules']['decoder'])
-        else:
+        ruleset_conf = configuration.get_ossec_conf(section='ruleset')
+        if not ruleset_conf:
             raise WazuhException(1500)
 
-        for decoder_dir in decoder_dirs:
-            path = "{0}/{1}/*_decoders.xml".format(common.ossec_path, decoder_dir)
-            data.extend(glob(path))
+        tmp_data = []
+        tags = ['decoder_include', 'decoder_exclude']
+        exclude_filenames =[]
+        for tag in tags:
+            if tag in ruleset_conf:
+                item_status = Decoder.S_DISABLED if tag == 'decoder_exclude' else Decoder.S_ENABLED
 
-        for decoder_file in decoder_files:
-            data.append("{0}/{1}".format(common.ossec_path, decoder_file))
+                if type(ruleset_conf[tag]) is list:
+                    items = ruleset_conf[tag]
+                else:
+                    items = [ruleset_conf[tag]]
+
+                for item in items:
+                    if '/' in item:
+                        item_split = item.split('/')
+                        item_name = item_split[-1]
+                        item_dir = "{0}/{1}".format(common.ossec_path, "/".join(item_split[:-1]))
+                    else:
+                        item_name = item
+                        item_dir = "{0}/{1}".format(common.ruleset_rules_path, item)
+
+                    if tag == 'decoder_exclude':
+                        exclude_filenames.append(item_name)
+                        # tmp_data.append({'file': item_name, 'path': '-', 'status': item_status})
+                    else:
+                        tmp_data.append({'file': item_name, 'path': item_dir, 'status': item_status})
+
+        tag = 'decoder_dir'
+        if tag in ruleset_conf:
+            if type(ruleset_conf[tag]) is list:
+                items = ruleset_conf[tag]
+            else:
+                items = [ruleset_conf[tag]]
+
+            for item_dir in items:
+                all_decoders = "{0}/{1}/*.xml".format(common.ossec_path, item_dir)
+
+                for item in glob(all_decoders):
+                    item_split = item.split('/')
+                    item_name = item_split[-1]
+                    item_dir = "/".join(item_split[:-1])
+                    if item_name in exclude_filenames:
+                        item_status = Decoder.S_DISABLED
+                    else:
+                        item_status = Decoder.S_ENABLED
+                    tmp_data.append({'file': item_name, 'path': item_dir, 'status': item_status})
+
+        data = list(tmp_data)
+        for d in tmp_data:
+            if status and status != 'all' and status != d['status']:
+                data.remove(d)
+            if path and path != d['path']:
+                data.remove(d)
+            if file and file != d['file']:
+                data.remove(d)
 
         if search:
             data = search_array(data, search['value'], search['negation'])
 
         if sort:
-            data = sort_array(data, order=sort['order'])
+            data = sort_array(data, sort['fields'], sort['order'])
         else:
-            data = sort_array(data, order='asc')
+            data = sort_array(data, ['file'], 'asc')
 
         return {'items': cut_array(data, offset, limit), 'totalItems': len(data)}
 
     @staticmethod
-    def get_decoders(file=None, name=None, parents=False, offset=0, limit=common.database_limit, sort=None, search=None):
+    def get_decoders(status=None, path=None, file=None, name=None, parents=False, offset=0, limit=common.database_limit, sort=None, search=None):
         """
         Gets a list of available decoders.
 
+        :param status: Filters by status: enabled, disabled, all.
+        :param path: Filters by path.
         :param file: Filters by file.
         :param name: Filters by name.
         :param parents: Just parent decoders.
@@ -113,14 +165,17 @@ class Decoder:
         :param search: Looks for items with the specified string.
         :return: Dictionary: {'items': array of items, 'totalItems': Number of items (without applying the limit)}
         """
+        status = Decoder.__check_status(status)
         all_decoders = []
 
         for decoder_file in Decoder.get_decoders_files(limit=0)['items']:
-            all_decoders.extend(Decoder.__load_decoders_from_file(decoder_file))
+            all_decoders.extend(Decoder.__load_decoders_from_file(decoder_file['file'], decoder_file['path'], decoder_file['status']))
 
         decoders = list(all_decoders)
         for d in all_decoders:
-            if file and file not in d.file:
+            if path and path != d.path:
+                decoders.remove(d)
+            if file and file != d.file:
                 decoders.remove(d)
             if name and name != d.name:
                 decoders.remove(d)
@@ -138,13 +193,13 @@ class Decoder:
         return {'items': cut_array(decoders, offset, limit), 'totalItems': len(decoders)}
 
     @staticmethod
-    def __load_decoders_from_file(decoder_path):
+    def __load_decoders_from_file(decoder_file, decoder_path, decoder_status):
         try:
             decoders = []
             position = 0
 
             # wrap the data
-            f = open(decoder_path)
+            f = open("{0}/{1}".format(decoder_path, decoder_file))
             data = f.read()
             data = data.replace(" -- ", " -INVALID_CHAR ").replace("\<;", "\INVALID_CHAR;")
             f.close()
@@ -155,8 +210,8 @@ class Decoder:
                 # New decoder
                 if xml_decoder.tag.lower() == "decoder":
                     decoder = Decoder()
-                    decoder.full_path = decoder_path
-                    decoder.file = decoder_path.split('/')[-1]
+                    decoder.path = decoder_path
+                    decoder.file = decoder_file
                     decoder.name = xml_decoder.attrib['name']
                     decoder.position = position
                     position += 1
@@ -170,6 +225,6 @@ class Decoder:
 
                     decoders.append(decoder)
         except Exception as e:
-            raise WazuhException(1501, "{0}. Error: {1}".format(decoder_path, str(e)))
+            raise WazuhException(1501, "{0}. Error: {1}".format(decoder_file, str(e)))
 
         return decoders

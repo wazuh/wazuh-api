@@ -25,8 +25,11 @@ def set_paths_based_on_ossec(o_path='/var/ossec'):
     global stats_path
     stats_path = '{0}/stats'.format(ossec_path)
 
-    global rules_path
-    rules_path = '{0}/rules'.format(ossec_path)
+    global ruleset_path
+    ruleset_path = '{0}/ruleset'.format(ossec_path)
+
+    global ruleset_rules_path
+    ruleset_rules_path = '{0}/rules'.format(ruleset_path)
 
     global database_path
     database_path = ossec_path + '/var/db'
