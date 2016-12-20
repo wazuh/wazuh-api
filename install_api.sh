@@ -103,7 +103,7 @@ show_info () {
         proto="http"
     fi
 
-    print "\nAPI URL: $proto://localhost:$port/"
+    print "\nAPI URL: $proto://host_ip:$port/"
     if [ "X${update}" != "Xyes" ]; then
         print "user: 'foo'"
         print "password: 'bar'"
