@@ -33,7 +33,7 @@ describe('Decoders', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
+                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name', 'status']);
                 done();
             });
         });
@@ -51,7 +51,7 @@ describe('Decoders', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
+                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name', 'status']);
                 done();
             });
         });
@@ -70,7 +70,7 @@ describe('Decoders', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
+                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name', 'status']);
                 done();
             });
         });
@@ -89,7 +89,7 @@ describe('Decoders', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
+                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name', 'status']);
                 done();
             });
         });
@@ -108,7 +108,7 @@ describe('Decoders', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
+                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name', 'status']);
                 done();
             });
         });
@@ -127,7 +127,7 @@ describe('Decoders', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
+                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name', 'status']);
                 done();
             });
         });
@@ -258,7 +258,7 @@ describe('Decoders', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
+                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name', 'status']);
                 done();
             });
         });
@@ -276,7 +276,7 @@ describe('Decoders', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
+                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name', 'status']);
                 done();
             });
         });
@@ -295,7 +295,7 @@ describe('Decoders', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
+                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name', 'status']);
                 done();
             });
         });
@@ -314,7 +314,7 @@ describe('Decoders', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
+                res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name', 'status']);
                 done();
             });
         });
@@ -337,7 +337,7 @@ describe('Decoders', function() {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
+                    res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name', 'status']);
                     done();
                 });
             });
@@ -355,7 +355,7 @@ describe('Decoders', function() {
 
                     res.body.error.should.equal(0);
                     res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                    res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
+                    res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name', 'status']);
                     done();
                 });
             });
@@ -374,7 +374,7 @@ describe('Decoders', function() {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
+                    res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name', 'status']);
                     done();
                 });
             });
@@ -393,7 +393,7 @@ describe('Decoders', function() {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name']);
+                    res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name', 'status']);
                     done();
                 });
             });

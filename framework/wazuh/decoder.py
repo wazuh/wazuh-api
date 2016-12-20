@@ -27,13 +27,14 @@ class Decoder:
         self.path = None
         self.name = None
         self.position = None
+        self.status = None
         self.details = {}
 
     def __str__(self):
         return str(self.to_dict())
 
     def to_dict(self):
-        dictionary = {'file': self.file, 'path': self.path, 'name': self.name, 'position': self.position, 'details': self.details}
+        dictionary = {'file': self.file, 'path': self.path, 'name': self.name, 'position': self.position, 'status': self.status, 'details': self.details}
         return dictionary
 
     def add_detail(self, detail, value):
@@ -171,7 +172,7 @@ class Decoder:
         status = Decoder.__check_status(status)
         all_decoders = []
 
-        for decoder_file in Decoder.get_decoders_files(limit=0)['items']:
+        for decoder_file in Decoder.get_decoders_files(status=status, limit=0)['items']:
             all_decoders.extend(Decoder.__load_decoders_from_file(decoder_file['file'], decoder_file['path'], decoder_file['status']))
 
         decoders = list(all_decoders)
@@ -219,6 +220,7 @@ class Decoder:
                     decoder = Decoder()
                     decoder.path = decoder_path
                     decoder.file = decoder_file
+                    decoder.status = decoder_status
                     decoder.name = xml_decoder.attrib['name']
                     decoder.position = position
                     position += 1
