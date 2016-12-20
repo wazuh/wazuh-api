@@ -159,6 +159,7 @@ router.get('/pci', cache(), function(req, res) {
  * @apiParam {String="enabled","disabled", "all"} [status] Filters files by status.
  * @apiParam {String} [path] Filters the rules by path.
  * @apiParam {String} [file] Filters the rules by filefile.
+ * @apiParam {String} [download] Downloads the file
  *
  * @apiDescription Returns the files of all rules.
  *
@@ -193,7 +194,7 @@ router.get('/files', cache(), function(req, res) {
         data_request['arguments']['file'] = req.query.file;
 
     if ('download' in req.query)
-        res_h.send_file(req, res, req.query.download);
+        res_h.send_file(req, res, req.query.download, 'rules');
     else
         execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })

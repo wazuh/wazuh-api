@@ -72,6 +72,7 @@ router.get('/', cache(), function(req, res) {
  * @apiParam {String="enabled","disabled", "all"} [status] Filters the decoders by status.
  * @apiParam {String} [file] Filters by filename.
  * @apiParam {String} [path] Filters by path.
+ * @apiParam {String} [download] Downloads the file
  *
  * @apiDescription Returns all decoders files included in ossec.conf.
  *
@@ -85,7 +86,7 @@ router.get('/files', cache(), function(req, res) {
     req.apicacheGroup = "decoders";
 
     var data_request = {'function': '/decoders/files', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'path':'paths', 'file':'alphanumeric_param'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'download':'alphanumeric_param', 'path':'paths', 'file':'alphanumeric_param'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -105,7 +106,10 @@ router.get('/files', cache(), function(req, res) {
     if ('path' in req.query)
         data_request['arguments']['path'] = req.query.path;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    if ('download' in req.query)
+        res_h.send_file(req, res, req.query.download, 'decoders');
+    else
+        execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**

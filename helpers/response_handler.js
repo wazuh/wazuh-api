@@ -61,12 +61,19 @@ exports.bad_request = function(req, res, internal_error, extra_msg){
     this.send(req, res, json_res, 400);
 }
 
-exports.send_file = function(req, res, rule_name){
-    var data_request = {'function': '/rules/files', 'arguments': {'file': rule_name}};
+exports.send_file = function(req, res, file_name, type){
+    var data_request = {'function': '/' + type +'/files', 'arguments': {'file': file_name}};
 
+    var send_aux = this.send;
     execute.exec(wazuh_control, [], data_request, function (data) {
         try {
-            var filepath = data.data.items[0].path + "/" + rule_name;
+            try {
+                var filepath = data.data.items[0].path + "/" + file_name;
+            } catch (e) {
+                json_res = {'error': 700, 'message': errors.description(700) + ": " + file_name};
+                send_aux(req, res, json_res, 404);
+                return;
+            }
             var stat = fileSystem.statSync(filepath);
 
             res.writeHead(200, {
@@ -85,10 +92,12 @@ exports.send_file = function(req, res, rule_name){
         } catch (e) {
             if (e.code === 'ENOENT') {
                 json_res = {'error': 700, 'message': errors.description(700) + ": " + filepath};
-                send(req, res, json_res, 404);
+                send_aux(req, res, json_res, 404);
+                return;
             } else {
                 json_res = {'error': 3, 'message': errors.description(3)};
-                send(req, res, json_res, 500);
+                send_aux(req, res, json_res, 500);
+                return;
             }
         }
     });
