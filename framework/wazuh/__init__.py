@@ -40,6 +40,7 @@ class Wazuh:
         self.path = ossec_path
         self.max_agents = 'N/A'
         self.openssl_support = 'N/A'
+        self.ruleset_version = None
 
         if get_init:
             self.get_ossec_init()
@@ -50,7 +51,7 @@ class Wazuh:
         return str(self.to_dict())
 
     def to_dict(self):
-        return {'path': self.path, 'version': self.version, 'installation_date': self.installation_date, 'type': self.type, 'max_agents': self.max_agents, 'openssl_support': self.openssl_support}
+        return {'path': self.path, 'version': self.version, 'installation_date': self.installation_date, 'type': self.type, 'max_agents': self.max_agents, 'openssl_support': self.openssl_support, 'ruleset_version': self.ruleset_version}
 
     def get_ossec_init(self):
         """
@@ -91,6 +92,18 @@ class Wazuh:
                 self.max_agents = tuple[1]
             elif tuple[0] == 'openssl_support':
                 self.openssl_support = tuple[1]
+
+        # Ruleset version
+        ruleset_version_file = "{0}/ruleset/VERSION".format(self.path)
+        try:
+            with open(ruleset_version_file, 'r') as f:
+                line_regex = re.compile('(^\w+)="(.+)"')
+                for line in f:
+                    match = line_regex.match(line)
+                    if match and len(match.groups()) == 2:
+                        self.ruleset_version = match.group(2)
+        except:
+            raise WazuhException(1005, ruleset_version_file)
 
         return self.to_dict()
 
