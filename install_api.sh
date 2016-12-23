@@ -10,21 +10,15 @@
 # Installer for Wazuh API
 # Wazuh Inc.
 #
-# Instructions:
-#  List dependencies.
-#    ./install_api.sh dependencies
-#  Install last release (download lastest release)
-#    ./install_api.sh
-#  Install API from path
-#    ./install_api.sh /path/to/api
-#  Install API development mode
-#    git clone https://github.com/wazuh/wazuh-api.git
-#    cd wazuh-api
-#    [git checkout <branch>]
-#    ./install_api.sh dev  : Install API from current path, development mode
+# Usage:
+#  ./install_api.sh [dependencies|download|dev]
+#  ./install_api.sh                Install API from current path
+#  ./install_api.sh dependencies   List dependencies
+#  ./install_api.sh download       Download and install lastest release (stable branch)
+#  ./install_api.sh dev            Install API from current path in development mode
 
 
-arg=$1  # emtpy, path or dev
+arg=$1  # emtpy, help, dependencies, download or dev
 
 # Aux functions
 print() {
@@ -76,7 +70,8 @@ get_type_service() {
 
 url_lastest_release () {
     LATEST_RELEASE=$(curl -L -s -H 'Accept: application/json' https://github.com/$1/$2/releases/latest)
-    LATEST_VERSION=$(echo $LATEST_RELEASE | sed -e 's/.*"tag_name":"\(.*\)".*/\1/')
+    #LATEST_VERSION=$(echo $LATEST_RELEASE | sed -e 's/.*"tag_name":"\(.*\)".*/\1/')
+    LATEST_VERSION=$(echo $LATEST_RELEASE | grep -P "\"tag_name\":\".+\"update_url" -o | grep -P "v\d+\.\d+\.\d" -o)
     ARTIFACT_URL="https://github.com/$1/$2/archive/$LATEST_VERSION.tar.gz"
     echo $ARTIFACT_URL
 }
@@ -114,6 +109,14 @@ show_info () {
     print "Configuration: $API_PATH/configuration"
 }
 
+help() {
+    echo "./install_api.sh [dependencies|download|dev]"
+    echo "./install_api.sh                Install API from current path"
+    echo "./install_api.sh dependencies   List dependencies"
+    echo "./install_api.sh download       Download and install lastest release (stable branch)"
+    echo "./install_api.sh dev            Install API from current path in development mode"
+}
+
 required_packages() {
     print "\nDebian and Ubuntu based Linux distributions:"
     print "\tsudo apt-get install -y python-pip"
@@ -131,18 +134,19 @@ required_packages() {
 
 previous_checks() {
     # Arguments
-    if [ "X${arg}" == "Xdependencies" ]; then
+    if [ "X${arg}" == "Xdependencies" ]; then  # dependencies argument
         required_packages
         exit 0
-    elif [ "X${arg}" == "Xdev" ]; then  # Dev argument
+    elif [ "X${arg}" == "Xhelp" ]; then  # help argument
+        help
+        exit 0
+    elif [ "X${arg}" == "Xdev" ]; then  # dev argument
         API_SOURCES=`pwd`
-    elif [ "X${arg}" == "X" ]; then   # No argument
+    elif [ "X${arg}" == "Xdownload" ]; then   # download argument
         API_SOURCES="/root"
         DOWNLOAD_PATH=$(url_lastest_release "wazuh" "wazuh-api")
-        print "API v1.3 is not released. Please, use './install_api.sh /path/to/api_sources'"
-        exit 1
     else
-        API_SOURCES=$arg  # Path argument
+        API_SOURCES="."  # empty argument
     fi
 
     # Test root permissions
@@ -206,15 +210,16 @@ get_api () {
         if [ -d "$API_SOURCES/wazuh-api-tmp" ]; then
             exec_cmd "rm -rf $API_SOURCES/wazuh-api-tmp"
         fi
-
-        exec_cmd "mkdir -p $API_SOURCES/wazuh-api-tmp && curl -sL $DOWNLOAD_PATH | tar xvz -C $API_SOURCES/wazuh-api-tmp"
+        exec_cmd "mkdir -p $API_SOURCES/wazuh-api-tmp"
+        
+        exec_cmd "curl -sL $DOWNLOAD_PATH | tar xvz -C $API_SOURCES/wazuh-api-tmp"
 
         API_SOURCES="$API_SOURCES/wazuh-api-tmp/wazuh-api-*.*"
     else
         if [ "X${arg}" == "Xdev" ]; then
-            print "\nInstalling Wazuh API from current directory [$API_SOURCES] [DEV MODE]"
+            print "\nInstalling Wazuh API from current directory [DEV MODE]."
         else
-            print "\nInstalling Wazuh API from current directory [$API_SOURCES]"
+            print "\nInstalling Wazuh API from current directory."
         fi
     fi
 }
