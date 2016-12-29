@@ -233,7 +233,7 @@ router.delete('/:agent_id', function(req, res) {
 
 
 /**
- * @api {post} /agents/:agent_id Add agent
+ * @api {post} /agents Add agent
  * @apiName PostAddAgentId
  * @apiGroup Add
  *

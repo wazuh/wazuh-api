@@ -200,7 +200,7 @@ router.get('/files', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /rules Get rules by id
+ * @api {get} /rules/:rule_id Get rules by id
  * @apiName GetRulesId
  * @apiGroup Info
  *

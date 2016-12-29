@@ -77,7 +77,7 @@ router.get('/', cache(), function(req, res) {
  * @apiDescription Returns all decoders files included in ossec.conf.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/decoders/files?pretty&offset=0&limit=10&sort=-"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/decoders/files?pretty&offset=0&limit=10&sort=-path"
  *
  */
 router.get('/files', cache(), function(req, res) {
