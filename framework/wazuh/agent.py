@@ -212,7 +212,8 @@ class Agent:
         """
 
         # Check if authd is running
-        if manager.status()['ossec-authd'] == 'running':
+        manager_status = manager.status()
+        if 'ossec-authd' not in manager_status or manager_status['ossec-authd'] == 'running':
             raise WazuhException(1704)
 
         f_keys_temp = '{0}.tmp'.format(common.client_keys)
@@ -253,7 +254,8 @@ class Agent:
         """
 
         # Check if authd is running
-        if manager.status()['ossec-authd'] == 'running':
+        manager_status = manager.status()
+        if 'ossec-authd' not in manager_status or manager_status['ossec-authd'] == 'running':
             raise WazuhException(1704)
 
         # Check if ip or name exist in client.keys

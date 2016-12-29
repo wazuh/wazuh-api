@@ -40,9 +40,13 @@ def run(agent_id=None, all_agents=False):
     else:
         # Check if agent exists and it is active
         agent_info = Agent(agent_id).get_basic_information()
+        if 'status' in agent_info:
+            agent_status = agent_info['status']
+        else:
+            agent_status = "N/A"
 
-        if agent_info['status'].lower() != 'active':
-            raise WazuhException(1602, '{0} - {1}'.format(agent_id, agent_info['status']))
+        if agent_status.lower() != 'active':
+            raise WazuhException(1602, '{0} - {1}'.format(agent_id, agent_status))
 
         oq = OssecQueue(OssecQueue.ARQUEUE)
         ret_msg = oq.send_msg_to_agent(OssecQueue.HC_SK_RESTART, agent_id)

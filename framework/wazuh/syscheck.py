@@ -40,9 +40,13 @@ def run(agent_id=None, all_agents=False):
     else:
         # Check if agent exists
         agent_info = Agent(agent_id).get_basic_information()
+        if 'status' in agent_info:
+            agent_status = agent_info['status']
+        else:
+            agent_status = "N/A"
 
-        if agent_info['status'].lower() != 'active':
-            raise WazuhException(1602, '{0} - {1}'.format(agent_id, agent_info['status']))
+        if agent_status.lower() != 'active':
+            raise WazuhException(1602, '{0} - {1}'.format(agent_id, agent_status))
 
         oq = OssecQueue(OssecQueue.ARQUEUE)
         ret_msg = oq.send_msg_to_agent(OssecQueue.HC_SK_RESTART, agent_id)
@@ -159,12 +163,16 @@ def files(agent_id=None, event=None, filename=None, filetype='file', md5=None, s
 
     conn = Connection(db_agent)
 
-    agent_os = Agent(agent_id).get_basic_information()['os']
-
-    if "windows" in agent_os.lower():
-        windows_agent = True
+    agent_info = Agent(agent_id).get_basic_information()
+    if 'os' in agent_info:
+        if 'windows' in agent_info['os'].lower():
+            windows_agent = True
+        else:
+            windows_agent = False
     else:
-        windows_agent = False
+        # We do not know if it is a windows or linux agent.
+        # It is set to windows agent in order to avoid wrong data (uid, gid, ...)
+        windows_agent = True
 
     fields = {'scanDate': 'date', 'modificationDate': 'mtime', 'file': 'path', 'size': 'size', 'user': 'uname', 'group': 'gname'}
 
