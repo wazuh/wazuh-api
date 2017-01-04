@@ -34,7 +34,7 @@ def run(agent_id=None, all_agents=False):
             raise WazuhException(1601, "locally")
 
         if all_agents:
-            oq = OssecQueue(OssecQueue.ARQUEUE)
+            oq = OssecQueue(common.ARQUEUE)
             ret_msg = oq.send_msg_to_agent(OssecQueue.HC_SK_RESTART)
             oq.close()
     else:
@@ -48,7 +48,7 @@ def run(agent_id=None, all_agents=False):
         if agent_status.lower() != 'active':
             raise WazuhException(1602, '{0} - {1}'.format(agent_id, agent_status))
 
-        oq = OssecQueue(OssecQueue.ARQUEUE)
+        oq = OssecQueue(common.ARQUEUE)
         ret_msg = oq.send_msg_to_agent(OssecQueue.HC_SK_RESTART, agent_id)
         oq.close()
 

@@ -198,7 +198,7 @@ class Agent:
             if self.status.lower() != 'active':
                 raise WazuhException(1707, '{0} - {1}'.format(self.id, self.status))
 
-            oq = OssecQueue(OssecQueue.ARQUEUE)
+            oq = OssecQueue(common.ARQUEUE)
             ret_msg = oq.send_msg_to_agent(OssecQueue.RESTART_AGENTS, self.id)
             oq.close()
 
@@ -470,7 +470,7 @@ class Agent:
         """
 
         if restart_all:
-            oq = OssecQueue(OssecQueue.ARQUEUE)
+            oq = OssecQueue(common.ARQUEUE)
             ret_msg = oq.send_msg_to_agent(OssecQueue.RESTART_AGENTS)
             oq.close()
             return ret_msg

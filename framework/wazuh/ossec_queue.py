@@ -12,9 +12,6 @@ class OssecQueue:
     OssecQueue Object.
     """
 
-    # Queues
-    ARQUEUE = "{0}/queue/alerts/ar".format(common.ossec_path)
-
     # Messages
     HC_SK_RESTART = "syscheck restart"  # syscheck and rootcheck restart
     RESTART_AGENTS = "restart-ossec0"  # Agents, not manager (000)
