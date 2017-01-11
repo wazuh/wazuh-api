@@ -211,7 +211,7 @@ get_api () {
             exec_cmd "rm -rf $API_SOURCES/wazuh-api-tmp"
         fi
         exec_cmd "mkdir -p $API_SOURCES/wazuh-api-tmp"
-        
+
         exec_cmd "curl -sL $DOWNLOAD_PATH | tar xvz -C $API_SOURCES/wazuh-api-tmp"
 
         API_SOURCES="$API_SOURCES/wazuh-api-tmp/wazuh-api-*.*"
@@ -264,7 +264,7 @@ backup_api () {
 restore_configuration () {
     API_OLD_VERSION=`cat $API_PATH_BACKUP/package.json | grep "version\":" | grep -P "\d+(?:\.\d+){0,2}" -o`
 
-    if [ "X${API_OLD_VERSION}" == "X1.3.0" ]; then
+    if [ "X${API_OLD_VERSION}" == "X2.0.0" ]; then
         exec_cmd "rm -rf $API_PATH/configuration"
         exec_cmd "cp -rfp $API_PATH_BACKUP/configuration $API_PATH/configuration"
     elif [ "X${API_OLD_VERSION}" == "X1.1" ] || [ "X${API_OLD_VERSION}" == "X1.2.0" ] || [ "X${API_OLD_VERSION}" == "X1.2.1" ]; then

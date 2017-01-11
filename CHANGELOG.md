@@ -2,9 +2,9 @@
 All notable changes to this project will be documented in this file.
 
 
-## [v1.3.0] - 2016-10-??
+## [v2.0.0] - 2017-??-??
 ### Added
-- **Wazuh v1.2** is required to run the API.
+- **Wazuh v2.0** is required to run the API.
 - API must be launched with root user, but it is run with ossec user.
 - Scripts:
  - install_api.sh

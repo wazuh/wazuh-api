@@ -74,7 +74,7 @@ api_path = __dirname;
 /********************************************/
 /* Config APP
 /********************************************/
-current_version = "v1.3.0";
+current_version = "v2.0.0";
 
 if (process.argv.length == 3 && process.argv[2] == "-f")
     logger.set_foreground();
@@ -112,7 +112,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 /**
  * Versioning
- * Using: Header: "api-version: vX.Y" or URL: /v1.3.0/
+ * Using: Header: "api-version: vX.Y" or URL: /v2.0.0/
  */
 app.use(function(req, res, next) {
     var api_version_header = req.get('api-version');
@@ -135,7 +135,6 @@ app.use(function(req, res, next) {
 
 // Controllers
 app.use("/" + current_version, require('./controllers'));
-//Example: app.use("/v1.2", require('./versions/v1.2/controllers'));
 
 
 // APP Errors
