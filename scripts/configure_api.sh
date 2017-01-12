@@ -42,20 +42,6 @@ get_type_service() {
     fi
 }
 
-get_node(){
-    NODE_DIR=$(which nodejs 2> /dev/null)
-
-    if [ "X$NODE_DIR" = "X" ]; then
-        NODE_DIR=$(which node 2> /dev/null)
-
-        if [ "X$NODE_DIR" = "X" ]; then
-            echo "NodeJS binaries not found. Is NodeJS installed?"
-            exit 1
-        fi
-    fi
-    echo $NODE_DIR
-}
-
 check_program_installed() {
     hash $1 > /dev/null 2>&1
     if [ "$?" != "0" ]; then
@@ -88,9 +74,7 @@ previous_checks() {
     fi
 
     serv_type=$(get_type_service)
-    node_dir=$(get_node)
     API_PATH="${DIRECTORY}/api"
-
 
     # Dependencies
     check_program_installed "openssl"
@@ -142,7 +126,7 @@ change_auth () {
         edit_configuration "basic_auth" "yes"
         read -p "API user: " user
 
-        exec_cmd_bash "cd $API_PATH/configuration/auth && $node_dir htpasswd -c user $user"
+        exec_cmd_bash "cd $API_PATH/configuration/auth && $API_PATH/node_modules/htpasswd/bin/htpasswd -c user $user"
     else
         auth="n"
         print "Disabling authentication (not secure)."
