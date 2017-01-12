@@ -33,7 +33,7 @@ describe('Manager', function() {
 
                 res.body.error.should.equal(0);
 
-                res.body.data.should.have.properties(['wazuh-moduled', 'ossec-authd', 'ossec-monitord', 'ossec-logcollector', 'ossec-execd', 'ossec-remoted', 'ossec-syscheckd', 'ossec-analysisd', 'ossec-maild']);
+                res.body.data.should.have.properties(['wazuh-modulesd', 'ossec-authd', 'ossec-monitord', 'ossec-logcollector', 'ossec-execd', 'ossec-remoted', 'ossec-syscheckd', 'ossec-analysisd', 'ossec-maild']);
                 done();
             });
         });
