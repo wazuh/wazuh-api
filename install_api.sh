@@ -215,13 +215,18 @@ get_api () {
         exec_cmd "curl -sL $DOWNLOAD_PATH | tar xvz -C $API_SOURCES/wazuh-api-tmp"
 
         API_SOURCES="$API_SOURCES/wazuh-api-tmp/wazuh-api-*.*"
+
+        API_NEW_VERSION=`cat $API_SOURCES/package.json | grep "version\":" | grep -P "\d+(?:\.\d+){0,2}" -o`
+        print "\nInstalling Wazuh API $API_NEW_VERSION"
     else
+        API_NEW_VERSION=`cat $API_SOURCES/package.json | grep "version\":" | grep -P "\d+(?:\.\d+){0,2}" -o`
         if [ "X${arg}" == "Xdev" ]; then
-            print "\nInstalling Wazuh API from current directory [DEV MODE]."
+            print "\nInstalling Wazuh API $API_NEW_VERSION from current directory [DEV MODE]."
         else
-            print "\nInstalling Wazuh API from current directory."
+            print "\nInstalling Wazuh API $API_NEW_VERSION from current directory."
         fi
     fi
+
 }
 
 install_framework() {
@@ -259,10 +264,10 @@ backup_api () {
     exec_cmd "cp -rLfp $API_PATH $API_PATH_BACKUP"
     exec_cmd "chown root:root $API_PATH_BACKUP"
     API_BACKUP='yes'
+    API_OLD_VERSION=`cat $API_PATH_BACKUP/package.json | grep "version\":" | grep -P "\d+(?:\.\d+){0,2}" -o`
 }
 
 restore_configuration () {
-    API_OLD_VERSION=`cat $API_PATH_BACKUP/package.json | grep "version\":" | grep -P "\d+(?:\.\d+){0,2}" -o`
 
     if [ "X${API_OLD_VERSION}" == "X2.0.0" ]; then
         exec_cmd "rm -rf $API_PATH/configuration"
@@ -286,7 +291,7 @@ setup_api() {
         backup_api
         print ""
         while true; do
-            read -p "Wazuh API is already installed. Do you want to update it? [y/n]: " yn
+            read -p "Wazuh API is already installed (version $API_OLD_VERSION). Do you want to update it? [y/n]: " yn
             case $yn in
                 [Yy] ) update="yes"; break;;
                 [Nn] ) update="no"; break;;
