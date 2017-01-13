@@ -267,6 +267,10 @@ class Agent:
 
                 line_data = line.strip().split(' ')  # 0 -> id, 1 -> name, 2 -> ip, 3 -> key
 
+                id = int(line_data[0])
+                if last_id < id:
+                    last_id = id
+
                 if line_data[1][0] in ('#!'):  # name starts with # or !
                     continue
 
@@ -274,10 +278,6 @@ class Agent:
                     raise WazuhException(1705, name)
                 if ip.lower() != 'any' and ip == line_data[2]:
                     raise WazuhException(1706, ip)
-
-                id = int(line_data[0])
-                if last_id < id:
-                    last_id = id
 
         last_id = str(last_id + 1).zfill(3)
 
