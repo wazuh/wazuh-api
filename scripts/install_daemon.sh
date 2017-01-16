@@ -68,6 +68,7 @@ if [ -n "$(ps -e | egrep ^\ *1\ .*systemd$)" ]; then
 
     sed "s:^ExecStart=.*:ExecStart=$BIN_DIR $APP_PATH:g" $SCRIPTS_PATH/wazuh-api.service > $SCRIPTS_PATH/wazuh-api.service.tmp
     install -m $I_FMODE -o $I_OWNER -g $I_GROUP $SCRIPTS_PATH/wazuh-api.service.tmp $I_SYSTEMD/wazuh-api.service
+    rm $SCRIPTS_PATH/wazuh-api.service.tmp
     systemctl enable wazuh-api
     systemctl daemon-reload
     systemctl restart wazuh-api
@@ -75,7 +76,7 @@ if [ -n "$(ps -e | egrep ^\ *1\ .*systemd$)" ]; then
     echo "Daemon installed successfully. Please check the status running:"
     echo "  systemctl status wazuh-api"
 
-# Install for SysVinit
+# Install for SysVinit / Upstart
 
 elif [ -n "$(ps -e | egrep ^\ *1\ .*init$)" ]; then
     echo "Installing for SysVinit"
@@ -84,6 +85,7 @@ elif [ -n "$(ps -e | egrep ^\ *1\ .*init$)" ]; then
     sed -i "s:^APP_PATH=.*:APP_PATH=\"$APP_PATH\":g" $SCRIPTS_PATH/wazuh-api.tmp
     sed -i "s:^OSSEC_PATH=.*:OSSEC_PATH=\"${DIRECTORY}\":g" $SCRIPTS_PATH/wazuh-api.tmp
     install -m $I_XMODE -o $I_OWNER -g $I_GROUP $SCRIPTS_PATH/wazuh-api.tmp $I_SYSVINIT/wazuh-api
+    rm $SCRIPTS_PATH/wazuh-api.tmp
 
     enabled=true
     if [ -r "/etc/redhat-release" ] || [ -r "/etc/SuSE-release" ]; then
@@ -102,6 +104,6 @@ elif [ -n "$(ps -e | egrep ^\ *1\ .*init$)" ]; then
         service wazuh-api restart
     fi
 else
-    echo "Unknown init system. Exiting."
-    exit 1
+    echo "Warning: Unknown init system. Please run the API with:"
+    echo "$BIN_DIR $APP_PATH > /dev/null 2>&1 < /dev/null &"
 fi
