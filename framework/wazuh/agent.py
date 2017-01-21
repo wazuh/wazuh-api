@@ -17,7 +17,7 @@ from shutil import copyfile, move
 from random import randrange
 from time import time
 from platform import platform
-from os import remove, chown, chmod
+from os import remove, chown, chmod, path
 from pwd import getpwnam
 from grp import getgrnam
 
@@ -216,6 +216,9 @@ class Agent:
         if 'ossec-authd' not in manager_status or manager_status['ossec-authd'] == 'running':
             raise WazuhException(1704)
 
+        # Get info from DB
+        self._load_info_from_DB()
+
         f_keys_temp = '{0}.tmp'.format(common.client_keys)
 
         f_tmp = open(f_keys_temp, 'w')
@@ -238,6 +241,23 @@ class Agent:
             ossec_gid = getgrnam("ossec").gr_gid
             chown(common.client_keys, root_uid, ossec_gid)
             chmod(common.client_keys, 0o640)
+
+            # Remove agent files
+            agent_files = []
+            agent_files.append('{0}/queue/agent-info/{1}-{2}'.format(common.ossec_path, self.name, self.ip))
+            agent_files.append('{0}/queue/syscheck/({1}) {2}->syscheck'.format(common.ossec_path, self.name, self.ip))
+            agent_files.append('{0}/queue/syscheck/.({1}) {2}->syscheck.cpt'.format(common.ossec_path, self.name, self.ip))
+            agent_files.append('{0}/queue/syscheck/({1}) {2}->syscheck-registry'.format(common.ossec_path, self.name, self.ip))
+            agent_files.append('{0}/queue/syscheck/.({1}) {2}->syscheck-registry.cpt'.format(common.ossec_path, self.name, self.ip))
+            agent_files.append('{0}/queue/rootcheck/({1}) {2}->rootcheck'.format(common.ossec_path, self.name, self.ip))
+            agent_files.append('{0}/queue/rids/{1}'.format(common.ossec_path, self.id))
+            agent_files.append('{0}/var/db/agents/{1}-{2}.db'.format(common.ossec_path, self.id, self.name))
+            agent_files.append('{0}/var/db/agents/{1}-{2}.db-wal'.format(common.ossec_path, self.id, self.name))
+            agent_files.append('{0}/var/db/agents/{1}-{2}.db-shm'.format(common.ossec_path, self.id, self.name))
+
+            for agent_file in agent_files:
+                if path.exists(agent_file):
+                    remove(agent_file)
         else:
             remove(f_keys_temp)
             raise WazuhException(1701, self.id)
