@@ -64,6 +64,8 @@ class WazuhException(Exception):
         1705: 'There is an agent with the same name',
         1706: 'There is an agent with the same IP',
         1707: 'Impossible to restart agent due to it is not active',
+        1708: 'There is an agent with the same ID',
+        1709: 'Too short key size (<64)',
         # Manager:
 
         # Database:

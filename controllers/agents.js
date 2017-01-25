@@ -289,5 +289,66 @@ router.post('/', function(req, res) {
 })
 
 
+/**
+ * @api {post} /agents/insert Insert agent
+ * @apiName PostInsertAgent
+ * @apiGroup Add
+ *
+ * @apiParam {String} name Agent name.
+ * @apiParam {String="IP","IP/NET", "ANY"} [ip] If you do not include this param, the API will get the IP automatically. If you are behind a proxy, you must set the option config.BehindProxyServer to yes at config.js.
+ * @apiParam {String} id Agent ID.
+ * @apiParam {String} key Agent key.
+ *
+ * @apiDescription Insert a new agent. This request should be used when the ID and the Key of the agent are known.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X POST -d '{"name":"NewHost_2","ip":"10.0.0.10", "id": "100", "key": "my_key"}' -H 'Content-Type:application/json' "https://127.0.0.1:55000/agents/insert?pretty"
+ *
+ */
+router.post('/insert', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " POST /agents/insert");
+
+    // If not IP set, we will use source IP.
+    var ip = req.body.ip;
+    if ( !ip ){
+        // If we hare behind a proxy server, use headers.
+        if (config.BehindProxyServer.toLowerCase() == "yes")
+            if (!req.headers.hasOwnProperty('x-forwarded-for')){
+                res_h.bad_request(req, res, 800);
+                return;
+            }
+            else
+                ip = req.headers['x-forwarded-for'];
+        else
+            ip = req.connection.remoteAddress;
+
+        // Extract IPv4 from IPv6 hybrid notation
+        if (ip.indexOf("::ffff:") > -1) {
+            var ipFiltered = ip.split(":");
+            ip = ipFiltered[ipFiltered.length-1];
+            logger.debug("Hybrid IPv6 IP filtered: " + ip);
+        }
+        logger.debug("Add agent with automatic IP: " + ip);
+    }
+    req.body.ip = ip;
+
+    var data_request = {'function': 'POST/agents/insert', 'arguments': {}};
+    var filters = {'name':'names', 'ip':'ips', 'id':'numbers', 'key': 'alphanumeric_param'};
+
+    if (!filter.check(req.body, filters, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['id'] = req.body.id;
+    data_request['arguments']['name'] = req.body.name;
+    data_request['arguments']['ip'] = req.body.ip;
+    data_request['arguments']['key'] = req.body.key;
+
+    if ('id' in req.body && 'name' in req.body && 'ip' in req.body && 'key' in req.body){
+        execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    }else
+        res_h.bad_request(req, res, 604, "Missing fields. Mandatory fields: id, name, ip, key");
+})
+
+
 
 module.exports = router;

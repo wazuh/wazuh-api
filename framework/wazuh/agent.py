@@ -29,8 +29,12 @@ class Agent:
     def __init__(self, *args, **kwargs):
         """
         Initialize an agent.
+        'id': When the agent is known
+        'name' and 'ip': Add an agent (generate id and key automatically)
+        'name', 'ip', 'id', 'key': Insert an agent with an existent id and key
 
-        :param args: 'id' in case it is known, or 'name' and 'ip' to add the agent.
+        :param args: [id | name, ip | name, ip, id, key].
+        :param kwargs: [id | name, ip | name, ip, id, key].
         """
         self.id = None
         self.name = None
@@ -44,16 +48,24 @@ class Agent:
         self.key = None
         self.sharedSum = None
 
-        if len(args) == 1:
-            self.id = args[0]
-        elif 'id' in kwargs:
-            self.id = kwargs['id']
-        elif len(args) == 2:
-            self._add(args[0], args[1])
-        elif 'ip' in kwargs and 'name' in kwargs:
-            self._add(kwargs['name'], kwargs['ip'])
-        else:
-            raise WazuhException(1700)
+        if args:
+            if len(args) == 1:
+                self.id = args[0]
+            elif len(args) == 2:
+                self._add(args[0], args[1])
+            elif len(args) == 4:
+                self._add(args[0], args[1], args[2], args[3])
+            else:
+                raise WazuhException(1700)
+        elif kwargs:
+            if len(kwargs) == 1:
+                self.id = kwargs['id']
+            elif len(kwargs) == 2:
+                self._add(kwargs['name'], kwargs['ip'])
+            elif len(kwargs) == 4:
+                self._add(kwargs['name'], kwargs['ip'], kwargs['id'], kwargs['key'])
+            else:
+                raise WazuhException(1700)
 
     def __str__(self):
         return str(self.to_dict())
@@ -264,21 +276,32 @@ class Agent:
 
         return 'Agent removed'
 
-    def _add(self, name, ip):
+    def _add(self, name, ip, id=None, key=None):
         """
-        Adds the agent to OSSEC.
+        Adds a agent to OSSEC.
+        2 uses:
+            - name and ip: Add an agent like manage_agents (generate id and key).
+            - name, ip, id, key: Insert an agent with an existing id and key.
 
         :param name: name of the new agent.
         :param ip: IP of the new agent. It can be an IP, IP/NET or ANY.
+        :param id: ID of the new agent.
+        :param key: Key of the new agent.
         :return: Agent ID.
         """
+
+        # Check arguments
+        id = id.zfill(3)
+
+        if len(key) < 64:
+            raise WazuhException(1709)
 
         # Check if authd is running
         manager_status = manager.status()
         if 'ossec-authd' not in manager_status or manager_status['ossec-authd'] == 'running':
             raise WazuhException(1704)
 
-        # Check if ip or name exist in client.keys
+        # Check if ip, name or id exist in client.keys
         last_id = 0
         with open(common.client_keys) as f_k:
             for line in f_k.readlines():
@@ -287,39 +310,47 @@ class Agent:
 
                 line_data = line.strip().split(' ')  # 0 -> id, 1 -> name, 2 -> ip, 3 -> key
 
-                id = int(line_data[0])
-                if last_id < id:
-                    last_id = id
+                line_id = int(line_data[0])
+                if last_id < line_id:
+                    last_id = line_id
 
                 if line_data[1][0] in ('#!'):  # name starts with # or !
                     continue
 
+                if id and id == line_data[0]:
+                    raise WazuhException(1708, id)
                 if name == line_data[1]:
                     raise WazuhException(1705, name)
                 if ip.lower() != 'any' and ip == line_data[2]:
                     raise WazuhException(1706, ip)
 
-        last_id = str(last_id + 1).zfill(3)
+        if not id:
+            agent_id = str(last_id + 1).zfill(3)
+        else:
+            agent_id = id
+
+        if not key:
+            # Generate key
+            random_number = randrange(1, 999999)
+            epoch_time = int(time())
+            str1 = "{0}{1}{2}{3}".format(epoch_time, name, random_number, platform())
+            random_number = randrange(1, 999999)
+            str2 = "{0}{1}{2}".format(ip, agent_id, random_number)
+            hash1 = md5()
+            hash1.update(str1.encode())
+            hash2 = md5()
+            hash2.update(str2.encode())
+            agent_key = hash1.hexdigest() + hash2.hexdigest()
+        else:
+            agent_key = key
 
         # Tmp file
         f_keys_temp = '{0}.tmp'.format(common.client_keys)
         copyfile(common.client_keys, f_keys_temp)
 
-        # Generate key
-        random_number = randrange(1, 999999)
-        epoch_time = int(time())
-        str1 = "{0}{1}{2}{3}".format(epoch_time, name, random_number, platform())
-        random_number = randrange(1, 999999)
-        str2 = "{0}{1}{2}".format(ip, last_id, random_number)
-        hash1 = md5()
-        hash1.update(str1.encode())
-        hash2 = md5()
-        hash2.update(str2.encode())
-        new_key = hash1.hexdigest() + hash2.hexdigest()
-
         # Write key
         with open(f_keys_temp, 'a') as f_kt:
-            f_kt.write('{0} {1} {2} {3}\n'.format(last_id, name, ip, new_key))
+            f_kt.write('{0} {1} {2} {3}\n'.format(agent_id, name, ip, agent_key))
 
         # Overwrite client.keys
         move(f_keys_temp, common.client_keys)
@@ -328,7 +359,7 @@ class Agent:
         chown(common.client_keys, root_uid, ossec_gid)
         chmod(common.client_keys, 0o640)
 
-        self.id = last_id
+        self.id = agent_id
 
     @staticmethod
     def get_agents_overview(status="all", offset=0, limit=common.database_limit, sort=None, search=None):
@@ -541,3 +572,17 @@ class Agent:
         """
 
         return Agent(name, ip).id
+
+    @staticmethod
+    def insert_agent(name, id, key, ip='any'):
+        """
+        Create a new agent providing the id, name, ip and key to the Manager.
+
+        :param id: id of the new agent.
+        :param name: name of the new agent.
+        :param ip: IP of the new agent. It can be an IP, IP/NET or ANY.
+        :param key: name of the new agent.
+        :return: Agent ID.
+        """
+
+        return Agent(name=name, ip=ip, id=id, key=key).id
