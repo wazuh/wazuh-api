@@ -11,7 +11,7 @@ import sys
 TIMEOUT = 30  # cURL TIMEOUT. 0 to disable "example response"
 
 ### Hardcoded text ###
-rst_header = '.. _ossec_api_reference:\n\n'
+rst_header = '.. _api_reference:\n\n'
 introduction = "Reference\n======================\nThis API reference is organized by resources:\n\n{0}\nAlso, it is provided an `Request List`_ with all available requests.\n\n.. _request_list:\n"
 str_request_list = 'Request List'
 section_separator = '-'*40
@@ -164,7 +164,7 @@ if __name__ == "__main__":
     try:
         rst_output = sys.argv[1]
     except:
-        rst_output = './build/ossec_api_reference.rst'
+        rst_output = './build/api_reference.rst'
 
     print("\nOutput:")
     print(rst_output + '\n')

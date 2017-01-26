@@ -6,12 +6,12 @@ Pre-requisites:
 Generate documentation:
 
     $ cd $PATH/wazuh-api/doc
-    $ ./generate_rst.py /$PATH/wazuh-documentation/source/ossec_api_reference.rst
+    $ ./generate_rst.py /$PATH/wazuh-documentation/source/reference/api/reference.rst
     $ cd /$PATH/wazuh-documentation/
     $ make html
 
 one-line command:
 
-    ./generate_rst.py /$PATH/wazuh-documentation/source/ossec_api_reference.rst && cd /$PATH/wazuh-documentation/ && make html && cd -
+    ./generate_rst.py /$PATH/wazuh-documentation/source/reference/api/reference.rst && cd /$PATH/wazuh-documentation/ && make html && cd -
 
-Review **ossec_api_reference.html,** specially *Example Response* section.
+Review **source/reference/api/reference.rst,** specially *Example Response* section.
