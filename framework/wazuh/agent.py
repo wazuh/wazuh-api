@@ -291,9 +291,10 @@ class Agent:
         """
 
         # Check arguments
-        id = id.zfill(3)
+        if id:
+            id = id.zfill(3)
 
-        if len(key) < 64:
+        if key and len(key) < 64:
             raise WazuhException(1709)
 
         # Check if authd is running

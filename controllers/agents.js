@@ -297,12 +297,12 @@ router.post('/', function(req, res) {
  * @apiParam {String} name Agent name.
  * @apiParam {String="IP","IP/NET", "ANY"} [ip] If you do not include this param, the API will get the IP automatically. If you are behind a proxy, you must set the option config.BehindProxyServer to yes at config.js.
  * @apiParam {String} id Agent ID.
- * @apiParam {String} key Agent key.
+ * @apiParam {String} key Agent key. Minimum length: 64 characters. Allowed values: ^[a-zA-Z0-9]+$
  *
- * @apiDescription Insert a new agent. This request should be used when the ID and the Key of the agent are known.
+ * @apiDescription Insert an agent with an existing id and key.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X POST -d '{"name":"NewHost_2","ip":"10.0.0.10", "id": "100", "key": "my_key"}' -H 'Content-Type:application/json' "https://127.0.0.1:55000/agents/insert?pretty"
+ *     curl -u foo:bar -k -X POST -d '{"name":"NewHost_2","ip":"10.0.10.10","id":"123","key":"1abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi64"}' -H 'Content-Type:application/json' "https://127.0.0.1:55000/agents/insert?pretty"
  *
  */
 router.post('/insert', function(req, res) {
@@ -333,7 +333,7 @@ router.post('/insert', function(req, res) {
     req.body.ip = ip;
 
     var data_request = {'function': 'POST/agents/insert', 'arguments': {}};
-    var filters = {'name':'names', 'ip':'ips', 'id':'numbers', 'key': 'alphanumeric_param'};
+    var filters = {'name':'names', 'ip':'ips', 'id':'numbers', 'key': 'ossec_key'};
 
     if (!filter.check(req.body, filters, req, res))  // Filter with error
         return;

@@ -41,6 +41,8 @@ errors['search_param'] = 612;
 errors['613'] = "Param not valid. Valid characters: md5/sha1 hash";  // hashes
 errors['hashes'] = 613;
 errors['614'] = "Invalid request"
+errors['615'] = "Param not valid. Valid characters: a-z A-Z 0-9";  // keys
+errors['ossec_key'] = 615;
 
 errors['700'] = "File not found"
 

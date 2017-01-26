@@ -98,3 +98,12 @@ exports.hashes = function(hash) {
     else
         return false;
 }
+
+exports.ossec_key = function(param) {
+    if (typeof param != 'undefined'){
+        var regex = /^[a-zA-Z0-9]+$/;
+        return regex.test(param);
+    }
+    else
+        return false;
+}
