@@ -47,6 +47,7 @@ class Agent:
         self.status = None
         self.key = None
         self.sharedSum = None
+        self.os_family = None
 
         if args:
             if len(args) == 1:
@@ -71,7 +72,7 @@ class Agent:
         return str(self.to_dict())
 
     def to_dict(self):
-        dictionary = {'id': self.id, 'name': self.name, 'ip': self.ip, 'internal_key': self.internal_key, 'os': self.os, 'version': self.version, 'dateAdd': self.dateAdd, 'lastKeepAlive': self.lastKeepAlive, 'status': self.status, 'key': self.key, 'sharedSum': self.sharedSum }
+        dictionary = {'id': self.id, 'name': self.name, 'ip': self.ip, 'internal_key': self.internal_key, 'os': self.os, 'version': self.version, 'dateAdd': self.dateAdd, 'lastKeepAlive': self.lastKeepAlive, 'status': self.status, 'key': self.key, 'sharedSum': self.sharedSum, 'os_family': self.os_family }
         return dictionary
 
     @staticmethod
@@ -125,6 +126,14 @@ class Agent:
                 self.internal_key = tuple[3]
             if tuple[4] != None:
                 self.os = tuple[4]
+                try:
+                    os_family = self.os.split(' ')[0]
+                    if os_family.lower() == "microsoft" or os_family.lower() == "windows":
+                        self.os_family = "Windows"
+                    else:
+                        self.os_family = os_family
+                except:
+                    self.os_family = None
             if tuple[5] != None:
                 self.version = tuple[5]
             if tuple[6] != None:
@@ -163,6 +172,8 @@ class Agent:
         #    info['internal_key'] = self.internal_key
         if self.os:
             info['os'] = self.os
+        if self.os_family:
+            info['os_family'] = self.os_family
         if self.version:
             info['version'] = self.version
         if self.dateAdd:
