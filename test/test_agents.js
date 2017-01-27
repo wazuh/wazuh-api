@@ -660,6 +660,271 @@ describe('Agents', function() {
 
     });  //POST/agents
 
+
+    describe('POST/agents/insert', function() {
+        describe('Any', function() {
+            var agent_id = 0;
+
+            after(function(done) {
+                request(common.url)
+                .delete("/agents/" + agent_id)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) return done(err);
+                    done();
+                  });
+
+            });
+
+            it('Request', function(done) {
+
+                request(common.url)
+                .post("/agents/insert")
+                .send({'name':'NewAgentPostInsert', 'ip':'any', 'id':'750', 'key':'1abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi64'})
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(200)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.match(/^\d+$/);
+                    agent_id = res.body.data;
+                    done();
+                });
+            });
+
+            it('Errors: Name already present', function(done) {
+                request(common.url)
+                .post("/agents/insert")
+                .send({'name':'NewAgentPostInsert', 'ip':'any', 'id':'751', 'key':'1abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi64'})
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(200)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'message']);
+
+                    res.body.error.should.equal(1705);
+                    res.body.message.should.be.type('string');
+                    done();
+                });
+            });
+
+            it('Errors: ID already present', function(done) {
+                request(common.url)
+                .post("/agents/insert")
+                .send({'name':'NewAgentPostInsert', 'ip':'any', 'id':'750', 'key':'1abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi64'})
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(200)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'message']);
+
+                    res.body.error.should.equal(1708);
+                    res.body.message.should.be.type('string');
+                    done();
+                });
+            });
+
+            it('Errors: Invalid key', function(done) {
+                request(common.url)
+                .post("/agents/insert")
+                .send({'name':'NewAgentPostInsert', 'ip':'any', 'id':'750', 'key':'short'})
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(200)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'message']);
+
+                    res.body.error.should.equal(1709);
+                    res.body.message.should.be.type('string');
+                    done();
+                });
+            });
+
+            it('Filters: Missing fields', function(done) {
+
+                request(common.url)
+                .post("/agents/insert")
+                .send({'ip':'any'})
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(400)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'message']);
+
+                    res.body.error.should.equal(604);
+                    done();
+                });
+            });
+
+            it('Filters: Invalid field', function(done) {
+
+                request(common.url)
+                .post("/agents/insert")
+                .send({'extraField': 'invalid', 'name':'NewAgentPostInsert', 'ip':'any', 'id':'750', 'key':'1abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi64'})
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(400)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'message']);
+
+                    res.body.error.should.equal(604);
+                    done();
+                });
+            });
+
+        });  // Any
+
+        describe('IP Automatic', function() {
+            var agent_id = 0;
+
+            after(function(done) {
+                request(common.url)
+                .delete("/agents/" + agent_id)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) return done(err);
+                    done();
+                  });
+
+            });
+
+            it('Request: Automatic IP', function(done) {
+
+                request(common.url)
+                .post("/agents/insert")
+                .send({'name':'NewAgentPostInsert', 'id':'755', 'key':'1abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi64'})
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(200)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.match(/^\d+$/);
+                    agent_id = res.body.data;
+                    done();
+                });
+            });
+
+            it('Errors: Duplicated IP', function(done) {
+                request(common.url)
+                .post("/agents/insert")
+                .send({'name':'NewAgentPostInsert3', 'id':'756', 'key':'1abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi64'})
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(200)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'message']);
+
+                    res.body.error.should.equal(1706);
+                    done();
+                });
+            });
+        });  // IP Automatic
+
+        describe('IP', function() {
+            var agent_id = 0;
+
+            afterEach(function(done) {
+                if (agent_id != 0){
+                    request(common.url)
+                    .delete("/agents/" + agent_id)
+                    .auth(common.credentials.user, common.credentials.password)
+                    .expect("Content-type",/json/)
+                    .expect(200)
+                    .end(function(err, res) {
+                        if (err) return done(err);
+                        agent_id = 0;
+                        done();
+                      });
+                }
+                else {
+                    done();
+                }
+
+            });
+
+            it('Request', function(done) {
+
+                request(common.url)
+                .post("/agents/insert")
+                .send({'name':'NewAgentPostInsert4', 'ip':'192.246.247.249', 'id':'760', 'key':'1abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi64'})
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(200)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.match(/^\d+$/);
+                    agent_id = res.body.data;
+                    done();
+                });
+            });
+
+            it('Filters: Bad IP', function(done) {
+
+                request(common.url)
+                .post("/agents/insert")
+                .send({'name':'NewAgentPostInsert', 'ip':'192.246.247.d', 'id':'760', 'key':'1abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi64'})
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(400)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'message']);
+
+                    res.body.error.should.equal(606);
+                    done();
+                });
+            });
+
+            it('Filters: Bad IP 2', function(done) {
+
+                request(common.url)
+                .post("/agents/insert")
+                .send({'name':'NewAgentPostInsert4', 'ip':'333.333.333.333', 'id':'760', 'key':'1abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi64'})
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(400)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'message']);
+
+                    res.body.error.should.equal(606);
+                    done();
+                });
+            });
+        });  // IP
+
+    });  //POST/agents/insert
+
     describe('PUT/agents/restart', function() {
 
         it('Request', function(done) {
