@@ -7,6 +7,7 @@ from wazuh import common
 from wazuh.exception import WazuhException
 from wazuh.utils import execute
 from wazuh.database import Connection
+from time import strftime
 import re
 
 
@@ -41,6 +42,8 @@ class Wazuh:
         self.max_agents = 'N/A'
         self.openssl_support = 'N/A'
         self.ruleset_version = None
+        self.tz_offset = None
+        self.tz_name = None
 
         if get_init:
             self.get_ossec_init()
@@ -51,7 +54,7 @@ class Wazuh:
         return str(self.to_dict())
 
     def to_dict(self):
-        return {'path': self.path, 'version': self.version, 'installation_date': self.installation_date, 'type': self.type, 'max_agents': self.max_agents, 'openssl_support': self.openssl_support, 'ruleset_version': self.ruleset_version}
+        return {'path': self.path, 'version': self.version, 'installation_date': self.installation_date, 'type': self.type, 'max_agents': self.max_agents, 'openssl_support': self.openssl_support, 'ruleset_version': self.ruleset_version, 'tz_offset': self.tz_offset, 'tz_name': self.tz_name}
 
     def get_ossec_init(self):
         """
@@ -104,6 +107,14 @@ class Wazuh:
                         self.ruleset_version = match.group(2)
         except:
             raise WazuhException(1005, ruleset_version_file)
+
+        # Timezone info
+        try:
+            self.tz_offset = strftime("%z")
+            self.tz_name = strftime("%Z")
+        except:
+            self.tz_offset = None
+            self.tz_name = None
 
         return self.to_dict()
 
