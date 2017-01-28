@@ -1,5 +1,5 @@
 /**
- * API RESTful for OSSEC
+ * Wazuh API RESTful
  * Copyright (C) 2015-2016 Wazuh, Inc.All rights reserved.
  * Wazuh.com
  *
@@ -14,7 +14,9 @@ if (process.getuid() !== 0){
     process.exit(1);
 }
 
-// Actions before dropping privileges
+/********************************************/
+/* Root actions
+/********************************************/
 try {
     var auth = require("http-auth");
 } catch (e) {
@@ -78,6 +80,34 @@ current_version = "v2.0.0";
 
 if (process.argv.length == 3 && process.argv[2] == "-f")
     logger.set_foreground();
+
+// Check Wazuh version
+try {
+    var fs  = require("fs");
+    var wazuh_version = 0;
+    var version_regex = new RegExp('VERSION="v(.+)"');
+
+    fs.readFileSync('./etc/ossec-init.conf').toString().split('\n').forEach(function (line) {
+        var r  = line.match(version_regex);
+        if (r){
+            wazuh_version = parseFloat(r[1]);
+            return;
+        }
+    });
+
+    if (wazuh_version < 2){
+        if (wazuh_version == 0)
+            var msg = "not";
+        else
+            var msg = wazuh_version;
+
+        logger.log("Wazuh manager " + msg + " found. It is required Wazuh Manager 2.0 or newer. Exiting.");
+        setTimeout(function(){ process.exit(1); }, 500);
+        return;
+    }
+} catch (e) {
+    logger.log("WARNING: The installed version of Wazuh manager could not be determined. It is required Wazuh Manager 2.0 or newer.");
+}
 
 var port = process.env.PORT || config.port;
 
@@ -160,8 +190,8 @@ app.use (function (err, req, res, next){
 });
 
 /********************************************/
-
-// Create server
+/* Create server
+/********************************************/
 if (config.https.toLowerCase() == "yes"){
     var https = require('https');
     var server = https.createServer(options, app).listen(port, host, function(){
@@ -175,8 +205,9 @@ else{
     });
 }
 
-
-// Event Handler
+/********************************************/
+/* Event handler
+/********************************************/
 process.on('uncaughtException', function(err) {
 
     if (err.errno == "EADDRINUSE")
