@@ -13,6 +13,8 @@ var logger = require('../helpers/logger');
 var errors = require('../helpers/errors');
 var timeout = 30; // seconds
 
+process.env.LD_LIBRARY_PATH = config.ld_library_path;
+
 /**
  * Exec command.
  * It returns (callback) always a JSON.

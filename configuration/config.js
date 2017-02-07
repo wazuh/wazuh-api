@@ -24,11 +24,14 @@ config.logs = "info";
 // Cross-origin resource sharing. Values: yes, no.
 config.cors = "yes";
 // Cache (time in milliseconds)
-config.cache_enabled = "yes"
-config.cache_debug = "no"
-config.cache_time = "750"
+config.cache_enabled = "yes";
+config.cache_debug = "no";
+config.cache_time = "750";
 // Log path
 config.log_path = config.ossec_path + "/logs/api.log";
-
+// Python
+config.python_path = "";
+// Shared library path
+config.ld_library_path = config.ossec_path + "/api/framework/lib";
 
 module.exports = config;

@@ -85,6 +85,30 @@ check_program_installed() {
     fi
 }
 
+min_version() {
+    # $1: Minimal supported version
+    # $2: Current version (to test)
+
+    if [ -z "$1" ] || [ -z "$2" ]
+    then
+        return 2
+    fi
+
+    [ "$((echo $1; echo $2) | sort -V | head -n 1)" == "$1" ]
+}
+
+compile_sqlite() {
+    LIB_PATH="$API_PATH/framework/lib"
+    SONAME="libsqlite3.so.0"
+    SOURCE="database/sqlite3.c"
+
+    print "\nInstalling SQLite library."
+    exec_cmd "gcc -pipe -O2 -shared -fPIC -o $LIB_PATH/$SONAME $SOURCE"
+    exec_cmd "chmod 600 $LIB_PATH/$SONAME"
+    exec_cmd "chown ossec:ossec $LIB_PATH/$SONAME"
+}
+
+
 # END Aux functions
 
 show_info () {
@@ -123,6 +147,7 @@ required_packages() {
     print "\tNodeJS 4.x or newer:"
     print "\t\tcurl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -"
     print "\t\tsudo apt-get install -y nodejs"
+    print "\t\tsudo apt-get install -y gcc"
 
     print "\nRed Hat, CentOS and Fedora:"
     print "\tsudo yum install epel-release"
@@ -130,6 +155,7 @@ required_packages() {
     print "\tNodeJS 4.x or newer:"
     print "\t\tcurl --silent --location https://rpm.nodesource.com/setup_6.x | bash -"
     print "\t\tsudo yum -y install nodejs"
+    print "\t\tsudo yum -y install gcc"
 }
 
 previous_checks() {
@@ -180,6 +206,7 @@ previous_checks() {
     check_program_installed "tar"
     check_program_installed "curl"
     check_program_installed "pip"
+    check_program_installed "gcc"
 
     NODE_DIR=$(which nodejs 2> /dev/null)
 
@@ -201,6 +228,16 @@ previous_checks() {
     fi
 
     check_program_installed "npm"
+
+    # Check Python 2.7
+
+    check_program_installed "python"
+    python_version=$(python -V 2>&1 | cut -d' ' -f2)
+
+    if ! min_version "2.7" $python_version
+    then
+        echo "Warning: Python $python_version detected, minimal supported version is 2.7"
+    fi
 }
 
 get_api () {
@@ -234,6 +271,11 @@ install_framework() {
     print "-----------------------------------------------------------------"
     exec_cmd_bash "pip install xmljson"
     print "-----------------------------------------------------------------"
+
+    exec_cmd "mkdir -m 700 $API_PATH/framework/lib"
+    exec_cmd "chown ossec:ossec $API_PATH/framework/lib"
+    compile_sqlite
+
     #FRAMEWORK_SOURCES="$API_SOURCES/framework"
 
     #print "\nFramework."
@@ -362,6 +404,7 @@ setup_api() {
         repl="\\\/"
         escaped_ossec_path=`echo "$DIRECTORY" | sed -e "s#\/#$repl#g"`
         edit_configuration "ossec_path" $escaped_ossec_path
+
     fi
 
     # Create/check api.log

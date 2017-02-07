@@ -15,7 +15,7 @@ filter = require('../helpers/filters');
 execute = require('../helpers/execute');
 apicache  = require('apicache');
 cache     = apicache.middleware;
-wazuh_control = api_path + "/models/wazuh-api.py";
+wazuh_control = config.python_path + " " + api_path + "/models/wazuh-api.py";
 
 var router = require('express').Router();
 var validator = require('../helpers/input_validation');
