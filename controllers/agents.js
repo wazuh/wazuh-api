@@ -51,7 +51,7 @@ router.get('/', cache(), function(req, res) {
     if ('status' in req.query)
         data_request['arguments']['status'] = req.query.status;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -72,7 +72,7 @@ router.get('/summary', cache(), function(req, res) {
     req.apicacheGroup = "agents";
 
     var data_request = {'function': '/agents/summary', 'arguments': {}};
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -100,7 +100,7 @@ router.get('/:agent_id', cache(), function(req, res) {
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 
 })
 
@@ -127,7 +127,7 @@ router.get('/:agent_id/key', function(req, res) {
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -148,7 +148,7 @@ router.put('/restart', function(req, res) {
 
     data_request['arguments']['restart_all'] = 'True';
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 
@@ -175,7 +175,7 @@ router.put('/:agent_id/restart', function(req, res) {
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -201,7 +201,7 @@ router.put('/:agent_name', function(req, res) {
 
     data_request['arguments']['name'] = req.params.agent_name;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 
@@ -228,7 +228,7 @@ router.delete('/:agent_id', function(req, res) {
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 
@@ -283,7 +283,7 @@ router.post('/', function(req, res) {
 
     if ('name' in req.body){
         data_request['arguments']['name'] = req.body.name;
-        execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+        execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
     }else
         res_h.bad_request(req, res, 604, "Missing field: 'name'");
 })
@@ -344,7 +344,7 @@ router.post('/insert', function(req, res) {
     data_request['arguments']['key'] = req.body.key;
 
     if ('id' in req.body && 'name' in req.body && 'ip' in req.body && 'key' in req.body){
-        execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+        execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
     }else
         res_h.bad_request(req, res, 604, "Missing fields. Mandatory fields: id, name, ip, key");
 })

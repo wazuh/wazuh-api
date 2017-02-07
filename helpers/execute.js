@@ -13,7 +13,12 @@ var logger = require('../helpers/logger');
 var errors = require('../helpers/errors');
 var timeout = 30; // seconds
 
-process.env.LD_LIBRARY_PATH = config.ld_library_path;
+if (config.ld_library_path.length > 0) {
+    if (typeof process.env.LD_LIBRARY_PATH == 'undefined')
+        process.env.LD_LIBRARY_PATH = config.ld_library_path;
+    else
+        process.env.LD_LIBRARY_PATH += ":" + config.ld_library_path;
+}
 
 /**
  * Exec command.

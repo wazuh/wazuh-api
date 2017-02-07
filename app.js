@@ -72,6 +72,7 @@ try {
 logger = require('./helpers/logger');
 res_h = require('./helpers/response_handler');
 api_path = __dirname;
+python_bin = '';
 
 /********************************************/
 /* Config APP
@@ -81,32 +82,12 @@ current_version = "v2.0.0";
 if (process.argv.length == 3 && process.argv[2] == "-f")
     logger.set_foreground();
 
-// Check Wazuh version
-try {
-    var fs  = require("fs");
-    var wazuh_version = 0;
-    var version_regex = new RegExp('VERSION="v(.+)"');
+// Check Wazuh and Python version
+const check = require('./helpers/check');
 
-    fs.readFileSync('./etc/ossec-init.conf').toString().split('\n').forEach(function (line) {
-        var r  = line.match(version_regex);
-        if (r){
-            wazuh_version = parseFloat(r[1]);
-            return;
-        }
-    });
-
-    if (wazuh_version < 2){
-        if (wazuh_version == 0)
-            var msg = "not";
-        else
-            var msg = wazuh_version;
-
-        logger.log("Wazuh manager " + msg + " found. It is required Wazuh Manager 2.0 or newer. Exiting.");
-        setTimeout(function(){ process.exit(1); }, 500);
-        return;
-    }
-} catch (e) {
-    logger.log("WARNING: The installed version of Wazuh manager could not be determined. It is required Wazuh Manager 2.0 or newer.");
+if (check.wazuh() < 0 || check.python() < 0) {
+    setTimeout(function(){ process.exit(1); }, 500);
+    return;
 }
 
 var port = process.env.PORT || config.port;

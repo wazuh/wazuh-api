@@ -65,7 +65,7 @@ exports.send_file = function(req, res, file_name, type){
     var data_request = {'function': '/' + type +'/files', 'arguments': {'file': file_name}};
 
     var send_aux = this.send;
-    execute.exec(wazuh_control, [], data_request, function (data) {
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) {
         try {
             try {
                 var filepath = data.data.items[0].path + "/" + file_name;

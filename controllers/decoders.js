@@ -57,7 +57,7 @@ router.get('/', cache(), function(req, res) {
     if ('path' in req.query)
         data_request['arguments']['path'] = req.query.path;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -109,7 +109,7 @@ router.get('/files', cache(), function(req, res) {
     if ('download' in req.query)
         res_h.send_file(req, res, req.query.download, 'decoders');
     else
-        execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+        execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -150,7 +150,7 @@ router.get('/parents', cache(), function(req, res) {
 
     data_request['arguments']['parents'] = "True";
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -195,7 +195,7 @@ router.get('/:decoder_name', cache(), function(req, res) {
 
     data_request['arguments']['name'] = req.params.decoder_name;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 

@@ -75,7 +75,7 @@ router.get('/:agent_id', cache(), function(req, res) {
         return;
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -102,7 +102,7 @@ router.get('/:agent_id/last_scan', cache(), function(req, res) {
         return;
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 
@@ -123,7 +123,7 @@ router.put('/', function(req, res) {
 
     var data_request = {'function': 'PUT/syscheck', 'arguments': {}};
     data_request['arguments']['all_agents'] = 1;
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -148,7 +148,7 @@ router.put('/:agent_id', function(req, res) {
         return;
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 
@@ -171,7 +171,7 @@ router.delete('/', function(req, res) {
 
     var data_request = {'function': 'DELETE/syscheck', 'arguments': {}};
     data_request['arguments']['all_agents'] = 1;
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -198,7 +198,7 @@ router.delete('/:agent_id', function(req, res) {
         return;
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 

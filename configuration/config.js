@@ -30,8 +30,19 @@ config.cache_time = "750";
 // Log path
 config.log_path = config.ossec_path + "/logs/api.log";
 // Python
-config.python_path = "";
+config.python = [
+    // Default installation
+    {
+        bin: "python",
+        lib: ""
+    },
+    // Package 'python27' for CentOS 6
+    {
+        bin: "/opt/rh/python27/root/usr/bin/python",
+        lib: "/opt/rh/python27/root/usr/lib64"
+    }
+];
 // Shared library path
-config.ld_library_path = config.ossec_path + "/api/framework/lib";
+config.ld_library_path = config.ossec_path + "/api/framework/lib"
 
 module.exports = config;

@@ -31,7 +31,7 @@ router.get('/status', cache(), function(req, res) {
     req.apicacheGroup = "manager";
 
     var data_request = {'function': '/manager/status', 'arguments': {}};
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -51,7 +51,7 @@ router.get('/info', cache(), function(req, res) {
     req.apicacheGroup = "manager";
 
     var data_request = {'function': '/manager/info', 'arguments': {}};
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -87,7 +87,7 @@ router.get('/configuration', cache(), function(req, res) {
         else
             res_h.bad_request(req, res, 604, "Missing field: 'section'");
     }
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -127,7 +127,7 @@ router.get('/stats', cache(), function(req, res) {
         data_request['arguments']['day'] = date.substring(6, 8);
     }
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -148,7 +148,7 @@ router.get('/stats/hourly', cache(), function(req, res) {
     req.apicacheGroup = "manager";
 
     var data_request = {'function': '/manager/stats/hourly', 'arguments': {}};
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -169,7 +169,7 @@ router.get('/stats/weekly', cache(), function(req, res) {
     req.apicacheGroup = "manager";
 
     var data_request = {'function': '/manager/stats/weekly', 'arguments': {}};
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -214,7 +214,7 @@ router.get('/logs', cache(), function(req, res) {
     if ('category' in req.query)
         data_request['arguments']['category'] = req.query.category;
 
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -235,7 +235,7 @@ router.get('/logs/summary', cache(), function(req, res) {
     req.apicacheGroup = "manager";
 
     var data_request = {'function': '/manager/logs/summary', 'arguments': {}};
-    execute.exec(wazuh_control, [], data_request, function (data) { res_h.send(req, res, data); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 module.exports = router;
