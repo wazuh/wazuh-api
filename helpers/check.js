@@ -58,9 +58,9 @@ exports.python = function() {
                 return 0;
             }
         } catch (e) {
-        } finally {
-            process.env.LD_LIBRARY_PATH = old_library_path;
         }
+
+        process.env.LD_LIBRARY_PATH = old_library_path;
     }
 
     logger.log("No suitable Python version found. This application requires Python 2.7 or newer. Exiting.");

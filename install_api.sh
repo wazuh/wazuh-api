@@ -85,6 +85,19 @@ check_program_installed() {
     fi
 }
 
+check_pip_installed() {
+    if ! hash pip > /dev/null 2>&1
+    then
+        if [ -f /opt/rh/python27/root/usr/bin/pip ]
+        then
+            export PATH=$PATH:/opt/rh/python27/root/usr/bin
+            export LD_LIBRARY_PATH=/opt/rh/python27/root/usr/lib64
+        fi
+
+        check_program_installed pip
+    fi
+}
+
 min_version() {
     # $1: Minimal supported version
     # $2: Current version (to test)
@@ -205,7 +218,7 @@ previous_checks() {
     # Dependencies
     check_program_installed "tar"
     check_program_installed "curl"
-    check_program_installed "pip"
+    check_pip_installed
     check_program_installed "gcc"
 
     NODE_DIR=$(which nodejs 2> /dev/null)
