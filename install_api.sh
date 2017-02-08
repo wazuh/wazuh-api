@@ -113,7 +113,7 @@ min_version() {
 compile_sqlite() {
     LIB_PATH="$API_PATH/framework/lib"
     SONAME="libsqlite3.so.0"
-    SOURCE="database/sqlite3.c"
+    SOURCE="framework/database/sqlite3.c"
 
     print "\nInstalling SQLite library."
     exec_cmd "gcc -pipe -O2 -shared -fPIC -o $LIB_PATH/$SONAME $SOURCE"
@@ -285,7 +285,7 @@ install_framework() {
     exec_cmd_bash "pip install xmljson"
     print "-----------------------------------------------------------------"
 
-    exec_cmd "mkdir -m 700 $API_PATH/framework/lib"
+    exec_cmd "mkdir -pm 700 $API_PATH/framework/lib"
     exec_cmd "chown ossec:ossec $API_PATH/framework/lib"
     compile_sqlite
 
