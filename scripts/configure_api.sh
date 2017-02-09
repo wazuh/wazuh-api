@@ -108,7 +108,7 @@ change_https () {
         exec_cmd "cd $API_PATH/configuration/ssl && openssl x509 -req -days 2048 -in server.csr -signkey server.key -out server.crt"
         exec_cmd "cd $API_PATH/configuration/ssl && rm -f server.csr && rm -f server.key.org"
 
-        exec_cmd "chmod 400 $API_PATH/configuration/ssl/server.*"
+        exec_cmd "chmod 600 $API_PATH/configuration/ssl/server.*"
         print "\nKey: $API_PATH/configuration/ssl/server.key.\nCertificate: $API_PATH/configuration/ssl/server.crt\n"
 
         read -p "Continue with next section [Press Enter]" enter

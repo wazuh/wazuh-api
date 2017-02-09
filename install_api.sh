@@ -104,8 +104,8 @@ compile_sqlite() {
 
     print "\nInstalling SQLite library."
     exec_cmd "gcc -pipe -O2 -shared -fPIC -o $LIB_PATH/$SONAME $SOURCE"
-    exec_cmd "chmod 600 $LIB_PATH/$SONAME"
-    exec_cmd "chown ossec:ossec $LIB_PATH/$SONAME"
+    exec_cmd "chmod -R 640 $LIB_PATH"
+    exec_cmd "chown -R root:ossec $LIB_PATH"
 }
 
 
@@ -288,7 +288,7 @@ restore_configuration () {
         exec_cmd "cp -rfp $API_PATH_BACKUP/ssl/htpasswd $API_PATH/configuration/auth/user"
         exec_cmd "cp -p $API_PATH_BACKUP/ssl/*.key $API_PATH_BACKUP/ssl/*.crt $API_PATH/configuration/ssl/"
         exec_cmd "chown -R root:root $API_PATH/configuration"
-        exec_cmd "chmod -R 500 $API_PATH/configuration"
+        exec_cmd "chmod -R 750 $API_PATH/configuration"
         exec_cmd "chmod u-x $API_PATH/configuration/ssl/*"
         RESTORE_WARNING="1"
     else
@@ -339,14 +339,14 @@ setup_api() {
         exec_cmd "cp --parents -r $API_SOURCES/app.js $API_SOURCES/configuration $API_SOURCES/controllers $API_SOURCES/examples $API_SOURCES/framework/examples $API_SOURCES/framework/wazuh $API_SOURCES/helpers $API_SOURCES/models $API_SOURCES/package.json $API_SOURCES/scripts $API_PATH"
 
         # General permissions
-        exec_cmd "chown -R ossec:ossec $API_PATH"
+        exec_cmd "chown -R root:ossec $API_PATH"
         exec_cmd "chown -R root:root $API_PATH/scripts"
         exec_cmd "chown -R root:root $API_PATH/configuration"
-        exec_cmd "chmod -R 500 $API_PATH"
+        exec_cmd "chmod -R 750 $API_PATH"
 
         # Remove execution permissions
-        exec_cmd "chmod u-x $API_PATH/package.json"
-        exec_cmd "chmod u-x $API_PATH/scripts/wazuh-api*"
+        exec_cmd "chmod ugo-x $API_PATH/package.json"
+        exec_cmd "chmod ugo-x $API_PATH/scripts/wazuh-api*"
     fi
 
     if [ "X${update}" == "Xyes" ]; then
@@ -361,9 +361,8 @@ setup_api() {
     else
         exec_cmd "cd $API_PATH && npm install --production"
     fi
-    exec_cmd "chown -R ossec:ossec $API_PATH/node_modules"
-    exec_cmd "chmod -R go-rwx $API_PATH/node_modules"
-    exec_cmd "chmod -R u-w $API_PATH/node_modules"
+    exec_cmd "chown -R root:ossec $API_PATH/node_modules"
+    exec_cmd "chmod -R 750 $API_PATH/node_modules"
 
     if [ ! -f $API_PATH/configuration/auth/htpasswd ]; then
         exec_cmd "ln -s $API_PATH/node_modules/htpasswd/bin/htpasswd $API_PATH/configuration/auth/htpasswd"
@@ -382,8 +381,8 @@ setup_api() {
     if [ ! -f $APILOG_PATH ]; then
         touch $APILOG_PATH
     fi
-    exec_cmd "chown ossec:ossec $APILOG_PATH"
-    exec_cmd "chmod 640 $APILOG_PATH"
+    exec_cmd "chown root:ossec $APILOG_PATH"
+    exec_cmd "chmod 660 $APILOG_PATH"
 
     print "\nInstalling service."
     echo "----------------------------------------------------------------"
