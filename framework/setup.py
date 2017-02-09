@@ -16,7 +16,5 @@ setup(name='wazuh',
       author_email='hello@wazuh.com',
       license='GPLv2',
       packages=['wazuh'],
-      install_requires=[
-          'xmljson',
-      ],
+      install_requires=[],
       zip_safe=False)

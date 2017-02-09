@@ -85,19 +85,6 @@ check_program_installed() {
     fi
 }
 
-check_pip_installed() {
-    if ! hash pip > /dev/null 2>&1
-    then
-        if [ -f /opt/rh/python27/root/usr/bin/pip ]
-        then
-            export PATH=$PATH:/opt/rh/python27/root/usr/bin
-            export LD_LIBRARY_PATH=/opt/rh/python27/root/usr/lib64
-        fi
-
-        check_program_installed pip
-    fi
-}
-
 min_version() {
     # $1: Minimal supported version
     # $2: Current version (to test)
@@ -156,15 +143,12 @@ help() {
 
 required_packages() {
     print "\nDebian and Ubuntu based Linux distributions:"
-    print "\tsudo apt-get install -y python-pip"
     print "\tNodeJS 4.x or newer:"
     print "\t\tcurl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -"
     print "\t\tsudo apt-get install -y nodejs"
     print "\t\tsudo apt-get install -y gcc"
 
     print "\nRed Hat, CentOS and Fedora:"
-    print "\tsudo yum install epel-release"
-    print "\tsudo yum install -y python-pip"
     print "\tNodeJS 4.x or newer:"
     print "\t\tcurl --silent --location https://rpm.nodesource.com/setup_6.x | bash -"
     print "\t\tsudo yum -y install nodejs"
@@ -218,7 +202,6 @@ previous_checks() {
     # Dependencies
     check_program_installed "tar"
     check_program_installed "curl"
-    check_pip_installed
     check_program_installed "gcc"
 
     NODE_DIR=$(which nodejs 2> /dev/null)
@@ -280,35 +263,9 @@ get_api () {
 }
 
 install_framework() {
-    print "\nInstalling dependencies: xmljson."
-    print "-----------------------------------------------------------------"
-    exec_cmd_bash "pip install xmljson"
-    print "-----------------------------------------------------------------"
-
     exec_cmd "mkdir -pm 700 $API_PATH/framework/lib"
     exec_cmd "chown ossec:ossec $API_PATH/framework/lib"
     compile_sqlite
-
-    #FRAMEWORK_SOURCES="$API_SOURCES/framework"
-
-    #print "\nFramework."
-    #print "-----------------------------------------------------------------"
-    #if [ "X${arg}" == "Xdev" ]; then
-    #    exec_cmd_bash "pip install -e $FRAMEWORK_SOURCES"
-    #else
-    #    exec_cmd_bash "pip install $FRAMEWORK_SOURCES --ignore-installed"
-    #fi
-    #print "-----------------------------------------------------------------"
-
-    ## Check
-    #`python -c 'import wazuh'`
-    #RC=$?
-    #if [[ $RC != 0 ]]; then
-    #    print "Error installing Wazuh Framework.\nExiting."
-    #    exit 1
-    #fi
-
-    #print "Framework ready."
 }
 
 backup_api () {
