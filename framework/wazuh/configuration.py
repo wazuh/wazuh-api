@@ -24,81 +24,74 @@ conf_sections = {
         'type': 'simple',
         'list_options': ['white_list']
     },
-
     'open-scap': {
-        'type': 'mix',
+        'type': 'simple',
         'list_options': ['content']
     },
     'rootcheck': {
-        'type': 'mix',
+        'type': 'simple',
         'list_options': ['rootkit_files', 'rootkit_trojans', 'windows_audit', 'system_audit', 'windows_apps', 'windows_malware']
     },
     'ruleset': {
-        'type': 'mix',
+        'type': 'simple',
         'list_options':  ['include', 'rule', 'rule_dir', 'decoder', 'decoder_dir', 'list', 'rule_exclude', 'decoder_exclude']
     },
     'syscheck': {
-        'type': 'mix',
+        'type': 'simple',
         'list_options': ['directories', 'ignore', 'nodiff']
     }
 }
 
 
-def _insert(json, section_name, key, value):
+def _insert(json_dst, section_name, option, value):
+    """
+    Inserts element (option:value) in a section (json_dst) called section_name
+    """
+
     if not value:
         return
 
-    if key in json:
-        old_value = json[key]
-        # The old value is a list -> append new value
-        if type(old_value) is list:
-            json[key].append(value)
-        # The old value is simple -> update
+    if option in json_dst:
+        if type(json_dst[option]) is list:
+            json_dst[option].append(value)  # Append new values
         else:
-            json[key] = value
+            json_dst[option] = value  # Update values
     else:
-        # if key in list_options -> store as list
-        if section_name in conf_sections and key in conf_sections[section_name]['list_options']:
-            json[key] = [value]
+        if section_name in conf_sections and option in conf_sections[section_name]['list_options']:
+            json_dst[option] = [value]  # Create as list
         else:
-            json[key] = value
+            json_dst[option] = value  # Update values
 
 
-def _insert_section(json, section_name, section_json):
-    # Duplicated sections -> always list
+def _insert_section(json_dst, section_name, section_data):
+    """
+    Inserts a new section (section_data) called section_name in json_dst.
+    """
+
     if section_name in conf_sections and conf_sections[section_name]['type'] == 'duplicate':
-        if section_name in json:
-            json[section_name].append(section_json)
+        if section_name in json_dst:
+            json_dst[section_name].append(section_data)  # Append new values
         else:
-            json[section_name] = [section_json]
-    # Mix sections:
-    #   - If value in list_options -> append
-    #   - else update value (final result: last value)
-    elif section_name in conf_sections and conf_sections[section_name]['type'] == 'mix':
-        if section_name in json:
-            old_json = json[section_name]
-            for value in section_json:
-                if value in conf_sections[section_name]['list_options']:
-                    old_json[value].extend(section_json[value])
+            json_dst[section_name] = [section_data]  # Create as list
+    elif section_name in conf_sections and conf_sections[section_name]['type'] == 'simple':
+        if section_name in json_dst:
+            for option in section_data:
+                if option in json_dst[section_name] and option in conf_sections[section_name]['list_options']:
+                    json_dst[section_name][option].extend(section_data[option])  # Append new values
                 else:
-                    old_json[value] = section_json[value]
-            json[section_name] = old_json
+                    json_dst[section_name][option] = section_data[option]  # Update values
         else:
-            json[section_name] = section_json
-    # Simple section: Update values and copy new ones
-    else:
-        if section_name in json:
-            old_json = json[section_name]
-            for value in section_json:
-                old_json[value] = section_json[value]
-            json[section_name] = old_json
-        else:
-            json[section_name] = section_json
+            json_dst[section_name] = section_data  # Create
 
-def _read_option(section, opt):
+
+def _read_option(section_name, opt):
+    """
+    Reads an option (inside a section) and returns the name and the value.
+    """
+
     opt_name = opt.tag.lower()
 
-    if section == 'open-scap':
+    if section_name == 'open-scap':
         if opt.attrib:
             opt_value = {}
             for a in opt.attrib:
@@ -112,7 +105,7 @@ def _read_option(section, opt):
                 opt_value['profiles'] = profiles_list
         else:
             opt_value = opt.text
-    elif section == 'syscheck' and opt_name == 'directories':
+    elif section_name == 'syscheck' and opt_name == 'directories':
         opt_value = []
 
         json_attribs = {}
@@ -136,6 +129,9 @@ def _read_option(section, opt):
     return opt_name, opt_value
 
 def _conf2json(xml_conf):
+    """
+    Returns a dict from a xml string.
+    """
     root_json = {}
 
     for root in xml_conf.getchildren():
