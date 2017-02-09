@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 ###
 #  Copyright (C) 2015-2016 Wazuh, Inc.All rights reserved.
 #  Wazuh.com
@@ -9,15 +10,31 @@
 #  Foundation.
 ###
 
-import sys
+# Instructions:
+#  - Configure the framework_path variable.
+#  Optional:
+#  - Configure the python path. Example for python27 package in Centos6
+#    - export PATH=$PATH:/opt/rh/python27/root/usr/bin
+#    - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/rh/python27/root/usr/bin/python
+#  - Use the framework sqlite lib
+#    - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/var/ossec/api/framework/lib
+
+from sys import path, exit
 import json
+# cwd = /var/ossec/api/framework/examples
+#framework_path = '{0}'.format(path[0][:-9])
+# cwd = /var/ossec/api
+#framework_path = '{0}/framework'.format(path[0])
+# Default path
+framework_path = '/var/ossec/api/framework'
+path.append(framework_path)
 
 try:
     from wazuh import Wazuh
     from wazuh.agent import Agent
 except Exception as e:
     print("No module 'wazuh' found.")
-    sys.exit()
+    exit()
 
 if __name__ == "__main__":
 
@@ -30,12 +47,3 @@ if __name__ == "__main__":
     print("\nAgents:")
     agents = Agent.get_agents_overview(status="all")
     print(json.dumps(agents, indent=4, sort_keys=True))
-
-    print("\nAdding 'WazuhFrameworkTest':")
-    agent = Agent()
-    agent_id = agent.add("WazuhFrameworkTest", "Any")
-    print("\nAgent added with ID: {0}".format(agent_id))
-    print("\nAgent key: {0}".format(agent.get_key()))
-    agent.get()
-    print("\nAgent info:")
-    print(json.dumps(agent.to_dict(), indent=4, sort_keys=True))
