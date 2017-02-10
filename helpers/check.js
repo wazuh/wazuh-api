@@ -44,11 +44,29 @@ exports.wazuh = function() {
 exports.python = function() {
     const execFileSync = require('child_process').execFileSync;
 
+    switch (typeof config.python) {
+    case "undefined":
+        logger.error("No Python configuration found. Exiting.");
+        return -1;
+    case "object":
+        break;
+    default:
+        logger.error("Invalid Python configuration. Exiting.");
+        return -1;
+    }
+
     var old_library_path = typeof process.env.LD_LIBRARY_PATH == 'undefined' ? '' : process.env.LD_LIBRARY_PATH;
 
     for (var i = 0; i < config.python.length; i++) {
         try {
-            process.env.LD_LIBRARY_PATH = old_library_path + ":" + config.python[i].lib;
+            if (typeof config.python[i].bin === "undefined") {
+                logger.error("Invalid Python configuration. Exiting.");
+                return -1;
+            }
+
+            if (typeof config.python[i].lib !== "undefined" && config.python[i].lib.length > 0)
+                process.env.LD_LIBRARY_PATH = old_library_path + ":" + config.python[i].lib;
+
             var buffer = execFileSync(config.python[i].bin, ["-c", "import sys; print('.'.join([str(x) for x in sys.version_info[0:2]]))"]);
             var version = parseFloat(buffer.toString());
 
