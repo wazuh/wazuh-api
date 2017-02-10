@@ -104,7 +104,7 @@ compile_sqlite() {
 
     print "\nInstalling SQLite library."
     exec_cmd "gcc -pipe -O2 -shared -fPIC -o $LIB_PATH/$SONAME $SOURCE"
-    exec_cmd "chmod -R 640 $LIB_PATH"
+    exec_cmd "chmod -R 750 $LIB_PATH"
     exec_cmd "chown -R root:ossec $LIB_PATH"
 }
 
