@@ -9,9 +9,64 @@
  * Foundation.
  */
 
-// Check Wazuh version
+exports.configuration_file = function() {
+    var config_fields = ['ossec_path', 'host', 'port', 'https', 'basic_auth', 'BehindProxyServer', 'logs', 'cors', 'cache_enabled', 'cache_debug', 'cache_time', 'log_path', 'ld_library_path', 'python'];
 
-exports.wazuh = function() {
+    for (i = 0; i < config_fields.length; i++) {
+
+        // Exist
+        if (!(config_fields[i] in config)){
+            console.log("Configuration error: Element '" + config_fields[i] + "' not found. Exiting.");
+            return -1;
+        }
+
+        if (config_fields[i] != "python"){
+            // String
+            if (typeof config[config_fields[i]] !== "string") {
+                console.log("Configuration error: Element '" + config_fields[i] + "' must be an string. Exiting.");
+                return -1;
+            }
+            // Empty
+            if (!config[config_fields[i]].trim()){
+                console.log("Configuration error: Element '" + config_fields[i] + "' is empty. Exiting.");
+                return -1;
+            }
+        }
+        else{
+            // object
+            if (typeof config.python !== "object") {
+                console.log("Configuration error: Element '" + config_fields[i] + "' must be an array. Exiting.");
+                return -1;
+            }
+
+            for (var j = 0; j < config.python.length; j++) {
+
+                // Exist
+                if (!("bin" in config.python[j]) || !("lib" in config.python[j])){
+                    console.log("Configuration error: Element 'bin' or 'lib' not found. Exiting.");
+                    return -1;
+                }
+
+                // String
+                if (typeof config.python[j]["bin"] !== "string" || typeof config.python[j]["lib"] !== "string") {
+                    console.log("Configuration error: Elements 'bin' and 'lib' must be an string. Exiting.");
+                    return -1;
+                }
+                // Empty
+                if (config.python[j]["bin"] != "python" && (!config.python[j]["bin"].trim() || !config.python[j]["lib"].trim())){
+                    console.log("Configuration error: Element 'bin' or 'lib' empty. Exiting.");
+                    return -1;
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
+
+// Check Wazuh version
+exports.wazuh = function(my_logger) {
     try {
         var fs = require("fs");
         var wazuh_version = 0;
@@ -31,40 +86,24 @@ exports.wazuh = function() {
             else
                 var msg = wazuh_version;
 
-            logger.log("Wazuh manager " + msg + " found. It is required Wazuh Manager 2.0 or newer. Exiting.");
+            my_logger.log("Wazuh manager " + msg + " found. It is required Wazuh Manager 2.0 or newer. Exiting.");
             return -1;
         }
     } catch (e) {
-        logger.log("WARNING: The installed version of Wazuh manager could not be determined. It is required Wazuh Manager 2.0 or newer.");
+        my_logger.log("WARNING: The installed version of Wazuh manager could not be determined. It is required Wazuh Manager 2.0 or newer.");
     }
 
     return 0;
 }
 
-exports.python = function() {
+exports.python = function(my_logger) {
     const execFileSync = require('child_process').execFileSync;
-
-    switch (typeof config.python) {
-    case "undefined":
-        logger.error("No Python configuration found. Exiting.");
-        return -1;
-    case "object":
-        break;
-    default:
-        logger.error("Invalid Python configuration. Exiting.");
-        return -1;
-    }
 
     var old_library_path = typeof process.env.LD_LIBRARY_PATH == 'undefined' ? '' : process.env.LD_LIBRARY_PATH;
 
     for (var i = 0; i < config.python.length; i++) {
         try {
-            if (typeof config.python[i].bin === "undefined") {
-                logger.error("Invalid Python configuration. Exiting.");
-                return -1;
-            }
-
-            if (typeof config.python[i].lib !== "undefined" && config.python[i].lib.length > 0)
+            if (config.python[i].lib.length > 0)
                 process.env.LD_LIBRARY_PATH = old_library_path + ":" + config.python[i].lib;
 
             var buffer = execFileSync(config.python[i].bin, ["-c", "import sys; print('.'.join([str(x) for x in sys.version_info[0:2]]))"]);
@@ -72,7 +111,7 @@ exports.python = function() {
 
             if (version >= 2.7) {
                 python_bin = config.python[i].bin;
-                logger.debug("Selected Python binary at '" + python_bin + "'.");
+                my_logger.debug("Selected Python binary at '" + python_bin + "'.");
                 return 0;
             }
         } catch (e) {
@@ -81,6 +120,6 @@ exports.python = function() {
         process.env.LD_LIBRARY_PATH = old_library_path;
     }
 
-    logger.log("No suitable Python version found. This application requires Python 2.7 or newer. Exiting.");
+    my_logger.log("No suitable Python version found. This application requires Python 2.7 or newer. Exiting.");
     return -1;
 }

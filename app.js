@@ -24,8 +24,14 @@ try {
     process.exit(1);
 }
 
+const check = require('./helpers/check');
+
 //  Get configuration
 config = require('./configuration/config');
+if (check.configuration_file() < 0) {
+    setTimeout(function(){ process.exit(1); }, 500);
+    return;
+}
 
 //  Get credentials
 if (config.basic_auth.toLowerCase() == "yes"){
@@ -64,13 +70,13 @@ try {
     var bodyParser = require('body-parser');
     var cors = require('cors')
     var moment = require('moment');
+    res_h = require('./helpers/response_handler');
+    logger = require('./helpers/logger');
 } catch (e) {
     console.log("Dependencies not found. Try 'npm install' in /var/ossec/api. Exiting...");
     process.exit(1);
 }
 
-logger = require('./helpers/logger');
-res_h = require('./helpers/response_handler');
 api_path = __dirname;
 python_bin = '';
 
@@ -82,10 +88,7 @@ current_version = "v2.0.0";
 if (process.argv.length == 3 && process.argv[2] == "-f")
     logger.set_foreground();
 
-// Check Wazuh and Python version
-const check = require('./helpers/check');
-
-if (check.wazuh() < 0 || check.python() < 0) {
+if (check.wazuh(logger) < 0 || check.python(logger) < 0) {
     setTimeout(function(){ process.exit(1); }, 500);
     return;
 }
