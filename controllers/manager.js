@@ -196,7 +196,7 @@ router.get('/logs', cache(), function(req, res) {
     req.apicacheGroup = "manager";
 
     var data_request = {'function': '/manager/logs', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'type_log':'names', 'category': 'names'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'type_log':'names', 'category': 'search_param'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
