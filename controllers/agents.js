@@ -239,6 +239,7 @@ router.delete('/:agent_id', function(req, res) {
  *
  * @apiParam {String} name Agent name.
  * @apiParam {String="IP","IP/NET", "ANY"} [ip] If you do not include this param, the API will get the IP automatically. If you are behind a proxy, you must set the option config.BehindProxyServer to yes at config.js.
+ * @apiParam {Number} [force] Remove old agent with same IP if disconnected since <force> seconds.
  *
  * @apiDescription Add a new agent.
  *
@@ -274,7 +275,7 @@ router.post('/', function(req, res) {
     req.body.ip = ip;
 
     var data_request = {'function': 'POST/agents', 'arguments': {}};
-    var filters = {'name':'names', 'ip':'ips'};
+    var filters = {'name':'names', 'ip':'ips', 'force':'numbers'};
 
     if (!filter.check(req.body, filters, req, res))  // Filter with error
         return;
@@ -283,6 +284,9 @@ router.post('/', function(req, res) {
 
     if ('name' in req.body){
         data_request['arguments']['name'] = req.body.name;
+        if ('force' in req.body){
+            data_request['arguments']['force'] = req.body.force;
+        }
         execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
     }else
         res_h.bad_request(req, res, 604, "Missing field: 'name'");
@@ -298,6 +302,7 @@ router.post('/', function(req, res) {
  * @apiParam {String="IP","IP/NET", "ANY"} [ip] If you do not include this param, the API will get the IP automatically. If you are behind a proxy, you must set the option config.BehindProxyServer to yes at config.js.
  * @apiParam {String} id Agent ID.
  * @apiParam {String} key Agent key. Minimum length: 64 characters. Allowed values: ^[a-zA-Z0-9]+$
+ * @apiParam {Number} [force] Remove old agent with same IP if disconnected since <force> seconds.
  *
  * @apiDescription Insert an agent with an existing id and key.
  *
@@ -333,7 +338,7 @@ router.post('/insert', function(req, res) {
     req.body.ip = ip;
 
     var data_request = {'function': 'POST/agents/insert', 'arguments': {}};
-    var filters = {'name':'names', 'ip':'ips', 'id':'numbers', 'key': 'ossec_key'};
+    var filters = {'name':'names', 'ip':'ips', 'id':'numbers', 'key': 'ossec_key', 'force':'numbers'};
 
     if (!filter.check(req.body, filters, req, res))  // Filter with error
         return;
@@ -342,6 +347,9 @@ router.post('/insert', function(req, res) {
     data_request['arguments']['name'] = req.body.name;
     data_request['arguments']['ip'] = req.body.ip;
     data_request['arguments']['key'] = req.body.key;
+    if ('force' in req.body){
+        data_request['arguments']['force'] = req.body.force;
+    }
 
     if ('id' in req.body && 'name' in req.body && 'ip' in req.body && 'key' in req.body){
         execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });

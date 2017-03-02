@@ -3,21 +3,21 @@
 # Created by Wazuh, Inc. <info@wazuh.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
-from wazuh.utils import execute, cut_array, sort_array, search_array
+from wazuh.utils import execute, cut_array, sort_array, search_array, chmod_r
 from wazuh.exception import WazuhException
 from wazuh.ossec_queue import OssecQueue
 from wazuh.database import Connection
 from wazuh import manager
 from wazuh import common
 from glob import glob
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from hashlib import md5
 from base64 import b64encode
 from shutil import copyfile, move
 from random import randrange
 from time import time
 from platform import platform
-from os import remove, chown, chmod, path
+from os import remove, chown, chmod, path, makedirs, rename
 from pwd import getpwnam
 from grp import getgrnam
 
@@ -29,12 +29,14 @@ class Agent:
     def __init__(self, *args, **kwargs):
         """
         Initialize an agent.
-        'id': When the agent is known
+        'id': When the agent exists
         'name' and 'ip': Add an agent (generate id and key automatically)
+        'name', 'ip' and 'force': Add an agent (generate id and key automatically), removing old agent with same IP if disconnected since <force> seconds.
         'name', 'ip', 'id', 'key': Insert an agent with an existent id and key
+        'name', 'ip', 'id', 'key', 'force': Insert an agent with an existent id and key, removing old agent with same IP if disconnected since <force> seconds.
 
-        :param args: [id | name, ip | name, ip, id, key].
-        :param kwargs: [id | name, ip | name, ip, id, key].
+        :param args:   [id | name, ip | name, ip, force | name, ip, id, key | name, ip, id, key, force].
+        :param kwargs: [id | name, ip | name, ip, force | name, ip, id, key | name, ip, id, key, force].
         """
         self.id = None
         self.name = None
@@ -53,18 +55,26 @@ class Agent:
             if len(args) == 1:
                 self.id = args[0]
             elif len(args) == 2:
-                self._add(args[0], args[1])
+                self._add(name=args[0], ip=args[1])
+            elif len(args) == 3:
+                self._add(name=args[0], ip=args[1], force=args[2])
             elif len(args) == 4:
-                self._add(args[0], args[1], args[2], args[3])
+                self._add(name=args[0], ip=args[1], id=args[2], key=args[3])
+            elif len(args) == 5:
+                self._add(name=args[0], ip=args[1], id=args[2], key=args[3], force=args[4])
             else:
                 raise WazuhException(1700)
         elif kwargs:
             if len(kwargs) == 1:
                 self.id = kwargs['id']
             elif len(kwargs) == 2:
-                self._add(kwargs['name'], kwargs['ip'])
+                self._add(name=kwargs['name'], ip=kwargs['ip'])
+            elif len(kwargs) == 3:
+                self._add(name=kwargs['name'], ip=kwargs['ip'], force=kwargs['force'])
             elif len(kwargs) == 4:
-                self._add(kwargs['name'], kwargs['ip'], kwargs['id'], kwargs['key'])
+                self._add(name=kwargs['name'], ip=kwargs['ip'], id=kwargs['id'], key=kwargs['key'])
+            elif len(kwargs) == 5:
+                self._add(name=kwargs['name'], ip=kwargs['ip'], id=kwargs['id'], key=kwargs['key'], force=kwargs['force'])
             else:
                 raise WazuhException(1700)
 
@@ -227,10 +237,11 @@ class Agent:
 
         return ret_msg
 
-    def remove(self):
+    def remove(self, backup=False):
         """
         Deletes the agent.
 
+        :param backup: Create backup before removing the agent.
         :return: Message.
         """
 
@@ -257,14 +268,23 @@ class Agent:
                     f_tmp.write(line)
         f_tmp.close()
 
-        if agent_found:
-            # Overwrite client.keys
-            move(f_keys_temp, common.client_keys)
-            root_uid = getpwnam("ossec").pw_uid
-            ossec_gid = getgrnam("ossec").gr_gid
-            chown(common.client_keys, root_uid, ossec_gid)
-            chmod(common.client_keys, 0o640)
+        if not agent_found:
+            remove(f_keys_temp)
+            raise WazuhException(1701, self.id)
 
+        # Overwrite client.keys
+        move(f_keys_temp, common.client_keys)
+        root_uid = getpwnam("ossec").pw_uid
+        ossec_gid = getgrnam("ossec").gr_gid
+        chown(common.client_keys, root_uid, ossec_gid)
+        chmod(common.client_keys, 0o640)
+
+        # Remove rid file
+        rids_file = '{0}/queue/rids/{1}'.format(common.ossec_path, self.id)
+        if path.exists(rids_file):
+            remove(rids_file)
+
+        if not backup:
             # Remove agent files
             agent_files = []
             agent_files.append('{0}/queue/agent-info/{1}-{2}'.format(common.ossec_path, self.name, self.ip))
@@ -282,22 +302,50 @@ class Agent:
                 if path.exists(agent_file):
                     remove(agent_file)
         else:
-            remove(f_keys_temp)
-            raise WazuhException(1701, self.id)
+            # Create backup directory
+            # /var/ossec/backup/agents/yyyy/Mon/dd/id-name-ip[tag]
+            date_part = date.today().strftime('%Y/%b/%d')
+            main_agent_backup_dir = '{0}/backup/agents/{1}/{2}-{3}-{4}'.format(common.ossec_path, date_part, self.id, self.name, self.ip)
+            agent_backup_dir = main_agent_backup_dir
+
+            not_agent_dir = True
+            i = 0
+            while not_agent_dir:
+                if path.exists(agent_backup_dir):
+                    i += 1
+                    agent_backup_dir = '{0}-{1}'.format(main_agent_backup_dir, str(i).zfill(3))
+                else:
+                    makedirs(agent_backup_dir)
+                    chmod_r(agent_backup_dir, 0o750)
+                    not_agent_dir = False
+
+            # Move agent file
+            agent_files = []
+            agent_files.append(['{0}/queue/agent-info/{1}-{2}'.format(common.ossec_path, self.name, self.ip), '{0}/agent-info'.format(agent_backup_dir)])
+            agent_files.append(['{0}/queue/syscheck/({1}) {2}->syscheck'.format(common.ossec_path, self.name, self.ip), '{0}/syscheck'.format(agent_backup_dir)])
+            agent_files.append(['{0}/queue/syscheck/.({1}) {2}->syscheck.cpt'.format(common.ossec_path, self.name, self.ip), '{0}/syscheck.cpt'.format(agent_backup_dir)])
+            agent_files.append(['{0}/queue/syscheck/({1}) {2}->syscheck-registry'.format(common.ossec_path, self.name, self.ip), '{0}/syscheck-registry'.format(agent_backup_dir)])
+            agent_files.append(['{0}/queue/syscheck/.({1}) {2}->syscheck-registry.cpt'.format(common.ossec_path, self.name, self.ip), '{0}/syscheck-registry.cpt'.format(agent_backup_dir)])
+            agent_files.append(['{0}/queue/rootcheck/({1}) {2}->rootcheck'.format(common.ossec_path, self.name, self.ip), '{0}/rootcheck'.format(agent_backup_dir)])
+
+            for agent_file in agent_files:
+                if path.exists(agent_file[0]) and not path.exists(agent_file[1]):
+                    rename(agent_file[0], agent_file[1])
 
         return 'Agent removed'
 
-    def _add(self, name, ip, id=None, key=None):
+    def _add(self, name, ip, id=None, key=None, force=-1):
         """
         Adds a agent to OSSEC.
         2 uses:
-            - name and ip: Add an agent like manage_agents (generate id and key).
-            - name, ip, id, key: Insert an agent with an existing id and key.
+            - name and ip [force]: Add an agent like manage_agents (generate id and key).
+            - name, ip, id, key [force]: Insert an agent with an existing id and key.
 
         :param name: name of the new agent.
         :param ip: IP of the new agent. It can be an IP, IP/NET or ANY.
         :param id: ID of the new agent.
         :param key: Key of the new agent.
+        :param force: Remove old agents with same IP if disconnected since <force> seconds
         :return: Agent ID.
         """
 
@@ -334,7 +382,13 @@ class Agent:
                 if name == line_data[1]:
                     raise WazuhException(1705, name)
                 if ip.lower() != 'any' and ip == line_data[2]:
-                    raise WazuhException(1706, ip)
+                    if force < 0:
+                        raise WazuhException(1706, ip)
+                    else:
+                        if Agent.check_agent_last_connection(line_data[0], force):
+                            Agent.remove_agent(line_data[0], backup=True)
+                        else:
+                            raise WazuhException(1706, ip)
 
         if not id:
             agent_id = str(last_id + 1).zfill(3)
@@ -563,30 +617,32 @@ class Agent:
         return Agent(agent_id).get_key()
 
     @staticmethod
-    def remove_agent(agent_id):
+    def remove_agent(agent_id, backup=False):
         """
         Removes an existing agent.
 
         :param agent_id: Agent ID.
+        :param backup: Create backup before removing the agent.
         :return: Message generated by OSSEC.
         """
 
-        return Agent(agent_id).remove()
+        return Agent(agent_id).remove(backup)
 
     @staticmethod
-    def add_agent(name, ip='any'):
+    def add_agent(name, ip='any', force=-1):
         """
         Adds a new agent to OSSEC.
 
         :param name: name of the new agent.
         :param ip: IP of the new agent. It can be an IP, IP/NET or ANY.
+        :param force: Remove old agent with same IP if disconnected since <force> seconds.
         :return: Agent ID.
         """
 
-        return Agent(name, ip).id
+        return Agent(name=name, ip=ip, force=force).id
 
     @staticmethod
-    def insert_agent(name, id, key, ip='any'):
+    def insert_agent(name, id, key, ip='any', force=-1):
         """
         Create a new agent providing the id, name, ip and key to the Manager.
 
@@ -594,7 +650,30 @@ class Agent:
         :param name: name of the new agent.
         :param ip: IP of the new agent. It can be an IP, IP/NET or ANY.
         :param key: name of the new agent.
+        :param force: Remove old agent with same IP if disconnected since <force> seconds.
         :return: Agent ID.
         """
 
-        return Agent(name=name, ip=ip, id=id, key=key).id
+        return Agent(name=name, ip=ip, id=id, key=key, force=force).id
+
+    @staticmethod
+    def check_agent_last_connection(id, seconds):
+        """
+        Check if the last connection of an agent is greater than <seconds>.
+
+        :param id: id of the new agent.
+        :param seconds: Number of seconds.
+        :return: True if last connection > seconds
+        """
+        last_connection = False
+        agent_info = Agent(id=id).get_basic_information()
+        if 'lastKeepAlive' in agent_info:
+            if agent_info['lastKeepAlive'] == 0:
+                last_connection = True
+            else:
+                last_date = datetime.strptime(agent_info['lastKeepAlive'], '%Y-%m-%d %H:%M:%S')
+                difference = (datetime.now() - last_date).total_seconds()
+                if difference >= int(seconds):
+                    last_connection = True
+
+        return last_connection

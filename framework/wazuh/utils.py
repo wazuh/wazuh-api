@@ -7,7 +7,7 @@ from wazuh.exception import WazuhException
 from wazuh import common
 from tempfile import mkstemp
 from subprocess import call, CalledProcessError
-from os import remove, close as close
+from os import remove, chmod, path, listdir, close as close
 from datetime import datetime, timedelta
 import json
 import stat
@@ -288,3 +288,21 @@ def tail(filename, n=20):
     f.close()
     #return '\n'.join(all_read_text.splitlines()[-total_lines_wanted:])
     return all_read_text.splitlines()[-total_lines_wanted:]
+
+
+def chmod_r(filepath, mode):
+    """
+    Recursive chmod.
+    :param filepath: Path to the file.
+    :param mode: file mode in octal.
+    """
+
+    chmod(filepath, mode)
+
+    if path.isdir(filepath):
+        for item in listdir(filepath):
+            itempath = path.join(filepath, item)
+            if path.isfile(itempath):
+                chmod(itempath, mode)
+            elif path.isdir(itempath):
+                chmod_r(itempath, mode)
