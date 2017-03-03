@@ -53,7 +53,7 @@ exports.configuration_file = function() {
                     return -1;
                 }
                 // Empty
-                if (config.python[j]["bin"] != "python" && (!config.python[j]["bin"].trim() || !config.python[j]["lib"].trim())){
+                if (config.python[j]["bin"] != "python" && config.python[j]["bin"] != "python3" && (!config.python[j]["bin"].trim() || !config.python[j]["lib"].trim())){
                     console.log("Configuration error: Element 'bin' or 'lib' empty. Exiting.");
                     return -1;
                 }

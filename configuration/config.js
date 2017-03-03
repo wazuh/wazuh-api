@@ -36,6 +36,11 @@ config.python = [
         bin: "python",
         lib: ""
     },
+    // Python 3
+    {
+        bin: "python3",
+        lib: ""
+    },
     // Package 'python27' for CentOS 6
     {
         bin: "/opt/rh/python27/root/usr/bin/python",
