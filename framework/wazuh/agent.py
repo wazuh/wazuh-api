@@ -14,10 +14,9 @@ from datetime import date, datetime, timedelta
 from hashlib import md5
 from base64 import b64encode
 from shutil import copyfile, move
-from random import randrange
 from time import time
 from platform import platform
-from os import remove, chown, chmod, path, makedirs, rename
+from os import remove, chown, chmod, path, makedirs, rename, urandom
 from pwd import getpwnam
 from grp import getgrnam
 
@@ -399,15 +398,13 @@ class Agent:
 
         if not key:
             # Generate key
-            random_number = randrange(1, 999999)
             epoch_time = int(time())
-            str1 = "{0}{1}{2}{3}".format(epoch_time, name, random_number, platform())
-            random_number = randrange(1, 999999)
-            str2 = "{0}{1}{2}".format(ip, agent_id, random_number)
-            hash1 = md5()
-            hash1.update(str1.encode())
-            hash2 = md5()
-            hash2.update(str2.encode())
+            str1 = "{0}{1}{2}".format(epoch_time, name, platform())
+            str2 = "{0}{1}".format(ip, agent_id)
+            hash1 = md5(str1.encode())
+            hash1.update(urandom(64))
+            hash2 = md5(str2.encode())
+            hash1.update(urandom(64))
             agent_key = hash1.hexdigest() + hash2.hexdigest()
         else:
             agent_key = key
