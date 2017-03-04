@@ -356,6 +356,8 @@ class Agent:
         if key and len(key) < 64:
             raise WazuhException(1709)
 
+        force = force if type(force) == int else int(force)
+
         # Check if authd is running
         manager_status = manager.status()
         if 'ossec-authd' not in manager_status or manager_status['ossec-authd'] == 'running':
@@ -385,7 +387,7 @@ class Agent:
                     if force < 0:
                         raise WazuhException(1706, ip)
                     else:
-                        if Agent.check_agent_last_connection(line_data[0], force):
+                        if force == 0 or Agent.check_if_delete_agent(line_data[0], force):
                             Agent.remove_agent(line_data[0], backup=True)
                         else:
                             raise WazuhException(1706, ip)
@@ -657,23 +659,25 @@ class Agent:
         return Agent(name=name, ip=ip, id=id, key=key, force=force).id
 
     @staticmethod
-    def check_agent_last_connection(id, seconds):
+    def check_if_delete_agent(id, seconds):
         """
-        Check if the last connection of an agent is greater than <seconds>.
+        Check if we should remove an agent: if time from last connection is greater thant <seconds>.
 
         :param id: id of the new agent.
         :param seconds: Number of seconds.
-        :return: True if last connection > seconds
+        :return: True if time from last connection is greater thant <seconds>.
         """
-        last_connection = False
+        remove_agent = False
+
         agent_info = Agent(id=id).get_basic_information()
+
         if 'lastKeepAlive' in agent_info:
             if agent_info['lastKeepAlive'] == 0:
-                last_connection = True
+                remove_agent = True
             else:
                 last_date = datetime.strptime(agent_info['lastKeepAlive'], '%Y-%m-%d %H:%M:%S')
                 difference = (datetime.now() - last_date).total_seconds()
-                if difference >= int(seconds):
-                    last_connection = True
+                if difference >= seconds:
+                    remove_agent = True
 
-        return last_connection
+        return remove_agent
