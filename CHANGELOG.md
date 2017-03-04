@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 
-## [v2.0.0] - 2017-??-??
+## [v2.0.0] - 2017-03-??
 ### Added
 - **Wazuh v2.0** is required to run the API.
 - API must be launched with root user, but it is run with ossec user.
@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file.
  - Agents
   - GET /agents/summary (Get agents summary)
   - PUT /agents/restart (Restart all agents)
+  - POST /agents/insert (Insert agent)
  - Manager
   - GET /manager/info (Get manager information)
   - GET /manager/logs (Get ossec.log)
@@ -41,14 +42,17 @@ All notable changes to this project will be documented in this file.
 
 - Wazuh framework: Manage OSSEC Wazuh from python.
 - Unit tests
-- Cache (750ms) for GET Requests
+- Cache (750ms) for GET requests
 
 ### Changed
 - Improved API service.
 - Improved input validation.
 - Improved Error Handling.
+- Improved logging.
 - Settings in /api/configuration.
 - By default, API is installed using HTTP.
+- xmljson is not necessary.
+- apache-utils is not necessary.
 - Requests:
  - Improved:
   - GET /rootcheck/:agent_id (Get rootcheck database)
