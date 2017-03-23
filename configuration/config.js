@@ -16,6 +16,12 @@ config.basic_auth = "yes";
 //In case the API run behind a proxy server, turn to "yes" this feature. Values: yes, no.
 config.BehindProxyServer = "no";
 
+// HTTPS Certificates
+// config.https_key = "/configuration/ssl/server.key"
+// config.https_cert = "/configuration/ssl/server.crt"
+// config.https_use_ca = "no"
+// config.https_ca = "/configuration/ssl/ca.cert"
+
 
 // Advanced configuration
 

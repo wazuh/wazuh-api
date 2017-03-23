@@ -43,12 +43,20 @@ if (config.basic_auth.toLowerCase() == "yes"){
 
 //  Get Certs
 var options;
+var https = {
+    key: config.https_key || '/configuration/ssl/server.key',
+    cert: config.https_cert || '/configuration/ssl/server.crt',
+    ca: config.https_use_ca || '/configuration/ssl/ca.crt',
+    use_ca: config.https_ca || 'no'
+}
 if (config.https.toLowerCase() == "yes"){
     var fs = require('fs');
     options = {
-      key: fs.readFileSync(__dirname + '/configuration/ssl/server.key'),
-      cert: fs.readFileSync(__dirname + '/configuration/ssl/server.crt')
+        key: fs.readFileSync(__dirname + https.key),
+        cert: fs.readFileSync(__dirname + https.cert)
     };
+    if (https.use_ca.toLowerCase() == "yes")
+        options = fs.readFileSync(__dirname + https.ca);
 }
 
 /********************************************/
