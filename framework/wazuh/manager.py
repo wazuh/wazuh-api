@@ -122,18 +122,20 @@ def ossec_log_summary(months=3):
     first_date = previous_month(months)
 
     with open(common.ossec_log) as f:
-
+        lines_count = 0
         for line in f:
+            if lines_count > 50000:
+                break
+            lines_count = lines_count + 1
             try:
                 log_date = datetime.strptime(line[:10], '%Y/%m/%d')
             except ValueError:
                 continue
 
             if log_date < first_date:
-                continue
+                break
 
             category = __get_ossec_log_category(line)
-
             if category:
                 if category in categories:
                     categories[category]['all'] += 1
