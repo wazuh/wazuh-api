@@ -42,22 +42,37 @@ if (config.basic_auth.toLowerCase() == "yes"){
 }
 
 //  Get Certs
-var options;
-var https = {
-    key: config.https_key || '/configuration/ssl/server.key',
-    cert: config.https_cert || '/configuration/ssl/server.crt',
-    ca: config.https_use_ca || '/configuration/ssl/ca.crt',
-    use_ca: config.https_ca || 'no'
-}
+var options = {};
+var option_paths = {};
+
+var api_route = config.ossec_path + '/api/';
+    
 if (config.https.toLowerCase() == "yes"){
-    var fs = require('fs');
-    options = {
-        key: fs.readFileSync(__dirname + https.key),
-        cert: fs.readFileSync(__dirname + https.cert)
-    };
-    if (https.use_ca.toLowerCase() == "yes")
-        options = fs.readFileSync(__dirname + https.ca);
+  var fs = require('fs');
+  
+  if (config.https_key.charAt(0) != '/'){ 
+    option_paths.key = api_route + config.https_key;
+  } else {
+    option_paths.key = config.https_key;
+  }
+  if (config.https_cert.charAt(0) != '/'){ 
+    option_paths.cert = api_route + config.https_cert;
+  } else {
+    option_paths.cert = config.https_cert;
+  }
+
+  if (config.https_use_ca.toLowerCase() == "yes"){
+    if(config.https_ca.charAt(0) != '/'){
+      option_paths.ca = api_route + config.https_ca;
+    } else {
+      option_paths.ca = config.https_ca;
+    }
+    options.ca = fs.readFileSync(option_paths.ca);
+  }
+    options.key = fs.readFileSync(option_paths.key);
+    options.cert = fs.readFileSync(option_paths.cert);
 }
+
 
 /********************************************/
 /* Drop privileges

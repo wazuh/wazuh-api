@@ -17,11 +17,10 @@ config.basic_auth = "yes";
 config.BehindProxyServer = "no";
 
 // HTTPS Certificates
-// config.https_key = "/configuration/ssl/server.key"
-// config.https_cert = "/configuration/ssl/server.crt"
-// config.https_use_ca = "no"
-// config.https_ca = "/configuration/ssl/ca.cert"
-
+config.https_key = "configuration/ssl/server.key"
+config.https_cert = "configuration/ssl/server.crt"
+config.https_use_ca = "no"
+config.https_ca = "configuration/ssl/ca.crt"
 
 // Advanced configuration
 
