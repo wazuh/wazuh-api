@@ -51,14 +51,13 @@ Ignore-SelfSignedCerts
 # Test API integration to make sure IE has run through initial startup dialogue - This can be a problem with new servers.
 
 try{
-$testresponse = req -method "GET" -resource "/manager/info?pretty" | ConvertFrom-Json | select -expand data -ErrorAction Stop -ErrorVariable geterr
+    $testresponse = req -method "GET" -resource "/manager/info?pretty" | ConvertFrom-Json | select -expand data -ErrorAction Stop -ErrorVariable geterr
 
-Write-Output "The Wazuh manager is contactable via the API, the response is: `n $($testresponse)"
-}
-catch{
-Write-Host -ForegroundColor Red "IE has not had it's initial startup dialogue dismissed, please complete this step and try again. Script will exit. Error: $($geterr)`n .Please Run OSSEC_AgentConfig Seperately once you correct the error."
-Exit
-}
+    Write-Output "The Wazuh manager is contactable via the API, the response is: `n $($testresponse)"
+    }catch{
+    Write-Host -ForegroundColor Red "IE has not had it's initial startup dialogue dismissed, please complete this step and try again. Script will exit. Error: $($geterr)`n .Please Run OSSEC_AgentConfig Seperately once you correct the error."
+    Exit
+    }
 
 # Test for agent already existing in manager
 
