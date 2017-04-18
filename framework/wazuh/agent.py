@@ -49,6 +49,7 @@ class Agent:
         self.key = None
         self.sharedSum = None
         self.os_family = None
+        self.profile = None
 
         if args:
             if len(args) == 1:
@@ -81,7 +82,7 @@ class Agent:
         return str(self.to_dict())
 
     def to_dict(self):
-        dictionary = {'id': self.id, 'name': self.name, 'ip': self.ip, 'internal_key': self.internal_key, 'os': self.os, 'version': self.version, 'dateAdd': self.dateAdd, 'lastKeepAlive': self.lastKeepAlive, 'status': self.status, 'key': self.key, 'sharedSum': self.sharedSum, 'os_family': self.os_family }
+        dictionary = {'id': self.id, 'name': self.name, 'ip': self.ip, 'internal_key': self.internal_key, 'os': self.os, 'version': self.version, 'dateAdd': self.dateAdd, 'lastKeepAlive': self.lastKeepAlive, 'status': self.status, 'key': self.key, 'sharedSum': self.sharedSum, 'os_family': self.os_family, 'profile': self.profile }
         return dictionary
 
     @staticmethod
@@ -116,7 +117,7 @@ class Agent:
         query = "SELECT {0} FROM agent WHERE id = :id"
         request = {'id': self.id}
 
-        select = ["id", "name", "ip", "key", "os", "version", "date_add", "last_keepalive", "shared_sum"]
+        select = ["id", "name", "ip", "key", "os", "version", "date_add", "last_keepalive", "shared_sum", "profile"]
 
         conn.execute(query.format(','.join(select)), request)
 
@@ -153,6 +154,8 @@ class Agent:
                 self.lastKeepAlive = 0
             if tuple[8] != None:
                 self.sharedSum = tuple[8]
+            if tuple[9] != None:
+                self.profile = tuple[9]
 
             if self.id != "000":
                 self.status = Agent.calculate_status(self.lastKeepAlive)
@@ -195,6 +198,8 @@ class Agent:
             info['sharedSum'] = self.sharedSum
         #if self.key:
         #    info['key'] = self.key
+        if self.profile:
+            info['profile'] = self.profile
 
         return info
 
