@@ -43,34 +43,36 @@ if (config.basic_auth.toLowerCase() == "yes"){
 
 //  Get Certs
 var options = {};
-var option_paths = {};
 
-var api_route = config.ossec_path + '/api/';
-    
 if (config.https.toLowerCase() == "yes"){
-  var fs = require('fs');
-  
-  if (config.https_key.charAt(0) != '/'){ 
-    option_paths.key = api_route + config.https_key;
-  } else {
-    option_paths.key = config.https_key;
-  }
-  if (config.https_cert.charAt(0) != '/'){ 
-    option_paths.cert = api_route + config.https_cert;
-  } else {
-    option_paths.cert = config.https_cert;
-  }
+    var fs = require('fs');
+    var api_route = config.ossec_path + '/api/';
+    var option_paths = {};
 
-  if (config.https_use_ca.toLowerCase() == "yes"){
-    if(config.https_ca.charAt(0) != '/'){
-      option_paths.ca = api_route + config.https_ca;
-    } else {
-      option_paths.ca = config.https_ca;
+    // Cert and key
+    option_paths.key = config.https_key || 'configuration/ssl/server.key';
+    if (option_paths.key.charAt(0) != '/'){
+        option_paths.key = api_route + option_paths.key;
     }
-    options.ca = fs.readFileSync(option_paths.ca);
-  }
+
+    option_paths.cert = config.https_cert  || 'configuration/ssl/server.crt';
+    if (option_paths.cert.charAt(0) != '/'){
+        option_paths.cert = api_route + option_paths.cert;
+    }
+
     options.key = fs.readFileSync(option_paths.key);
     options.cert = fs.readFileSync(option_paths.cert);
+
+    // CA
+    var use_ca = config.https_use_ca || 'no';
+    if (use_ca.toLowerCase() == "yes"){
+        option_paths.ca = config.https_ca || 'configuration/ssl/ca.crt';
+        if (option_paths.ca.charAt(0) != '/'){
+            option_paths.ca = api_route + option_paths.ca;
+        }
+
+        options.ca = fs.readFileSync(option_paths.ca);
+    }
 }
 
 
