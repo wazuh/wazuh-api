@@ -169,6 +169,7 @@ if __name__ == "__main__":
             'DELETE/agents/:agent_id/profile':Agent.remove_profile,
             'DELETE/agents/profiles/:profile_id':Agent.remove_profile_in_every_agent,
             '/agents/profiles/:profile_id/configuration':configuration.get_agent_conf,
+            '/agents/profiles/:profile_id/files':configuration.get_profile_files,
 
             '/decoders': Decoder.get_decoders,
             '/decoders/files': Decoder.get_decoders_files,

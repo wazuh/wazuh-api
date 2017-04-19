@@ -4,7 +4,7 @@
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 from xml.etree.ElementTree import fromstring
-from os import path as os_path
+from os import listdir, path as os_path
 from wazuh.exception import WazuhException
 from wazuh.agent import Agent
 from wazuh import common
@@ -261,3 +261,16 @@ def get_agent_conf(profile_id=None):
         raise WazuhException(1101)
 
     return data
+
+def get_profile_files(profile_id=None):
+
+    profile_path = common.shared_path
+    if profile_id:
+        if not Agent.profile_exists(profile_id):
+            raise WazuhException(1710, profile_id)
+        profile_path = "{0}/{1}".format(common.shared_path, profile_id)
+
+    if not os_path.exists(profile_path):
+        raise WazuhException(1013, profile_path)
+
+    return listdir(profile_path)
