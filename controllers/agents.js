@@ -345,6 +345,32 @@ router.delete('/:agent_id', function(req, res) {
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
+/**
+ * @api {delete} /agents/:agent_id/profile Delete the profile of the agent
+ * @apiName DeleteProfileAgent
+ * @apiGroup Profiles
+ *
+ * @apiParam {Number} agent_id Agent ID.
+ *
+ * @apiDescription Remove the profile of the agent. The profile will be 'default'.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/002/profile?pretty"
+ *
+ */
+router.delete('/:agent_id/profile', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " DELETE /agents/:agent_id/profile");
+
+    var data_request = {'function': 'DELETE/agents/:agent_id/profile', 'arguments': {}};
+
+    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
 
 /**
  * @api {post} /agents Add agent
