@@ -825,3 +825,55 @@ class Agent:
             data['items'].append(data_tuple)
 
         return data
+
+    @staticmethod
+    def set_profile(agent_id, profile_id):
+        """
+        Assings a profile to an agent.
+
+        :param agent_id: Agent ID.
+        :param profile_id: Profile ID.
+        :return: Confirmation message.
+        """
+
+        # Check if agent exists
+        Agent(agent_id).get_basic_information()
+
+        if profile_id.lower() != "default":
+            agent_profile_path = "{0}/{1}".format(common.profiles_path, agent_id)
+            try:
+                new_file = False if path.exists(agent_profile_path) else True
+
+                f_profile = open(agent_profile_path, 'w')
+                f_profile.write(profile_id)
+                f_profile.close()
+
+                if new_file:
+                    ossec_uid = getpwnam("ossec").pw_uid
+                    ossec_gid = getgrnam("ossec").gr_gid
+                    chown(agent_profile_path, ossec_uid, ossec_gid)
+                    chmod(agent_profile_path, 0o640)
+            except Exception as e:
+                raise WazuhException(1005, str(e))
+        else:
+            Agent.remove_profile(agent_id)
+
+        return "Profile '{0}' assigned to agent '{1}'.".format(profile_id, agent_id)
+
+    @staticmethod
+    def remove_profile(agent_id):
+        """
+        Remove the agent profile. The profile will be 'default'.
+
+        :param agent_id: Agent ID.
+        :return: Confirmation message.
+        """
+
+        # Check if agent exists
+        Agent(agent_id).get_basic_information()
+
+        agent_profile_path = "{0}/{1}".format(common.profiles_path, agent_id)
+        if path.exists(agent_profile_path):
+            remove(agent_profile_path)
+
+        return "Profile removed. Current profile for agent '{0}': 'default'.".format(agent_id)

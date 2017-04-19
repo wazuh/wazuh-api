@@ -78,7 +78,7 @@ router.get('/summary', cache(), function(req, res) {
 /**
  * @api {get} /profiles Get profiles
  * @apiName GetAgentProfiles
- * @apiGroup Info
+ * @apiGroup Profiles
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
@@ -117,7 +117,7 @@ router.get('/profiles', cache(), function(req, res) {
 /**
  * @api {get} /profiles/:profile_id Get agents in the profile
  * @apiName GetAgentProfileID
- * @apiGroup Info
+ * @apiGroup Profiles
  *
  * @apiParam {String} profile_id Profile ID.
  * @apiParam {Number} [offset] First element to return in the collection.
@@ -143,7 +143,7 @@ router.get('/profiles/:profile_id', cache(), function(req, res) {
         return;
 
     data_request['arguments']['profile_id'] = req.params.profile_id;
-    
+
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -285,6 +285,35 @@ router.put('/:agent_name', function(req, res) {
         return;
 
     data_request['arguments']['name'] = req.params.agent_name;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {put} /agents/:agent_id/profiles/:profile_id Assign profile to agent
+ * @apiName PutProfileAgent
+ * @apiGroup Profiles
+ *
+ * @apiParam {Number} agent_id Agent unique ID.
+ * @apiParam {String} profile_id Pofile ID.
+ *
+ * @apiDescription Assing the profile :profile_id to the agent.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/001/profiles/newProfile?pretty"
+ *
+ */
+router.put('/:agent_id/profile/:profile_id', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " PUT /agents/:agent_id/profile/:profile_id");
+
+    var data_request = {'function': 'PUT/agents/:agent_id/profile/:profile_id', 'arguments': {}};
+    var filters = {'agent_id':'numbers', 'profile_id':'names'};
+
+    if (!filter.check(req.params, filters, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+    data_request['arguments']['profile_id'] = req.params.profile_id;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
