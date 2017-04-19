@@ -805,9 +805,10 @@ class Agent:
             query += ' ORDER BY id ASC'
 
         # OFFSET - LIMIT
-        query += ' LIMIT :offset,:limit'
-        request['offset'] = offset
-        request['limit'] = limit
+        if limit:
+            query += ' LIMIT :offset,:limit'
+            request['offset'] = offset
+            request['limit'] = limit
 
         # Data query
         conn.execute(query.format(','.join(select)), request)
@@ -877,3 +878,24 @@ class Agent:
             remove(agent_profile_path)
 
         return "Profile removed. Current profile for agent '{0}': 'default'.".format(agent_id)
+
+    @staticmethod
+    def remove_profile_in_every_agent(profile_id):
+        """
+        Remove the profile in every agent.
+
+        :param profile_id: Profile ID.
+        :return: Confirmation message.
+        """
+
+        ids = []
+
+        # Get agents with profile
+        agents = Agent.get_agent_profile(profile_id=profile_id, limit=None)
+        for agent in agents['items']:
+            Agent.remove_profile(agent['id'])
+            ids.append(agent['id'])
+
+        msg = "Profile '{0}' removed.".format(profile_id)
+
+        return {'msg': msg, 'affected_agents': ids}
