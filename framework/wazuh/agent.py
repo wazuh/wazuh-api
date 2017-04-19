@@ -483,27 +483,31 @@ class Agent:
 
         # Sorting
         if sort:
-            allowed_sort_fields = fields.keys()
-            for sf in sort['fields']:
-                if sf not in allowed_sort_fields:
-                    raise WazuhException(1403, 'Allowed sort fields: {0}. Field: {1}'.format(allowed_sort_fields, sf))
-
-            order_str_fields = []
-            for i in sort['fields']:
-                # Order by status ASC is the same that order by last_keepalive DESC.
-                if i == 'status':
-                    if sort['order'] == 'asc':
-                        str_order = "desc"
-                    else:
-                        str_order = "asc"
-                else:
-                    str_order = sort['order']
-                order_str_fields.append('{0} {1}'.format(fields[i], str_order))
-
             if sort['fields']:
+                allowed_sort_fields = fields.keys()
+                # Check if every element in sort['fields'] is in allowed_sort_fields.
+                if not set(sort['fields']).issubset(allowed_sort_fields):
+                    raise WazuhException(1403, 'Allowed sort fields: {0}. Fields: {1}'.format(allowed_sort_fields, sort['fields']))
+
+                order_str_fields = []
+                for i in sort['fields']:
+                    # Order by status ASC is the same that order by last_keepalive DESC.
+                    if i == 'status':
+                        if sort['order'] == 'asc':
+                            str_order = "desc"
+                        else:
+                            str_order = "asc"
+                    else:
+                        str_order = sort['order']
+                    order_str_fields.append('{0} {1}'.format(fields[i], str_order))
+
                 query += ' ORDER BY ' + ','.join(order_str_fields)
+            else:
+                query += ' ORDER BY id {0}'.format(sort['order'])
         else:
             query += ' ORDER BY id ASC'
+
+
 
         query += ' LIMIT :offset,:limit'
         request['offset'] = offset
