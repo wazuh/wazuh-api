@@ -20,6 +20,7 @@ class WazuhException(Exception):
         1010: 'Unable to connect to queue',
         1011: 'Error communicating with queue',
         1012: 'Invalid message to queue',
+        1013: 'File/directory does not exist',
 
         # Configuration: 1100 - 1199
         1100: 'Error checking configuration',
@@ -66,6 +67,7 @@ class WazuhException(Exception):
         1707: 'Impossible to restart agent due to it is not active',
         1708: 'There is an agent with the same ID',
         1709: 'Too short key size (<64)',
+        1710: 'The profile doest not exist',
         # Manager:
 
         # Database:

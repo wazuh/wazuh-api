@@ -4,7 +4,9 @@
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 from xml.etree.ElementTree import fromstring
+from os import path as os_path
 from wazuh.exception import WazuhException
+from wazuh.agent import Agent
 from wazuh import common
 
 conf_sections = {
@@ -128,6 +130,7 @@ def _read_option(section_name, opt):
 
     return opt_name, opt_value
 
+
 def _conf2json(xml_conf):
     """
     Returns a dict from a xml string.
@@ -155,11 +158,11 @@ def _conf2json(xml_conf):
 
 def get_ossec_conf(section=None, field=None):
     """
-    Returns ossec.conf as dictionary.
+    Returns ossec.conf (manager) as dictionary.
 
     :param section: Filters by section (i.e. rules).
     :param field: Filters by field in section (i.e. included).
-    :return: ossec.conf as dictionary.
+    :return: ossec.conf (manager) as dictionary.
     """
 
     try:
@@ -189,5 +192,72 @@ def get_ossec_conf(section=None, field=None):
             data = data[field]  # data[section][field]
         except:
             raise WazuhException(1103)
+
+    return data
+
+
+def _agentconf2json(xml_conf):
+    """
+    Returns a dict from a xml string.
+    """
+
+    final_json = []
+
+    for root in xml_conf.getchildren():
+        if root.tag.lower() == "agent_config":
+            root_json = {'filters': [], 'config': {}}
+            for attr in root.attrib:
+                filter_value = {attr: root.attrib[attr].split('|')}
+                root_json['filters'].append(filter_value)
+
+            for section in root.getchildren():
+                section_name = 'open-scap' if section.tag.lower() == 'wodle' else section.tag.lower()
+                section_json = {}
+
+                for option in section.getchildren():
+                    option_name, option_value = _read_option(section_name, option)
+                    if type(option_value) is list:
+                        for ov in option_value:
+                            _insert(section_json, section_name, option_name, ov)
+                    else:
+                        _insert(section_json, section_name, option_name, option_value)
+
+                _insert_section(root_json['config'], section_name, section_json)
+            final_json.append(root_json)
+
+    return final_json
+
+def get_agent_conf(profile_id=None):
+    """
+    Returns agent.conf as dictionary.
+
+    :return: agent.conf as dictionary.
+    """
+
+    if profile_id:
+        if not Agent.profile_exists(profile_id):
+            raise WazuhException(1710, profile_id)
+
+        agent_conf = "{0}/{1}".format(common.shared_path, profile_id)
+    agent_conf += "/agent.conf"
+
+    if not os_path.exists(agent_conf):
+        raise WazuhException(1013, agent_conf)
+
+    try:
+        # wrap the data
+        f = open(agent_conf)
+        txt_data = f.read()
+        txt_data = txt_data.replace(" -- ", " -INVALID_CHAR ")
+        f.close()
+        txt_data = '<root_tag>' + txt_data + '</root_tag>'
+
+        # Read XML
+        xml_data = fromstring(txt_data)
+
+        # Parse XML to JSON
+        data = _agentconf2json(xml_data)
+    except:
+        raise WazuhException(1101)
 
     return data

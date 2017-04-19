@@ -28,6 +28,12 @@ def set_paths_based_on_ossec(o_path='/var/ossec'):
     global ruleset_path
     ruleset_path = '{0}/ruleset'.format(ossec_path)
 
+    global profiles_path
+    profiles_path = "{0}/queue/agent-profiles".format(ossec_path)
+
+    global shared_path
+    shared_path = "{0}/etc/shared".format(ossec_path)
+
     global ruleset_rules_path
     ruleset_rules_path = '{0}/rules'.format(ruleset_path)
 
@@ -39,9 +45,6 @@ def set_paths_based_on_ossec(o_path='/var/ossec'):
 
     global database_path_agents
     database_path_agents = database_path + '/agents'
-
-    global profiles_path
-    profiles_path = "{0}/queue/agent-profiles".format(ossec_path)
 
     # Queues
     global ARQUEUE

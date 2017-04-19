@@ -161,6 +161,34 @@ router.get('/profiles/:profile_id', cache(), function(req, res) {
 })
 
 /**
+ * @api {get} /profiles/:profile_id/configuration Get profile configuration
+ * @apiName GetAgentProfileConfiguration
+ * @apiGroup Profiles
+ *
+ * @apiParam {String} profile_id Profile ID.
+ *
+ * @apiDescription Returns the profile configuration (agent.conf)
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/profiles/myprofile/configuration?pretty"
+ *
+ */
+router.get('/profiles/:profile_id/configuration', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /agents/profiles/:profile_id/configuration");
+
+    req.apicacheGroup = "agents";
+
+    var data_request = {'function': '/agents/profiles/:profile_id/configuration', 'arguments': {}};
+
+    if (!filter.check(req.params, {'profile_id':'names'}, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['profile_id'] = req.params.profile_id;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
  * @api {get} /agents/:agent_id Get an agent
  * @apiName GetAgentsID
  * @apiGroup Info

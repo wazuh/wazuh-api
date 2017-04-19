@@ -754,6 +754,33 @@ class Agent:
         return data
 
     @staticmethod
+    def profile_exists(profile_id):
+        """
+        Checks if the profile exists
+
+        :param profile_id: Profile ID.
+        :return: True if profile exists, False otherwise
+        """
+
+        db_global = glob(common.database_path_global)
+        if not db_global:
+            raise WazuhException(1600)
+
+        conn = Connection(db_global[0])
+
+        query = "SELECT profile FROM agent WHERE profile = :profile_id LIMIT 1"
+        request = {'profile_id': profile_id}
+
+        conn.execute(query, request)
+
+        for tuple in conn:
+
+            if tuple[0] != None:
+                return True
+            else:
+                return False
+
+    @staticmethod
     def get_agent_profile(profile_id, offset=0, limit=common.database_limit, sort=None, search=None):
         """
         Gets the agents in a profile
