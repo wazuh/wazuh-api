@@ -689,7 +689,7 @@ class Agent:
         return remove_agent
 
     @staticmethod
-    def get_agent_profiles(offset=0, limit=common.database_limit, sort=None, search=None):
+    def get_all_profiles(offset=0, limit=common.database_limit, sort=None, search=None):
         """
         Gets the existing profiles.
 
@@ -751,4 +751,77 @@ class Agent:
         for tuple in conn:
             if tuple[0] != None:
                 data['items'].append(tuple[0])
+        return data
+
+    @staticmethod
+    def get_agent_profile(profile_id, offset=0, limit=common.database_limit, sort=None, search=None):
+        """
+        Gets the agents in a profile
+
+        :param profile_id: Profile ID.
+        :param offset: First item to return.
+        :param limit: Maximum number of items to return.
+        :param sort: Sorts the items. Format: {"fields":["field1","field2"],"order":"asc|desc"}.
+        :param search: Looks for items with the specified string.
+        :return: Dictionary: {'items': array of items, 'totalItems': Number of items (without applying the limit)}
+        """
+
+        # Connect DB
+        db_global = glob(common.database_path_global)
+        if not db_global:
+            raise WazuhException(1600)
+
+        conn = Connection(db_global[0])
+
+        # Init query
+        query = "SELECT {0} FROM agent WHERE profile = :profile_id"
+        fields = {'id': 'id', 'name': 'name'}  # field: db_column
+        select = ['id', 'name']
+        request = {'profile_id': profile_id}
+
+        # Search
+        if search:
+            query += " AND NOT" if bool(search['negation']) else ' AND'
+            query += " (" + " OR ".join(x + ' LIKE :search' for x in ('id', 'name')) + " )"
+            request['search'] = '%{0}%'.format(search['value'])
+
+        # Count
+        conn.execute(query.format('COUNT(*)'), request)
+        data = {'totalItems': conn.fetch()[0]}
+
+        # Sorting
+        if sort:
+            if sort['fields']:
+                allowed_sort_fields = fields.keys()
+                # Check if every element in sort['fields'] is in allowed_sort_fields.
+                if not set(sort['fields']).issubset(allowed_sort_fields):
+                    raise WazuhException(1403, 'Allowed sort fields: {0}. Fields: {1}'.format(allowed_sort_fields, sort['fields']))
+
+                order_str_fields = ['{0} {1}'.format(fields[i], sort['order']) for i in sort['fields']]
+                query += ' ORDER BY ' + ','.join(order_str_fields)
+            else:
+                query += ' ORDER BY id {0}'.format(sort['order'])
+        else:
+            query += ' ORDER BY id ASC'
+
+        # OFFSET - LIMIT
+        query += ' LIMIT :offset,:limit'
+        request['offset'] = offset
+        request['limit'] = limit
+
+        # Data query
+        conn.execute(query.format(','.join(select)), request)
+
+        data['items'] = []
+
+        for tuple in conn:
+            data_tuple = {}
+
+            if tuple[0] != None:
+                data_tuple['id'] = str(tuple[0]).zfill(3)
+            if tuple[1] != None:
+                data_tuple['name'] = tuple[1]
+
+            data['items'].append(data_tuple)
+
         return data
