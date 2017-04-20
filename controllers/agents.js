@@ -76,27 +76,27 @@ router.get('/summary', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /profiles Get profiles
- * @apiName GetAgentProfiles
- * @apiGroup Profiles
+ * @api {get} /groups Get groups
+ * @apiName GetAgentGroups
+ * @apiGroup Groups
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  *
- * @apiDescription Returns a list with the existing profiles.
+ * @apiDescription Returns a list with the existing groups.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/profiles?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/groups?pretty"
  *
  */
-router.get('/profiles', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /agents/profiles");
+router.get('/groups', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /agents/groups");
 
     req.apicacheGroup = "agents";
 
-    var data_request = {'function': '/agents/profiles', 'arguments': {}};
+    var data_request = {'function': '/agents/groups', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
@@ -115,34 +115,34 @@ router.get('/profiles', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /profiles/:profile_id Get agents in the profile
- * @apiName GetAgentProfileID
- * @apiGroup Profiles
+ * @api {get} /groups/:group_id Get agents in the group
+ * @apiName GetAgentGroupID
+ * @apiGroup Groups
  *
- * @apiParam {String} profile_id Profile ID.
+ * @apiParam {String} group_id Group ID.
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  *
- * @apiDescription Returns a list of agents with the profile specified
+ * @apiDescription Returns a list of agents with the group specified
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/profiles/myprofile?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/groups/mygroup?pretty"
  *
  */
-router.get('/profiles/:profile_id', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /agents/profiles/:profile_id");
+router.get('/groups/:group_id', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /agents/groups/:group_id");
 
     req.apicacheGroup = "agents";
 
-    var data_request = {'function': '/agents/profiles/:profile_id', 'arguments': {}};
+    var data_request = {'function': '/agents/groups/:group_id', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
 
-    if (!filter.check(req.params, {'profile_id':'names'}, req, res))  // Filter with error
+    if (!filter.check(req.params, {'group_id':'names'}, req, res))  // Filter with error
         return;
 
-    data_request['arguments']['profile_id'] = req.params.profile_id;
+    data_request['arguments']['group_id'] = req.params.group_id;
 
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
@@ -161,32 +161,32 @@ router.get('/profiles/:profile_id', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /profiles/:profile_id/configuration Get profile configuration
- * @apiName GetAgentProfileConfiguration
- * @apiGroup Profiles
+ * @api {get} /groups/:group_id/configuration Get group configuration
+ * @apiName GetAgentGroupConfiguration
+ * @apiGroup Groups
  *
- * @apiParam {String} profile_id Profile ID.
+ * @apiParam {String} group_id Group ID.
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  *
- * @apiDescription Returns the profile configuration (agent.conf)
+ * @apiDescription Returns the group configuration (agent.conf)
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/profiles/myprofile/configuration?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/groups/mygroup/configuration?pretty"
  *
  */
-router.get('/profiles/:profile_id/configuration', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /agents/profiles/:profile_id/configuration");
+router.get('/groups/:group_id/configuration', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /agents/groups/:group_id/configuration");
 
     req.apicacheGroup = "agents";
 
-    var data_request = {'function': '/agents/profiles/:profile_id/configuration', 'arguments': {}};
+    var data_request = {'function': '/agents/groups/:group_id/configuration', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers'};
 
-    if (!filter.check(req.params, {'profile_id':'names'}, req, res))  // Filter with error
+    if (!filter.check(req.params, {'group_id':'names'}, req, res))  // Filter with error
         return;
 
-    data_request['arguments']['profile_id'] = req.params.profile_id;
+    data_request['arguments']['group_id'] = req.params.group_id;
 
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
@@ -201,29 +201,29 @@ router.get('/profiles/:profile_id/configuration', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /profiles/:profile_id/files Get profile files
- * @apiName GetAgentProfileFiles
- * @apiGroup Profiles
+ * @api {get} /groups/:group_id/files Get group files
+ * @apiName GetAgentGroupFiles
+ * @apiGroup Groups
  *
- * @apiParam {String} profile_id Profile ID.
+ * @apiParam {String} group_id Group ID.
  *
- * @apiDescription Returns the profile files
+ * @apiDescription Returns the group files
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/profiles/myprofile/files?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/groups/mygroup/files?pretty"
  *
  */
-router.get('/profiles/:profile_id/files', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /agents/profiles/:profile_id/files");
+router.get('/groups/:group_id/files', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /agents/groups/:group_id/files");
 
     req.apicacheGroup = "agents";
 
-    var data_request = {'function': '/agents/profiles/:profile_id/files', 'arguments': {}};
+    var data_request = {'function': '/agents/groups/:group_id/files', 'arguments': {}};
 
-    if (!filter.check(req.params, {'profile_id':'names'}, req, res))  // Filter with error
+    if (!filter.check(req.params, {'group_id':'names'}, req, res))  // Filter with error
         return;
 
-    data_request['arguments']['profile_id'] = req.params.profile_id;
+    data_request['arguments']['group_id'] = req.params.group_id;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -358,30 +358,30 @@ router.put('/:agent_name', function(req, res) {
 })
 
 /**
- * @api {put} /agents/:agent_id/profiles/:profile_id Assign profile to agent
- * @apiName PutProfileAgent
- * @apiGroup Profiles
+ * @api {put} /agents/:agent_id/groups/:group_id Assign group to agent
+ * @apiName PutGroupAgent
+ * @apiGroup Groups
  *
  * @apiParam {Number} agent_id Agent unique ID.
- * @apiParam {String} profile_id Pofile ID.
+ * @apiParam {String} group_id Pofile ID.
  *
- * @apiDescription Assing the profile :profile_id to the agent.
+ * @apiDescription Assing the group :group_id to the agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/001/profiles/newProfile?pretty"
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/001/groups/newGroup?pretty"
  *
  */
-router.put('/:agent_id/profile/:profile_id', function(req, res) {
-    logger.debug(req.connection.remoteAddress + " PUT /agents/:agent_id/profile/:profile_id");
+router.put('/:agent_id/group/:group_id', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " PUT /agents/:agent_id/group/:group_id");
 
-    var data_request = {'function': 'PUT/agents/:agent_id/profile/:profile_id', 'arguments': {}};
-    var filters = {'agent_id':'numbers', 'profile_id':'names'};
+    var data_request = {'function': 'PUT/agents/:agent_id/group/:group_id', 'arguments': {}};
+    var filters = {'agent_id':'numbers', 'group_id':'names'};
 
     if (!filter.check(req.params, filters, req, res))  // Filter with error
         return;
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
-    data_request['arguments']['profile_id'] = req.params.profile_id;
+    data_request['arguments']['group_id'] = req.params.group_id;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -414,22 +414,22 @@ router.delete('/:agent_id', function(req, res) {
 })
 
 /**
- * @api {delete} /agents/:agent_id/profile Delete the profile of the agent
- * @apiName DeleteProfileAgent
- * @apiGroup Profiles
+ * @api {delete} /agents/:agent_id/group Delete the group of the agent
+ * @apiName DeleteGroupAgent
+ * @apiGroup Groups
  *
  * @apiParam {Number} agent_id Agent ID.
  *
- * @apiDescription Remove the profile of the agent. The profile will be 'default'.
+ * @apiDescription Remove the group of the agent. The group will be 'default'.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/002/profile?pretty"
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/002/group?pretty"
  *
  */
-router.delete('/:agent_id/profile', function(req, res) {
-    logger.debug(req.connection.remoteAddress + " DELETE /agents/:agent_id/profile");
+router.delete('/:agent_id/group', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " DELETE /agents/:agent_id/group");
 
-    var data_request = {'function': 'DELETE/agents/:agent_id/profile', 'arguments': {}};
+    var data_request = {'function': 'DELETE/agents/:agent_id/group', 'arguments': {}};
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
         return;
@@ -440,27 +440,27 @@ router.delete('/:agent_id/profile', function(req, res) {
 })
 
 /**
- * @api {delete} /agents/profiles/:profile_id Delete profile in every agent
- * @apiName DeleteProfileAgents
- * @apiGroup Profiles
+ * @api {delete} /agents/groups/:group_id Delete group in every agent
+ * @apiName DeleteGroupAgents
+ * @apiGroup Groups
  *
- * @apiParam {Number} profile_id Profile ID.
+ * @apiParam {Number} group_id Group ID.
  *
- * @apiDescription Deletes the profile in every agent. Agents will have 'default' profile.
+ * @apiDescription Deletes the group in every agent. Agents will have 'default' group.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/profiles/profile_name?pretty"
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/groups/group_name?pretty"
  *
  */
-router.delete('/profiles/:profile_id', function(req, res) {
-    logger.debug(req.connection.remoteAddress + " DELETE /agents/profiles/:profile_id");
+router.delete('/groups/:group_id', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " DELETE /agents/groups/:group_id");
 
-    var data_request = {'function': 'DELETE/agents/profiles/:profile_id', 'arguments': {}};
+    var data_request = {'function': 'DELETE/agents/groups/:group_id', 'arguments': {}};
 
-    if (!filter.check(req.params, {'profile_id':'names'}, req, res))  // Filter with error
+    if (!filter.check(req.params, {'group_id':'names'}, req, res))  // Filter with error
         return;
 
-    data_request['arguments']['profile_id'] = req.params.profile_id;
+    data_request['arguments']['group_id'] = req.params.group_id;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })

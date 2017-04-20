@@ -28,8 +28,8 @@ def set_paths_based_on_ossec(o_path='/var/ossec'):
     global ruleset_path
     ruleset_path = '{0}/ruleset'.format(ossec_path)
 
-    global profiles_path
-    profiles_path = "{0}/queue/agent-profiles".format(ossec_path)
+    global groups_path
+    groups_path = "{0}/queue/agent-groups".format(ossec_path)
 
     global shared_path
     shared_path = "{0}/etc/shared".format(ossec_path)

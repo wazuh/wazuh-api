@@ -236,18 +236,18 @@ def get_ossec_conf(section=None, field=None):
     return data
 
 
-def get_agent_conf(profile_id=None, offset=0, limit=common.database_limit):
+def get_agent_conf(group_id=None, offset=0, limit=common.database_limit):
     """
     Returns agent.conf as dictionary.
 
     :return: agent.conf as dictionary.
     """
 
-    if profile_id:
-        if not Agent.profile_exists(profile_id):
-            raise WazuhException(1710, profile_id)
+    if group_id:
+        if not Agent.group_exists(group_id):
+            raise WazuhException(1710, group_id)
 
-        agent_conf = "{0}/{1}".format(common.shared_path, profile_id)
+        agent_conf = "{0}/{1}".format(common.shared_path, group_id)
     agent_conf += "/agent.conf"
 
     if not os_path.exists(agent_conf):
@@ -273,15 +273,15 @@ def get_agent_conf(profile_id=None, offset=0, limit=common.database_limit):
     return {'totalItems': len(data), 'items': cut_array(data, offset, limit)}
 
 
-def get_profile_files(profile_id=None):
+def get_group_files(group_id=None):
 
-    profile_path = common.shared_path
-    if profile_id:
-        if not Agent.profile_exists(profile_id):
-            raise WazuhException(1710, profile_id)
-        profile_path = "{0}/{1}".format(common.shared_path, profile_id)
+    group_path = common.shared_path
+    if group_id:
+        if not Agent.group_exists(group_id):
+            raise WazuhException(1710, group_id)
+        group_path = "{0}/{1}".format(common.shared_path, group_id)
 
-    if not os_path.exists(profile_path):
-        raise WazuhException(1013, profile_path)
+    if not os_path.exists(group_path):
+        raise WazuhException(1013, group_path)
 
-    return listdir(profile_path)
+    return listdir(group_path)

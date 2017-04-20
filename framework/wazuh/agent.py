@@ -49,7 +49,7 @@ class Agent:
         self.key = None
         self.sharedSum = None
         self.os_family = None
-        self.profile = None
+        self.group = None
 
         if args:
             if len(args) == 1:
@@ -82,7 +82,7 @@ class Agent:
         return str(self.to_dict())
 
     def to_dict(self):
-        dictionary = {'id': self.id, 'name': self.name, 'ip': self.ip, 'internal_key': self.internal_key, 'os': self.os, 'version': self.version, 'dateAdd': self.dateAdd, 'lastKeepAlive': self.lastKeepAlive, 'status': self.status, 'key': self.key, 'sharedSum': self.sharedSum, 'os_family': self.os_family, 'profile': self.profile }
+        dictionary = {'id': self.id, 'name': self.name, 'ip': self.ip, 'internal_key': self.internal_key, 'os': self.os, 'version': self.version, 'dateAdd': self.dateAdd, 'lastKeepAlive': self.lastKeepAlive, 'status': self.status, 'key': self.key, 'sharedSum': self.sharedSum, 'os_family': self.os_family, 'group': self.group }
         return dictionary
 
     @staticmethod
@@ -117,7 +117,7 @@ class Agent:
         query = "SELECT {0} FROM agent WHERE id = :id"
         request = {'id': self.id}
 
-        select = ["id", "name", "ip", "key", "os", "version", "date_add", "last_keepalive", "shared_sum", "profile"]
+        select = ["id", "name", "ip", "key", "os", "version", "date_add", "last_keepalive", "shared_sum", "`group`"]
 
         conn.execute(query.format(','.join(select)), request)
 
@@ -155,7 +155,7 @@ class Agent:
             if tuple[8] != None:
                 self.sharedSum = tuple[8]
             if tuple[9] != None:
-                self.profile = tuple[9]
+                self.group = tuple[9]
 
             if self.id != "000":
                 self.status = Agent.calculate_status(self.lastKeepAlive)
@@ -198,8 +198,8 @@ class Agent:
             info['sharedSum'] = self.sharedSum
         #if self.key:
         #    info['key'] = self.key
-        if self.profile:
-            info['profile'] = self.profile
+        if self.group:
+            info['group'] = self.group
 
         return info
 
@@ -689,9 +689,9 @@ class Agent:
         return remove_agent
 
     @staticmethod
-    def get_all_profiles(offset=0, limit=common.database_limit, sort=None, search=None):
+    def get_all_groups(offset=0, limit=common.database_limit, sort=None, search=None):
         """
-        Gets the existing profiles.
+        Gets the existing groups.
 
         :param offset: First item to return.
         :param limit: Maximum number of items to return.
@@ -708,19 +708,19 @@ class Agent:
         conn = Connection(db_global[0])
 
         # Init query
-        query = "SELECT DISTINCT {0} FROM agent WHERE profile IS NOT null"
-        fields = {'name': 'profile'}  # field: db_column
-        select = ["profile"]
+        query = "SELECT DISTINCT {0} FROM agent WHERE `group` IS NOT null"
+        fields = {'name': 'group'}  # field: db_column
+        select = ["`group`"]
         request = {}
 
         # Search
         if search:
             query += " AND NOT" if bool(search['negation']) else ' AND'
-            query += " ( profile LIKE :search )"
+            query += " ( `group` LIKE :search )"
             request['search'] = '%{0}%'.format(search['value'])
 
         # Count
-        conn.execute(query.format('COUNT(DISTINCT profile)'), request)
+        conn.execute(query.format('COUNT(DISTINCT `group`)'), request)
         data = {'totalItems': conn.fetch()[0]}
 
         # Sorting
@@ -731,12 +731,12 @@ class Agent:
                 if not set(sort['fields']).issubset(allowed_sort_fields):
                     raise WazuhException(1403, 'Allowed sort fields: {0}. Fields: {1}'.format(allowed_sort_fields, sort['fields']))
 
-                order_str_fields = ['{0} {1}'.format(fields[i], sort['order']) for i in sort['fields']]
+                order_str_fields = ['`{0}` {1}'.format(fields[i], sort['order']) for i in sort['fields']]
                 query += ' ORDER BY ' + ','.join(order_str_fields)
             else:
-                query += ' ORDER BY profile {0}'.format(sort['order'])
+                query += ' ORDER BY `group` {0}'.format(sort['order'])
         else:
-            query += ' ORDER BY profile ASC'
+            query += ' ORDER BY `group` ASC'
 
         # OFFSET - LIMIT
         if limit:
@@ -756,12 +756,12 @@ class Agent:
         return data
 
     @staticmethod
-    def profile_exists(profile_id):
+    def group_exists(group_id):
         """
-        Checks if the profile exists
+        Checks if the group exists
 
-        :param profile_id: Profile ID.
-        :return: True if profile exists, False otherwise
+        :param group_id: Group ID.
+        :return: True if group exists, False otherwise
         """
 
         db_global = glob(common.database_path_global)
@@ -770,8 +770,8 @@ class Agent:
 
         conn = Connection(db_global[0])
 
-        query = "SELECT profile FROM agent WHERE profile = :profile_id LIMIT 1"
-        request = {'profile_id': profile_id}
+        query = "SELECT `group` FROM agent WHERE `group` = :group_id LIMIT 1"
+        request = {'group_id': group_id}
 
         conn.execute(query, request)
 
@@ -783,11 +783,11 @@ class Agent:
                 return False
 
     @staticmethod
-    def get_agent_profile(profile_id, offset=0, limit=common.database_limit, sort=None, search=None):
+    def get_agent_group(group_id, offset=0, limit=common.database_limit, sort=None, search=None):
         """
-        Gets the agents in a profile
+        Gets the agents in a group
 
-        :param profile_id: Profile ID.
+        :param group_id: Group ID.
         :param offset: First item to return.
         :param limit: Maximum number of items to return.
         :param sort: Sorts the items. Format: {"fields":["field1","field2"],"order":"asc|desc"}.
@@ -803,10 +803,10 @@ class Agent:
         conn = Connection(db_global[0])
 
         # Init query
-        query = "SELECT {0} FROM agent WHERE profile = :profile_id"
+        query = "SELECT {0} FROM agent WHERE `group` = :group_id"
         fields = {'id': 'id', 'name': 'name'}  # field: db_column
         select = ['id', 'name']
-        request = {'profile_id': profile_id}
+        request = {'group_id': group_id}
 
         # Search
         if search:
@@ -857,43 +857,43 @@ class Agent:
         return data
 
     @staticmethod
-    def set_profile(agent_id, profile_id):
+    def set_group(agent_id, group_id):
         """
-        Assings a profile to an agent.
+        Assings a group to an agent.
 
         :param agent_id: Agent ID.
-        :param profile_id: Profile ID.
+        :param group_id: Group ID.
         :return: Confirmation message.
         """
 
         # Check if agent exists
         Agent(agent_id).get_basic_information()
 
-        if profile_id.lower() != "default":
-            agent_profile_path = "{0}/{1}".format(common.profiles_path, agent_id)
+        if group_id.lower() != "default":
+            agent_group_path = "{0}/{1}".format(common.groups_path, agent_id)
             try:
-                new_file = False if path.exists(agent_profile_path) else True
+                new_file = False if path.exists(agent_group_path) else True
 
-                f_profile = open(agent_profile_path, 'w')
-                f_profile.write(profile_id)
-                f_profile.close()
+                f_group = open(agent_group_path, 'w')
+                f_group.write(group_id)
+                f_group.close()
 
                 if new_file:
                     ossec_uid = getpwnam("ossec").pw_uid
                     ossec_gid = getgrnam("ossec").gr_gid
-                    chown(agent_profile_path, ossec_uid, ossec_gid)
-                    chmod(agent_profile_path, 0o640)
+                    chown(agent_group_path, ossec_uid, ossec_gid)
+                    chmod(agent_group_path, 0o640)
             except Exception as e:
                 raise WazuhException(1005, str(e))
         else:
-            Agent.remove_profile(agent_id)
+            Agent.remove_group(agent_id)
 
-        return "Profile '{0}' assigned to agent '{1}'.".format(profile_id, agent_id)
+        return "Group '{0}' assigned to agent '{1}'.".format(group_id, agent_id)
 
     @staticmethod
-    def remove_profile(agent_id):
+    def remove_group(agent_id):
         """
-        Remove the agent profile. The profile will be 'default'.
+        Remove the agent group. The group will be 'default'.
 
         :param agent_id: Agent ID.
         :return: Confirmation message.
@@ -902,29 +902,29 @@ class Agent:
         # Check if agent exists
         Agent(agent_id).get_basic_information()
 
-        agent_profile_path = "{0}/{1}".format(common.profiles_path, agent_id)
-        if path.exists(agent_profile_path):
-            remove(agent_profile_path)
+        agent_group_path = "{0}/{1}".format(common.groups_path, agent_id)
+        if path.exists(agent_group_path):
+            remove(agent_group_path)
 
-        return "Profile removed. Current profile for agent '{0}': 'default'.".format(agent_id)
+        return "Group removed. Current group for agent '{0}': 'default'.".format(agent_id)
 
     @staticmethod
-    def remove_profile_in_every_agent(profile_id):
+    def remove_group_in_every_agent(group_id):
         """
-        Remove the profile in every agent.
+        Remove the group in every agent.
 
-        :param profile_id: Profile ID.
+        :param group_id: Group ID.
         :return: Confirmation message.
         """
 
         ids = []
 
-        # Get agents with profile
-        agents = Agent.get_agent_profile(profile_id=profile_id, limit=None)
+        # Get agents with group
+        agents = Agent.get_agent_group(group_id=group_id, limit=None)
         for agent in agents['items']:
-            Agent.remove_profile(agent['id'])
+            Agent.remove_group(agent['id'])
             ids.append(agent['id'])
 
-        msg = "Profile '{0}' removed.".format(profile_id)
+        msg = "Group '{0}' removed.".format(group_id)
 
         return {'msg': msg, 'affected_agents': ids}
