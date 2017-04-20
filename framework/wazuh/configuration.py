@@ -131,29 +131,68 @@ def _read_option(section_name, opt):
     return opt_name, opt_value
 
 
-def _conf2json(xml_conf):
+def _conf2json(src_xml, dst_json):
     """
-    Returns a dict from a xml string.
+    Parses src_xml to json. It is inserted in dst_json.
     """
-    root_json = {}
+
+    for section in src_xml.getchildren():
+        section_name = 'open-scap' if section.tag.lower() == 'wodle' else section.tag.lower()
+        section_json = {}
+
+        for option in section.getchildren():
+            option_name, option_value = _read_option(section_name, option)
+            if type(option_value) is list:
+                for ov in option_value:
+                    _insert(section_json, section_name, option_name, ov)
+            else:
+                _insert(section_json, section_name, option_name, option_value)
+
+        _insert_section(dst_json, section_name, section_json)
+
+
+def _ossecconf2json(xml_conf):
+    """
+    Returns ossec.conf in JSON from xml
+    """
+    final_json = {}
 
     for root in xml_conf.getchildren():
         if root.tag.lower() == "ossec_config":
-            for section in root.getchildren():
-                section_name = 'open-scap' if section.tag.lower() == 'wodle' else section.tag.lower()
-                section_json = {}
+            _conf2json(root, final_json)
 
-                for option in section.getchildren():
-                    option_name, option_value = _read_option(section_name, option)
-                    if type(option_value) is list:
-                        for ov in option_value:
-                            _insert(section_json, section_name, option_name, ov)
-                    else:
-                        _insert(section_json, section_name, option_name, option_value)
+    return final_json
 
-                _insert_section(root_json, section_name, section_json)
 
-    return root_json
+def _agentconf2json(xml_conf):
+    """
+    Returns agent.conf in JSON from xml
+    """
+
+    final_json = []
+
+    for root in xml_conf.getchildren():
+        if root.tag.lower() == "agent_config":
+            # Get attributes (os, name, profile)
+            filters = {}
+            for attr in root.attrib:
+                filters[attr] = root.attrib[attr]
+
+            # Check if we have read the same filters before (we will need to merge them)
+            previous_config = -1
+            for idx, item in enumerate(final_json):
+                if 'filters' in item and item['filters'] == filters:
+                    previous_config = idx
+                    break
+
+            if previous_config != -1:
+                _conf2json(root, final_json[previous_config]['config'])
+            else:
+                config = {}
+                _conf2json(root, config)
+                final_json.append({'filters': filters, 'config': config})
+
+    return {'totalItems': len(final_json), 'items': final_json}
 
 
 def get_ossec_conf(section=None, field=None):
@@ -177,7 +216,7 @@ def get_ossec_conf(section=None, field=None):
         xml_data = fromstring(txt_data)
 
         # Parse XML to JSON
-        data = _conf2json(xml_data)
+        data = _ossecconf2json(xml_data)
     except:
         raise WazuhException(1101)
 
@@ -195,37 +234,6 @@ def get_ossec_conf(section=None, field=None):
 
     return data
 
-
-def _agentconf2json(xml_conf):
-    """
-    Returns a dict from a xml string.
-    """
-
-    final_json = []
-
-    for root in xml_conf.getchildren():
-        if root.tag.lower() == "agent_config":
-            root_json = {'filters': [], 'config': {}}
-            for attr in root.attrib:
-                filter_value = {attr: root.attrib[attr].split('|')}
-                root_json['filters'].append(filter_value)
-
-            for section in root.getchildren():
-                section_name = 'open-scap' if section.tag.lower() == 'wodle' else section.tag.lower()
-                section_json = {}
-
-                for option in section.getchildren():
-                    option_name, option_value = _read_option(section_name, option)
-                    if type(option_value) is list:
-                        for ov in option_value:
-                            _insert(section_json, section_name, option_name, ov)
-                    else:
-                        _insert(section_json, section_name, option_name, option_value)
-
-                _insert_section(root_json['config'], section_name, section_json)
-            final_json.append(root_json)
-
-    return final_json
 
 def get_agent_conf(profile_id=None):
     """
@@ -261,6 +269,7 @@ def get_agent_conf(profile_id=None):
         raise WazuhException(1101)
 
     return data
+
 
 def get_profile_files(profile_id=None):
 
