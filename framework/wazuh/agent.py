@@ -739,9 +739,10 @@ class Agent:
             query += ' ORDER BY profile ASC'
 
         # OFFSET - LIMIT
-        query += ' LIMIT :offset,:limit'
-        request['offset'] = offset
-        request['limit'] = limit
+        if limit:
+            query += ' LIMIT :offset,:limit'
+            request['offset'] = offset
+            request['limit'] = limit
 
         # Data query
         conn.execute(query.format(','.join(select)), request)
@@ -751,6 +752,7 @@ class Agent:
         for tuple in conn:
             if tuple[0] != None:
                 data['items'].append(tuple[0])
+
         return data
 
     @staticmethod
