@@ -166,6 +166,8 @@ router.get('/profiles/:profile_id', cache(), function(req, res) {
  * @apiGroup Profiles
  *
  * @apiParam {String} profile_id Profile ID.
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
  *
  * @apiDescription Returns the profile configuration (agent.conf)
  *
@@ -179,11 +181,21 @@ router.get('/profiles/:profile_id/configuration', cache(), function(req, res) {
     req.apicacheGroup = "agents";
 
     var data_request = {'function': '/agents/profiles/:profile_id/configuration', 'arguments': {}};
+    var filters = {'offset': 'numbers', 'limit': 'numbers'};
 
     if (!filter.check(req.params, {'profile_id':'names'}, req, res))  // Filter with error
         return;
 
     data_request['arguments']['profile_id'] = req.params.profile_id;
+
+
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
+
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })

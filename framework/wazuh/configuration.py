@@ -8,6 +8,7 @@ from os import listdir, path as os_path
 from wazuh.exception import WazuhException
 from wazuh.agent import Agent
 from wazuh import common
+from wazuh.utils import cut_array
 
 conf_sections = {
     'active-response': { 'type': 'duplicate', 'list_options': [] },
@@ -192,7 +193,7 @@ def _agentconf2json(xml_conf):
                 _conf2json(root, config)
                 final_json.append({'filters': filters, 'config': config})
 
-    return {'totalItems': len(final_json), 'items': final_json}
+    return final_json
 
 
 def get_ossec_conf(section=None, field=None):
@@ -235,7 +236,7 @@ def get_ossec_conf(section=None, field=None):
     return data
 
 
-def get_agent_conf(profile_id=None):
+def get_agent_conf(profile_id=None, offset=0, limit=common.database_limit):
     """
     Returns agent.conf as dictionary.
 
@@ -268,7 +269,8 @@ def get_agent_conf(profile_id=None):
     except:
         raise WazuhException(1101)
 
-    return data
+
+    return {'totalItems': len(data), 'items': cut_array(data, offset, limit)}
 
 
 def get_profile_files(profile_id=None):
