@@ -20,7 +20,7 @@ try:
     else:
         exit("Error: Framework path not found.")
 
-    path.append(framework_path)
+    path.append(framework_path)  # It is necessary to import Wazuh package
 except Exception as e:
     exit("Error: Framework path not found: {0}".format(e))
 
@@ -83,9 +83,9 @@ def show_group_files(group_id):
         print("  {0}".format(f))
 
 
-def remove_group(agent_id, force=False):
+def remove_group(agent_id, force=False, quiet=False):
     ans = 'n'
-    if not force:
+    if not quiet:
          ans = get_stdin("Do you want to remove the current group of agent '{0}'? [y/N]: ".format(agent_id))
     else:
         ans = 'y'
@@ -98,9 +98,9 @@ def remove_group(agent_id, force=False):
     print(msg)
 
 
-def remove_group_all_agents(group_id, force=False):
+def remove_group_all_agents(group_id, force=False, quiet=False):
     ans = 'n'
-    if not force:
+    if not quiet:
          ans = get_stdin("Do you want to remove the '{0}' group of every agent? [y/N]: ".format(group_id))
     else:
         ans = 'y'
@@ -115,9 +115,9 @@ def remove_group_all_agents(group_id, force=False):
     print(msg)
 
 
-def set_group(agent_id, group_id, force=False):
+def set_group(agent_id, group_id, force=False, quiet=False):
     ans = 'n'
-    if not force:
+    if not quiet:
          ans = get_stdin("Do you want to set the group '{0}' to the agent '{1}'? [y/N]: ".format(group_id, agent_id))
     else:
         ans = 'y'
@@ -132,28 +132,44 @@ def set_group(agent_id, group_id, force=False):
 
 def usage():
     msg = """
-    agent_groups.py [  -i agent_id [ -r [-f] ] |  -g group_id  [ -a | -l | -s agent_id [-f] | -r [-f] ]  ]
+    ./agent_groups.py [ -l [ -g group_id ] | -c -g group_id | -a -i agent_id -g groupd_id [-q] [-f] | -s -i agent_id | -r (-g group_id | -i agent_id) [-q] [-f] ]
 
     Usage:
-    ./agent_groups.py                                   # List all groups
-    ./agent_groups.py -g group_id -a                    # List agents in group
-    ./agent_groups.py -g group_id -l                    # List files in group
-    ./agent_groups.py -g group_id -s agent_id [-f]      # Set group to agent
-    ./agent_groups.py -g group_id -r [-f]               # Remove the group in every agent
-    ./agent_groups.py -i agent_id                       # Get group of agent
-    ./agent_groups.py -i agent_id -r [-f]               # Remove the current group of the agent
+    ./agent_groups.py [-l]                                  # List all groups
+    ./agent_groups.py -l -g group_id                        # List agents in group
+    ./agent_groups.py -c -g group_id                        # List configuration files in group
+
+    ./agent_groups.py -a -i agent_id -g group_id [-q] [-f]  # Assign group to agent
+    ./agent_groups.py -s -i agent_id                        # Show group of agent
+
+    ./agent_groups.py -r -g group_id [-q] [-f]              # Remove the group in every agent
+    ./agent_groups.py -r -i agent_id [-q] [-f]              # Remove the current group of the agent
 
     Params:
+    \t-l, --list
+    \t-c, --list-files
+    \t-a, --assign-group
+    \t-s, --show-group
+    \t-r, --remove-group
+
     \t-i, --agent-id
     \t-g, --group
-    \t-a, --list-agents
-    \t-l, --list-files
-    \t-s, --set-group
-    \t-r, --remove-group
+
+    \t-q, --quiet (no confirmation)
     \t-f, --force
     \t-d, --debug
     """
     print(msg)
+
+
+def invalid_option(msg=None):
+    if msg:
+        print("Invalid options: {0}".format(msg))
+    else:
+        print("Invalid options.")
+
+    print("Try '--help' for more information.\n")
+    exit(1)
 
 
 def main():
@@ -163,33 +179,38 @@ def main():
     # Initialize framework
     myWazuh = Wazuh(get_init=True)
 
-    # Arguments
-    arguments = {'n_args': 0, 'group_id': None, 'agent_id': None, 'force': False, 'list_agents': False, 'list_files': False, 'set_group': False, 'remove_group': False,  }
+    # Parse arguments
+    arguments = {'n_args': 0, 'n_actions': 0, 'group': None, 'agent-id': None, 'list': False, 'list-files': False, 'assign-group': False, 'show-group': False, 'remove-group': False, 'quiet': False, 'force': False, }
     try:
-        opts, args = getopt(argv[1:], "i:g:als:rfhd", ["agent-id=", "group=", "list-agents", "list-files", "set-group=", "remove-group", "force", "help", "debug"])
+        opts, args = getopt(argv[1:], "lcasri:g:qfdh", ["list", "list-files", "assign-group", "show-group", "remove-group", "agent-id=", "group=", "quiet", "force", "debug", "help"])
         arguments['n_args'] = len(opts)
-        if arguments['n_args'] > 4:
-            print("Incorrect number of arguments.\nTry './agent_groups.py --help' for more information.")
-            exit(1)
     except GetoptError as err:
-        print(str(err) + "\n" + "Try './agent_groups.py --help' for more information.")
+        print(str(err) + "\n" + "Try '--help' for more information.")
         exit(1)
 
     for o, a in opts:
-        if o in ("-i", "--agent-id"):
-            arguments['agent_id'] = a
-        elif o in ("-g", "group"):
-            arguments['group_id'] = a
-        elif o in ("-a", "list-agents"):
-            arguments['list_agents'] = True
-        elif o in ("-l", "list-files"):
-            arguments['list_files'] = True
-        elif o in ("-s", "set-group"):
-            arguments['set_group'] = True
-            arguments['agent_id'] = a
-        elif o in ("-r", "remove-group"):
-            arguments['remove_group'] = True
-        elif o in ("-f", "force"):
+        if o in ("-l", "--list"):
+            arguments['list'] = True
+            arguments['n_actions'] += 1
+        elif o in ("-c", "--list-files"):
+            arguments['list-files'] = True
+            arguments['n_actions'] += 1
+        elif o in ("-a", "--assign-group"):
+            arguments['assign-group'] = True
+            arguments['n_actions'] += 1
+        elif o in ("-s", "--show-group"):
+            arguments['show-group'] = True
+            arguments['n_actions'] += 1
+        elif o in ("-r", "--remove-group"):
+            arguments['remove-group'] = True
+            arguments['n_actions'] += 1
+        elif o in ("-i", "--agent-id"):
+            arguments['agent-id'] = a
+        elif o in ("-g", "--group"):
+            arguments['group'] = a
+        elif o in ("-q", "--quiet"):
+            arguments['quiet'] = True
+        elif o in ("-f", "--force"):
             arguments['force'] = True
         elif o in ("-d", "--debug"):
             global debug
@@ -198,32 +219,41 @@ def main():
             usage()
             exit(0)
         else:
-            usage()
-            exit(1)
+            invalid_option()
 
-    # No arguments
+    # Actions
+    if arguments['n_args'] > 5 or arguments['n_actions'] > 1:
+        invalid_option("Bad argument combination.")
+
+    # ./agent_groups.py
     if arguments['n_args'] == 0:
         show_groups()
-    # -i agent_id [ -r [-f] ]
-    elif arguments['agent_id'] and not arguments['group_id']:
-        if arguments['remove_group']:
-            remove_group(arguments['agent_id'], arguments['force'])
+    # ./agent_groups.py -l [ -g group_id ]
+    elif arguments['list']:
+        if arguments['group']:
+            show_agents_with_group(arguments['group'])
         else:
-            show_group(arguments['agent_id'])
-    #  -g group_id  [ -a | -l | -s agent_id [-f] | -r [-f] ]  ]
-    elif arguments['group_id']:
-        # -g group_id -a
-        if arguments['list_agents']:
-            show_agents_with_group(arguments['group_id'])
-        # -g group_id -l
-        elif arguments['list_files']:
-            show_group_files(arguments['group_id'])
-        # -g group_id -s agent_id [-f]
-        elif arguments['set_group']:
-            set_group(arguments['agent_id'], arguments['group_id'], arguments['force'])
-        # -g group_id -r [-f]
-        elif arguments['remove_group']:
-            remove_group_all_agents(arguments['group_id'], arguments['force'])
+            show_groups()
+    # -c -g group_id
+    elif arguments['list-files']:
+        show_group_files(arguments['group']) if arguments['group'] else invalid_option("Missing group.")
+    # -a -i agent_id -g groupd_id [-q] [-f]
+    elif arguments['assign-group']:
+        set_group(arguments['agent-id'], arguments['group'], arguments['force'], arguments['quiet']) if arguments['agent-id'] and arguments['group'] else invalid_option("Missing agent ID or group.")
+    # -s -i agent_id
+    elif arguments['show-group']:
+        show_group(arguments['agent-id']) if arguments['agent-id'] else invalid_option("Missing agent ID.")
+    # -r (-g group_id | -i agent_id) [-q] [-f]
+    elif arguments['remove-group']:
+        if arguments['agent-id']:
+            remove_group(arguments['agent-id'], arguments['force'], arguments['quiet'])
+        elif arguments['group']:
+            remove_group_all_agents(arguments['group'], arguments['force'], arguments['quiet'])
+        else:
+            invalid_option("Missing agent ID or group.")
+    else:
+        invalid_option("Bad argument combination.")
+
 
 if __name__ == "__main__":
 
