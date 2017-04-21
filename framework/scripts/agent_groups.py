@@ -92,14 +92,14 @@ def remove_group(agent_id, force=False, quiet=False):
         ans = 'y'
 
     if ans.lower() == 'y':
-        msg = Agent.remove_group(agent_id)
+        msg = Agent.remove_group(agent_id, force)
     else:
         msg = "Cancelled."
 
     print(msg)
 
 
-def remove_group_all_agents(group_id, force=False, quiet=False):
+def remove_group_all_agents(group_id, quiet=False):
     ans = 'n'
     if not quiet:
          ans = get_stdin("Do you want to remove the '{0}' group of every agent? [y/N]: ".format(group_id))
@@ -124,7 +124,7 @@ def set_group(agent_id, group_id, force=False, quiet=False):
         ans = 'y'
 
     if ans.lower() == 'y':
-        msg = Agent.set_group(agent_id, group_id)
+        msg = Agent.set_group(agent_id, group_id, force)
     else:
         msg = "Cancelled."
 
@@ -133,7 +133,7 @@ def set_group(agent_id, group_id, force=False, quiet=False):
 
 def usage():
     msg = """
-    ./agent_groups.py [ -l [ -g group_id ] | -c -g group_id | -a -i agent_id -g groupd_id [-q] [-f] | -s -i agent_id | -r (-g group_id | -i agent_id) [-q] [-f] ]
+    ./agent_groups.py [ -l [ -g group_id ] | -c -g group_id | -a -i agent_id -g groupd_id [-q] [-f] | -s -i agent_id | -r (-g group_id | -i agent_id [-f]) [-q] ]
 
     Usage:
     ./agent_groups.py [-l]                                  # List all groups
@@ -143,7 +143,7 @@ def usage():
     ./agent_groups.py -a -i agent_id -g group_id [-q] [-f]  # Assign group to agent
     ./agent_groups.py -s -i agent_id                        # Show group of agent
 
-    ./agent_groups.py -r -g group_id [-q] [-f]              # Remove the group in every agent
+    ./agent_groups.py -r -g group_id [-q]                   # Remove the group in every agent
     ./agent_groups.py -r -i agent_id [-q] [-f]              # Remove the current group of the agent
 
     Params:
@@ -157,7 +157,7 @@ def usage():
     \t-g, --group
 
     \t-q, --quiet (no confirmation)
-    \t-f, --force
+    \t-f, --force (No check if agent exists)
     \t-d, --debug
     """
     print(msg)
@@ -244,12 +244,12 @@ def main():
     # -s -i agent_id
     elif arguments['show-group']:
         show_group(arguments['agent-id']) if arguments['agent-id'] else invalid_option("Missing agent ID.")
-    # -r (-g group_id | -i agent_id) [-q] [-f]
+    # -r (-g group_id | -i agent_id [-f]) [-q] 
     elif arguments['remove-group']:
         if arguments['agent-id']:
             remove_group(arguments['agent-id'], arguments['force'], arguments['quiet'])
         elif arguments['group']:
-            remove_group_all_agents(arguments['group'], arguments['force'], arguments['quiet'])
+            remove_group_all_agents(arguments['group'], arguments['quiet'])
         else:
             invalid_option("Missing agent ID or group.")
     else:

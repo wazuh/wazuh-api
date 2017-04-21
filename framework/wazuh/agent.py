@@ -857,17 +857,19 @@ class Agent:
         return data
 
     @staticmethod
-    def set_group(agent_id, group_id):
+    def set_group(agent_id, group_id, force=False):
         """
         Assings a group to an agent.
 
         :param agent_id: Agent ID.
         :param group_id: Group ID.
+        :param force: No check if agent exists
         :return: Confirmation message.
         """
 
         # Check if agent exists
-        Agent(agent_id).get_basic_information()
+        if not force:
+            Agent(agent_id).get_basic_information()
 
         if group_id.lower() != "default":
             agent_group_path = "{0}/{1}".format(common.groups_path, agent_id)
@@ -891,16 +893,18 @@ class Agent:
         return "Group '{0}' assigned to agent '{1}'.".format(group_id, agent_id)
 
     @staticmethod
-    def remove_group(agent_id):
+    def remove_group(agent_id, force=False):
         """
         Remove the agent group. The group will be 'default'.
 
         :param agent_id: Agent ID.
+        :param force: No check if agent exists
         :return: Confirmation message.
         """
 
         # Check if agent exists
-        Agent(agent_id).get_basic_information()
+        if not force:
+            Agent(agent_id).get_basic_information()
 
         agent_group_path = "{0}/{1}".format(common.groups_path, agent_id)
         if path.exists(agent_group_path):
