@@ -11,7 +11,10 @@ import sqlite3
 
 # Check SQL compatibility: >= 3.7.0.0
 if LooseVersion(sqlite3.sqlite_version) < LooseVersion('3.7.0.0'):
-    raise WazuhException(2001, str(sqlite3.sqlite_version))
+    msg = str(sqlite3.sqlite_version)
+    msg += "\nTry to export the internal SQLite library:"
+    msg += "\nexport LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/var/ossec/api/framework/lib"
+    raise WazuhException(2001, msg)
 
 
 class Connection:

@@ -31,7 +31,8 @@ try:
     from wazuh.exception import WazuhException
     from wazuh.configuration import get_group_files
 except Exception as e:
-    exit("No module 'wazuh' found: {0}".format(e))
+    print("Error importing 'Wazuh' package.\n\n{0}\n".format(e))
+    exit()
 
 # Global variables
 debug = False

@@ -10,7 +10,8 @@ class WazuhException(Exception):
     """
 
     ERRORS = {
-        # Wazuh: 1000 - 1099
+        # Wazuh: 0999 - 1099
+        999: 'Incompatilbe version of Python',
         1000: 'Wazuh Internal Error',
         1001: 'Error importing module',
         1002: 'Error executing command',
@@ -94,4 +95,4 @@ class WazuhException(Exception):
             self.message = extra_message
 
     def __str__(self):
-        return self.message
+        return "Error {0} - {1}".format(self.code, self.message)

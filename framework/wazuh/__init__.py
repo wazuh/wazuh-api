@@ -20,6 +20,19 @@ Wazuh is a python package to manage OSSEC.
 
 __version__ = '0.1'
 
+
+msg = "\n\nPython 2.7 or newer not found."
+msg += "\nUpdate it or set the path to a valid version. Example:"
+msg += "\n  export PATH=$PATH:/opt/rh/python27/root/usr/bin"
+msg += "\n  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/rh/python27/root/usr/lib64"
+
+try:
+    from sys import version_info as python_version
+    if python_version.major < 2 or (python_version.major == 2 and python_version.minor < 7 ):
+        raise WazuhException(999, msg)
+except Exception as e:
+    raise WazuhException(999, msg)
+
 class Wazuh:
     """
     Basic class to set up OSSEC directories
