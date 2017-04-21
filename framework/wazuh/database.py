@@ -6,7 +6,12 @@
 from wazuh import common
 from wazuh.exception import WazuhException
 from os.path import isfile
+from distutils.version import LooseVersion
 import sqlite3
+
+# Check SQL compatibility: >= 3.7.0.0
+if LooseVersion(sqlite3.sqlite_version) < LooseVersion('3.7.0.0'):
+    raise WazuhException(2001, str(sqlite3.sqlite_version))
 
 
 class Connection:

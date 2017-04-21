@@ -72,6 +72,7 @@ class WazuhException(Exception):
 
         # Database:
         2000: 'No such database file',
+        2001: 'Incompatible version of SQLite',
 
     }
 
@@ -93,4 +94,4 @@ class WazuhException(Exception):
             self.message = extra_message
 
     def __str__(self):
-        print(': ' + self.message)
+        return self.message
