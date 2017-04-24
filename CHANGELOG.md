@@ -2,45 +2,45 @@
 All notable changes to this project will be documented in this file.
 
 
-## [v2.0.0] - 2017-03-??
+## [v2.0.0] - 2017-04-24
 ### Added
 - **Wazuh v2.0** is required to run the API.
 - API must be launched with root user, but it is run with ossec user.
 - Scripts:
- - install_api.sh
- - configure_api.sh
+    - install_api.sh
+    - configure_api.sh
 - Parameters:
- - Pretty JSON (?pretty)
- - Pagination: offset & limit
- - Search
- - Sort
+    - Pretty JSON (?pretty)
+    - Pagination: offset & limit
+    - Search
+    - Sort
 - Requests:
- - Agents
-  - GET /agents/summary (Get agents summary)
-  - PUT /agents/restart (Restart all agents)
-  - POST /agents/insert (Insert agent)
- - Manager
-  - GET /manager/info (Get manager information)
-  - GET /manager/logs (Get ossec.log)
-  - GET /manager/logs/summary (Get summary of ossec.log)
+    - Agents
+      - GET /agents/summary (Get agents summary)
+      - PUT /agents/restart (Restart all agents)
+      - POST /agents/insert (Insert agent)
+    - Manager
+      - GET /manager/info (Get manager information)
+      - GET /manager/logs (Get ossec.log)
+      - GET /manager/logs/summary (Get summary of ossec.log)
  - Decoders
-  - GET /decoders (Get all decoders)
-  - GET /decoders/:decoder_name (Get decoders by name)
-  - GET /decoders/files (Get all decoders files)
-  - GET /decoders/parents (Get all parent decoders)
+    - GET /decoders (Get all decoders)
+    - GET /decoders/:decoder_name (Get decoders by name)
+    - GET /decoders/files (Get all decoders files)
+    - GET /decoders/parents (Get all parent decoders)
  - Rules
-  - GET /rules (Get all rules)
-  - GET /rules (Get rules by id)
-  - GET /rules/files (Get files of rules)
-  - GET /rules/groups (Get rule groups)
-  - GET /rules/pci (Get rule pci requirements)
+    - GET /rules (Get all rules)
+    - GET /rules (Get rules by id)
+    - GET /rules/files (Get files of rules)
+    - GET /rules/groups (Get rule groups)
+    - GET /rules/pci (Get rule pci requirements)
  - Rootcheck
-  - GET /rootcheck/:agent_id/cis (Get rootcheck CIS requirements)
-  - GET /rootcheck/:agent_id/pci (Get rootcheck pci requirements)
+    - GET /rootcheck/:agent_id/cis (Get rootcheck CIS requirements)
+    - GET /rootcheck/:agent_id/pci (Get rootcheck pci requirements)
  - API
-  - GET /version
+    - GET /version
 
-- Wazuh framework: Manage OSSEC Wazuh from python.
+- Wazuh framework: Manage Wazuh from python.
 - Unit tests
 - Cache (750ms) for GET requests
 
