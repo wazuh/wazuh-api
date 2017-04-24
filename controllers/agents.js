@@ -364,7 +364,6 @@ router.put('/:agent_name', function(req, res) {
  *
  * @apiParam {Number} agent_id Agent unique ID.
  * @apiParam {String} group_id Pofile ID.
- * @apiParam {Number} [force] No check if agent exists.
  *
  * @apiDescription Assing the group :group_id to the agent.
  *
@@ -383,13 +382,6 @@ router.put('/:agent_id/group/:group_id', function(req, res) {
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
     data_request['arguments']['group_id'] = req.params.group_id;
-
-    if (!filter.check(req.query, {'force': 'numbers'}, req, res))  // Filter with error
-        return;
-
-    if ('force' in req.query && req.query.force == 1){
-        data_request['arguments']['force'] = req.query.force;
-    }
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -427,7 +419,6 @@ router.delete('/:agent_id', function(req, res) {
  * @apiGroup Groups
  *
  * @apiParam {Number} agent_id Agent ID.
- * @apiParam {Number} [force] No check if agent exists.
  *
  * @apiDescription Remove the group of the agent. The group will be 'default'.
  *
@@ -444,13 +435,6 @@ router.delete('/:agent_id/group', function(req, res) {
         return;
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
-
-    if (!filter.check(req.query, {'force': 'numbers'}, req, res))  // Filter with error
-        return;
-
-    if ('force' in req.query && req.query.force == 1){
-        data_request['arguments']['force'] = req.query.force;
-    }
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
