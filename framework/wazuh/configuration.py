@@ -389,7 +389,7 @@ def get_ossec_conf(section=None, field=None):
     return data
 
 
-def get_agent_conf(group_id=None, offset=0, limit=common.database_limit):
+def get_agent_conf(group_id=None, offset=0, limit=common.database_limit, filename=None):
     """
     Returns agent.conf as dictionary.
 
@@ -401,7 +401,13 @@ def get_agent_conf(group_id=None, offset=0, limit=common.database_limit):
             raise WazuhException(1710, group_id)
 
         agent_conf = "{0}/{1}".format(common.shared_path, group_id)
-    agent_conf += "/agent.conf"
+
+    if filename:
+        agent_conf_name = filename
+    else:
+        agent_conf_name = 'agent.conf'
+
+    agent_conf += "/{0}".format(agent_conf_name)
 
     if not os_path.exists(agent_conf):
         raise WazuhException(1013, agent_conf)
@@ -426,7 +432,7 @@ def get_agent_conf(group_id=None, offset=0, limit=common.database_limit):
     return {'totalItems': len(data), 'items': cut_array(data, offset, limit)}
 
 
-def get_file_conf(filename, group_id=None):
+def get_file_conf(filename, group_id=None, type_conf=None):
     """
     Returns the configuration file as dictionary.
 
@@ -443,15 +449,31 @@ def get_file_conf(filename, group_id=None):
     if not os_path.exists(file_path):
         raise WazuhException(1013, file_path)
 
+    types = {
+        'conf': get_agent_conf,
+        'rootkit_files': _rootkit_files2json,
+        'rootkit_trojans': _rootkit_trojans2json,
+        'rcl': _rcl2json
+    }
+
     data = {}
-    if filename == "agent.conf":
-        data = get_agent_conf(group_id, limit=0)
-    elif filename == "rootkit_files.txt":
-        data = _rootkit_files2json(file_path)
-    elif filename == "rootkit_trojans.txt":
-        data = _rootkit_trojans2json(file_path)
+    if type_conf:
+        if type_conf in types:
+            if type_conf == 'conf':
+                data = types[type_conf](group_id, limit=0, filename=filename)
+            else:
+                data = types[type_conf](file_path)
+        else:
+            raise WazuhException(1104, "{0}. Valid types: {1}".format(type_conf, types.keys()))
     else:
-        data = _rcl2json(file_path)
+        if filename == "agent.conf":
+            data = get_agent_conf(group_id, limit=0, filename=filename)
+        elif filename == "rootkit_files.txt":
+            data = _rootkit_files2json(file_path)
+        elif filename == "rootkit_trojans.txt":
+            data = _rootkit_trojans2json(file_path)
+        else:
+            data = _rcl2json(file_path)
 
     return data
 

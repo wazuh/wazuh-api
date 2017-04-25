@@ -28,6 +28,7 @@ class WazuhException(Exception):
         1101: 'Error getting configuration',
         1102: 'Invalid section',
         1103: 'Invalid field in section',
+        1104: 'Invalid type',
 
         # Rule: 1200 - 1299
         1200: 'Error reading rules from ossec.conf',
