@@ -13,7 +13,7 @@ from glob import glob
 from datetime import date, datetime, timedelta
 from hashlib import md5
 from base64 import b64encode
-from shutil import copyfile, move
+from shutil import copyfile, move, copytree
 from time import time
 from platform import platform
 from os import remove, chown, chmod, path, makedirs, rename, urandom
@@ -872,6 +872,8 @@ class Agent:
             Agent(agent_id).get_basic_information()
 
         if group_id.lower() != "default":
+
+            # Create group in /queue/agent-groups
             agent_group_path = "{0}/{1}".format(common.groups_path, agent_id)
             try:
                 new_file = False if path.exists(agent_group_path) else True
@@ -887,6 +889,20 @@ class Agent:
                     chmod(agent_group_path, 0o640)
             except Exception as e:
                 raise WazuhException(1005, str(e))
+
+            # Create group in /etc/shared
+            group_path = "{0}/{1}".format(common.shared_path, group_id)
+            group_def_path = "{0}/default".format(common.shared_path)
+            try:
+                if not path.exists(group_path):
+                    copytree(group_def_path, group_path)
+                    chmod_r(group_path, 0o660)
+                    chmod(group_path, 0o770)
+
+            except Exception as e:
+                raise WazuhException(1005, str(e))
+
+
         else:
             Agent.remove_group(agent_id)
 
