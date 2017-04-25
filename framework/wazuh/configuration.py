@@ -5,10 +5,13 @@
 
 from xml.etree.ElementTree import fromstring
 from os import listdir, path as os_path
+import re
 from wazuh.exception import WazuhException
 from wazuh.agent import Agent
 from wazuh import common
 from wazuh.utils import cut_array
+
+# Aux functions
 
 conf_sections = {
     'active-response': { 'type': 'duplicate', 'list_options': [] },
@@ -196,6 +199,156 @@ def _agentconf2json(xml_conf):
     return final_json
 
 
+def _rcl2json(filepath):
+    """
+    Returns the RCL file as dictionary.
+
+    :return: rcl file (system_audit, windows_audit) as dictionary.
+    """
+
+    data = {'vars': {}, 'controls': []}
+    # [Application name] [any or all] [reference]
+    # type:<entry name>;
+    regex_comment = re.compile("^\s*#")
+    regex_title = re.compile("^\s*\[(.*)\]\s*\[(.*)\]\s*\[(.*)\]\s*")
+    regex_name_groups = re.compile("(\{\w+:\s+\S+\s*\S*\})")
+    regex_check = re.compile("^\s*(\w:.+)")
+    regex_var = re.compile("^\s*\$(\w+)=(.+)")
+
+    try:
+        item = {}
+
+        with open(filepath) as f:
+            for line in f:
+                if re.search(regex_comment, line):
+                    continue
+
+                match_title = re.search(regex_title, line)
+                if match_title:
+                    # Previous
+                    if item:
+                        data['controls'].append(item)
+
+                    # New
+                    name = match_title.group(1)
+                    condition = match_title.group(2)
+                    reference = match_title.group(3)
+
+                    item = {}
+
+                    # Name
+                    end_name = name.find('{')
+                    item['name'] = name[:end_name].strip()
+
+                    # Extract PCI and CIS from name
+                    name_groups = re.findall(regex_name_groups, name)
+
+                    cis = []
+                    pci = []
+                    if name_groups:
+
+                        for group in name_groups:
+                            # {CIS: 1.1.2 RHEL7}
+                            g_value = group.split(':')[-1][:-1].strip()
+                            if 'CIS' in group:
+                                 cis.append(g_value)
+                            elif 'PCI' in group:
+                                 pci.append(g_value)
+
+                    if cis:
+                        item['cis'] = cis
+                    if pci:
+                        item['pci'] = pci
+
+                    # Conditions
+                    if condition:
+                        item['condition'] = condition
+                    if reference:
+                        item['reference'] = reference
+                    item['checks'] = []
+
+                    continue
+
+                match_checks = re.search(regex_check, line)
+                if match_checks:
+                    item['checks'].append(match_checks.group(1))
+                    continue
+
+                match_var = re.search(regex_var, line)
+                if match_var:
+                    data['vars'][match_var.group(1)] = match_var.group(2)
+                    continue
+
+            # Last item
+            data['controls'].append(item)
+
+    except Exception as e:
+        raise WazuhException(1101, str(e))
+
+    return data
+
+
+def _rootkit_files2json(filepath):
+    """
+    Returns the rootkit file as dictionary.
+
+    :return: rootkit file as dictionary.
+    """
+
+    data = []
+
+    # file_name ! Name ::Link to it
+    regex_comment = re.compile("^\s*#")
+    regex_check = re.compile("^\s*(.+)\s+!\s*(.+)\s*::\s*(.+)")
+
+    try:
+        with open(filepath) as f:
+            for line in f:
+                if re.search(regex_comment, line):
+                    continue
+
+                match_check= re.search(regex_check, line)
+                if match_check:
+                    new_check = {'filename': match_check.group(1).strip(), 'name': match_check.group(2).strip(), 'link': match_check.group(3).strip()}
+                    data.append(new_check)
+
+    except Exception as e:
+        raise WazuhException(1101, str(e))
+
+    return data
+
+
+def _rootkit_trojans2json(filepath):
+    """
+    Returns the rootkit trojans file as dictionary.
+
+    :return: rootkit trojans file as dictionary.
+    """
+
+    data = []
+
+    # file_name !string_to_search!Description
+    regex_comment = re.compile("^\s*#")
+    regex_check = re.compile("^\s*(.+)\s+!\s*(.+)\s*!\s*(.+)")
+
+    try:
+        with open(filepath) as f:
+            for line in f:
+                if re.search(regex_comment, line):
+                    continue
+
+                match_check= re.search(regex_check, line)
+                if match_check:
+                    new_check = {'filename': match_check.group(1).strip(), 'name': match_check.group(2).strip(), 'description': match_check.group(3).strip()}
+                    data.append(new_check)
+
+    except Exception as e:
+        raise WazuhException(1101, str(e))
+
+    return data
+
+
+# Main functions
 def get_ossec_conf(section=None, field=None):
     """
     Returns ossec.conf (manager) as dictionary.
@@ -271,6 +424,36 @@ def get_agent_conf(group_id=None, offset=0, limit=common.database_limit):
 
 
     return {'totalItems': len(data), 'items': cut_array(data, offset, limit)}
+
+
+def get_file_conf(filename, group_id=None):
+    """
+    Returns the configuration file as dictionary.
+
+    :return: configuration file as dictionary.
+    """
+
+    if group_id:
+        if not Agent.group_exists(group_id):
+            raise WazuhException(1710, group_id)
+        file_path = "{0}/{1}/{2}".format(common.shared_path, group_id, filename)
+    else:
+        file_path = "{0}/{1}".format(common.shared_path, filename)
+
+    if not os_path.exists(file_path):
+        raise WazuhException(1013, file_path)
+
+    data = {}
+    if filename == "agent.conf":
+        data = get_agent_conf(group_id, limit=0)
+    elif filename == "rootkit_files.txt":
+        data = _rootkit_files2json(file_path)
+    elif filename == "rootkit_trojans.txt":
+        data = _rootkit_trojans2json(file_path)
+    else:
+        data = _rcl2json(file_path)
+
+    return data
 
 
 def get_group_files(group_id=None):

@@ -201,6 +201,37 @@ router.get('/groups/:group_id/configuration', cache(), function(req, res) {
 })
 
 /**
+ * @api {get} /groups/:group_id/files/:filename Get the file in group
+ * @apiName GetAgentGroupFiles
+ * @apiGroup Groups
+ *
+ * @apiParam {String} group_id Group ID.
+ * @apiParam {String} file_name Filename
+ *
+ * @apiDescription Returns the file parsed to JSON
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/groups/mygroup/file/cis_debian_linux_rcl.txt?pretty"
+ *
+ */
+router.get('/groups/:group_id/files/:filename', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /agents/groups/:group_id/files/:filename");
+
+    req.apicacheGroup = "agents";
+
+    var data_request = {'function': '/agents/groups/:group_id/files/:filename', 'arguments': {}};
+    var filters = {'group_id': 'names', 'filename': 'names'};
+
+    if (!filter.check(req.params, filters, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['group_id'] = req.params.group_id;
+    data_request['arguments']['filename'] = req.params.filename;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
  * @api {get} /groups/:group_id/files Get group files
  * @apiName GetAgentGroupFiles
  * @apiGroup Groups

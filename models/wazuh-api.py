@@ -170,6 +170,7 @@ if __name__ == "__main__":
             'DELETE/agents/groups/:group_id':Agent.remove_group_in_every_agent,
             '/agents/groups/:group_id/configuration':configuration.get_agent_conf,
             '/agents/groups/:group_id/files':configuration.get_group_files,
+            '/agents/groups/:group_id/files/:filename':configuration.get_file_conf,
 
             '/decoders': Decoder.get_decoders,
             '/decoders/files': Decoder.get_decoders_files,
