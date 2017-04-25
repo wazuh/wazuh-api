@@ -400,9 +400,9 @@ main() {
     show_info
 
     if [ "X${RESTORE_WARNING}" == "X1" ]; then
-        print "\nWarning: Some problems occured when restoring your previous configuration ($API_PATH/configuration/config.js). Please, review it manually. Backup directory: $API_PATH_BACKUP."
+        print "\nWarning: Some problems occurred when restoring your previous configuration ($API_PATH/configuration/config.js). Please, review it manually. Backup directory: $API_PATH_BACKUP."
     elif [ "X${RESTORE_WARNING}" == "X2" ]; then
-        print "\nWarning: Some problems occured when restoring your previous configuration. Please, review it manually. Backup directory: $API_PATH_BACKUP."
+        print "\nWarning: Some problems occurred when restoring your previous configuration. Please, review it manually. Backup directory: $API_PATH_BACKUP."
     fi
 
     print "Note: You can configure the API executing $API_PATH/scripts/configure_api.sh"
