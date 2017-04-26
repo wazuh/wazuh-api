@@ -133,17 +133,17 @@ if (config.cors.toLowerCase() == "yes"){
 // Basic authentication
 if (config.basic_auth.toLowerCase() == "yes"){
     app.use(auth.connect(auth_secure));
+
+    auth_secure.on('fail', (result, req) => {
+        var log_msg = "[" + req.connection.remoteAddress + "] " + "User: \"" + result.user + "\" - Authentication failed.";
+        logger.log(log_msg);
+    });
+
+    auth_secure.on('error', (error, req) => {
+        var log_msg = "[" + req.connection.remoteAddress + "] Authentication error: " + error.code + " - " + error.message;
+        logger.log(log_msg);
+    });
 }
-
-auth_secure.on('fail', (result, req) => {
-    var log_msg = "[" + req.connection.remoteAddress + "] " + "User: \"" + result.user + "\" - Authentication failed.";
-    logger.log(log_msg);
-});
-
-auth_secure.on('error', (error, req) => {
-    var log_msg = "[" + req.connection.remoteAddress + "] Authentication error: " + error.code + " - " + error.message;
-    logger.log(log_msg);
-});
 
 // Body
 app.use(bodyParser.json());
