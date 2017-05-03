@@ -1,8 +1,8 @@
 # Wazuh RESTful API
 
-Wazuh API is an open source RESTful API to interact with OSSEC from your own application or with a simple web browser or tools like cURL.
+Wazuh API is an open source RESTful API to interact with Wazuh from your own application or with a simple web browser or tools like cURL.
 
-Our goal is to completely manage OSSEC remotely. Perform everyday actions like adding an agent, check configuration, or look for syscheck files are now simplest using Wazuh API.
+Our goal is to completely manage Wazuh remotely. Perform everyday actions like adding an agent, check configuration, or look for syscheck files are now simplest using Wazuh API.
 
 Wazuh API capabilities:
 
@@ -19,15 +19,15 @@ Wazuh API capabilities:
 
 #### How to install
 
-[Installation guide](http://documentation.wazuh.com/en/latest/ossec_api.html#installation)
+[Installation guide](https://documentation.wazuh.com/current/installation-guide/installing-wazuh-server/index.html)
 
 #### Request reference
 
-[Full request reference](http://documentation.wazuh.com/en/latest/ossec_api.html#request-list)
+[Full request reference](https://documentation.wazuh.com/current/user-manual/api/reference.html#request-list)
 
 #### Full documentation
 
-[Full documentation](http://documentation.wazuh.com/en/latest/ossec_api.html)
+[Full documentation](https://documentation.wazuh.com/current/user-manual/api/index.html)
 
 ## Branches
 
