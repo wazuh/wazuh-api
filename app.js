@@ -108,7 +108,7 @@ python_bin = '';
 /********************************************/
 /* Config APP
 /********************************************/
-current_version = "v2.0.1";
+current_version = "v3.0.0-alpha1";
 
 if (process.argv.length == 3 && process.argv[2] == "-f")
     logger.set_foreground();
@@ -156,7 +156,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(function(req, res, next) {
     var api_version_header = req.get('api-version');
     var api_version_url = req.path.split('/')[1];
-    var regex_version = /^v\d+(?:\.\d+){0,2}$/i;
+    var regex_version = /^v\d+(?:\.\d+){0,2}\-*\w*$/i;
     var new_url = "";
 
     if (api_version_url && regex_version.test(api_version_url))

@@ -243,10 +243,10 @@ get_api () {
 
         API_SOURCES="$API_SOURCES/wazuh-api-tmp/wazuh-api-*.*"
 
-        API_NEW_VERSION=`cat $API_SOURCES/package.json | grep "version\":" | grep -P "\d+(?:\.\d+){0,2}" -o`
+        API_NEW_VERSION=`cat $API_SOURCES/package.json | grep "version\":" | grep -P "\d+(?:\.\d+){0,2}\-*\w*" -o`
         print "\nInstalling Wazuh API $API_NEW_VERSION"
     else
-        API_NEW_VERSION=`cat $API_SOURCES/package.json | grep "version\":" | grep -P "\d+(?:\.\d+){0,2}" -o`
+        API_NEW_VERSION=`cat $API_SOURCES/package.json | grep "version\":" | grep -P "\d+(?:\.\d+){0,2}\-*\w*" -o`
         if [ "X${arg}" == "Xdev" ]; then
             print "\nInstalling Wazuh API $API_NEW_VERSION from current directory [DEV MODE]."
         else
@@ -264,15 +264,15 @@ backup_api () {
     exec_cmd "cp -rLfp $API_PATH $API_PATH_BACKUP"
     exec_cmd "chown root:root $API_PATH_BACKUP"
     API_BACKUP='yes'
-    API_OLD_VERSION=`cat $API_PATH_BACKUP/package.json | grep "version\":" | grep -P "\d+(?:\.\d+){0,2}" -o`
+    API_OLD_VERSION=`cat $API_PATH_BACKUP/package.json | grep "version\":" | grep -P "\d+(?:\.\d+){0,2}\-*\w*" -o`
 }
 
 restore_configuration () {
 
-    if [ "X${API_OLD_VERSION}" == "X2.0.0" ]; then
+    if [[ ${API_OLD_VERSION} =~ ^3 ]] || [[ ${API_OLD_VERSION} =~ ^2 ]]; then
         exec_cmd "rm -rf $API_PATH/configuration"
         exec_cmd "cp -rfp $API_PATH_BACKUP/configuration $API_PATH/configuration"
-    elif [ "X${API_OLD_VERSION}" == "X1.1" ] || [ "X${API_OLD_VERSION}" == "X1.2.0" ] || [ "X${API_OLD_VERSION}" == "X1.2.1" ]; then
+    elif [[ ${API_OLD_VERSION} =~ ^1 ]]; then
         exec_cmd "cp -rfp $API_PATH_BACKUP/ssl/htpasswd $API_PATH/configuration/auth/user"
         exec_cmd "cp -p $API_PATH_BACKUP/ssl/*.key $API_PATH_BACKUP/ssl/*.crt $API_PATH/configuration/ssl/"
         exec_cmd "chown -R root:root $API_PATH/configuration"
@@ -388,7 +388,7 @@ main() {
     if [ "X${RESTORE_WARNING}" == "X1" ]; then
         print "\nWarning: Some problems occurred when restoring your previous configuration ($API_PATH/configuration/config.js). Please, review it manually. Backup directory: $API_PATH_BACKUP."
     elif [ "X${RESTORE_WARNING}" == "X2" ]; then
-        print "\nWarning: Some problems occurred when restoring your previous configuration. Please, review it manually. Backup directory: $API_PATH_BACKUP."
+        print "\nWarning: It was not possible to restore your previous configuration. Please, review it manually. Backup directory: $API_PATH_BACKUP."
     fi
 
     print "Note: You can configure the API executing $API_PATH/scripts/configure_api.sh"
