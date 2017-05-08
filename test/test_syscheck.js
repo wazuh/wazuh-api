@@ -304,7 +304,7 @@ describe('Syscheck', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.should.be.an.Object;
-                res.body.data.should.have.properties(['syscheckEndTime', 'syscheckTime']);
+                res.body.data.should.have.properties(['end', 'start']);
                 done();
             });
         });
