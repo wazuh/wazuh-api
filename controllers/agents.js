@@ -76,7 +76,7 @@ router.get('/summary', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /groups Get groups
+ * @api {get} /agents/groups Get groups
  * @apiName GetAgentGroups
  * @apiGroup Groups
  *
@@ -85,7 +85,7 @@ router.get('/summary', cache(), function(req, res) {
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  *
- * @apiDescription Returns a list with the existing groups.
+ * @apiDescription Returns the list of existing agent groups.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/groups?pretty"
@@ -115,7 +115,7 @@ router.get('/groups', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /groups/:group_id Get agents in the group
+ * @api {get} /agents/groups/:group_id Get agents in a group
  * @apiName GetAgentGroupID
  * @apiGroup Groups
  *
@@ -125,10 +125,10 @@ router.get('/groups', cache(), function(req, res) {
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  *
- * @apiDescription Returns a list of agents with the group specified
+ * @apiDescription Returns the list of agent in a group.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/groups/mygroup?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/groups/webserver?pretty"
  *
  */
 router.get('/groups/:group_id', cache(), function(req, res) {
@@ -161,7 +161,7 @@ router.get('/groups/:group_id', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /groups/:group_id/configuration Get group configuration
+ * @api {get} /agents/groups/:group_id/configuration Get group configuration
  * @apiName GetAgentGroupConfiguration
  * @apiGroup Groups
  *
@@ -169,10 +169,10 @@ router.get('/groups/:group_id', cache(), function(req, res) {
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  *
- * @apiDescription Returns the group configuration (agent.conf)
+ * @apiDescription Returns the group configuration (agent.conf).
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/groups/mygroup/configuration?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/groups/webserver/configuration?pretty"
  *
  */
 router.get('/groups/:group_id/configuration', cache(), function(req, res) {
@@ -201,18 +201,18 @@ router.get('/groups/:group_id/configuration', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /groups/:group_id/files/:filename Get the file in group
- * @apiName GetAgentGroupFiles
+ * @api {get} /agents/groups/:group_id/files/:filename Get a file in group
+ * @apiName GetAgentGroupFile
  * @apiGroup Groups
  *
  * @apiParam {String} group_id Group ID.
  * @apiParam {String} file_name Filename
  * @apiParam {String="conf","rootkit_files", "rootkit_trojans", "rcl"} [type] Type of file.
  *
- * @apiDescription Returns the file parsed to JSON
+ * @apiDescription Returns the specified file belonging to the group parsed to JSON.
  *
- * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/groups/mygroup/file/cis_debian_linux_rcl.txt?pretty"
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/groups/webserver/files/cis_debian_linux_rcl.txt?pretty"
  *
  */
 router.get('/groups/:group_id/files/:filename', cache(), function(req, res) {
@@ -239,16 +239,16 @@ router.get('/groups/:group_id/files/:filename', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /groups/:group_id/files Get group files
+ * @api {get} /agents/groups/:group_id/files Get group files
  * @apiName GetAgentGroupFiles
  * @apiGroup Groups
  *
  * @apiParam {String} group_id Group ID.
  *
- * @apiDescription Returns the group files
+ * @apiDescription Returns the files belonging to the group.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/groups/mygroup/files?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/groups/webserver/files?pretty"
  *
  */
 router.get('/groups/:group_id/files', cache(), function(req, res) {
@@ -396,17 +396,17 @@ router.put('/:agent_name', function(req, res) {
 })
 
 /**
- * @api {put} /agents/:agent_id/groups/:group_id Assign group to agent
+ * @api {put} /agents/:agent_id/group/:group_id Assign group to agent
  * @apiName PutGroupAgent
  * @apiGroup Groups
  *
  * @apiParam {Number} agent_id Agent unique ID.
- * @apiParam {String} group_id Pofile ID.
+ * @apiParam {String} group_id Group ID.
  *
- * @apiDescription Assing the group :group_id to the agent.
+ * @apiDescription Assings the specified group to the agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/001/groups/newGroup?pretty"
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/001/group/webserver?pretty"
  *
  */
 router.put('/:agent_id/group/:group_id', function(req, res) {
@@ -452,16 +452,16 @@ router.delete('/:agent_id', function(req, res) {
 })
 
 /**
- * @api {delete} /agents/:agent_id/group Delete the group of the agent
+ * @api {delete} /agents/:agent_id/group Delete the agent group
  * @apiName DeleteGroupAgent
  * @apiGroup Groups
  *
  * @apiParam {Number} agent_id Agent ID.
  *
- * @apiDescription Remove the group of the agent. The group will be 'default'.
+ * @apiDescription Removes the group of the agent. The group will be 'default'.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/002/group?pretty"
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/004/group?pretty"
  *
  */
 router.delete('/:agent_id/group', function(req, res) {
@@ -482,12 +482,12 @@ router.delete('/:agent_id/group', function(req, res) {
  * @apiName DeleteGroupAgents
  * @apiGroup Groups
  *
- * @apiParam {Number} group_id Group ID.
+ * @apiParam {String} group_id Group ID.
  *
- * @apiDescription Deletes the group in every agent. Agents will have 'default' group.
+ * @apiDescription Removes the group in every agent. Agents will have 'default' group.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/groups/group_name?pretty"
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/groups/dmz?pretty"
  *
  */
 router.delete('/groups/:group_id', function(req, res) {
