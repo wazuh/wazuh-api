@@ -29,7 +29,7 @@ fi
 echo ""
 echo "Adding agent:"
 echo "curl -s -u $USER:**** -k -X POST -d 'name=$AGENT_NAME' $PROTOCOL://$API_IP:$API_PORT/agents"
-GET_ID=$(curl -s -u $USER:$PASSWORD -k -X POST -d 'name='$AGENT_NAME $PROTOCOL://$API_IP:$API_PORT/agents) #revisar https e ip
+GET_ID=$(curl -s -u $USER:$PASSWORD -k -X POST -d 'name='$AGENT_NAME $PROTOCOL://$API_IP:$API_PORT/agents)
 ERROR=$(echo $GET_ID | sed -rn 's/.*"error":(.+)\,.*/\1/p')
 
 if [ ! "$ERROR" = "0" ]; then
