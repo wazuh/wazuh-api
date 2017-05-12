@@ -71,7 +71,7 @@ get_type_service() {
 url_lastest_release () {
     LATEST_RELEASE=$(curl -L -s -H 'Accept: application/json' https://github.com/$1/$2/releases/latest)
     #LATEST_VERSION=$(echo $LATEST_RELEASE | sed -e 's/.*"tag_name":"\(.*\)".*/\1/')
-    LATEST_VERSION=$(echo $LATEST_RELEASE | grep -P "\"tag_name\":\".+\"update_url" -o | grep -P "v\d+\.\d+(?:\.\d+)*" -o)
+    LATEST_VERSION=$(echo $LATEST_RELEASE | grep -P "\"tag_name\":\".+\"update_url" -o | grep -P "v\d+(?:\.\d+){0,2}\-*\w*" -o)
     ARTIFACT_URL="https://github.com/$1/$2/archive/$LATEST_VERSION.tar.gz"
     echo $ARTIFACT_URL
 }
@@ -104,6 +104,7 @@ show_info () {
     https=$(get_configuration_value "https")
     port=$(get_configuration_value "port")
     basic_auth=$(get_configuration_value "basic_auth")
+    curl_msg="curl"
 
     if [ "X${https}" == "Xyes" ]; then
         proto="https"
@@ -115,11 +116,19 @@ show_info () {
     if [ "X${update}" != "Xyes" ]; then
         print "user: 'foo'"
         print "password: 'bar'"
+        curl_msg="$curl_msg -u foo:bar"
+    else
+        curl_msg="$curl_msg -u user:pass"
     fi
     if [ "X${basic_auth}" == "Xno" ]; then
         print "Authentication disabled (not secure)."
+        curl_msg="curl"
     fi
     print "Configuration: $API_PATH/configuration"
+
+
+    print "Test: $curl_msg -k $proto://127.0.0.1:55000?pretty"
+
 }
 
 help() {
@@ -135,13 +144,11 @@ required_packages() {
     print "\tNodeJS 4.x or newer:"
     print "\t\tcurl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -"
     print "\t\tsudo apt-get install -y nodejs"
-    print "\t\tsudo apt-get install -y gcc"
 
     print "\nRed Hat, CentOS and Fedora:"
     print "\tNodeJS 4.x or newer:"
     print "\t\tcurl --silent --location https://rpm.nodesource.com/setup_6.x | bash -"
     print "\t\tsudo yum -y install nodejs"
-    print "\t\tsudo yum -y install gcc"
 }
 
 previous_checks() {
@@ -341,6 +348,11 @@ setup_api() {
 
     if [ "X${update}" == "Xyes" ]; then
         restore_configuration
+
+        # Remove framework
+        if [ -d "$API_PATH/framework" ]; then
+            exec_cmd "rm -rf $API_PATH/framework"
+        fi
     fi
 
     print "\nInstalling NodeJS modules."
@@ -389,6 +401,8 @@ main() {
         print "\nWarning: Some problems occurred when restoring your previous configuration ($API_PATH/configuration/config.js). Please, review it manually. Backup directory: $API_PATH_BACKUP."
     elif [ "X${RESTORE_WARNING}" == "X2" ]; then
         print "\nWarning: It was not possible to restore your previous configuration. Please, review it manually. Backup directory: $API_PATH_BACKUP."
+    else
+        exec_cmd "rm -rf $API_PATH_BACKUP"
     fi
 
     print "Note: You can configure the API executing $API_PATH/scripts/configure_api.sh"
