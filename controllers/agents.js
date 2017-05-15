@@ -413,6 +413,33 @@ router.put('/:agent_name', function(req, res) {
 })
 
 /**
+ * @api {put} /agents/groups/:group_id Create a group
+ * @apiName PutGroup
+ * @apiGroup Groups
+ *
+ * @apiParam {String} group_id Group ID.
+ *
+ * @apiDescription Creates a new group.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/groups/pciserver?pretty"
+ *
+ */
+router.put('/groups/:group_id', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " PUT /agents/groups/:group_id");
+
+    var data_request = {'function': 'PUT/agents/groups/:group_id', 'arguments': {}};
+    var filters = {'group_id':'names'};
+
+    if (!filter.check(req.params, filters, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['group_id'] = req.params.group_id;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
  * @api {put} /agents/:agent_id/group/:group_id Assign group to agent
  * @apiName PutGroupAgent
  * @apiGroup Groups
