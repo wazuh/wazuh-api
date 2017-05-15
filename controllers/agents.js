@@ -244,6 +244,10 @@ router.get('/groups/:group_id/files/:filename', cache(), function(req, res) {
  * @apiGroup Groups
  *
  * @apiParam {String} group_id Group ID.
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
  *
  * @apiDescription Returns the files belonging to the group.
  *
@@ -257,6 +261,19 @@ router.get('/groups/:group_id/files', cache(), function(req, res) {
     req.apicacheGroup = "agents";
 
     var data_request = {'function': '/agents/groups/:group_id/files', 'arguments': {}};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
+
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
+
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
 
     if (!filter.check(req.params, {'group_id':'names'}, req, res))  // Filter with error
         return;
