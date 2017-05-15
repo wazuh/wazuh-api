@@ -42,14 +42,39 @@ if (config.basic_auth.toLowerCase() == "yes"){
 }
 
 //  Get Certs
-var options;
+var options = {};
+
 if (config.https.toLowerCase() == "yes"){
     var fs = require('fs');
-    options = {
-      key: fs.readFileSync(__dirname + '/configuration/ssl/server.key'),
-      cert: fs.readFileSync(__dirname + '/configuration/ssl/server.crt')
-    };
+    var api_route = config.ossec_path + '/api/';
+    var option_paths = {};
+
+    // Cert and key
+    option_paths.key = config.https_key || 'configuration/ssl/server.key';
+    if (option_paths.key.charAt(0) != '/'){
+        option_paths.key = api_route + option_paths.key;
+    }
+
+    option_paths.cert = config.https_cert  || 'configuration/ssl/server.crt';
+    if (option_paths.cert.charAt(0) != '/'){
+        option_paths.cert = api_route + option_paths.cert;
+    }
+
+    options.key = fs.readFileSync(option_paths.key);
+    options.cert = fs.readFileSync(option_paths.cert);
+
+    // CA
+    var use_ca = config.https_use_ca || 'no';
+    if (use_ca.toLowerCase() == "yes"){
+        option_paths.ca = config.https_ca || 'configuration/ssl/ca.crt';
+        if (option_paths.ca.charAt(0) != '/'){
+            option_paths.ca = api_route + option_paths.ca;
+        }
+
+        options.ca = fs.readFileSync(option_paths.ca);
+    }
 }
+
 
 /********************************************/
 /* Drop privileges
@@ -83,7 +108,7 @@ python_bin = '';
 /********************************************/
 /* Config APP
 /********************************************/
-current_version = "v2.0.0";
+current_version = "v2.0.1";
 
 if (process.argv.length == 3 && process.argv[2] == "-f")
     logger.set_foreground();
@@ -108,17 +133,17 @@ if (config.cors.toLowerCase() == "yes"){
 // Basic authentication
 if (config.basic_auth.toLowerCase() == "yes"){
     app.use(auth.connect(auth_secure));
+
+    auth_secure.on('fail', (result, req) => {
+        var log_msg = "[" + req.connection.remoteAddress + "] " + "User: \"" + result.user + "\" - Authentication failed.";
+        logger.log(log_msg);
+    });
+
+    auth_secure.on('error', (error, req) => {
+        var log_msg = "[" + req.connection.remoteAddress + "] Authentication error: " + error.code + " - " + error.message;
+        logger.log(log_msg);
+    });
 }
-
-auth_secure.on('fail', (result, req) => {
-    var log_msg = "[" + req.connection.remoteAddress + "] " + "User: \"" + result.user + "\" - Authentication failed.";
-    logger.log(log_msg);
-});
-
-auth_secure.on('error', (error, req) => {
-    var log_msg = "[" + req.connection.remoteAddress + "] Authentication error: " + error.code + " - " + error.message;
-    logger.log(log_msg);
-});
 
 // Body
 app.use(bodyParser.json());

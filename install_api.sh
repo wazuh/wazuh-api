@@ -71,7 +71,7 @@ get_type_service() {
 url_lastest_release () {
     LATEST_RELEASE=$(curl -L -s -H 'Accept: application/json' https://github.com/$1/$2/releases/latest)
     #LATEST_VERSION=$(echo $LATEST_RELEASE | sed -e 's/.*"tag_name":"\(.*\)".*/\1/')
-    LATEST_VERSION=$(echo $LATEST_RELEASE | grep -P "\"tag_name\":\".+\"update_url" -o | grep -P "v\d+\.\d+\.\d" -o)
+    LATEST_VERSION=$(echo $LATEST_RELEASE | grep -P "\"tag_name\":\".+\"update_url" -o | grep -P "v\d+\.\d+(?:\.\d+)*" -o)
     ARTIFACT_URL="https://github.com/$1/$2/archive/$LATEST_VERSION.tar.gz"
     echo $ARTIFACT_URL
 }
@@ -336,7 +336,9 @@ setup_api() {
         exec_cmd "ln -s $API_SOURCES $API_PATH"
     else
         exec_cmd "mkdir $API_PATH"
-        exec_cmd "cp --parents -r $API_SOURCES/app.js $API_SOURCES/configuration $API_SOURCES/controllers $API_SOURCES/examples $API_SOURCES/framework/examples $API_SOURCES/framework/wazuh $API_SOURCES/helpers $API_SOURCES/models $API_SOURCES/package.json $API_SOURCES/scripts $API_PATH"
+        exec_cmd "cd $API_SOURCES"
+        exec_cmd "cp --parents -r app.js configuration controllers examples framework/examples framework/wazuh helpers models package.json scripts $API_PATH"
+        exec_cmd "cd -"
 
         # General permissions
         exec_cmd "chown -R root:ossec $API_PATH"
@@ -398,9 +400,9 @@ main() {
     show_info
 
     if [ "X${RESTORE_WARNING}" == "X1" ]; then
-        print "\nWarning: Some problems occured when restoring your previous configuration ($API_PATH/configuration/config.js). Please, review it manually. Backup directory: $API_PATH_BACKUP."
+        print "\nWarning: Some problems occurred when restoring your previous configuration ($API_PATH/configuration/config.js). Please, review it manually. Backup directory: $API_PATH_BACKUP."
     elif [ "X${RESTORE_WARNING}" == "X2" ]; then
-        print "\nWarning: Some problems occured when restoring your previous configuration. Please, review it manually. Backup directory: $API_PATH_BACKUP."
+        print "\nWarning: Some problems occurred when restoring your previous configuration. Please, review it manually. Backup directory: $API_PATH_BACKUP."
     fi
 
     print "Note: You can configure the API executing $API_PATH/scripts/configure_api.sh"

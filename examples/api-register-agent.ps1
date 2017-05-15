@@ -1,3 +1,4 @@
+
 ###
 #  Powershell script for registering agents automatically with the API
 #  Copyright (C) 2017 Wazuh, Inc. All rights reserved.
@@ -13,7 +14,6 @@ function Ignore-SelfSignedCerts {
     add-type @"
         using System.Net;
         using System.Security.Cryptography.X509Certificates;
-
         public class PolicyCert : ICertificatePolicy {
             public PolicyCert() {}
             public bool CheckValidationResult(
@@ -39,12 +39,37 @@ function req($method, $resource, $params){
 }
 
 # Configuration
-$base_url = "http://10.0.0.1:55000"
+$base_url = "http://<Wazuh-Manager-IP>:55000"
 $username = "foo"
 $password = "bar"
 $agent_name = $env:computername
 $path = "C:\Program Files (x86)\ossec-agent\"
+$config = "C:\Program Files (x86)\ossec-agent\ossec.conf"
+$wazuh_manager = "<Wazuh-Manager-IP>"
 Ignore-SelfSignedCerts
+
+# Test API integration to make sure IE has run through initial startup dialogue - This can be a problem with new servers.
+
+try{
+    $testresponse = req -method "GET" -resource "/manager/info?pretty" | ConvertFrom-Json | select -expand data -ErrorAction Stop -ErrorVariable geterr
+
+    Write-Output "The Wazuh manager is contactable via the API, the response is: `n $($testresponse)"
+    }catch{
+    Write-Host -ForegroundColor Red "IE has not had it's initial startup dialogue dismissed, please complete this step and try again. Script will exit. Error: $($geterr)`n .Please Run OSSEC_AgentConfig Seperately once you correct the error."
+    Exit
+    }
+
+# Test for agent already existing in manager
+
+$agentexist = req -method "GET" -resource "/agents?pretty" -params @{search=$agent_name} # searches for the agent based on the env variable name
+
+$agentinfo = $agentexist.Content | ConvertFrom-Json | select -expand data | select totalitems
+
+$agentexistid = $agentexist.Content | ConvertFrom-Json | select -expand data | select -expand items | select id # expands the embedded JSON items to retrieve the agent ID
+
+# If agent does not already exist proceed to create agent and register the agent key
+
+if ($agentinfo.totalitems -lt 1){
 
 # Adding agent and getting Id from manager
 
@@ -83,7 +108,46 @@ Stop-Service $srvName
 $srvStat = Get-Service $srvName
 Write-Output "$($srvName) is now $($srvStat.status)"
 
+Start-Sleep -s 10
+
+Add-Content $config "`n<ossec_config>   <client>      <server-ip>$($wazuh_manager)</server-ip>   </client> </ossec_config>"
+
+Start-Sleep -s 10
+
 Write-Output "Starting service."
 Start-Service $srvName
 $srvStat = Get-Service $srvName
 Write-Output "$($srvName) is now $($srvStat.status)"
+}
+Else{
+
+# If agent is found in manager by name it will retrieve the key and configure the agent
+
+$response = req -method "GET" -resource "/agents/$($agentexistid.id)/key" | ConvertFrom-Json
+# Key received from manager
+$agent_key = $response.data
+# Importing agent key from manager
+Write-Output "`r`nImporting authentication key:"
+echo "y" | & "$($path)manage_agents.exe" "-i $($agent_key)" "y`r`n"
+
+Write-Output "`r`nRestarting:"
+$srvName = "OssecSvc"
+
+Write-Output "Stopping service."
+Stop-Service $srvName
+$srvStat = Get-Service $srvName
+Write-Output "$($srvName) is now $($srvStat.status)"
+
+Start-Sleep -s 10
+
+Add-Content $config "`n<ossec_config>   <client>      <server-ip>$($wazuh_manager)</server-ip>   </client> </ossec_config>"
+
+Start-Sleep -s 10
+
+Write-Output "Starting service."
+Start-Service $srvName
+$srvStat = Get-Service $srvName
+Write-Output "$($srvName) is now $($srvStat.status)"
+
+
+}

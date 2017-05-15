@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file.
 
 
+## [v2.0.1] - 2017-??-??
+### Fixed
+- Issue when basic-auth is disabled.
+- Regex for latest version in install_api.sh
+- Wrong scan dates for syscheck and rootcheck.
+- IP value always must be lowercase.
+
 ## [v2.0.0] - 2017-04-24
 ### Added
 - **Wazuh v2.0** is required to run the API.
