@@ -440,14 +440,14 @@ router.put('/groups/:group_id', function(req, res) {
 })
 
 /**
- * @api {put} /agents/:agent_id/group/:group_id Assign group to agent
+ * @api {put} /agents/:agent_id/group/:group_id Set agent group
  * @apiName PutGroupAgent
  * @apiGroup Groups
  *
  * @apiParam {Number} agent_id Agent unique ID.
  * @apiParam {String} group_id Group ID.
  *
- * @apiDescription Assings the specified group to the agent.
+ * @apiDescription Sets the specified group to the agent.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/001/group/webserver?pretty"
@@ -496,13 +496,13 @@ router.delete('/:agent_id', function(req, res) {
 })
 
 /**
- * @api {delete} /agents/:agent_id/group Delete the agent group
+ * @api {delete} /agents/:agent_id/group Unset the agent group
  * @apiName DeleteGroupAgent
  * @apiGroup Groups
  *
  * @apiParam {Number} agent_id Agent ID.
  *
- * @apiDescription Removes the group of the agent. The group will be 'default'.
+ * @apiDescription Unsets the group of the agent. The group will be 'default'.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/004/group?pretty"
@@ -522,13 +522,13 @@ router.delete('/:agent_id/group', function(req, res) {
 })
 
 /**
- * @api {delete} /agents/groups/:group_id Delete group in every agent
+ * @api {delete} /agents/groups/:group_id Remove group
  * @apiName DeleteGroupAgents
  * @apiGroup Groups
  *
  * @apiParam {String} group_id Group ID.
  *
- * @apiDescription Removes the group in every agent. Agents will have 'default' group.
+ * @apiDescription Removes the group. Agents will have 'default' group.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/groups/dmz?pretty"
