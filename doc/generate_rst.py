@@ -7,14 +7,7 @@
 
 # Requirements
 # https
-# curl -u foo:bar -k -X POST -d '{"name":"server001","ip":"10.0.0.62"}' -H 'Content-Type:application/json' # "https://127.0.0.1:55000/agents"
-# curl -u foo:bar -k -X POST -d '{"name":"dmz001","ip":"10.0.0.12"}' -H 'Content-Type:application/json' # "https://127.0.0.1:55000/agents"
-# curl -u foo:bar -k -X POST -d '{"name":"main_database","ip":"10.0.0.15"}' -H 'Content-Type:application/json' # "https://127.0.0.1:55000/agents"
-# curl -u foo:bar -k -X POST -d '{"name":"dmz002","ip":"10.0.0.14"}' -H 'Content-Type:application/json' # "https://127.0.0.1:55000/agents"
-# curl -u foo:bar -k -X PUT https://127.0.0.1:55000/agents/001/group/webserver
-# curl -u foo:bar -k -X PUT https://127.0.0.1:55000/agents/002/group/dmz
-# curl -u foo:bar -k -X PUT https://127.0.0.1:55000/agents/003/group/database
-# curl -u foo:bar -k -X PUT https://127.0.0.1:55000/agents/004/group/dmz
+# Auth: foo:bar
 
 import json
 import sys
