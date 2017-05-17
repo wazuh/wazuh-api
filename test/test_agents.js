@@ -414,6 +414,57 @@ describe('Agents', function() {
 
     });  // PUT/agents/:agent_id/group/:group_id
 
+    describe('PUT/agents/groups/:group_id', function() {
+
+        it('Request', function(done) {
+
+            request(common.url)
+            .put("/agents/groups/newgroupcreated")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+
+        it('Params: Bad group name', function(done) {
+            request(common.url)
+            .put("/agents/groups/!group")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(601);
+                done();
+            });
+        });
+
+        it('Params: Group already exists', function(done) {
+            request(common.url)
+            .put("/agents/groups/webserver")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1711);
+                done();
+            });
+        });
+
+    });  // PUT/agents/groups/:group_id
+
     describe('GET/agents/groups', function() {
 
         it('Request', function(done) {
