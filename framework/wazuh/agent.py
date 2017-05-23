@@ -6,6 +6,7 @@
 from wazuh.utils import execute, cut_array, sort_array, search_array, chmod_r
 from wazuh.exception import WazuhException
 from wazuh.ossec_queue import OssecQueue
+from wazuh.ossec_socket import OssecSocket
 from wazuh.database import Connection
 from wazuh import manager
 from wazuh import common
@@ -246,92 +247,17 @@ class Agent:
 
         # Check if authd is running
         manager_status = manager.status()
-        if 'ossec-authd' not in manager_status or manager_status['ossec-authd'] == 'running':
+        if 'ossec-authd' not in manager_status or manager_status['ossec-authd'] != 'running':
             raise WazuhException(1704)
 
-        # Get info from DB
-        self._load_info_from_DB()
+        msg = { "function": "remove", "arguments": { "id": str(self.id) } }
 
-        f_keys_temp = '{0}.tmp'.format(common.client_keys)
+        authd_socket = OssecSocket(common.AUTHD_SOCKET)
+        authd_socket.send(msg)
+        data = authd_socket.receive()
+        authd_socket.close()
 
-        f_tmp = open(f_keys_temp, 'w')
-        agent_found = False
-        with open(common.client_keys) as f_k:
-            for line in f_k.readlines():
-                line_data = line.strip().split(' ')  # 0 -> id, 1 -> name, 2 -> ip, 3 -> key
-
-                if self.id == line_data[0] and line_data[1][0] not in ('#!'):
-                    f_tmp.write('{0} !{1} {2} {3}\n'.format(line_data[0], line_data[1], line_data[2], line_data[3]))
-                    agent_found = True
-                else:
-                    f_tmp.write(line)
-        f_tmp.close()
-
-        if not agent_found:
-            remove(f_keys_temp)
-            raise WazuhException(1701, self.id)
-
-        # Overwrite client.keys
-        move(f_keys_temp, common.client_keys)
-        root_uid = getpwnam("ossec").pw_uid
-        ossec_gid = getgrnam("ossec").gr_gid
-        chown(common.client_keys, root_uid, ossec_gid)
-        chmod(common.client_keys, 0o640)
-
-        # Remove rid file
-        rids_file = '{0}/queue/rids/{1}'.format(common.ossec_path, self.id)
-        if path.exists(rids_file):
-            remove(rids_file)
-
-        if not backup:
-            # Remove agent files
-            agent_files = []
-            agent_files.append('{0}/queue/agent-info/{1}-{2}'.format(common.ossec_path, self.name, self.ip))
-            agent_files.append('{0}/queue/syscheck/({1}) {2}->syscheck'.format(common.ossec_path, self.name, self.ip))
-            agent_files.append('{0}/queue/syscheck/.({1}) {2}->syscheck.cpt'.format(common.ossec_path, self.name, self.ip))
-            agent_files.append('{0}/queue/syscheck/({1}) {2}->syscheck-registry'.format(common.ossec_path, self.name, self.ip))
-            agent_files.append('{0}/queue/syscheck/.({1}) {2}->syscheck-registry.cpt'.format(common.ossec_path, self.name, self.ip))
-            agent_files.append('{0}/queue/rootcheck/({1}) {2}->rootcheck'.format(common.ossec_path, self.name, self.ip))
-            agent_files.append('{0}/queue/rids/{1}'.format(common.ossec_path, self.id))
-            agent_files.append('{0}/var/db/agents/{1}-{2}.db'.format(common.ossec_path, self.id, self.name))
-            agent_files.append('{0}/var/db/agents/{1}-{2}.db-wal'.format(common.ossec_path, self.id, self.name))
-            agent_files.append('{0}/var/db/agents/{1}-{2}.db-shm'.format(common.ossec_path, self.id, self.name))
-
-            for agent_file in agent_files:
-                if path.exists(agent_file):
-                    remove(agent_file)
-        else:
-            # Create backup directory
-            # /var/ossec/backup/agents/yyyy/Mon/dd/id-name-ip[tag]
-            date_part = date.today().strftime('%Y/%b/%d')
-            main_agent_backup_dir = '{0}/backup/agents/{1}/{2}-{3}-{4}'.format(common.ossec_path, date_part, self.id, self.name, self.ip)
-            agent_backup_dir = main_agent_backup_dir
-
-            not_agent_dir = True
-            i = 0
-            while not_agent_dir:
-                if path.exists(agent_backup_dir):
-                    i += 1
-                    agent_backup_dir = '{0}-{1}'.format(main_agent_backup_dir, str(i).zfill(3))
-                else:
-                    makedirs(agent_backup_dir)
-                    chmod_r(agent_backup_dir, 0o750)
-                    not_agent_dir = False
-
-            # Move agent file
-            agent_files = []
-            agent_files.append(['{0}/queue/agent-info/{1}-{2}'.format(common.ossec_path, self.name, self.ip), '{0}/agent-info'.format(agent_backup_dir)])
-            agent_files.append(['{0}/queue/syscheck/({1}) {2}->syscheck'.format(common.ossec_path, self.name, self.ip), '{0}/syscheck'.format(agent_backup_dir)])
-            agent_files.append(['{0}/queue/syscheck/.({1}) {2}->syscheck.cpt'.format(common.ossec_path, self.name, self.ip), '{0}/syscheck.cpt'.format(agent_backup_dir)])
-            agent_files.append(['{0}/queue/syscheck/({1}) {2}->syscheck-registry'.format(common.ossec_path, self.name, self.ip), '{0}/syscheck-registry'.format(agent_backup_dir)])
-            agent_files.append(['{0}/queue/syscheck/.({1}) {2}->syscheck-registry.cpt'.format(common.ossec_path, self.name, self.ip), '{0}/syscheck-registry.cpt'.format(agent_backup_dir)])
-            agent_files.append(['{0}/queue/rootcheck/({1}) {2}->rootcheck'.format(common.ossec_path, self.name, self.ip), '{0}/rootcheck'.format(agent_backup_dir)])
-
-            for agent_file in agent_files:
-                if path.exists(agent_file[0]) and not path.exists(agent_file[1]):
-                    rename(agent_file[0], agent_file[1])
-
-        return 'Agent removed'
+        return data
 
     def _add(self, name, ip, id=None, key=None, force=-1):
         """
