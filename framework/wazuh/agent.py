@@ -410,11 +410,6 @@ class Agent:
 
         force = force if type(force) == int else int(force)
 
-        # Add
-        manager_status = manager.status()
-        if 'ossec-authd' not in manager_status or manager_status['ossec-authd'] != 'running':
-            raise WazuhException(1704)
-
         msg = ""
         if name and ip:
             if id and key:
