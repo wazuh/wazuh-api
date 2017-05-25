@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 
-## [v2.0.1] - 2017-??-??
+## [v2.0.1]
 ### Fixed
 - Issue when basic-auth is disabled.
 - Regex for latest version in install_api.sh
