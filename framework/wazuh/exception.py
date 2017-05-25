@@ -10,6 +10,8 @@ class WazuhException(Exception):
     """
 
     ERRORS = {
+        # < 1000: API
+
         # Wazuh: 1000 - 1099
         1000: 'Wazuh Internal Error',
         1001: 'Error importing module',
@@ -73,6 +75,7 @@ class WazuhException(Exception):
         # Database:
         2000: 'No such database file',
 
+        # > 9000: Authd
     }
 
     def __init__(self, code, extra_message=None, cmd_error=False):
