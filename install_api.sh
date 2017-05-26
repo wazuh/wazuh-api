@@ -97,17 +97,6 @@ min_version() {
     [ "$((echo $1; echo $2) | sort -V | head -n 1)" == "$1" ]
 }
 
-compile_sqlite() {
-    LIB_PATH="$API_PATH/framework/lib"
-    SONAME="libsqlite3.so.0"
-    SOURCE="framework/database/sqlite3.c"
-
-    print "\nInstalling SQLite library."
-    exec_cmd "gcc -pipe -O2 -shared -fPIC -o $LIB_PATH/$SONAME $SOURCE"
-    exec_cmd "chmod -R 750 $LIB_PATH"
-    exec_cmd "chown -R root:ossec $LIB_PATH"
-}
-
 
 # END Aux functions
 
@@ -199,6 +188,11 @@ previous_checks() {
     API_BACKUP='no'
     serv_type=$(get_type_service)
 
+    if ! [ -d $FRAMEWORK_PATH ]; then
+        print "Can't find $FRAMEWORK_PATH. Is Wazuh installed?.\nExiting."
+        exit 1
+    fi
+
     # Dependencies
     check_program_installed "tar"
     check_program_installed "curl"
@@ -260,12 +254,6 @@ get_api () {
         fi
     fi
 
-}
-
-install_framework() {
-    exec_cmd "mkdir -pm 700 $API_PATH/framework/lib"
-    exec_cmd "chown ossec:ossec $API_PATH/framework/lib"
-    compile_sqlite
 }
 
 backup_api () {
@@ -337,7 +325,7 @@ setup_api() {
     else
         exec_cmd "mkdir $API_PATH"
         exec_cmd "cd $API_SOURCES"
-        exec_cmd "cp --parents -r app.js configuration controllers examples framework/examples framework/wazuh helpers models package.json scripts $API_PATH"
+        exec_cmd "cp --parents -r app.js configuration controllers examples helpers models package.json scripts $API_PATH"
         exec_cmd "cd -"
 
         # General permissions
@@ -354,8 +342,6 @@ setup_api() {
     if [ "X${update}" == "Xyes" ]; then
         restore_configuration
     fi
-
-    install_framework
 
     print "\nInstalling NodeJS modules."
     if [ "X${arg}" == "Xdev" ]; then

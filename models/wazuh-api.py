@@ -12,7 +12,9 @@ import signal
 error_wazuh_package = 0
 exception_error = None
 try:
-    path.append(path[0].replace('models','framework'))
+    current_path = path[0].split('/')
+    new_path = "/{0}/{1}/framework".format(current_path[1], current_path[2])
+    path.append(new_path)
     from wazuh import Wazuh
     from wazuh.agent import Agent
     from wazuh.rule import Rule
