@@ -108,7 +108,7 @@ python_bin = '';
 /********************************************/
 /* Config APP
 /********************************************/
-current_version = "v2.0.2";
+current_version = "v2.1.0";
 
 if (process.argv.length == 3 && process.argv[2] == "-f")
     logger.set_foreground();
