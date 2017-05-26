@@ -41,14 +41,13 @@ class Agent:
         self.name = None
         self.ip = None
         self.internal_key = None
-        self.os = None
+        self.os = {}
         self.version = None
         self.dateAdd = None
         self.lastKeepAlive = None
         self.status = None
         self.key = None
         self.sharedSum = None
-        self.os_family = None
 
         if args:
             if len(args) == 1:
@@ -81,7 +80,7 @@ class Agent:
         return str(self.to_dict())
 
     def to_dict(self):
-        dictionary = {'id': self.id, 'name': self.name, 'ip': self.ip, 'internal_key': self.internal_key, 'os': self.os, 'version': self.version, 'dateAdd': self.dateAdd, 'lastKeepAlive': self.lastKeepAlive, 'status': self.status, 'key': self.key, 'sharedSum': self.sharedSum, 'os_family': self.os_family }
+        dictionary = {'id': self.id, 'name': self.name, 'ip': self.ip, 'internal_key': self.internal_key, 'os': self.os, 'version': self.version, 'dateAdd': self.dateAdd, 'lastKeepAlive': self.lastKeepAlive, 'status': self.status, 'key': self.key, 'sharedSum': self.sharedSum }
         return dictionary
 
     @staticmethod
@@ -116,7 +115,7 @@ class Agent:
         query = "SELECT {0} FROM agent WHERE id = :id"
         request = {'id': self.id}
 
-        select = ["id", "name", "ip", "key", "os", "version", "date_add", "last_keepalive", "shared_sum"]
+        select = ["id", "name", "ip", "key", "version", "date_add", "last_keepalive", "shared_sum", "os_name", "os_version", "os_major", "os_minor", "os_codename", "os_build", "os_platform", "os_uname"]
 
         conn.execute(query.format(','.join(select)), request)
 
@@ -134,25 +133,34 @@ class Agent:
             if tuple[3] != None:
                 self.internal_key = tuple[3]
             if tuple[4] != None:
-                self.os = tuple[4]
-                try:
-                    os_family = self.os.split(' ')[0]
-                    if os_family.lower() == "microsoft" or os_family.lower() == "windows":
-                        self.os_family = "Windows"
-                    else:
-                        self.os_family = os_family
-                except:
-                    self.os_family = None
+                self.version = tuple[4]
             if tuple[5] != None:
-                self.version = tuple[5]
+                self.dateAdd = tuple[5]
+
             if tuple[6] != None:
-                self.dateAdd = tuple[6]
-            if tuple[7] != None:
-                self.lastKeepAlive = tuple[7]
+                self.lastKeepAlive = tuple[6]
             else:
                 self.lastKeepAlive = 0
+
+            if tuple[7] != None:
+                self.sharedSum = tuple[7]
+
             if tuple[8] != None:
-                self.sharedSum = tuple[8]
+                self.os['name'] = tuple[8]
+            if tuple[9] != None:
+                self.os['version'] = tuple[9]
+            if tuple[10] != None:
+                self.os['major'] = tuple[10]
+            if tuple[11] != None:
+                self.os['minor'] = tuple[11]
+            if tuple[12] != None:
+                self.os['codename'] = tuple[12]
+            if tuple[13] != None:
+                self.os['build'] = tuple[13]
+            if tuple[14] != None:
+                self.os['platform'] = tuple[14]
+            if tuple[15] != None:
+                self.os['uname'] = tuple[15]
 
             if self.id != "000":
                 self.status = Agent.calculate_status(self.lastKeepAlive)
@@ -180,9 +188,9 @@ class Agent:
         #if self.internal_key:
         #    info['internal_key'] = self.internal_key
         if self.os:
-            info['os'] = self.os
-        if self.os_family:
-            info['os_family'] = self.os_family
+            os_no_empty = dict((k, v) for k, v in self.os.iteritems() if v)
+            if os_no_empty:
+                info['os'] = os_no_empty
         if self.version:
             info['version'] = self.version
         if self.dateAdd:
