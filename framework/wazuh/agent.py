@@ -3,7 +3,7 @@
 # Created by Wazuh, Inc. <info@wazuh.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
-from wazuh.utils import execute, cut_array, sort_array, search_array, chmod_r
+from wazuh.utils import execute, cut_array, sort_array, search_array, chmod_r, chown_r
 from wazuh.exception import WazuhException
 from wazuh.ossec_queue import OssecQueue
 from wazuh.database import Connection
@@ -16,9 +16,10 @@ from base64 import b64encode
 from shutil import copyfile, move, copytree
 from time import time
 from platform import platform
-from os import remove, chown, chmod, path, makedirs, rename, urandom
+from os import remove, chown, chmod, path, makedirs, rename, urandom, listdir
 from pwd import getpwnam
 from grp import getgrnam
+from time import time
 
 class Agent:
     """
@@ -47,7 +48,8 @@ class Agent:
         self.lastKeepAlive = None
         self.status = None
         self.key = None
-        self.sharedSum = None
+        self.configSum = None
+        self.mergedSum = None
         self.os_family = None
         self.group = None
 
@@ -82,7 +84,7 @@ class Agent:
         return str(self.to_dict())
 
     def to_dict(self):
-        dictionary = {'id': self.id, 'name': self.name, 'ip': self.ip, 'internal_key': self.internal_key, 'os': self.os, 'version': self.version, 'dateAdd': self.dateAdd, 'lastKeepAlive': self.lastKeepAlive, 'status': self.status, 'key': self.key, 'sharedSum': self.sharedSum, 'os_family': self.os_family, 'group': self.group }
+        dictionary = {'id': self.id, 'name': self.name, 'ip': self.ip, 'internal_key': self.internal_key, 'os': self.os, 'version': self.version, 'dateAdd': self.dateAdd, 'lastKeepAlive': self.lastKeepAlive, 'status': self.status, 'key': self.key, 'configSum': self.configSum, 'mergedSum': self.mergedSum, 'os_family': self.os_family, 'group': self.group }
         return dictionary
 
     @staticmethod
@@ -117,7 +119,7 @@ class Agent:
         query = "SELECT {0} FROM agent WHERE id = :id"
         request = {'id': self.id}
 
-        select = ["id", "name", "ip", "key", "os", "version", "date_add", "last_keepalive", "shared_sum", "`group`"]
+        select = ["id", "name", "ip", "key", "os", "version", "date_add", "last_keepalive", "config_sum", "merged_sum", "`group`"]
 
         conn.execute(query.format(','.join(select)), request)
 
@@ -153,9 +155,11 @@ class Agent:
             else:
                 self.lastKeepAlive = 0
             if tuple[8] != None:
-                self.sharedSum = tuple[8]
+                self.configSum = tuple[8]
             if tuple[9] != None:
-                self.group = tuple[9]
+                self.mergedSum = tuple[9]
+            if tuple[10] != None:
+                self.group = tuple[10]
 
             if self.id != "000":
                 self.status = Agent.calculate_status(self.lastKeepAlive)
@@ -194,8 +198,10 @@ class Agent:
             info['lastKeepAlive'] = self.lastKeepAlive
         if self.status:
             info['status'] = self.status
-        if self.sharedSum:
-            info['sharedSum'] = self.sharedSum
+        if self.configSum:
+            info['configSum'] = self.configSum
+        if self.mergedSum:
+            info['mergedSum'] = self.mergedSum
         #if self.key:
         #    info['key'] = self.key
         if self.group:
@@ -297,10 +303,7 @@ class Agent:
             agent_files.append('{0}/queue/syscheck/({1}) {2}->syscheck-registry'.format(common.ossec_path, self.name, self.ip))
             agent_files.append('{0}/queue/syscheck/.({1}) {2}->syscheck-registry.cpt'.format(common.ossec_path, self.name, self.ip))
             agent_files.append('{0}/queue/rootcheck/({1}) {2}->rootcheck'.format(common.ossec_path, self.name, self.ip))
-            agent_files.append('{0}/queue/rids/{1}'.format(common.ossec_path, self.id))
-            agent_files.append('{0}/var/db/agents/{1}-{2}.db'.format(common.ossec_path, self.id, self.name))
-            agent_files.append('{0}/var/db/agents/{1}-{2}.db-wal'.format(common.ossec_path, self.id, self.name))
-            agent_files.append('{0}/var/db/agents/{1}-{2}.db-shm'.format(common.ossec_path, self.id, self.name))
+            agent_files.append('{0}/queue/agent-groups/{1}'.format(common.ossec_path, self.id))
 
             for agent_file in agent_files:
                 if path.exists(agent_file):
@@ -309,7 +312,7 @@ class Agent:
             # Create backup directory
             # /var/ossec/backup/agents/yyyy/Mon/dd/id-name-ip[tag]
             date_part = date.today().strftime('%Y/%b/%d')
-            main_agent_backup_dir = '{0}/backup/agents/{1}/{2}-{3}-{4}'.format(common.ossec_path, date_part, self.id, self.name, self.ip)
+            main_agent_backup_dir = '{0}/agents/{1}/{2}-{3}-{4}'.format(common.backup_path, date_part, self.id, self.name, self.ip)
             agent_backup_dir = main_agent_backup_dir
 
             not_agent_dir = True
@@ -331,6 +334,7 @@ class Agent:
             agent_files.append(['{0}/queue/syscheck/({1}) {2}->syscheck-registry'.format(common.ossec_path, self.name, self.ip), '{0}/syscheck-registry'.format(agent_backup_dir)])
             agent_files.append(['{0}/queue/syscheck/.({1}) {2}->syscheck-registry.cpt'.format(common.ossec_path, self.name, self.ip), '{0}/syscheck-registry.cpt'.format(agent_backup_dir)])
             agent_files.append(['{0}/queue/rootcheck/({1}) {2}->rootcheck'.format(common.ossec_path, self.name, self.ip), '{0}/rootcheck'.format(agent_backup_dir)])
+            agent_files.append(['{0}/queue/agent-groups/{1}'.format(common.ossec_path, self.id), '{0}/agent-group'.format(agent_backup_dir)])
 
             for agent_file in agent_files:
                 if path.exists(agent_file[0]) and not path.exists(agent_file[1]):
@@ -356,6 +360,8 @@ class Agent:
         # Check arguments
         if id:
             id = id.zfill(3)
+
+        ip = ip.lower()
 
         if key and len(key) < 64:
             raise WazuhException(1709)
@@ -387,7 +393,7 @@ class Agent:
                     raise WazuhException(1708, id)
                 if name == line_data[1]:
                     raise WazuhException(1705, name)
-                if ip.lower() != 'any' and ip == line_data[2]:
+                if ip != 'any' and ip == line_data[2]:
                     if force < 0:
                         raise WazuhException(1706, ip)
                     else:
@@ -689,7 +695,7 @@ class Agent:
         return remove_agent
 
     @staticmethod
-    def get_all_groups(offset=0, limit=common.database_limit, sort=None, search=None):
+    def get_all_groups_sql(offset=0, limit=common.database_limit, sort=None, search=None):
         """
         Gets the existing groups.
 
@@ -756,7 +762,56 @@ class Agent:
         return data
 
     @staticmethod
-    def group_exists(group_id):
+    def get_all_groups(offset=0, limit=common.database_limit, sort=None, search=None):
+        """
+        Gets the existing groups.
+
+        :param offset: First item to return.
+        :param limit: Maximum number of items to return.
+        :param sort: Sorts the items. Format: {"fields":["field1","field2"],"order":"asc|desc"}.
+        :param search: Looks for items with the specified string.
+        :return: Dictionary: {'items': array of items, 'totalItems': Number of items (without applying the limit)}
+        """
+
+        # Connect DB
+        db_global = glob(common.database_path_global)
+        if not db_global:
+            raise WazuhException(1600)
+
+        conn = Connection(db_global[0])
+        query = "SELECT {0} FROM agent WHERE `group` = :group_id"
+
+        # Group names
+        data = []
+        for entry in listdir(common.shared_path):
+            item = {}
+
+            full_entry = path.join(common.shared_path, entry)
+            if not path.isdir(full_entry):
+                continue
+
+            item['name'] = entry
+
+            # Group count
+            request = {'group_id': item['name']}
+            conn.execute(query.format('COUNT(*)'), request)
+            item['count'] = conn.fetch()[0]
+
+            data.append(item)
+
+
+        if search:
+            data = search_array(data, search['value'], search['negation'])
+
+        if sort:
+            data = sort_array(data, sort['fields'], sort['order'])
+        else:
+            data = sort_array(data, ['name'])
+
+        return {'items': cut_array(data, offset, limit), 'totalItems': len(data)}
+
+    @staticmethod
+    def group_exists_sql(group_id):
         """
         Checks if the group exists
 
@@ -781,6 +836,20 @@ class Agent:
                 return True
             else:
                 return False
+
+    @staticmethod
+    def group_exists(group_id):
+        """
+        Checks if the group exists
+
+        :param group_id: Group ID.
+        :return: True if group exists, False otherwise
+        """
+
+        if path.exists("{0}/{1}".format(common.shared_path, group_id)):
+            return True
+        else:
+            return False
 
     @staticmethod
     def get_agent_group(group_id, offset=0, limit=common.database_limit, sort=None, search=None):
@@ -857,9 +926,118 @@ class Agent:
         return data
 
     @staticmethod
+    def get_group_files(group_id=None, offset=0, limit=common.database_limit, sort=None, search=None):
+        """
+        Gets the group files.
+
+        :param group_id: Group ID.
+        :param offset: First item to return.
+        :param limit: Maximum number of items to return.
+        :param sort: Sorts the items. Format: {"fields":["field1","field2"],"order":"asc|desc"}.
+        :param search: Looks for items with the specified string.
+        :return: Dictionary: {'items': array of items, 'totalItems': Number of items (without applying the limit)}
+        """
+
+        group_path = common.shared_path
+        if group_id:
+            if not Agent.group_exists(group_id):
+                raise WazuhException(1710, group_id)
+            group_path = "{0}/{1}".format(common.shared_path, group_id)
+
+        if not path.exists(group_path):
+            raise WazuhException(1006, group_path)
+
+        data = []
+        for entry in listdir(group_path):
+            item = {}
+            item['filename'] = entry
+            with open("{0}/{1}".format(group_path, entry), 'rb') as f:
+                item['hash'] = md5(f.read()).hexdigest()
+            data.append(item)
+
+        # ar.conf
+        ar_path = "{0}/ar.conf".format(common.shared_path, entry)
+        with open(ar_path, 'rb') as f:
+            hash_ar = md5(f.read()).hexdigest()
+        data.append({'filename': "../ar.conf", 'hash': hash_ar})
+
+        if search:
+            data = search_array(data, search['value'], search['negation'])
+
+        if sort:
+            data = sort_array(data, sort['fields'], sort['order'])
+        else:
+            data = sort_array(data, ["filename"])
+
+        return {'items': cut_array(data, offset, limit), 'totalItems': len(data)}
+
+    @staticmethod
+    def create_group(group_id):
+        """
+        Creates a group.
+
+        :param group_id: Group ID.
+        :return: Confirmation message.
+        """
+
+        group_path = "{0}/{1}".format(common.shared_path, group_id)
+
+        if group_id.lower() == "default" or path.exists(group_path):
+            raise WazuhException(1711, group_id)
+
+        ossec_uid = getpwnam("ossec").pw_uid
+        ossec_gid = getgrnam("ossec").gr_gid
+
+        # Create group in /etc/shared
+        group_def_path = "{0}/default".format(common.shared_path)
+        try:
+            copytree(group_def_path, group_path)
+            chown_r(group_path, ossec_uid, ossec_gid)
+            chmod_r(group_path, 0o660)
+            chmod(group_path, 0o770)
+            msg = "Group '{0}' created.".format(group_id)
+        except Exception as e:
+            raise WazuhException(1005, str(e))
+
+        return msg
+
+    @staticmethod
+    def remove_group(group_id):
+        """
+        Remove the group in every agent.
+
+        :param group_id: Group ID.
+        :return: Confirmation message.
+        """
+
+        if group_id.lower() == "default":
+            raise WazuhException(1712)
+
+        if not Agent.group_exists(group_id):
+            raise WazuhException(1710, group_id)
+
+        ids = []
+
+        # Remove agent group
+        agents = Agent.get_agent_group(group_id=group_id, limit=None)
+        for agent in agents['items']:
+            Agent.unset_group(agent['id'])
+            ids.append(agent['id'])
+
+        # Remove group directory
+        group_path = "{0}/{1}".format(common.shared_path, group_id)
+        group_backup = "{0}/groups/{1}_{2}".format(common.backup_path, group_id, int(time()))
+        if path.exists(group_path):
+            move(group_path, group_backup)
+
+        msg = "Group '{0}' removed.".format(group_id)
+
+        return {'msg': msg, 'affected_agents': ids}
+
+    @staticmethod
     def set_group(agent_id, group_id, force=False):
         """
-        Assings a group to an agent.
+        Set a group to an agent.
 
         :param agent_id: Agent ID.
         :param group_id: Group ID.
@@ -867,13 +1045,19 @@ class Agent:
         :return: Confirmation message.
         """
 
+        agent_id = agent_id.zfill(3)
+        if agent_id == "000":
+            raise WazuhException(1703)
+
         # Check if agent exists
         if not force:
             Agent(agent_id).get_basic_information()
 
         if group_id.lower() != "default":
+            ossec_uid = getpwnam("ossec").pw_uid
+            ossec_gid = getgrnam("ossec").gr_gid
 
-            # Create group in /queue/agent-groups
+            # Assign group in /queue/agent-groups
             agent_group_path = "{0}/{1}".format(common.groups_path, agent_id)
             try:
                 new_file = False if path.exists(agent_group_path) else True
@@ -883,35 +1067,24 @@ class Agent:
                 f_group.close()
 
                 if new_file:
-                    ossec_uid = getpwnam("ossec").pw_uid
-                    ossec_gid = getgrnam("ossec").gr_gid
                     chown(agent_group_path, ossec_uid, ossec_gid)
                     chmod(agent_group_path, 0o640)
             except Exception as e:
                 raise WazuhException(1005, str(e))
 
             # Create group in /etc/shared
-            group_path = "{0}/{1}".format(common.shared_path, group_id)
-            group_def_path = "{0}/default".format(common.shared_path)
-            try:
-                if not path.exists(group_path):
-                    copytree(group_def_path, group_path)
-                    chmod_r(group_path, 0o660)
-                    chmod(group_path, 0o770)
-
-            except Exception as e:
-                raise WazuhException(1005, str(e))
-
+            if not Agent.group_exists(group_id):
+                Agent.create_group(group_id)
 
         else:
-            Agent.remove_group(agent_id)
+            Agent.unset_group(agent_id)
 
-        return "Group '{0}' assigned to agent '{1}'.".format(group_id, agent_id)
+        return "Group '{0}' set to agent '{1}'.".format(group_id, agent_id)
 
     @staticmethod
-    def remove_group(agent_id, force=False):
+    def unset_group(agent_id, force=False):
         """
-        Remove the agent group. The group will be 'default'.
+        Unset the agent group. The group will be 'default'.
 
         :param agent_id: Agent ID.
         :param force: No check if agent exists
@@ -926,25 +1099,4 @@ class Agent:
         if path.exists(agent_group_path):
             remove(agent_group_path)
 
-        return "Group removed. Current group for agent '{0}': 'default'.".format(agent_id)
-
-    @staticmethod
-    def remove_group_in_every_agent(group_id):
-        """
-        Remove the group in every agent.
-
-        :param group_id: Group ID.
-        :return: Confirmation message.
-        """
-
-        ids = []
-
-        # Get agents with group
-        agents = Agent.get_agent_group(group_id=group_id, limit=None)
-        for agent in agents['items']:
-            Agent.remove_group(agent['id'])
-            ids.append(agent['id'])
-
-        msg = "Group '{0}' removed.".format(group_id)
-
-        return {'msg': msg, 'affected_agents': ids}
+        return "Group unset. Current group for agent '{0}': 'default'.".format(agent_id)

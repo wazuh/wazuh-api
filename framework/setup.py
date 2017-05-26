@@ -9,8 +9,8 @@ from setuptools import setup
 # Install the package dev: python setup.py develop
 
 setup(name='wazuh',
-      version='0.1',
-      description='OSSEC control with python',
+      version='3.0.0-alpha3',
+      description='Wazuh control with Python',
       url='https://github.com/wazuh',
       author='Wazuh',
       author_email='hello@wazuh.com',
