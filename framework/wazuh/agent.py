@@ -457,8 +457,9 @@ class Agent:
 
         # Query
         query = "SELECT {0} FROM agent"
-        fields = {'id': 'id', 'name': 'name', 'ip': 'ip', 'status': 'last_keepalive'}
-        select = ["id", "name", "ip", "last_keepalive"]
+        fields = {'id': 'id', 'name': 'name', 'ip': 'ip', 'status': 'last_keepalive', 'os.name': 'os_name', 'os.version': 'os_version', 'os.platform': 'os_platform' }
+        select = ["id", "name", "ip", "last_keepalive", "os_name", "os_version", "os_platform"]
+        search_fields = ["id", "name", "ip", "os_name", "os_version", "os_platform"]
         request = {}
 
         if status != "all":
@@ -476,7 +477,7 @@ class Agent:
         # Search
         if search:
             query += " AND NOT" if bool(search['negation']) else ' AND'
-            query += " (" + " OR ".join(x + ' LIKE :search' for x in ('id', 'name', 'ip')) + " )"
+            query += " (" + " OR ".join(x + ' LIKE :search' for x in search_fields) + " )"
             request['search'] = '%{0}%'.format(search['value'])
 
         if "FROM agent AND" in query:
@@ -488,25 +489,27 @@ class Agent:
 
         # Sorting
         if sort:
-            allowed_sort_fields = fields.keys()
-            for sf in sort['fields']:
-                if sf not in allowed_sort_fields:
-                    raise WazuhException(1403, 'Allowed sort fields: {0}. Field: {1}'.format(allowed_sort_fields, sf))
-
-            order_str_fields = []
-            for i in sort['fields']:
-                # Order by status ASC is the same that order by last_keepalive DESC.
-                if i == 'status':
-                    if sort['order'] == 'asc':
-                        str_order = "desc"
-                    else:
-                        str_order = "asc"
-                else:
-                    str_order = sort['order']
-                order_str_fields.append('{0} {1}'.format(fields[i], str_order))
-
             if sort['fields']:
+                allowed_sort_fields = fields.keys()
+                # Check if every element in sort['fields'] is in allowed_sort_fields.
+                if not set(sort['fields']).issubset(allowed_sort_fields):
+                    raise WazuhException(1403, 'Allowed sort fields: {0}. Fields: {1}'.format(allowed_sort_fields, sort['fields']))
+
+                order_str_fields = []
+                for i in sort['fields']:
+                    # Order by status ASC is the same that order by last_keepalive DESC.
+                    if i == 'status':
+                        if sort['order'] == 'asc':
+                            str_order = "desc"
+                        else:
+                            str_order = "asc"
+                    else:
+                        str_order = sort['order']
+                    order_str_fields.append('{0} {1}'.format(fields[i], str_order))
+
                 query += ' ORDER BY ' + ','.join(order_str_fields)
+            else:
+                query += ' ORDER BY id {0}'.format(sort['order'])
         else:
             query += ' ORDER BY id ASC'
 
@@ -520,6 +523,7 @@ class Agent:
 
         for tuple in conn:
             data_tuple = {}
+            os = {}
 
             if tuple[0] != None:
                 data_tuple['id'] = str(tuple[0]).zfill(3)
@@ -532,6 +536,18 @@ class Agent:
                 lastKeepAlive = tuple[3]
             else:
                 lastKeepAlive = 0
+
+            if tuple[4] != None:
+                os['name'] = tuple[4]
+            if tuple[5] != None:
+                os['version'] = tuple[5]
+            if tuple[6] != None:
+                os['platform'] = tuple[6]
+
+            if os:
+                os_no_empty = dict((k, v) for k, v in os.iteritems() if v)
+                if os_no_empty:
+                    data_tuple['os'] = os_no_empty
 
             if data_tuple['id'] == "000":
                 data_tuple['status'] = "Active"
