@@ -22,6 +22,7 @@ var router = require('express').Router();
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {string="active","never connected", "disconnected"} [status] Filters by agent status.
+ * @apiParam {String} [os.platform] Filters by OS platform
  *
  * @apiDescription Returns a list with the available agents.
  *
@@ -35,7 +36,7 @@ router.get('/', cache(), function(req, res) {
     req.apicacheGroup = "agents";
 
     var data_request = {'function': '/agents', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'os.platform':'alphanumeric_param'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -50,6 +51,8 @@ router.get('/', cache(), function(req, res) {
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
     if ('status' in req.query)
         data_request['arguments']['status'] = req.query.status;
+    if ('os.platform' in req.query)
+        data_request['arguments']['os_platform'] = req.query['os.platform'];
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })

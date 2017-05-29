@@ -437,11 +437,12 @@ class Agent:
         self.id = agent_id
 
     @staticmethod
-    def get_agents_overview(status="all", offset=0, limit=common.database_limit, sort=None, search=None):
+    def get_agents_overview(status="all", os_platform="all", offset=0, limit=common.database_limit, sort=None, search=None):
         """
         Gets a list of available agents with basic attributes.
 
         :param status: Filters by agent status: Active, Disconnected or Never connected.
+        :param os_platform: Filters by OS platform.
         :param offset: First item to return.
         :param limit: Maximum number of items to return.
         :param sort: Sorts the items. Format: {"fields":["field1","field2"],"order":"asc|desc"}.
@@ -473,6 +474,10 @@ class Agent:
                 query += ' AND last_keepalive < :time_active'
             elif status.lower() == "never connected":
                 query += ' AND last_keepalive IS NULL AND id != 0'
+
+        if os_platform != "all":
+            request['os_platform'] = os_platform
+            query += ' AND os_platform = :os_platform'
 
         # Search
         if search:
