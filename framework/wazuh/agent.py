@@ -6,6 +6,7 @@
 from wazuh.utils import execute, cut_array, sort_array, search_array, chmod_r, chown_r
 from wazuh.exception import WazuhException
 from wazuh.ossec_queue import OssecQueue
+from wazuh.ossec_socket import OssecSocket
 from wazuh.database import Connection
 from wazuh import manager
 from wazuh import common
@@ -255,10 +256,37 @@ class Agent:
         :return: Message.
         """
 
-        # Check if authd is running
         manager_status = manager.status()
-        if 'ossec-authd' not in manager_status or manager_status['ossec-authd'] == 'running':
-            raise WazuhException(1704)
+        if 'ossec-authd' not in manager_status or manager_status['ossec-authd'] != 'running':
+            data = self._remove_manual(backup)
+        else:
+            data = self._remove_authd()
+
+        return data
+
+    def _remove_authd(self):
+        """
+        Deletes the agent.
+
+        :param backup: Create backup before removing the agent.
+        :return: Message.
+        """
+
+        msg = { "function": "remove", "arguments": { "id": str(self.id) } }
+
+        authd_socket = OssecSocket(common.AUTHD_SOCKET)
+        authd_socket.send(msg)
+        data = authd_socket.receive()
+        authd_socket.close()
+
+        return data
+
+    def _remove_manual(self, backup=False):
+        """
+        Deletes the agent.
+        :param backup: Create backup before removing the agent.
+        :return: Message.
+        """
 
         # Get info from DB
         self._load_info_from_DB()
@@ -340,11 +368,34 @@ class Agent:
                 if path.exists(agent_file[0]) and not path.exists(agent_file[1]):
                     rename(agent_file[0], agent_file[1])
 
-        return 'Agent removed'
+        return 'Agent deleted successfully.'
 
     def _add(self, name, ip, id=None, key=None, force=-1):
         """
-        Adds a agent to OSSEC.
+        Adds an agent to OSSEC.
+        2 uses:
+            - name and ip [force]: Add an agent like manage_agents (generate id and key).
+            - name, ip, id, key [force]: Insert an agent with an existing id and key.
+
+        :param name: name of the new agent.
+        :param ip: IP of the new agent. It can be an IP, IP/NET or ANY.
+        :param id: ID of the new agent.
+        :param key: Key of the new agent.
+        :param force: Remove old agents with same IP if disconnected since <force> seconds
+        :return: Agent ID.
+        """
+
+        manager_status = manager.status()
+        if 'ossec-authd' not in manager_status or manager_status['ossec-authd'] != 'running':
+            data = self._add_manual(name, ip, id, key, force)
+        else:
+            data = self._add_authd(name, ip, id, key, force)
+
+        return data
+
+    def _add_authd(self, name, ip, id=None, key=None, force=-1):
+        """
+        Adds an agent to OSSEC using authd.
         2 uses:
             - name and ip [force]: Add an agent like manage_agents (generate id and key).
             - name, ip, id, key [force]: Insert an agent with an existing id and key.
@@ -368,10 +419,45 @@ class Agent:
 
         force = force if type(force) == int else int(force)
 
-        # Check if authd is running
-        manager_status = manager.status()
-        if 'ossec-authd' not in manager_status or manager_status['ossec-authd'] == 'running':
-            raise WazuhException(1704)
+        msg = ""
+        if name and ip:
+            if id and key:
+                msg = { "function": "add", "arguments": { "name": name, "ip": ip, "force": force } }
+            else:
+                msg = { "function": "add", "arguments": { "name": name, "ip": ip, "id": id, "key": key, "force": force } }
+
+        authd_socket = OssecSocket(common.AUTHD_SOCKET)
+        authd_socket.send(msg)
+        data = authd_socket.receive()
+        authd_socket.close()
+
+        self.id = data['id']
+
+    def _add_manual(self, name, ip, id=None, key=None, force=-1):
+        """
+        Adds an agent to OSSEC manually.
+        2 uses:
+            - name and ip [force]: Add an agent like manage_agents (generate id and key).
+            - name, ip, id, key [force]: Insert an agent with an existing id and key.
+
+        :param name: name of the new agent.
+        :param ip: IP of the new agent. It can be an IP, IP/NET or ANY.
+        :param id: ID of the new agent.
+        :param key: Key of the new agent.
+        :param force: Remove old agents with same IP if disconnected since <force> seconds
+        :return: Agent ID.
+        """
+
+        # Check arguments
+        if id:
+            id = id.zfill(3)
+
+        ip = ip.lower()
+
+        if key and len(key) < 64:
+            raise WazuhException(1709)
+
+        force = force if type(force) == int else int(force)
 
         # Check if ip, name or id exist in client.keys
         last_id = 0
@@ -389,16 +475,26 @@ class Agent:
                 if line_data[1][0] in ('#!'):  # name starts with # or !
                     continue
 
+                check_remove = 0
                 if id and id == line_data[0]:
                     raise WazuhException(1708, id)
                 if name == line_data[1]:
-                    raise WazuhException(1705, name)
+                    if force < 0:
+                        raise WazuhException(1705, name)
+                    else:
+                        check_remove = 1
                 if ip != 'any' and ip == line_data[2]:
                     if force < 0:
                         raise WazuhException(1706, ip)
                     else:
-                        if force == 0 or Agent.check_if_delete_agent(line_data[0], force):
-                            Agent.remove_agent(line_data[0], backup=True)
+                        check_remove = 2
+
+                if check_remove:
+                    if force == 0 or Agent.check_if_delete_agent(line_data[0], force):
+                        Agent.remove_agent(line_data[0], backup=True)
+                    else:
+                        if check_remove == 1:
+                            raise WazuhException(1705, name)
                         else:
                             raise WazuhException(1706, ip)
 
