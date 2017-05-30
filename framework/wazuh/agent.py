@@ -504,13 +504,15 @@ class Agent:
                 for i in sort['fields']:
                     # Order by status ASC is the same that order by last_keepalive DESC.
                     if i == 'status':
-                        if sort['order'] == 'asc':
-                            str_order = "desc"
-                        else:
-                            str_order = "asc"
+                        str_order = "desc" if sort['order'] == 'asc' else "asc"
+                        order_str_field = '{0} {1}'.format(fields[i], str_order)
+                    # Order by version is order by major and minor
+                    elif i == 'os.version':
+                        order_str_field = "CAST(os_major AS INTEGER) {0}, CAST(os_minor AS INTEGER) {0}".format(sort['order'])
                     else:
-                        str_order = sort['order']
-                    order_str_fields.append('{0} {1}'.format(fields[i], str_order))
+                        order_str_field = '{0} {1}'.format(fields[i], sort['order'])
+
+                    order_str_fields.append(order_str_field)
 
                 query += ' ORDER BY ' + ','.join(order_str_fields)
             else:
@@ -668,8 +670,6 @@ class Agent:
                 data['items'].append(tuple[0])
 
         return data
-
-
 
     @staticmethod
     def restart_agents(agent_id=None, restart_all=False):
