@@ -157,6 +157,7 @@ if __name__ == "__main__":
             '/agents/:agent_id/key': Agent.get_agent_key,
             '/agents': Agent.get_agents_overview,
             '/agents/summary': Agent.get_agents_summary,
+            '/agents/summary/os': Agent.get_os_summary,
             'PUT/agents/:agent_id/restart': Agent.restart_agents,
             'PUT/agents/restart': Agent.restart_agents,
             'PUT/agents/:agent_name': Agent.add_agent,
