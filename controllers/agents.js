@@ -70,11 +70,50 @@ router.get('/', cache(), function(req, res) {
  *
  */
 router.get('/summary', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /agents");
+    logger.debug(req.connection.remoteAddress + " GET /agents/summary");
 
     req.apicacheGroup = "agents";
 
     var data_request = {'function': '/agents/summary', 'arguments': {}};
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {get} /agents/summary/os Get OS summary
+ * @apiName GetOSSummary
+ * @apiGroup Info
+ *
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ *
+ * @apiDescription Returns a summary of OS.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/summary/os?pretty"
+ *
+ */
+router.get('/summary/os', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /agents/summary/os");
+
+    req.apicacheGroup = "agents";
+
+    var data_request = {'function': '/agents/summary/os', 'arguments': {}};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
+
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
+
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 

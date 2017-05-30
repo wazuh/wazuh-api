@@ -606,6 +606,72 @@ class Agent:
         return {'Total': total, 'Active': active, 'Disconnected': disconnected, 'Never connected': never}
 
     @staticmethod
+    def get_os_summary(offset=0, limit=common.database_limit, sort=None, search=None):
+        """
+        Gets a list of available OS.
+
+        :param offset: First item to return.
+        :param limit: Maximum number of items to return.
+        :param sort: Sorts the items. Format: {"fields":["field1","field2"],"order":"asc|desc"}.
+        :param search: Looks for items with the specified string.
+        :return: Dictionary: {'items': array of items, 'totalItems': Number of items (without applying the limit)}
+        """
+        # Connect DB
+        db_global = glob(common.database_path_global)
+        if not db_global:
+            raise WazuhException(1600)
+
+        conn = Connection(db_global[0])
+
+        # Init query
+        query = "SELECT DISTINCT {0} FROM agent WHERE os_platform IS NOT null AND os_platform != ''"
+        fields = {'os.platform': 'os_platform'}  # field: db_column
+        select = ["os_platform"]
+        request = {}
+
+        # Search
+        if search:
+            query += " AND NOT" if bool(search['negation']) else ' AND'
+            query += " ( os_platform LIKE :search )"
+            request['search'] = '%{0}%'.format(search['value'])
+
+        # Count
+        conn.execute(query.format('COUNT(DISTINCT os_platform)'), request)
+        data = {'totalItems': conn.fetch()[0]}
+
+        # Sorting
+        if sort:
+            if sort['fields']:
+                allowed_sort_fields = fields.keys()
+                # Check if every element in sort['fields'] is in allowed_sort_fields.
+                if not set(sort['fields']).issubset(allowed_sort_fields):
+                    raise WazuhException(1403, 'Allowed sort fields: {0}. Fields: {1}'.format(allowed_sort_fields, sort['fields']))
+
+                order_str_fields = ['`{0}` {1}'.format(fields[i], sort['order']) for i in sort['fields']]
+                query += ' ORDER BY ' + ','.join(order_str_fields)
+            else:
+                query += ' ORDER BY os_platform {0}'.format(sort['order'])
+        else:
+            query += ' ORDER BY os_platform ASC'
+
+        # OFFSET - LIMIT
+        if limit:
+            query += ' LIMIT :offset,:limit'
+            request['offset'] = offset
+            request['limit'] = limit
+
+        conn.execute(query.format(','.join(select)), request)
+
+        data['items'] = []
+        for tuple in conn:
+            if tuple[0] != None:
+                data['items'].append(tuple[0])
+
+        return data
+
+
+
+    @staticmethod
     def restart_agents(agent_id=None, restart_all=False):
         """
         Restarts an agent or all agents.
