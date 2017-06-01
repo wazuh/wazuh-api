@@ -108,7 +108,11 @@ python_bin = '';
 /********************************************/
 /* Config APP
 /********************************************/
-current_version = "v2.0.2";
+
+// Get version: vX.Y
+info_package = require('./package.json');
+full_version = info_package.version.split(".");
+current_version = "v" + full_version[0] + "." + full_version[1];
 
 if (process.argv.length == 3 && process.argv[2] == "-f")
     logger.set_foreground();
@@ -151,22 +155,20 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 /**
  * Versioning
- * Using: Header: "api-version: vX.Y" or URL: /v2.0.0/
+ * Using: Header: "api-version: vX.Y"
  */
 app.use(function(req, res, next) {
     var api_version_header = req.get('api-version');
-    var api_version_url = req.path.split('/')[1];
-    var regex_version = /^v\d+(?:\.\d+){0,2}$/i;
-    var new_url = "";
+    var regex_version = /^v\d+\.\d+$/i;
 
-    if (api_version_url && regex_version.test(api_version_url))
-        new_url = req.url;
-    else if (api_version_header && regex_version.test(api_version_header))
-        new_url = "/" + api_version_header + req.url;
-    else
-        new_url = "/" + current_version + req.url;
+    if (typeof api_version_header != 'undefined'){
+        if (!regex_version.test(api_version_header))
+            res_h.bad_request(req, res, "801");
+        else if (api_version_header != current_version)
+            res_h.bad_request(req, res, "802", "Expected version '" + current_version + "', and found '" + api_version_header + "'");
+    }
 
-    req.url = new_url;
+    req.url = "/" + current_version + req.url;
 
     next();
 });
