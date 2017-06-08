@@ -6,14 +6,17 @@
 
 from sys import argv, exit, path
 from getopt import getopt, GetoptError
+from os import path as os_path
 import json
 import signal
 
 error_wazuh_package = 0
 exception_error = None
 try:
-    current_path = path[0].split('/')
-    new_path = "/{0}/{1}/framework".format(current_path[1], current_path[2])
+    new_path = '/var/ossec/framework'
+    if not os_path.exists(new_path):
+        current_path = path[0].split('/')
+        new_path = "/{0}/{1}/framework".format(current_path[1], current_path[2])
     path.append(new_path)
     from wazuh import Wazuh
     from wazuh.agent import Agent
