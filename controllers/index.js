@@ -19,7 +19,7 @@ wazuh_control = api_path + "/models/wazuh-api.py";
 
 var router = require('express').Router();
 var validator = require('../helpers/input_validation');
-
+var os = require("os");
 
 // Cache options
 if (config.cache_enabled.toLowerCase() == "yes"){
@@ -72,10 +72,12 @@ router.use('/rules', require('./rules'));
 router.use('/decoders', require('./decoders'));
 router.use('/cache', require('./cache'));
 
+
 // Index
 router.get('/',function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /");
-    json_res = {'error': 0, 'data': "Welcome to Wazuh HIDS API"};
+    data = { 'msg': "Welcome to Wazuh HIDS API", 'api_version': "v" + info_package.version, 'hostname': os.hostname()}
+    json_res = {'error': 0, 'data': data};
     res_h.send(req, res, json_res);
 });
 
