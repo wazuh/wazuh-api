@@ -89,18 +89,24 @@ exports.wazuh = function(my_logger) {
             else
                 var msg = wazuh_version;
 
-            my_logger.log("ERROR: Wazuh manager v" + msg + " found. It is required Wazuh manager v2.0.0 or newer. Exiting.");
+            var f_msg = "ERROR: Wazuh manager v" + msg + " found. It is required Wazuh manager v2.0.0 or newer. Exiting.";
+            console.log(f_msg);
+            my_logger.log(f_msg);
             return -1;
         }
 
         // Wazuh major.minor == API major.minor
         var wazuh_api_mm = info_package.version.substring(0, 3)
         if ( wazuh_version.substring(0, 3) != wazuh_api_mm ){
-            my_logger.log("ERROR: Wazuh manager v" + wazuh_version + " found. Wazuh manager v" + wazuh_api_mm + ".x expected. Exiting.");
+            var f_msg = "ERROR: Wazuh manager v" + wazuh_version + " found. Wazuh manager v" + wazuh_api_mm + ".x expected. Exiting.";
+            console.log(f_msg);
+            my_logger.log(f_msg);
             return -1;
         }
     } catch (e) {
-        my_logger.log("WARNING: The installed version of Wazuh manager could not be determined. It is required Wazuh Manager 2.0 or newer.");
+        var f_msg = "WARNING: The installed version of Wazuh manager could not be determined. It is required Wazuh Manager 2.0 or newer.";
+        console.log(f_msg);
+        my_logger.log(f_msg);
     }
 
     return 0;
@@ -130,6 +136,8 @@ exports.python = function(my_logger) {
         process.env.LD_LIBRARY_PATH = old_library_path;
     }
 
-    my_logger.log("No suitable Python version found. This application requires Python 2.7 or newer. Exiting.");
+    var f_msg = "ERROR: No suitable Python version found. This application requires Python 2.7 or newer. Exiting.";
+    console.log(f_msg);
+    my_logger.log(f_msg);
     return -1;
 }
