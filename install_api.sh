@@ -349,10 +349,10 @@ setup_api() {
         # Remove execution permissions
         exec_cmd "chmod ugo-x $API_PATH/package.json"
         exec_cmd "chmod ugo-x $API_PATH/scripts/wazuh-api*"
-    fi
 
-    if [ -f "$API_PATH/configuration/ssl/.gitignore" ]; then
-        exec_cmd "rm -f $API_PATH/configuration/ssl/.gitignore"
+        if [ -f "$API_PATH/configuration/ssl/.gitignore" ]; then
+            exec_cmd "rm -f $API_PATH/configuration/ssl/.gitignore"
+        fi
     fi
 
     if [ "X${update}" == "Xyes" ]; then
