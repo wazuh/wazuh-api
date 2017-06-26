@@ -82,7 +82,16 @@ router.get('/',function(req, res) {
 // Version
 router.get('/version',function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /version");
-    json_res = {'error': 0, 'data': current_version};
+
+    // Temporary patch
+    var api_version_header = req.get('api-version');
+    if (typeof api_version_header != 'undefined' && api_version_header == "v2.0.0"){
+        json_res = {'error': 0, 'data': "v2.0.0"};
+    }
+    else{
+        json_res = {'error': 0, 'data': current_version};
+    }
+
     res_h.send(req, res, json_res);
 });
 
