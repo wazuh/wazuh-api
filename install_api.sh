@@ -71,7 +71,7 @@ get_type_service() {
 url_lastest_release () {
     LATEST_RELEASE=$(curl -L -s -H 'Accept: application/json' https://github.com/$1/$2/releases/latest)
     #LATEST_VERSION=$(echo $LATEST_RELEASE | sed -e 's/.*"tag_name":"\(.*\)".*/\1/')
-    LATEST_VERSION=$(echo $LATEST_RELEASE | grep -P "\"tag_name\":\".+\"update_url" -o | grep -P "v\d+\.\d+(?:\.\d+)*" -o)
+    LATEST_VERSION=$(echo $LATEST_RELEASE | grep -P "\"tag_name\":\".+\"update_url" -o | grep -P "v\d+(?:\.\d+){0,2}\-*\w*" -o)
     ARTIFACT_URL="https://github.com/$1/$2/archive/$LATEST_VERSION.tar.gz"
     echo $ARTIFACT_URL
 }
@@ -100,7 +100,7 @@ min_version() {
 compile_sqlite() {
     LIB_PATH="$API_PATH/framework/lib"
     SONAME="libsqlite3.so.0"
-    SOURCE="framework/database/sqlite3.c"
+    SOURCE="$API_SOURCES/framework/database/sqlite3.c"
 
     print "\nInstalling SQLite library."
     exec_cmd "gcc -pipe -O2 -shared -fPIC -o $LIB_PATH/$SONAME $SOURCE"
@@ -281,10 +281,10 @@ backup_api () {
 
 restore_configuration () {
 
-    if [ "X${API_OLD_VERSION}" == "X2.0.0" ]; then
+    if [[ ${API_OLD_VERSION} =~ ^2 ]]; then
         exec_cmd "rm -rf $API_PATH/configuration"
         exec_cmd "cp -rfp $API_PATH_BACKUP/configuration $API_PATH/configuration"
-    elif [ "X${API_OLD_VERSION}" == "X1.1" ] || [ "X${API_OLD_VERSION}" == "X1.2.0" ] || [ "X${API_OLD_VERSION}" == "X1.2.1" ]; then
+    elif [[ ${API_OLD_VERSION} =~ ^1 ]]; then
         exec_cmd "cp -rfp $API_PATH_BACKUP/ssl/htpasswd $API_PATH/configuration/auth/user"
         exec_cmd "cp -p $API_PATH_BACKUP/ssl/*.key $API_PATH_BACKUP/ssl/*.crt $API_PATH/configuration/ssl/"
         exec_cmd "chown -R root:root $API_PATH/configuration"
@@ -351,6 +351,10 @@ setup_api() {
         exec_cmd "chmod ugo-x $API_PATH/scripts/wazuh-api*"
     fi
 
+    if [ -f "$API_PATH/configuration/ssl/.gitignore" ]; then
+        exec_cmd "rm -f $API_PATH/configuration/ssl/.gitignore"
+    fi
+
     if [ "X${update}" == "Xyes" ]; then
         restore_configuration
     fi
@@ -402,7 +406,9 @@ main() {
     if [ "X${RESTORE_WARNING}" == "X1" ]; then
         print "\nWarning: Some problems occurred when restoring your previous configuration ($API_PATH/configuration/config.js). Please, review it manually. Backup directory: $API_PATH_BACKUP."
     elif [ "X${RESTORE_WARNING}" == "X2" ]; then
-        print "\nWarning: Some problems occurred when restoring your previous configuration. Please, review it manually. Backup directory: $API_PATH_BACKUP."
+        print "\nWarning: It was not possible to restore your previous configuration. Please, review it manually. Backup directory: $API_PATH_BACKUP."
+    else
+        exec_cmd "rm -rf $API_PATH_BACKUP"
     fi
 
     print "Note: You can configure the API executing $API_PATH/scripts/configure_api.sh"
