@@ -452,7 +452,7 @@ describe('Rootcheck', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.should.be.an.Object;
-                res.body.data.should.have.properties(['rootcheckEndTime', 'rootcheckTime']);
+                res.body.data.should.have.properties(['end', 'start']);
                 done();
             });
         });
