@@ -84,8 +84,7 @@ router.get('/version',function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /version");
 
     // Temporary patch
-    var api_version_header = req.get('api-version');
-    if (typeof api_version_header != 'undefined' && api_version_header == "v2.0.0"){
+    if( !req.get('wazuh-app-version') && req.get('user-agent') && req.get('user-agent').startsWith('Needle')){
         json_res = {'error': 0, 'data': "v2.0.0"};
     }
     else{
