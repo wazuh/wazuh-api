@@ -48,8 +48,8 @@ errors['700'] = "File not found"
 
 // Headers
 errors['800'] = "Error adding agent due to header 'x-forwarded-for' is not present";
-errors['801'] = "Wrong format for 'api-version' header. Expected format: 'vX.Y'";
-errors['802'] = "Invalid 'api-version' header";
+errors['801'] = "Wrong format for 'wazuh-app-version' header. Expected format: 'vX.Y'";
+errors['802'] = "Invalid 'wazuh-app-version' header";
 
 
 exports.description = function(n){

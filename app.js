@@ -158,19 +158,15 @@ app.use(bodyParser.urlencoded({extended: true}));
  * Using: Header: "api-version: vX.Y"
  */
 app.use(function(req, res, next) {
-    var api_version_header = req.get('api-version');
+    //
+    var app_version_header = req.get('wazuh-app-version');
     var regex_version = /^v\d+\.\d+$/i;
 
-    if (typeof api_version_header != 'undefined'){
-
-        // Patch for Wazuh App 2.0_5.4.0
-        if (api_version_header != "v2.0.0"){
-            // Keep this part, but remove the previous if in Wazuh 2.1.0
-            if (!regex_version.test(api_version_header))
-                res_h.bad_request(req, res, "801");
-            else if (api_version_header != current_version)
-                res_h.bad_request(req, res, "802", "Expected version '" + current_version + "', and found '" + api_version_header + "'");
-        }
+    if (typeof app_version_header != 'undefined'){
+        if (!regex_version.test(app_version_header))
+            res_h.bad_request(req, res, "801");
+        else if (app_version_header != current_version)
+            res_h.bad_request(req, res, "802", "Expected version '" + current_version + "', and found '" + app_version_header + "'");
     }
 
     req.url = "/" + current_version + req.url;
