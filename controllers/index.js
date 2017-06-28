@@ -88,7 +88,7 @@ router.get('/version',function(req, res) {
         json_res = {'error': 0, 'data': "v2.0.0"};
     }
     else{
-        json_res = {'error': 0, 'data': current_version};
+        json_res = {'error': 0, 'data': "v" + info_package.version};
     }
 
     res_h.send(req, res, json_res);

@@ -111,7 +111,7 @@ python_bin = '';
 
 // Get version: vX.Y
 info_package = require('./package.json');
-full_version = info_package.version.split(".");
+var full_version = info_package.version.split(".");
 current_version = "v" + full_version[0] + "." + full_version[1];
 
 if (process.argv.length == 3 && process.argv[2] == "-f")
