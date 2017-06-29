@@ -108,11 +108,9 @@ python_bin = '';
 /********************************************/
 /* Config APP
 /********************************************/
-
-// Get version: vX.Y
 info_package = require('./package.json');
-var full_version = info_package.version.split(".");
-current_version = "v" + full_version[0] + "." + full_version[1];
+var version_mmp = info_package.version.split('.'); // major.minor.patch
+var current_mm_version = version_mmp[0] + '.' + version_mmp[1]; // major.minor
 
 if (process.argv.length == 3 && process.argv[2] == "-f")
     logger.set_foreground();
@@ -154,29 +152,32 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 /**
- * Versioning
- * Using: Header: "api-version: vX.Y"
+ * Check Wazuh app version
+ * Using: Header: "wazuh-app-version: X.Y.Z"
  */
 app.use(function(req, res, next) {
-    //
+
     var app_version_header = req.get('wazuh-app-version');
-    var regex_version = /^v\d+\.\d+$/i;
+    var regex_version = /^\d+\.\d+\.\d+$/i;
 
     if (typeof app_version_header != 'undefined'){
         if (!regex_version.test(app_version_header))
             res_h.bad_request(req, res, "801");
-        else if (app_version_header != current_version)
-            res_h.bad_request(req, res, "802", "Expected version '" + current_version + "', and found '" + app_version_header + "'");
-    }
+        else{
+            var app_version_mmp = app_version_header.split('.'); // major.minor.patch
+            var app_mm_version = app_version_mmp[0] + '.' + app_version_mmp[1]; // major.minor
 
-    req.url = "/" + current_version + req.url;
+            if (app_mm_version != current_mm_version)
+                res_h.bad_request(req, res, "802", "Expected version '" + current_mm_version + ".x', and found '" + app_mm_version + ".x'.");
+        }
+    }
 
     next();
 });
 
 
 // Controllers
-app.use("/" + current_version, require('./controllers'));
+app.use("/", require('./controllers'));
 
 
 // APP Errors
