@@ -23,6 +23,7 @@ var router = require('express').Router();
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {string="active","never connected", "disconnected"} [status] Filters by agent status.
  * @apiParam {String} [os.platform] Filters by OS platform
+ * @apiParam {String} [os.version] Filters by OS version
  *
  * @apiDescription Returns a list with the available agents.
  *
@@ -36,7 +37,7 @@ router.get('/', cache(), function(req, res) {
     req.apicacheGroup = "agents";
 
     var data_request = {'function': '/agents', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'os.platform':'alphanumeric_param'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'os.platform':'alphanumeric_param', 'os.version':'alphanumeric_param'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -53,6 +54,8 @@ router.get('/', cache(), function(req, res) {
         data_request['arguments']['status'] = req.query.status;
     if ('os.platform' in req.query)
         data_request['arguments']['os_platform'] = req.query['os.platform'];
+	if ('os.version' in req.query)
+        data_request['arguments']['os_version'] = req.query['os.version'];
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
