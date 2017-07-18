@@ -164,6 +164,7 @@ if __name__ == "__main__":
             'POST/agents': Agent.add_agent,
             'POST/agents/insert': Agent.insert_agent,
             'DELETE/agents/:agent_id': Agent.remove_agent,
+            'DELETE/agents/': Agent.remove_agent,
 
             '/decoders': Decoder.get_decoders,
             '/decoders/files': Decoder.get_decoders_files,

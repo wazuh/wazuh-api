@@ -18,6 +18,15 @@ exports.numbers = function(n) {
         return false;
 }
 
+exports.array_numbers = function(n) {
+    if (typeof n != 'undefined'){
+        var regex = /^((\d+)(,\d+)*)?$/;
+        return regex.test(n);
+    }
+    else
+        return false;
+}
+
 exports.names = function(name) {
     if (typeof name != 'undefined'){
         var regex = /^[a-zA-Z0-9_\-\.]+$/;
