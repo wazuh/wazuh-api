@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 
 
+## [v2.1.0]
+### Added
+- Added OS version to `GET /agent` request
+- New request: Delete a list of agents - `DELETE /agents - Params: {"ids":["id_1", ..., "id_n"]}`
+
 ## [v2.0.1]
 ### Fixed
 - Issue when basic-auth is disabled.
