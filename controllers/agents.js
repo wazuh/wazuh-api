@@ -23,6 +23,7 @@ var router = require('express').Router();
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {string="active","never connected", "disconnected"} [status] Filters by agent status.
  * @apiParam {String} [os.platform] Filters by OS platform
+ * @apiParam {String} [os.version] Filters by OS version
  *
  * @apiDescription Returns a list with the available agents.
  *
@@ -36,7 +37,7 @@ router.get('/', cache(), function(req, res) {
     req.apicacheGroup = "agents";
 
     var data_request = {'function': '/agents', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'os.platform':'alphanumeric_param'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'os.platform':'alphanumeric_param', 'os.version':'alphanumeric_param'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -53,6 +54,8 @@ router.get('/', cache(), function(req, res) {
         data_request['arguments']['status'] = req.query.status;
     if ('os.platform' in req.query)
         data_request['arguments']['os_platform'] = req.query['os.platform'];
+	if ('os.version' in req.query)
+        data_request['arguments']['os_version'] = req.query['os.version'];
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -469,6 +472,31 @@ router.put('/restart', function(req, res) {
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
+/**
+ * @api {post} /agents/ Restart a list of agents
+ * @apiName PostAgentListRestart
+ * @apiGroup Restart
+ *
+ * @apiParam {String[]} Array of agent ID's.
+ *
+ * @apiDescription Restarts a list of agents.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X POST -d '{"ids":["001", "002"]}' "https://127.0.0.1:55000/agents/restart"
+ *
+ */
+router.post('/restart', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " POST /agents/restart");
+
+    var data_request = {'function': 'POST/agents/restart', 'arguments': {}};
+
+	if (!filter.check(req.body, {'ids':'array_numbers'}, req, res))  // Filter with error
+        return;
+
+	data_request['arguments']['agent_id'] = req.body.ids;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
 
 /**
  * @api {put} /agents/:agent_id/restart Restart an agent
@@ -728,6 +756,31 @@ router.delete('/groups/:group_id', function(req, res) {
         return;
 
     data_request['arguments']['group_id'] = req.params.group_id;
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {delete} /agents/ Delete a list of agents
+ * @apiName DeleteAgents
+ * @apiGroup Delete
+ *
+ * @apiParam {String[]} Array of agent ID's.
+ *
+ * @apiDescription Removes a list of agents. You must restart OSSEC after removing an agent.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X DELETE -d '{"ids":["001", "002"]}' "https://127.0.0.1:55000/agents/"
+ *
+ */
+router.delete('/', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " DELETE /agents/");
+
+    var data_request = {'function': 'DELETE/agents/', 'arguments': {}};
+
+	if (!filter.check(req.body, {'ids':'array_numbers'}, req, res))  // Filter with error
+        return;
+
+	data_request['arguments']['agent_id'] = req.body.ids;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })

@@ -2,7 +2,17 @@
 All notable changes to this project will be documented in this file.
 
 
-## [v2.0.1]
+## [v2.1.0]
+### Added
+- Added OS information to `GET /agent` request
+- New request: Delete a list of agents - `DELETE /agents - Params: {"ids":["id_1", ..., "id_n"]}`
+- New request: Restart a list of agents - `POST /agents/restart - Params: {"ids":["id_1", ..., "id_n"]}`
+
+### Changed
+- Support add/remove agents with ossec-authd running
+
+
+## [v2.0.1] - 2017-07-25
 ### Fixed
 - Issue when basic-auth is disabled.
 - Regex for latest version in install_api.sh
