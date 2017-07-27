@@ -776,7 +776,7 @@ class Agent:
         """
         Restarts an agent or all agents.
 
-        :param agent_id: Agent ID of the agent to restart.
+        :param agent_id: Agent ID of the agent to restart. Can be a list of ID's.
         :param restart_all: Restarts all agents.
 
         :return: Message.
@@ -788,7 +788,24 @@ class Agent:
             oq.close()
             return ret_msg
         else:
-            return Agent(agent_id).restart()
+            ids = list()
+            if isinstance(agent_id, basestring):
+                try:
+                    Agent(agent_id).restart()
+                except Exception, e:
+                    ids.append(id)
+            else:
+                for id in agent_id:
+                    try:
+                        Agent(id).restart()
+                    except Exception, e:
+                        ids.append(id)
+            if not ids:
+                message = 'All selected agents were restarted'
+            else:
+                message = 'Some agents were not restarted'
+
+            return {'msg':message, 'ids':ids}
 
     @staticmethod
     def get_agent(agent_id):

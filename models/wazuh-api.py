@@ -161,6 +161,7 @@ if __name__ == "__main__":
             'PUT/agents/:agent_id/restart': Agent.restart_agents,
             'PUT/agents/restart': Agent.restart_agents,
             'PUT/agents/:agent_name': Agent.add_agent,
+            'POST/agents/restart': Agent.restart_agents,
             'POST/agents': Agent.add_agent,
             'POST/agents/insert': Agent.insert_agent,
             'DELETE/agents/:agent_id': Agent.remove_agent,

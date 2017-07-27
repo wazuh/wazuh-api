@@ -196,6 +196,31 @@ router.put('/restart', function(req, res) {
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
+/**
+ * @api {post} /agents/ Restart a list of agents
+ * @apiName PostAgentListRestart
+ * @apiGroup Restart
+ *
+ * @apiParam {String[]} Array of agent ID's.
+ *
+ * @apiDescription Restarts a list of agents.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X POST -d '{"ids":["001", "002"]}' "https://127.0.0.1:55000/agents/restart"
+ *
+ */
+router.post('/restart', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " POST /agents/restart");
+
+    var data_request = {'function': 'POST/agents/restart', 'arguments': {}};
+	
+	if (!filter.check(req.body, {'ids':'array_numbers'}, req, res))  // Filter with error
+        return;
+
+	data_request['arguments']['agent_id'] = req.body.ids;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
 
 /**
  * @api {put} /agents/:agent_id/restart Restart an agent
