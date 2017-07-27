@@ -792,13 +792,13 @@ class Agent:
             if isinstance(agent_id, basestring):
                 try:
                     Agent(agent_id).restart()
-                except Exception, e:
+                except Exception as e:
                     ids.append(id)
             else:
                 for id in agent_id:
                     try:
                         Agent(id).restart()
-                    except Exception, e:
+                    except Exception as e:
                         ids.append(id)
             if not ids:
                 message = 'All selected agents were restarted'
@@ -842,13 +842,13 @@ class Agent:
         if isinstance(agent_id, basestring):
             try:
                 Agent(agent_id).remove(backup)
-            except Exception, e:
+            except Exception as e:
                 ids.append(id)
         else:
             for id in agent_id:
                 try:
                     Agent(id).remove(backup)
-                except Exception, e:
+                except Exception as e:
                     ids.append(id)
 
         if not ids:
@@ -857,7 +857,7 @@ class Agent:
             message = 'Some agents were not removed'
 
         return {'msg':message, 'ids':ids}
-		
+
 
     @staticmethod
     def add_agent(name, ip='any', force=-1):
