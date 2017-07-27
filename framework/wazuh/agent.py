@@ -12,15 +12,21 @@ from wazuh import manager
 from wazuh import common
 from glob import glob
 from datetime import date, datetime, timedelta
-from hashlib import md5
+from hashlib import md5, sha1
 from base64 import b64encode
 from shutil import copyfile, move, copytree
 from time import time
 from platform import platform
-from os import remove, chown, chmod, path, makedirs, rename, urandom, listdir
+from os import remove, chown, chmod, path, makedirs, rename, urandom, listdir, stat
 from pwd import getpwnam
 from grp import getgrnam
-from time import time
+from time import time, sleep
+import socket
+from distutils.version import StrictVersion
+try:
+    from urllib import urlopen, urlretrieve
+except ImportError:
+    from urllib.request import urlopen, urlretrieve
 
 class Agent:
     """
@@ -167,6 +173,16 @@ class Agent:
                 self.os['platform'] = tuple[16]
             if tuple[17] != None:
                 self.os['uname'] = tuple[17]
+                if "x86_64" in self.os['uname']:
+                    self.os['arch'] = "x86_64"
+                elif "i386" in self.os['uname']:
+                    self.os['arch'] = "i386"
+                elif "sparc" in self.os['uname']:
+                    self.os['arch'] = "sparc"
+                elif "amd64" in self.os['uname']:
+                    self.os['arch'] = "amd64"
+                elif "AIX" in self.os['uname']:
+                    self.os['arch'] = "AIX"
 
             if self.id != "000":
                 self.status = Agent.calculate_status(self.lastKeepAlive)
@@ -1287,3 +1303,524 @@ class Agent:
             remove(agent_group_path)
 
         return "Group unset. Current group for agent '{0}': 'default'.".format(agent_id)
+
+    @staticmethod
+    def get_outdated_agents(offset=0, limit=common.database_limit, sort=None):
+        """
+        Gets the outdated agents.
+
+        :param offset: First item to return.
+        :param limit: Maximum number of items to return.
+        :param sort: Sorts the items. Format: {"fields":["field1","field2"],"order":"asc|desc"}.
+        :return: Dictionary: {'items': array of items, 'totalItems': Number of items (without applying the limit)}
+        """
+
+        # Connect DB
+        db_global = glob(common.database_path_global)
+        if not db_global:
+            raise WazuhException(1600)
+
+        conn = Connection(db_global[0])
+
+        # Get manager version
+        manager = Agent(id=0)
+        manager._load_info_from_DB()
+        manager_ver = manager.version
+
+        # Init query
+        query = "SELECT {0} FROM agent WHERE version <> :manager_ver AND id <> 0"
+        fields = {'id': 'id', 'name': 'name', 'version': 'version'}  # field: db_column
+        select = ['id','name','version']
+        request = {'manager_ver': manager_ver}
+
+        # Count
+        conn.execute(query.format('COUNT(`id`)'), request)
+        data = {'totalItems': conn.fetch()[0]}
+
+        # Sorting
+        if sort:
+            if sort['fields']:
+                allowed_sort_fields = fields.keys()
+                # Check if every element in sort['fields'] is in allowed_sort_fields.
+                if not set(sort['fields']).issubset(allowed_sort_fields):
+                    raise WazuhException(1403, 'Allowed sort fields: {0}. Fields: {1}'.format(allowed_sort_fields, sort['fields']))
+
+                order_str_fields = ['{0} {1}'.format(fields[i], sort['order']) for i in sort['fields']]
+                query += ' ORDER BY ' + ','.join(order_str_fields)
+            else:
+                query += ' ORDER BY id {0}'.format(sort['order'])
+        else:
+            query += ' ORDER BY id ASC'
+
+        # OFFSET - LIMIT
+        if limit:
+            query += ' LIMIT :offset,:limit'
+            request['offset'] = offset
+            request['limit'] = limit
+
+        # Data query
+        conn.execute(query.format(','.join(select)), request)
+
+        data['items'] = []
+
+        for tuple in conn:
+            data_tuple = {}
+
+            if tuple[0] != None:
+                data_tuple['id'] = str(tuple[0]).zfill(3)
+            if tuple[1] != None:
+                data_tuple['name'] = tuple[1]
+            if tuple[2] != None:
+                data_tuple['version'] = tuple[2]
+
+            data['items'].append(data_tuple)
+
+        return data
+
+
+    def _get_versions(self, wpk_repo=common.wpk_repo_url):
+        """
+        Generates a list of available versions for its distribution and version.
+        """
+        if self.os['platform']=="windows":
+            versions_url = wpk_repo + "windows/versions"
+        else:
+            if self.os['platform']=="ubuntu":
+                versions_url = wpk_repo + self.os['platform'] + "/" + self.os['major'] + "." + self.os['minor'] + "/" + self.os['arch'] + "/versions"
+            else:
+                versions_url = wpk_repo + self.os['platform'] + "/" + self.os['major'] + "/" + self.os['arch'] + "/versions"
+
+        result = urlopen(versions_url)
+        if result.getcode() == 200:
+            lines = result.readlines()
+            lines = filter(None, lines)
+        else:
+            raise WazuhException(1713, versions_url)
+
+        versions = []
+
+        for line in lines:
+            ver_readed = line.decode().split()
+            version = ver_readed[0]
+            sha1sum = ver_readed[1] if len(ver_readed) > 1 else ''
+            versions.append([version, sha1sum])
+
+        return versions
+
+
+    def _get_wpk_file(self, wpk_repo=common.wpk_repo_url, debug=False, version=None, force=False):
+        """
+        Searchs latest Wazuh WPK file for its distribution and version. Downloads the WPK if it is not in the upgrade folder.
+        """
+        agent_new_ver = None
+        if not version:
+            versions = self._get_versions(wpk_repo)
+            agent_new_ver = versions[0][0]
+            agent_new_shasum = versions[0][1]
+        else:
+            for versions in self._get_versions(wpk_repo):
+                if versions[0] == version:
+                    agent_new_ver = versions[0]
+                    agent_new_shasum = versions[1]
+                    break
+        if not agent_new_ver:
+            raise WazuhException(1718, version)
+
+        # Get manager version
+        manager = Agent(id=0)
+        manager._load_info_from_DB()
+        manager_ver = manager.version
+        if debug:
+            print("Manager version: {0}".format(manager_ver.split(" ")[1]))
+
+        # Comparing versions
+        agent_ver = self.version
+        if debug:
+            print("Agent version: {0}".format(agent_ver.split(" ")[1]))
+            print("Agent new version: {0}".format(agent_new_ver))
+
+        r_manager_ver = manager_ver.split(" ")[1].replace("v","").replace("-","").replace("alpha","a").replace("beta","b")
+        r_agent_ver = agent_ver.split(" ")[1].replace("v","").replace("-","").replace("alpha","a").replace("beta","b")
+        r_agent_new_ver = agent_new_ver.replace("v","").replace("-","").replace("alpha","a").replace("beta","b")
+
+        if StrictVersion(r_manager_ver) < StrictVersion(r_agent_new_ver):
+            raise WazuhException(1717, "Manager: {0} / Agent: {1} -> {2}".format(manager_ver.split(" ")[1], agent_ver.split(" ")[1], agent_new_ver))
+
+        if (StrictVersion(r_agent_ver) >= StrictVersion(r_agent_new_ver) and not force):
+            raise WazuhException(1716, "Agent ver: {0} / Agent new ver: {1}".format(agent_ver.split(" ")[1], agent_new_ver))
+
+        if self.os['platform']=="windows":
+            wpk_file = "wazuh_agent_{0}_{1}.wpk".format(agent_new_ver, self.os['platform'])
+        else:
+            if self.os['platform']=="ubuntu":
+                wpk_file = "wazuh_agent_{0}_{1}_{2}.{3}_{4}.wpk".format(agent_new_ver, self.os['platform'], self.os['major'], self.os['minor'], self.os['arch'])
+            else:
+                wpk_file = "wazuh_agent_{0}_{1}_{2}_{3}.wpk".format(agent_new_ver, self.os['platform'], self.os['major'], self.os['arch'])
+
+        wpk_file_path = "{0}/var/upgrade/{1}".format(common.ossec_path, wpk_file)
+
+        # If WPK is already downloaded
+        if path.isfile(wpk_file_path):
+            # Get SHA1 file sum
+            sha1hash = sha1(open(wpk_file_path, 'rb').read()).hexdigest()
+            # Comparing SHA1 hash
+            if not sha1hash == agent_new_shasum:
+                if debug:
+                    print("Downloaded file SHA1 does not match (downloaded: {0} / repository: {1})".format(sha1hash, agent_new_shasum))
+            else:
+                if debug:
+                    print("WPK file already downloaded: {0} - SHA1SUM: {1}".format(wpk_file_path, sha1hash))
+                return [wpk_file, sha1hash]
+
+        # Download WPK file
+        if self.os['platform']=="windows":
+            wpk_url = wpk_repo + "windows/" + wpk_file
+        else:
+            if self.os['platform']=="ubuntu":
+                wpk_url = wpk_repo + self.os['platform'] + "/" + self.os['major'] + "." + self.os['minor'] + "/" + self.os['arch'] + "/" + wpk_file
+            else:
+                wpk_url = wpk_repo + self.os['platform'] + "/" + self.os['major'] + "/" + self.os['arch'] + "/" + wpk_file
+
+        if debug:
+            print("Downloading WPK file from: {0}".format(wpk_url))
+        else:
+            print("Downloading WPK file...")
+
+        result = urlopen(wpk_url)
+        if result.getcode() == 200:
+            urlretrieve(wpk_url, wpk_file_path)
+        else:
+            raise WazuhException(1714, result.getcode())
+
+        # Get SHA1 file sum
+        sha1hash = sha1(open(wpk_file_path).read()).hexdigest()
+
+        # Comparing SHA1 hash
+        if not sha1hash == agent_new_shasum:
+            raise WazuhException(1714)
+
+        if debug:
+            print("WPK file downloaded: {0} - SHA1SUM: {1}".format(wpk_file_path, sha1hash))
+        else:
+            print("WPK file downloaded.")
+
+        return [wpk_file, sha1hash]
+
+
+    def _send_wpk_file(self, wpk_repo=common.wpk_repo_url, debug=False, version=None, force=False, show_progress=None):
+        """
+        Sends WPK file to agent.
+        """
+        # Check WPK file
+        _get_wpk = self._get_wpk_file(wpk_repo, debug, version, force)
+        wpk_file = _get_wpk[0]
+        file_sha1 = _get_wpk[1]
+        wpk_file_size = stat("{0}/var/upgrade/{1}".format(common.ossec_path, wpk_file)).st_size
+        if debug:
+            print("Upgrade PKG: {0} ({1} KB)".format(wpk_file, wpk_file_size/1024))
+        # Open file on agent
+        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        s.connect(common.ossec_path + "/queue/ossec/request")
+        msg = "{0} com open wb {1}".format(str(self.id).zfill(3), wpk_file)
+        s.send(msg.encode())
+        if debug:
+            print("MSG SENT: {0}".format(str(msg)))
+        data = s.recv(1024).decode()
+        s.close()
+        if debug:
+            print("RESPONSE: {0}".format(data))
+        if data.startswith('err'):
+            raise WazuhException(1715, data)
+
+        # Sending file to agent
+        file = open(common.ossec_path + "/var/upgrade/" + wpk_file, "rb")
+        if not file:
+            raise WazuhException(1715, data)
+        if debug:
+            print("Sending: {0}".format(common.ossec_path + "/var/upgrade/" + wpk_file))
+        try:
+            start_time = time()
+            bytes_read = file.read(512)
+            bytes_read_acum = 0
+            while bytes_read:
+                s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                s.connect(common.ossec_path + "/queue/ossec/request")
+                msg = "{0} com write {1} {2} ".format(str(self.id).zfill(3), str(len(bytes_read)), wpk_file)
+                s.send(msg.encode() + bytes_read)
+                data = s.recv(1024).decode()
+                s.close()
+                bytes_read = file.read(512)
+                if show_progress:
+                    bytes_read_acum = bytes_read_acum + len(bytes_read)
+                    show_progress(int(bytes_read_acum * 100 / wpk_file_size) + (bytes_read_acum * 100 % wpk_file_size > 0))
+            elapsed_time = time() - start_time
+        finally:
+            file.close()
+
+        # Close file on agent
+        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        s.connect(common.ossec_path + "/queue/ossec/request")
+        msg = "{0} com close {1}".format(str(self.id).zfill(3), wpk_file)
+        s.send(msg.encode())
+        if debug:
+            print("MSG SENT: {0}".format(str(msg)))
+        data = s.recv(1024).decode()
+        s.close()
+        if debug:
+            print("RESPONSE: {0}".format(data))
+        if data.startswith('err'):
+            raise WazuhException(1715, data)
+
+        # Get file SHA1 from agent and compare
+        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        s.connect(common.ossec_path + "/queue/ossec/request")
+        msg = "{0} com sha1 {1}".format(str(self.id).zfill(3), wpk_file)
+        s.send(msg.encode())
+        if debug:
+            print("MSG SENT: {0}".format(str(msg)))
+        data = s.recv(1024).decode()
+        s.close()
+        if debug:
+            print("RESPONSE: {0}".format(data))
+        rcv_sha1 = data.split(' ')[1]
+        if rcv_sha1 == file_sha1:
+            return ["WPK file sent", wpk_file]
+        else:
+            raise WazuhException(1715, data)
+
+
+    def upgrade(self, wpk_repo=None, debug=False, version=None, force=False, show_progress=None):
+        """
+        Upgrade agent using a WPK file.
+        """
+        if int(self.id) == 0:
+            raise WazuhException(1703)
+
+        self._load_info_from_DB()
+
+        ver = self.version.split(" ")[1].replace("v","").replace("-","").replace("alpha","a").replace("beta","b")
+        if not StrictVersion(ver) >= '3.0.0a4':
+            raise WazuhException(1719, self.version)
+
+        if self.os['platform']=="windows" and int(self.os['major']) < 6:
+            raise WazuhException(1721, self.os['name'])
+
+        if wpk_repo == None:
+            wpk_repo = common.wpk_repo_url
+
+        # Check if agent is active.
+        if not self.status == 'Active':
+            raise WazuhException(1720)
+
+        # Send file to agent
+        sending_result = self._send_wpk_file(wpk_repo, debug, version, force, show_progress)
+        if debug:
+            print(sending_result[0])
+
+        # Send upgrading command
+        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        s.connect(common.ossec_path + "/queue/ossec/request")
+        if self.os['platform']=="windows":
+            msg = "{0} com upgrade {1} upgrade.bat".format(str(self.id).zfill(3), sending_result[1])
+        else:
+            msg = "{0} com upgrade {1} upgrade.sh".format(str(self.id).zfill(3), sending_result[1])
+        s.send(msg.encode())
+        if debug:
+            print("MSG SENT: {0}".format(str(msg)))
+        data = s.recv(1024).decode()
+        s.close()
+        if debug:
+            print("RESPONSE: {0}".format(data))
+        if data.startswith('ok'):
+            return "Upgrade procedure started"
+        else:
+            raise WazuhException(1716, data.replace("err ",""))
+
+    @staticmethod
+    def upgrade_agent(agent_id, wpk_repo=None, version=None, force=False):
+        """
+        Read upgrade result output from agent.
+
+        :param agent_id: Agent ID.
+        :return: Upgrade message.
+        """
+
+        return Agent(agent_id).upgrade(wpk_repo=wpk_repo, version=version, force=True if int(force)==1 else False)
+
+
+    def upgrade_result(self, debug=False, timeout=60):
+        """
+        Read upgrade result output from agent.
+        """
+        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        s.connect(common.ossec_path + "/queue/ossec/request")
+        msg = "{0} com upgrade_result".format(str(self.id).zfill(3))
+        s.send(msg.encode())
+        if debug:
+            print("MSG SENT: {0}".format(str(msg)))
+        data = s.recv(1024).decode()
+        s.close()
+        if debug:
+            print("RESPONSE: {0}".format(data))
+        counter = 0
+        while data.startswith('err') and counter < timeout:
+            sleep(1)
+            counter = counter + 1
+            s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            s.connect(common.ossec_path + "/queue/ossec/request")
+            msg = str(self.id).zfill(3) + " com upgrade_result"
+            s.send(msg.encode())
+            if debug:
+                print("MSG SENT: {0}".format(str(msg)))
+            data = s.recv(1024).decode()
+            s.close()
+            if debug:
+                print("RESPONSE: {0}".format(data))
+
+        if data.startswith('ok 0'):
+            return "Agent upgraded successfully"
+        else:
+            raise WazuhException(1716, data.replace("err ",""))
+
+    @staticmethod
+    def get_upgrade_result(agent_id, timeout=3):
+        """
+        Read upgrade result output from agent.
+
+        :param agent_id: Agent ID.
+        :return: Upgrade result.
+        """
+
+        return Agent(agent_id).upgrade_result(timeout=int(timeout))
+
+
+    def _send_custom_wpk_file(self, file_path, debug=False, show_progress=None):
+        """
+        Sends custom WPK file to agent.
+        """
+        # Check WPK file
+        if not path.isfile(file_path):
+            raise WazuhException(1006)
+
+        wpk_file = path.basename(file_path)
+        wpk_file_size = stat(file_path).st_size
+        if debug:
+            print("Custom WPK file: {0} ({1} KB)".format(wpk_file, wpk_file_size/1024))
+
+        # Open file on agent
+        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        s.connect(common.ossec_path + "/queue/ossec/request")
+        msg = "{0} com open w {1}".format(str(self.id).zfill(3), wpk_file)
+        s.send(msg.encode())
+        if debug:
+            print("MSG SENT: {0}".format(str(msg)))
+        data = s.recv(1024).decode()
+        s.close()
+        if debug:
+            print("RESPONSE: {0}".format(data))
+        if data.startswith('err'):
+            raise WazuhException(1715, data)
+
+        # Sending file to agent
+        file = open(common.ossec_path + "/var/upgrade/" + wpk_file, "rb")
+        if not file:
+            raise WazuhException(1715, data)
+        try:
+            start_time = time()
+            bytes_read = file.read(512)
+            file_sha1=sha1(bytes_read)
+            bytes_read_acum = 0
+            while bytes_read:
+                s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                s.connect(common.ossec_path + "/queue/ossec/request")
+                msg = "{0} com write {1} {2} ".format(str(self.id).zfill(3), str(len(bytes_read)), wpk_file)
+                s.send(msg.encode() + bytes_read)
+                data = s.recv(1024).decode()
+                s.close()
+                bytes_read = file.read(512)
+                file_sha1.update(bytes_read)
+                if show_progress:
+                    bytes_read_acum = bytes_read_acum + len(bytes_read)
+                    show_progress(int(bytes_read_acum * 100 / wpk_file_size) + (bytes_read_acum * 100 % wpk_file_size > 0))
+            elapsed_time = time() - start_time
+            calc_sha1 = file_sha1.hexdigest()
+            if debug:
+                print("FILE SHA1: {0}".format(calc_sha1))
+        finally:
+            file.close()
+
+        # Close file on agent
+        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        s.connect(common.ossec_path + "/queue/ossec/request")
+        msg = "{0} com close {1}".format(str(self.id).zfill(3), wpk_file)
+        s.send(msg.encode())
+        if debug:
+            print("MSG SENT: {0}".format(str(msg)))
+        data = s.recv(1024).decode()
+        s.close()
+        if debug:
+            print("RESPONSE: {0}".format(data))
+        if data.startswith('err'):
+            raise WazuhException(1715, data)
+
+        # Get file SHA1 from agent and compare
+        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        s.connect(common.ossec_path + "/queue/ossec/request")
+        msg = "{0} com sha1 {1}".format(str(self.id).zfill(3), wpk_file)
+        s.send(msg.encode())
+        if debug:
+            print("MSG SENT: {0}".format(str(msg)))
+        data = s.recv(1024).decode()
+        s.close()
+        if debug:
+            print("RESPONSE: {0}".format(data))
+        rcv_sha1 = data.split(' ')[1]
+        if calc_sha1 == rcv_sha1:
+            return ["WPK file sent", wpk_file]
+        else:
+            raise WazuhException(1715, data)
+
+
+    def upgrade_custom(self, file_path, installer, debug=False, show_progress=None):
+        """
+        Upgrade agent using a custom WPK file.
+        """
+        self._load_info_from_DB()
+
+        # Check if agent is active.
+        if not self.status == 'Active':
+            raise WazuhException(1720)
+
+        # Send file to agent
+        sending_result = self._send_custom_wpk_file(file_path, debug, show_progress)
+        if debug:
+            print(sending_result[0])
+
+        # Send installing command
+        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        s.connect(common.ossec_path + "/queue/ossec/request")
+        msg = "{0} com upgrade {1} {2}".format(str(self.id).zfill(3), sending_result[1], installer)
+        s.send(msg.encode())
+        if debug:
+            print("MSG SENT: {0}".format(str(msg)))
+        data = s.recv(1024).decode()
+        s.close()
+        if debug:
+            print("RESPONSE: {0}".format(data))
+        if data.startswith('ok'):
+            return "Installation started"
+        else:
+            raise WazuhException(1716, data.replace("err ",""))
+
+    @staticmethod
+    def upgrade_agent_custom(agent_id, file_path=None, installer=None):
+        """
+        Read upgrade result output from agent.
+
+        :param agent_id: Agent ID.
+        :return: Upgrade message.
+        """
+        if not file_path or not installer:
+            raise WazuhException(1307)
+
+        return Agent(agent_id).upgrade_custom(file_path=file_path, installer=installer)

@@ -326,6 +326,42 @@ router.get('/groups/:group_id/files', cache(), function(req, res) {
 })
 
 /**
+ * @api {get} /outdated Get outdated agents
+ * @apiName GetOutdatedAgents
+ * @apiGroup Upgrade
+ *
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
+ *
+ * @apiDescription Returns the list of outdated groups.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/outdated?pretty"
+ *
+ */
+router.get('/outdated', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /agents/outdated");
+
+    req.apicacheGroup = "agents";
+
+    var data_request = {'function': '/agents/outdated', 'arguments': {}};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param'};
+
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
+
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
  * @api {get} /agents/:agent_id Get an agent
  * @apiName GetAgentsID
  * @apiGroup Info
@@ -381,6 +417,38 @@ router.get('/:agent_id/key', function(req, res) {
 })
 
 /**
+ * @api {get} /agents/:agent_id/upgrade_result Get upgrade result from agent
+ * @apiName GetUpgradeResult
+ * @apiGroup Upgrade
+ *
+ * @apiParam {Number} agent_id Agent ID.
+ * @apiParam {Number} [timeout=3] Seconds waiting for agent response.
+ *
+ * @apiDescription Returns the upgrade result from an agent.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/001/upgrade_result?pretty"
+ *
+ */
+router.get('/:agent_id/upgrade_result', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /agents/:agent_id/upgrade_result");
+
+    var data_request = {'function': '/agents/:agent_id/upgrade_result', 'arguments': {}};
+
+    if (!filter.check(req.query, {'timeout':'numbers'}, req, res))  // Filter with error
+        return;
+
+    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+    if ('timeout' in req.query)
+        data_request['arguments']['timeout'] = req.query.timeout;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
  * @api {put} /agents/restart Restart all agents
  * @apiName PutAgentsRestart
  * @apiGroup Restart
@@ -424,6 +492,81 @@ router.put('/:agent_id/restart', function(req, res) {
         return;
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {put} /agents/:agent_id/upgrade Upgrade an agent
+ * @apiName PutAgentsUpgradeId
+ * @apiGroup Upgrade
+ *
+ * @apiParam {Number} agent_id Agent unique ID.
+ * @apiParam {String} [wpk_repo] WPK repository.
+ * @apiParam {String} [version] Wazuh version.
+ * @apiParam {number=0,1} [force] Force upgrade.
+ *
+ * @apiDescription Upgrade the agent.
+ *
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/000/upgrade?pretty"
+ *
+ */
+router.put('/:agent_id/upgrade', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " PUT /agents/:agent_id/upgrade");
+
+    var data_request = {'function': 'PUT/agents/:agent_id/upgrade', 'arguments': {}};
+    var filters = {'wpk_repo':'paths', 'version':'alphanumeric_param', 'force':'numbers'};
+
+    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))
+        return;
+
+    if (!filter.check(req.query, filters, req, res))
+        return;
+
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+    if ('wpk_repo' in req.query)
+        data_request['arguments']['wpk_repo'] = req.query.wpk_repo;
+    if ('version' in req.query)
+        data_request['arguments']['version'] = req.query.version;
+    if ('force' in req.query)
+        data_request['arguments']['force'] = req.query.force;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {put} /agents/:agent_id/upgrade_custom Upgrade an agent
+ * @apiName PutAgentsUpgradeId
+ * @apiGroup Upgrade
+ *
+ * @apiParam {Number} agent_id Agent unique ID.
+ * @apiParam {String} file_path WPK file path.
+ * @apiParam {String} installer Installation script.
+ *
+ * @apiDescription Upgrade the agent using a custom file.
+ *
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/000/upgrade_custom?pretty"
+ *
+ */
+router.put('/:agent_id/upgrade_custom', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " PUT /agents/:agent_id/upgrade_custom");
+
+    var data_request = {'function': 'PUT/agents/:agent_id/upgrade_custom', 'arguments': {}};
+    var filters = {'file_path':'paths', 'installer':'alphanumeric_param'};
+
+    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))
+        return;
+
+    if (!filter.check(req.query, filters, req, res))
+        return;
+
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+    if ('file_path' in req.query)
+        data_request['arguments']['file_path'] = req.query.file_path;
+    if ('installer' in req.query)
+        data_request['arguments']['installer'] = req.query.installer;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -714,7 +857,6 @@ router.post('/insert', function(req, res) {
     }else
         res_h.bad_request(req, res, 604, "Missing fields. Mandatory fields: id, name, ip, key");
 })
-
 
 
 module.exports = router;
