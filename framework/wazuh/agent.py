@@ -462,6 +462,9 @@ class Agent:
         last_id = 0
         with open(common.client_keys) as f_k:
             for line in f_k.readlines():
+                if not line.strip():  # ignore empty lines
+                    continue
+
                 if line[0] in ('# '):  # starts with # or ' '
                     continue
 
