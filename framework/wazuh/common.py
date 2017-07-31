@@ -46,7 +46,7 @@ def set_paths_based_on_ossec(o_path='/var/ossec'):
 
     # Socket
     global AUTHD_SOCKET
-    AUTHD_SOCKET = "{0}/queue/agents/auth".format(ossec_path)
+    AUTHD_SOCKET = "{0}/queue/ossec/auth".format(ossec_path)
 
 
 # Common variables
