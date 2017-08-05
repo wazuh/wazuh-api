@@ -201,12 +201,12 @@ router.put('/restart', function(req, res) {
  * @apiName PostAgentListRestart
  * @apiGroup Restart
  *
- * @apiParam {String[]} Array of agent ID's.
+ * @apiParam {String[]} ids Array of agent ID's.
  *
  * @apiDescription Restarts a list of agents.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X POST -H "Content-Type: application/json" -d '{"ids":["001","002"]}' "https://127.0.0.1:55000/agents/restart?pretty"
+ *     curl -u foo:bar -k -X POST -H "Content-Type:application/json" -d '{"ids":["001","002"]}' "https://127.0.0.1:55000/agents/restart?pretty"
  *
  */
 router.post('/restart', function(req, res) {
@@ -310,12 +310,12 @@ router.delete('/:agent_id', function(req, res) {
  * @apiName DeleteAgents
  * @apiGroup Delete
  *
- * @apiParam {String[]} Array of agent ID's.
+ * @apiParam {String[]} ids Array of agent ID's.
  *
  * @apiDescription Removes a list of agents. You must restart OSSEC after removing an agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE -H "Content-Type: application/json" -d '{"ids":["001","002"]}' "https://127.0.0.1:55000/agents?pretty"
+ *     curl -u foo:bar -k -X DELETE -H "Content-Type:application/json" -d '{"ids":["001","002"]}' "https://127.0.0.1:55000/agents?pretty"
  *
  */
 router.delete('/', function(req, res) {
