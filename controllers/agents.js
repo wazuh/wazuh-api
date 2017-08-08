@@ -473,16 +473,16 @@ router.put('/restart', function(req, res) {
 })
 
 /**
- * @api {post} /agents/ Restart a list of agents
+ * @api {post} /agents/restart Restart a list of agents
  * @apiName PostAgentListRestart
  * @apiGroup Restart
  *
- * @apiParam {String[]} Array of agent ID's.
+ * @apiParam {String[]} ids Array of agent ID's.
  *
  * @apiDescription Restarts a list of agents.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X POST -d '{"ids":["001", "002"]}' "https://127.0.0.1:55000/agents/restart"
+ *     curl -u foo:bar -k -X POST -H "Content-Type:application/json" -d '{"ids":["001","002"]}' "https://127.0.0.1:55000/agents/restart?pretty"
  *
  */
 router.post('/restart', function(req, res) {
@@ -495,7 +495,11 @@ router.post('/restart', function(req, res) {
 
 	data_request['arguments']['agent_id'] = req.body.ids;
 
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    if ('ids' in req.body){
+        data_request['arguments']['agent_id'] = req.body.ids;
+        execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    }else
+        res_h.bad_request(req, res, 604, "Missing field: 'ids'");
 })
 
 /**
@@ -760,29 +764,31 @@ router.delete('/groups/:group_id', function(req, res) {
 })
 
 /**
- * @api {delete} /agents/ Delete a list of agents
+ * @api {delete} /agents Delete a list of agents
  * @apiName DeleteAgents
  * @apiGroup Delete
  *
- * @apiParam {String[]} Array of agent ID's.
+ * @apiParam {String[]} ids Array of agent ID's.
  *
  * @apiDescription Removes a list of agents. You must restart OSSEC after removing an agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE -d '{"ids":["001", "002"]}' "https://127.0.0.1:55000/agents/"
+ *     curl -u foo:bar -k -X DELETE -H "Content-Type:application/json" -d '{"ids":["001","002"]}' "https://127.0.0.1:55000/agents?pretty"
  *
  */
 router.delete('/', function(req, res) {
-    logger.debug(req.connection.remoteAddress + " DELETE /agents/");
+    logger.debug(req.connection.remoteAddress + " DELETE /agents");
 
     var data_request = {'function': 'DELETE/agents/', 'arguments': {}};
 
 	if (!filter.check(req.body, {'ids':'array_numbers'}, req, res))  // Filter with error
         return;
 
-	data_request['arguments']['agent_id'] = req.body.ids;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    if ('ids' in req.body){
+        data_request['arguments']['agent_id'] = req.body.ids;
+        execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    }else
+        res_h.bad_request(req, res, 604, "Missing field: 'ids'");
 })
 
 

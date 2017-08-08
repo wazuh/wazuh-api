@@ -20,7 +20,7 @@ exports.numbers = function(n) {
 
 exports.array_numbers = function(n) {
     if (typeof n != 'undefined'){
-        var regex = /^((\d+)(,\d+)*)?$/;
+        var regex = /^\d+(,\d+)*$/;
         return regex.test(n);
     }
     else
