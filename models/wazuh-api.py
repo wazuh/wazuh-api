@@ -20,6 +20,7 @@ try:
     path.append(new_path)
     from wazuh import Wazuh
     from wazuh.agent import Agent
+    from wazuh.cluster import Node
     from wazuh.rule import Rule
     from wazuh.decoder import Decoder
     from wazuh.exception import WazuhException
@@ -198,6 +199,12 @@ if __name__ == "__main__":
             '/manager/logs/summary': manager.ossec_log_summary,
             '/manager/logs': manager.ossec_log,
 
+            '/manager/files': manager.get_files,
+
+            '/cluster/nodes': Node.cluster_nodes,
+            'POST/cluster/nodes': Node.add_node,
+            '/cluster/sync': Node.sync,
+
             '/rootcheck/:agent_id': rootcheck.print_db,
             '/rootcheck/:agent_id/pci': rootcheck.get_pci,
             '/rootcheck/:agent_id/cis': rootcheck.get_cis,
@@ -214,6 +221,12 @@ if __name__ == "__main__":
             '/syscheck/:agent_id/last_scan': syscheck.last_scan,
             'PUT/syscheck': syscheck.run,
             'DELETE/syscheck': syscheck.clear
+
+
+
+
+
+
 
         }
 

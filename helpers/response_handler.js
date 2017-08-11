@@ -61,42 +61,99 @@ exports.bad_request = function(req, res, internal_error, extra_msg){
 }
 
 exports.send_file = function(req, res, file_name, type){
-    var data_request = {'function': '/' + type +'/files', 'arguments': {'file': file_name}};
 
-    var send_aux = this.send;
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) {
-        try {
+    if (type == 'files') {
+
+      var data_request = {'function': '/manager/files', 'arguments': {'download': file_name}};
+
+      var send_aux = this.send;
+      execute.exec(python_bin, [wazuh_control], data_request, function (data) {
+          try {
+              try {
+                  var files = Object.keys(data.data);
+                  var file_name = files[0];
+                  var fileformat = data.data[file_name]["format"];
+                  var wazuhpath = "/var/ossec";
+              } catch (e) {
+                  json_res = {'error': 700, 'message': errors.description(700) + ": " + file_name};
+                  send_aux(req, res, json_res, 404);
+                  return;
+              }
+              var stat = fileSystem.statSync(wazuhpath+file_name);
+
+            if (fileformat == "xml") {
+              res.writeHead(200, {
+              'Content-Type': 'text/xml',
+              'Content-Length': stat.size
+              });
+
+            }else{
+              res.writeHead(200, {
+              'Content-Type': 'text/plain',
+              'Content-Length': stat.size
+              });
+            }
+
+              var readStream = fileSystem.createReadStream(wazuhpath+file_name);
+
+              readStream.pipe(res)
+
+              // Logging
+              var log_msg = "[" + req.connection.remoteAddress + "] " + req.method + " " + req.baseUrl + req.url + " - 200 - error: '0'.";
+              logger.log(log_msg);
+          } catch (e) {
+              if (e.code === 'ENOENT') {
+                  json_res = {'error': 700, 'message': errors.description(700) + ": " + filepath};
+                  send_aux(req, res, json_res, 404);
+                  return;
+              } else {
+                  json_res = {'error': 3, 'message': errors.description(3)};
+                  send_aux(req, res, json_res, 500);
+                  return;
+              }
+          }
+      });
+
+
+    }else{
+
+        var data_request = {'function': '/' + type +'/files', 'arguments': {'file': file_name}};
+
+        var send_aux = this.send;
+        execute.exec(python_bin, [wazuh_control], data_request, function (data) {
             try {
-                var filepath = data.data.items[0].path + "/" + file_name;
+                try {
+                    var filepath = data.data.items[0].path + "/" + file_name;
+                } catch (e) {
+                    json_res = {'error': 700, 'message': errors.description(700) + ": " + file_name};
+                    send_aux(req, res, json_res, 404);
+                    return;
+                }
+                var stat = fileSystem.statSync(filepath);
+
+                res.writeHead(200, {
+                'Content-Type': 'text/xml',
+                'Content-Length': stat.size
+                });
+
+                var readStream = fileSystem.createReadStream(filepath);
+
+                readStream.pipe(res)
+
+                // Logging
+                var log_msg = "[" + req.connection.remoteAddress + "] " + req.method + " " + req.baseUrl + req.url + " - 200 - error: '0'.";
+                logger.log(log_msg);
             } catch (e) {
-                json_res = {'error': 700, 'message': errors.description(700) + ": " + file_name};
-                send_aux(req, res, json_res, 404);
-                return;
+                if (e.code === 'ENOENT') {
+                    json_res = {'error': 700, 'message': errors.description(700) + ": " + filepath};
+                    send_aux(req, res, json_res, 404);
+                    return;
+                } else {
+                    json_res = {'error': 3, 'message': errors.description(3)};
+                    send_aux(req, res, json_res, 500);
+                    return;
+                }
             }
-            var stat = fileSystem.statSync(filepath);
-
-            res.writeHead(200, {
-            'Content-Type': 'text/xml',
-            'Content-Length': stat.size
-            });
-
-            var readStream = fileSystem.createReadStream(filepath);
-
-            readStream.pipe(res)
-
-            // Logging
-            var log_msg = "[" + req.connection.remoteAddress + "] " + req.method + " " + req.baseUrl + req.url + " - 200 - error: '0'.";
-            logger.log(log_msg);
-        } catch (e) {
-            if (e.code === 'ENOENT') {
-                json_res = {'error': 700, 'message': errors.description(700) + ": " + filepath};
-                send_aux(req, res, json_res, 404);
-                return;
-            } else {
-                json_res = {'error': 3, 'message': errors.description(3)};
-                send_aux(req, res, json_res, 500);
-                return;
-            }
-        }
-    });
+        });
+      }
 }

@@ -71,7 +71,7 @@ router.use('/rootcheck', require('./rootcheck'));
 router.use('/rules', require('./rules'));
 router.use('/decoders', require('./decoders'));
 router.use('/cache', require('./cache'));
-
+router.use('/cluster', require('./cluster'));
 
 // Index
 router.get('/',function(req, res) {
