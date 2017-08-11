@@ -185,17 +185,34 @@ def get_files(*args, **kwargs):
         else:
             raise WazuhException(1700)
 
-    files_list = [{"file_name":"/etc/client.keys", "format":"plain"},{"file_name":"/etc/ossec.conf", "format":"xml"}]
+    items = [
+            {"file_name":"/etc/client.keys", "format":"plain", "type": "file"},
+            # {"file_name":"/etc/ossec.conf", "format":"xml"},
+            {"file_name":"/queue/agent-info", "format":"plain", "type": "directory"}
+        ]
+
     files_output = {}
-    for file in files_list:
-        file_name = common.ossec_path + file["file_name"]
-        file['modification_time'] = '{0}'.format(datetime.utcfromtimestamp(os.path.getmtime(file_name)))
-        file['md5'] = md5(file_name)
-        if file_download != "" and file_download == file["file_name"]:
-            file['wazuh_path'] = common.ossec_path
-            file_output = {file["file_name"] : {"md5": file['md5'], "modification_time" : file['modification_time'], "format" : file['format']}}
-            return file_output
-        file_output = {file["file_name"] : {"md5": file['md5'], "modification_time" : file['modification_time'], "format" : file['format']}}
-        files_output.update(file_output)
+    for item in items:
+        fullpath = common.ossec_path + item["file_name"]
+
+        file_list = []
+        if item["type"] == "file":
+            file_list.append(fullpath)
+        else:
+            for entry in os.listdir(fullpath):
+                file_list.append(os.path.join(fullpath, entry))
+
+        for file in file_list:
+
+            file_name = file
+            modification_time = '{0}'.format(datetime.utcfromtimestamp(os.path.getmtime(file_name)))
+            md5_hash = md5(file_name)
+
+            file_output = {file_name : {"md5": md5_hash, "modification_time" : modification_time, "format" : item['format']}}
+
+            if file_download != "" and file_download == file_name:
+                return file_output
+
+            files_output.update(file_output)
 
     return files_output

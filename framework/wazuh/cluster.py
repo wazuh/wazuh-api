@@ -197,6 +197,36 @@ class Node:
 
         return data
 
+
+    @staticmethod
+    def send_request_api(url, auth, verify, type):
+        error = 0
+        try:
+            r = requests.get(url, auth=auth, params=None, verify=verify)
+        except requests.exceptions.Timeout as e:
+            data = str(e)
+            error = 1
+        except requests.exceptions.TooManyRedirects as e:
+            data = str(e)
+            error = 2
+        except requests.exceptions.RequestException as e:
+            data = str(e)
+            error = 3
+        except Exception as e:
+            data = str(e)
+            error = 4
+
+        if error == 0:
+            if type == "json":
+                try:
+                    data = json.loads(r.text)
+                except Exception as e:
+                    data = str(e)
+                    error = 5
+            else:
+                data = r.text
+        return (error, data)
+
     @staticmethod
     def sync():
         """
@@ -205,73 +235,127 @@ class Node:
         """
 
         #Get its own files status
-        own_files = manager.get_files()
+        own_items = manager.get_files()
 
-        cluster = Node()
         #Get other nodes files
-        nodes_list = cluster.cluster_nodes()
-        output = []
-        for node in nodes_list["items"]:
-                # Configuration
-                base_url = node["ip"]
-                auth = requests.auth.HTTPBasicAuth(node["user"], node["password"])
-                verify = False
+        cluster = Node()
+        nodes = cluster.cluster_nodes()["items"]
 
 
-                # Request
-                url = '{0}{1}'.format(base_url, "/manager/files")
+        pushed_files = []
+        info = []
+        for node in nodes:
+            # Configuration
+            base_url = "http://{0}:55000".format(node["ip"])
+            auth = requests.auth.HTTPBasicAuth(node["user"], node["password"])
+            verify = False
+            url = '{0}{1}'.format(base_url, "/manager/files")
+            error, response = Node.send_request_api(url, auth, verify, "json")
+
+            discard_list = []
+            download_list = []
+            sychronize_list = []
+            error_list = []
+
+            if error:
+                error_list.append({'api_error': response, "code": error})
+                continue
+
+            # Items - files
+            their_items = response["data"]
+
+            remote_files = response['data'].keys()
+            local_files = own_items.keys()
+
+            missing_files_locally = set(remote_files) - set(local_files)
+            missing_files_remotely =  set(local_files) - set(remote_files)
+            shared_files = set(local_files).intersection(remote_files)
+
+
+
+
+            # Shared files
+            for filename in shared_files:
+
+                local_file_time = datetime.strptime(own_items[filename]["modification_time"], "%Y-%m-%d %H:%M:%S.%f")
+                local_file = {
+                    "name": filename,
+                    "md5": own_items[filename]["md5"],
+                    "modification_time": own_items[filename]["modification_time"]
+                }
+
+                remote_file_time = datetime.strptime(their_items[filename]["modification_time"], "%Y-%m-%d %H:%M:%S.%f")
+                remote_file = {
+                    "name": filename,
+                    "md5": their_items[filename]["md5"],
+                    "modification_time": their_items[filename]["modification_time"]
+                }
+
+                conditions = { "different_md5": False, "remote_time_higher": False}
+
+                if remote_file["md5"] != local_file["md5"]:
+                    conditions["different_md5"] = True
+                if remote_file_time > local_file_time:
+                    conditions["remote_time_higher"] = True
+
+                check_item = {
+                    "file": remote_file,
+                    "conditions": conditions,
+                    "updated": False,
+                    "node": node["node"]
+                }
+
+                if conditions["different_md5"] and conditions["remote_time_higher"]:
+                    download_list.append(check_item)
+                else:
+                    discard_list.append(check_item)
+
+            # Missing files
+            for filename in missing_files_locally:
+
+                remote_file = {
+                    "name": filename,
+                    "md5": their_items[filename]["md5"],
+                    "modification_time": their_items[filename]["modification_time"],
+                    "conditions": { "missing": True}
+                }
+
+
+                download_list.append(remote_file)
+
+            # Download
+
+
+            for item in download_list:
                 try:
-                    r = requests.get(url, auth=auth, params=None, verify=verify)
-                except requests.exceptions.Timeout as e:
-                    error = str(e)
+                    # Downloading files from each node and update
+                    base_url = "http://{0}:55000".format(node["ip"])
+
+                    url = '{0}{1}'.format(base_url, "/manager/files?download="+item["name"])
+
+                    error, downloaded_file = Node.send_request_api(url, auth, verify, "text")
+                    if error:
+                        error_list.append({'item': item, 'reason': downloaded_file})
+                        continue
+
+                    # fix me!
+                    # dest_file = open(common.ossec_path+item["name"],"w")
+                    dest_file = open(item["name"],"w")
+                    dest_file.write(downloaded_file)
+                    dest_file.close()
+                except Exception as e:
+                    error_list.append({'item': item, 'reason': str(e)})
                     continue
-                except requests.exceptions.TooManyRedirects as e:
-                    error =  str(e)
-                    continue
-                except requests.exceptions.RequestException as e:
-                    error =  str(e)
-                    continue
 
-                response = json.loads(r.text)
 
-                #Compare each file with node own files
-                for local_file_item in own_files:
-                    local_file = {}
-                    local_file["name"] = local_file_item
-                    local_file["md5"] = own_files[local_file_item]["md5"]
-                    local_file["modification_time"] = own_files[local_file_item]["modification_time"]
-                    local_file_time = datetime.strptime(local_file["modification_time"], "%Y-%m-%d %H:%M:%S.%f")
-                    remote_file_time = datetime.strptime(response["data"][local_file["name"]]["modification_time"], "%Y-%m-%d %H:%M:%S.%f")
-                    if response["data"][local_file["name"]]["md5"] != local_file["md5"] and remote_file_time > local_file_time:
-                            file_output = {}
-                            file_output["node"] = node["node"]
-                            file_output["file_name"] = local_file["name"]
-                            file_output["modification_time"] = response["data"][local_file["name"]]["modification_time"]
-                            file_output["format"] = response["data"][local_file["name"]]["format"]
-                            file_output["md5"] = response["data"][local_file["name"]]["md5"]
-                            output.append(file_output)
+                item["updated"] = True
+                sychronize_list.append(item)
 
-                            # Downloading files from each node and update
-                            for file in output:
-                                # Configuration
-                                auth = requests.auth.HTTPBasicAuth(node["user"], node["password"])
-                                verify = False
-                                # Request
-                                url = '{0}{1}'.format(node["ip"], "/manager/files?download="+file_output["file_name"])
-                                try:
-                                    r = requests.get(url, auth=auth, params=None, verify=verify)
-                                except requests.exceptions.Timeout as e:
-                                    error = str(e)
-                                    continue
-                                except requests.exceptions.TooManyRedirects as e:
-                                    error =  str(e)
-                                    continue 
-                                except requests.exceptions.RequestException as e:
-                                    error =  str(e)
-                                    continue
+        #print check_list
+        final_output = {
+            'discard': discard_list,
+            'error': error_list,
+            'updated': sychronize_list
+        }
 
-                                dest_file = open(common.ossec_path+file_output["file_name"],"w")
-                                dest_file.write(r.text)
-                                dest_file.close()
-
-        return output
+        return final_output

@@ -73,7 +73,7 @@ exports.send_file = function(req, res, file_name, type){
                   var files = Object.keys(data.data);
                   var file_name = files[0];
                   var fileformat = data.data[file_name]["format"];
-                  var wazuhpath = "/var/ossec";
+                  var wazuhpath = ""; // fix me
               } catch (e) {
                   json_res = {'error': 700, 'message': errors.description(700) + ": " + file_name};
                   send_aux(req, res, json_res, 404);
@@ -103,7 +103,7 @@ exports.send_file = function(req, res, file_name, type){
               logger.log(log_msg);
           } catch (e) {
               if (e.code === 'ENOENT') {
-                  json_res = {'error': 700, 'message': errors.description(700) + ": " + filepath};
+                  json_res = {'error': 700, 'message': errors.description(700) + ": " + wazuhpath+file_name};
                   send_aux(req, res, json_res, 404);
                   return;
               } else {
