@@ -186,33 +186,73 @@ def get_files(*args, **kwargs):
             raise WazuhException(1700)
 
     items = [
-            {"file_name":"/etc/client.keys", "format":"plain", "type": "file"},
-            # {"file_name":"/etc/ossec.conf", "format":"xml"},
-            {"file_name":"/queue/agent-info", "format":"plain", "type": "directory"}
+                {
+                    "file_name":"/etc/client.keys",
+                    "mode": 0o640,
+                    "user": "root",
+                    "group": "ossec",
+                    "format":"plain",
+                    "type": "file",
+                    "write_mode": "atomic",
+                    "conditions": {
+                        "remote_time_higher": True,
+                        "different_md5": True
+                    }
+                },
+                # {"file_name":"/etc/ossec.conf", "format":"xml"},
+                {
+                    "file_name":"/queue/agent-info",
+                    "mode": 0o644,
+                    "user": "ossecr",
+                    "group": "ossec",
+                    "format":"plain",
+                    "type": "directory",
+                    "write_mode": "normal",
+                    "conditions": {
+                        "remote_time_higher": True,
+                        "different_md5": False
+                    }
+                }
         ]
 
-    files_output = {}
+
+    # Expand directory
+    new_items = []
     for item in items:
         fullpath = common.ossec_path + item["file_name"]
 
-        file_list = []
         if item["type"] == "file":
-            file_list.append(fullpath)
+            new_item = dict(item)
+            new_item["fullpath"] = fullpath
+            new_items.append(new_item)
         else:
             for entry in os.listdir(fullpath):
-                file_list.append(os.path.join(fullpath, entry))
+                new_item = dict(item)
+                new_item["fullpath"] = os.path.join(fullpath, entry)
+                new_items.append(new_item)
 
-        for file in file_list:
+    files_output = {}
+    for new_item in new_items:
 
-            file_name = file
-            modification_time = '{0}'.format(datetime.utcfromtimestamp(os.path.getmtime(file_name)))
-            md5_hash = md5(file_name)
+        modification_time = '{0}'.format(datetime.utcfromtimestamp(int(os.path.getmtime(new_item["fullpath"]))))
+        md5_hash = md5(new_item["fullpath"])
 
-            file_output = {file_name : {"md5": md5_hash, "modification_time" : modification_time, "format" : item['format']}}
+        file_output = {
+            new_item["fullpath"] : {
+                "md5": md5_hash,
+                "modification_time" : modification_time,
+                "format" : new_item['format'],
+                "mode" : new_item['mode'],
+                "user" : new_item['user'],
+                "group" : new_item['group'],
+                "write_mode" : new_item['write_mode'],
+                "conditions" : new_item['conditions']
+                }
+            }
 
-            if file_download != "" and file_download == file_name:
-                return file_output
+        if file_download != "" and file_download == new_item["fullpath"]:
+            return file_output
 
-            files_output.update(file_output)
+        files_output.update(file_output)
 
     return files_output
