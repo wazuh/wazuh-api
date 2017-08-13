@@ -105,7 +105,7 @@ class Node:
     def send_request_api(url, auth, verify, type):
         error = 0
         try:
-            r = requests.get(url, auth=auth, params=None, verify=verify)
+            r = requests.get(url, auth=auth, params=None, timeout=2, verify=verify)
             if r.status_code == 401:
                   data = str(r.text)
                   error = 401
