@@ -174,8 +174,7 @@ class Node:
         #Cluster config
         config_cluster = cluster_get_config()
         if not config_cluster:
-            error = "1008"
-            return (error, {})
+            raise WazuhException(3000, "No config found")
 
         #Get its own files status
         own_items = manager.get_files()
@@ -184,24 +183,21 @@ class Node:
         cluster = Node()
         nodes = config_cluster["cluster.nodes"]
 
+        discard_list = []
+        sychronize_list = []
+        error_list = []
 
-        pushed_files = []
-        info = []
+        # auth
+        auth = requests.auth.HTTPBasicAuth(config_cluster["cluster.user"], config_cluster["cluster.password"])
+        verify = False
         for node in nodes:
-            # Configuration
-            base_url = "{0}".format(node)
-            auth = requests.auth.HTTPBasicAuth(config_cluster["cluster.user"], config_cluster["cluster.password"])
-            verify = False
-            url = '{0}{1}'.format(base_url, "/manager/files")
+            download_list = []
+
+            url = '{0}{1}'.format(node, "/manager/files")
             error, response = Node.send_request_api(url, auth, verify, "json")
 
-            discard_list = []
-            download_list = []
-            sychronize_list = []
-            error_list = []
-
             if error:
-                error_list.append({'api_error': response, "code": error})
+                error_list.append({'node': node, 'api_error': response, "code": error})
                 continue
 
             # Items - files
@@ -213,7 +209,6 @@ class Node:
             missing_files_locally = set(remote_files) - set(local_files)
             missing_files_remotely =  set(local_files) - set(remote_files)
             shared_files = set(local_files).intersection(remote_files)
-
 
             # Shared files
             for filename in shared_files:
@@ -318,10 +313,7 @@ class Node:
 
             for item in download_list:
                 try:
-                    # Downloading files from each node and update
-                    base_url = "http://{0}:55000".format(node["ip"])
-
-                    url = '{0}{1}'.format(base_url, "/manager/files?download="+item["file"]["name"])
+                    url = '{0}{1}'.format(node, "/manager/files?download="+item["file"]["name"])
 
                     error, downloaded_file = Node.send_request_api(url, auth, verify, "text")
                     if error:
@@ -359,7 +351,10 @@ def cluster_get_config():
                     config_cluster[name.strip().split("config.")[1]] = var.replace("\n","").replace("]","").replace("[","").replace('\"',"").replace(";","").strip()
 
         if "cluster.nodes" in config_cluster:
-            config_cluster["cluster.nodes"] = config_cluster["cluster.nodes"].split(",")
+            all_nodes = config_cluster["cluster.nodes"].split(",")
+            config_cluster["cluster.nodes"] = []
+            for node in all_nodes:
+                config_cluster["cluster.nodes"].append(node.strip())
         else:
             config_cluster["cluster.nodes"] = []
     except Exception as e:
