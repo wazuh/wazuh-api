@@ -22,6 +22,14 @@ config.BehindProxyServer = "no";
 //config.https_use_ca = "no"
 //config.https_ca = "configuration/ssl/ca.crt"
 
+// Cluster settings
+cluster.name = "wazuh";
+cluster.node.name = "node1";
+//cluster.nodes = ["http://172.0.0.16:55000","http://172.0.0.15:55000"];
+cluster.user = "wazuh";
+cluster.password = "wazuh";
+cluster.key = "";
+
 // Advanced configuration
 
 // Values for API log: disabled, info, warning, error, debug (each level includes the previous level).

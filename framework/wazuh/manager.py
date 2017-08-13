@@ -196,7 +196,8 @@ def get_files(*args, **kwargs):
                     "write_mode": "atomic",
                     "conditions": {
                         "remote_time_higher": True,
-                        "different_md5": True
+                        "different_md5": True,
+                        "larger_file_size": True
                     }
                 },
                 # {"file_name":"/etc/ossec.conf", "format":"xml"},
@@ -210,7 +211,8 @@ def get_files(*args, **kwargs):
                     "write_mode": "normal",
                     "conditions": {
                         "remote_time_higher": True,
-                        "different_md5": False
+                        "different_md5": False,
+                        "larger_file_size": False
                     }
                 }
         ]
@@ -233,8 +235,13 @@ def get_files(*args, **kwargs):
 
     files_output = {}
     for new_item in new_items:
+        
+        #Check if file exists
+        if not os.path.isfile(new_item["fullpath"]):
+            continue
 
         modification_time = '{0}'.format(datetime.utcfromtimestamp(int(os.path.getmtime(new_item["fullpath"]))))
+        size = os.path.getsize(new_item["fullpath"])
         md5_hash = md5(new_item["fullpath"])
 
         file_output = {
@@ -243,6 +250,7 @@ def get_files(*args, **kwargs):
                 "modification_time" : modification_time,
                 "format" : new_item['format'],
                 "mode" : new_item['mode'],
+                "size" : size,
                 "user" : new_item['user'],
                 "group" : new_item['group'],
                 "write_mode" : new_item['write_mode'],

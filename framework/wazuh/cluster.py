@@ -13,7 +13,7 @@ from datetime import date, datetime
 from hashlib import md5
 from time import time, mktime
 from platform import platform
-from os import remove, chown, chmod, path, rename, stat, utime
+from os import remove, chown, chmod, path, rename, stat, utime, environ
 from pwd import getpwnam
 from grp import getgrnam
 import requests
@@ -44,15 +44,11 @@ class Node:
         if args:
             if len(args) == 1:
                 self.id = args[0]
-            elif len(args) == 4:
-                self._add(node=args[0], ip=args[1], user=args[2], password=args[3])
             else:
                 raise WazuhException(1700)
         elif kwargs:
             if len(kwargs) == 1:
                 self.id = kwargs['id']
-            elif len(kwargs) == 4:
-                self._add(node=kwargs['node'], ip=kwargs['ip'], user=kwargs['user'], password=kwargs['password'])
             else:
                 raise WazuhException(1700)
 
@@ -65,124 +61,76 @@ class Node:
         return dictionary
 
     @staticmethod
-    def add_node(node, ip, user, password):
-        """
-        Adds a new node to Wazuh Cluster
+    def cluster_nodes():
+        error = 0
+        config_cluster = {}
+        data = {}
+        data["items"] = []
 
-        :param node: name of the node
-        :param ip: IP.
-        :param user: User for API
-        :param password: Password for API
-        :return: Node ID.
-        """
+        # Get api/configuration/config.js content
+        try:
+          with open(common.api_config_path) as api_config_file:
+              for line in api_config_file:
+                  if line.startswith('cluster.'):
+                          name, var = line.partition("=")[::2]
+                          config_cluster[name.strip()] = var.replace("\n","").replace("]","").replace("[","").replace('\"',"").replace(";","").strip()
 
-        return Node(node=node, ip=ip, user=user, password=password).id
+              if config_cluster:
+                  config_cluster["cluster.nodes"] = config_cluster["cluster.nodes"].split(",")
 
-    def _add(self, node, ip, user, password):
-        """
-        Adds a new node to Wazuh Cluster
+        except EnvironmentError as e:
+            data = str(e)
+            error = 1
+            return (error, data)
 
-        :param node: name of the node
-        :param ip: IP.
-        :param user: User for API
-        :param password: Password for API
-        :return: Node ID.
-        """
+        # TODO: Add my self as a node
+        item = {}
+        for url in config_cluster["cluster.nodes"]:
+            item["url"] = url
 
-        conn = Connection(common.database_path_cluster)
-        conn.execute('''CREATE TABLE IF NOT EXISTS nodes (id INTEGER PRIMARY KEY,node TEXT NOT NULL,ip TEXT,user TEXT,password TEXT,status TEXT,last_check TEXT)''')
-        conn.commit()
+            base_url = "{0}".format(url)
+            auth = requests.auth.HTTPBasicAuth(config_cluster["cluster.user"], config_cluster["cluster.password"])
+            verify = False
+            url = '{0}{1}'.format(base_url, "/cluster/node")
+            error, response = Node.send_request_api(url, auth, verify, "json")
 
-        db_cluster = glob(common.database_path_cluster)
-        if not db_cluster:
-            raise WazuhException(1600)
+            if error:
+                item["error"] = {'api_error': response, "code": error}
+                item["status"] = "disconnected"
+                data["items"].append(item)
+                continue
 
-        request = {"id": None, "last_check": None, "status": None, "node": node, "ip": ip, "user": user, "password": password}
-        request = (None, node, ip, user, password, None, None)
-        id = conn.execute('''INSERT INTO nodes(id,node,ip,user,password,last_check,status) VALUES(?,?,?,?,?,?,?)''', request)
-        conn.commit()
-        self.id = id
-        return self
+            item["name"] = response["data"]["name"]
+            item["status"] = "connected"
+
+            data["items"].append(item)
+
+        return data
 
     @staticmethod
-    def cluster_nodes(id="all", node="all", ip="all", offset=0, limit=common.database_limit, sort=None, search=None):
+    def node_info():
+        error = 0
+        config_cluster = {}
+        data = {}
 
-        conn = Connection(common.database_path_cluster)
-        conn.execute('''CREATE TABLE IF NOT EXISTS nodes (id INTEGER PRIMARY KEY,node TEXT NOT NULL,ip TEXT,user TEXT,password TEXT,status TEXT,last_check TEXT)''')
-        conn.commit()
+        # Get api/configuration/config.js content
+        try:
+          with open(common.api_config_path) as api_config_file:
+              for line in api_config_file:
+                  if line.startswith('cluster.'):
+                          name, var = line.partition("=")[::2]
+                          config_cluster[name.strip()] = var.replace("\n","").replace("]","").replace("[","").replace('\"',"").replace(";","").strip()
 
-        db_cluster = glob(common.database_path_cluster)
-        if not db_cluster:
-            raise WazuhException(1600)
+              if config_cluster:
+                  config_cluster["cluster.nodes"] = config_cluster["cluster.nodes"].split(",")
 
-        # Query
-        query = "SELECT {0} FROM nodes"
-        fields = {'id': 'id', 'node': 'node', 'ip': 'ip', 'user': 'user', 'password': 'password', 'status': 'status', 'last_check': 'last_check' }
-        select = ["id", "node", "ip", "user", "password", "status", "last_check"]
-        search_fields = ["id", "node", "ip", "user", "status", "last_check"]
-        request = {}
+        except EnvironmentError as e:
+            data = str(e)
+            error = 1
+            return (error, data)
 
-        # Count
-        conn.execute(query.format('COUNT(*)'), request)
-        data = {'totalItems': conn.fetch()[0]}
-
-        # Sorting
-        if sort:
-            if sort['fields']:
-                allowed_sort_fields = fields.keys()
-                # Check if every element in sort['fields'] is in allowed_sort_fields.
-                if not set(sort['fields']).issubset(allowed_sort_fields):
-                    raise WazuhException(1403, 'Allowed sort fields: {0}. Fields: {1}'.format(allowed_sort_fields, sort['fields']))
-
-                order_str_fields = []
-                for i in sort['fields']:
-                    # Order by status ASC is the same that order by last_keepalive DESC.
-                    if i == 'status':
-                        str_order = "desc" if sort['order'] == 'asc' else "asc"
-                        order_str_field = '{0} {1}'.format(fields[i], str_order)
-                    # Order by version is order by major and minor
-                    elif i == 'os.version':
-                        order_str_field = "CAST(os_major AS INTEGER) {0}, CAST(os_minor AS INTEGER) {0}".format(sort['order'])
-                    else:
-                        order_str_field = '{0} {1}'.format(fields[i], sort['order'])
-
-                    order_str_fields.append(order_str_field)
-
-                query += ' ORDER BY ' + ','.join(order_str_fields)
-            else:
-                query += ' ORDER BY id {0}'.format(sort['order'])
-        else:
-            query += ' ORDER BY id ASC'
-
-
-
-        query += ' LIMIT :offset,:limit'
-        request['offset'] = offset
-        request['limit'] = limit
-
-        conn.execute(query.format(','.join(select)), request)
-
-        data['items'] = []
-
-        for tuple in conn:
-            data_tuple = {}
-
-            if tuple[0] != None:
-                data_tuple['id'] = str(tuple[0])
-            if tuple[1] != None:
-                data_tuple['node'] = tuple[1]
-            if tuple[2] != None:
-                data_tuple['ip'] = tuple[2]
-            if tuple[3] != None:
-                data_tuple['user'] = tuple[3]
-            if tuple[4] != None:
-                data_tuple['password'] = tuple[4]
-            if tuple[5] != None:
-                data_tuple['status'] = tuple[5]
-            if tuple[6] != None:
-                data_tuple['last_check'] = tuple[6]
-
-            data['items'].append(data_tuple)
+        data["node"] = config_cluster["cluster.node.name"]
+        data["cluster"] = config_cluster["cluster.name"]
 
         return data
 
@@ -218,6 +166,9 @@ class Node:
     @staticmethod
     def update_file(fullpath, content, owner=None, group=None, mode=None, mtime=None, w_mode=None):
 
+        # Set Timezone to epoch converter
+        environ['TZ']='UTC'
+
         # Write
         f_temp = '{0}.tmp.cluster'.format(fullpath)
         dest_file = open(f_temp, "w")
@@ -225,10 +176,18 @@ class Node:
         dest_file.close()
 
         # Metadata
-        # uid = getpwnam(owner).pw_uid
-        # gid = getgrnam(group).gr_gid
-        # chown(f_temp, uid, gid) #  Fix me: api runs as ossec...
-        # chmod(f_temp, mode)
+        # Disabled getting metadata from external node
+        #uid = getpwnam(owner).pw_uid
+        #gid = getgrnam(group).gr_gid
+        #chown(f_temp, uid, gid) #  Fix me: api runs as ossec...
+        #chmod(f_temp, mode)
+
+        # Hardcoding user, group and privileges
+        uid = getpwnam("ossec").pw_uid
+        gid = getgrnam("ossec").gr_gid
+        chown(f_temp, uid, gid) #  Fix me: api runs as ossec...
+        chmod(f_temp, 0o660)
+
         mtime_epoch = int(mktime(datetime.strptime(mtime, "%Y-%m-%d %H:%M:%S").timetuple()))
         utime(f_temp, (mtime_epoch, mtime_epoch)) # (atime, mtime)
 
@@ -284,9 +243,11 @@ class Node:
             for filename in shared_files:
                 own_items[filename]["modification_time"]
                 local_file_time = datetime.strptime(own_items[filename]["modification_time"], "%Y-%m-%d %H:%M:%S")
+                local_file_size = own_items[filename]["size"]
                 local_file = {
                     "name": filename,
                     "md5": own_items[filename]["md5"],
+                    "size" : own_items[filename]['size'],
                     "modification_time": own_items[filename]["modification_time"],
                     "mode" : own_items[filename]['mode'],
                     "user" : own_items[filename]['user'],
@@ -296,9 +257,11 @@ class Node:
                 }
 
                 remote_file_time = datetime.strptime(their_items[filename]["modification_time"], "%Y-%m-%d %H:%M:%S")
+                remote_file_size = their_items[filename]["size"]
                 remote_file = {
                     "name": filename,
                     "md5": their_items[filename]["md5"],
+                    "size": their_items[filename]["size"],
                     "modification_time": their_items[filename]["modification_time"],
                     "mode" : their_items[filename]['mode'],
                     "user" : their_items[filename]['user'],
@@ -324,6 +287,13 @@ class Node:
                         conditions["remote_time_higher"] = True
                     else:
                         conditions["remote_time_higher"] = False
+
+                if remote_file["conditions"]["larger_file_size"]:
+                    checked_conditions.append("larger_file_size")
+                    if remote_file_size > local_file_size:
+                        conditions["larger_file_size"] = True
+                    else:
+                        conditions["larger_file_size"] = False
 
                 check_item = {
                     "file": remote_file,
@@ -352,6 +322,7 @@ class Node:
                     "md5": their_items[filename]["md5"],
                     "modification_time": their_items[filename]["modification_time"],
                     "mode" : their_items[filename]['mode'],
+                    "size" : their_items[filename]['size'],
                     "user" : their_items[filename]['user'],
                     "group" : their_items[filename]['group'],
                     "write_mode" : their_items[filename]['write_mode']

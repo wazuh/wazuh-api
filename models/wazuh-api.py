@@ -201,8 +201,8 @@ if __name__ == "__main__":
 
             '/manager/files': manager.get_files,
 
+            '/cluster/node': Node.node_info,
             '/cluster/nodes': Node.cluster_nodes,
-            'POST/cluster/nodes': Node.add_node,
             '/cluster/sync': Node.sync,
 
             '/rootcheck/:agent_id': rootcheck.print_db,
