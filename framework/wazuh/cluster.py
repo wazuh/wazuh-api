@@ -165,20 +165,20 @@ class Node:
         rename(f_temp, fullpath)
 
     @staticmethod
-    def get_key():
+    def get_token():
         config_cluster = cluster_get_config()
 
         if not config_cluster:
             raise WazuhException(3000, "No config found")
 
         raw_key = config_cluster["cluster.key"]
-        sha1_key = sha1(raw_key).hexdigest()
-        return sha1_key
+        token = sha1(raw_key).hexdigest()
+        return token
 
     @staticmethod
-    def check_key(other_key):
-        my_key = Node.get_key()
-        if my_key == other_key:
+    def check_token(other_token):
+        my_token = Node.get_token()
+        if my_token == other_token:
             return True
         else:
             return False
@@ -224,17 +224,17 @@ class Node:
             their_items = response["data"]
             remote_files = response['data'].keys()
 
-            # Get remote key
-            url = '{0}{1}'.format(node, "/cluster/node/key")
+            # Get remote token
+            url = '{0}{1}'.format(node, "/cluster/node/token")
             error, response = Node.send_request_api(url, auth, verify, "json")
 
             if error:
                 error_list.append({'node': node, 'api_error': response, "code": error})
                 continue
 
-            remote_node_key = response['data']
-            if not Node.check_key(remote_node_key):
-                error_list.append({'node': node, 'error': "Invalid cluster key"})
+            remote_node_token = response['data']
+            if not Node.check_token(remote_node_token):
+                error_list.append({'node': node, 'error': "Invalid cluster token"})
                 continue
 
 

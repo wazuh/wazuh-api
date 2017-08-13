@@ -59,23 +59,23 @@ router.get('/node', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /cluster/node/key Get node key
- * @apiName GetNodeKey
+ * @api {get} /cluster/node/token Get node token
+ * @apiName GetNodetoken
  * @apiGroup cluster
  *
- * @apiDescription Returns the Node key
+ * @apiDescription Returns the Node token
  *
  * @apiExample {curl} Example usage:
- *     curl -u wazuh:wazuh -k -X GET "https://127.0.0.1:55000/cluster/node/key"
+ *     curl -u wazuh:wazuh -k -X GET "https://127.0.0.1:55000/cluster/node/token"
  *
  */
-router.get('/node/key', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /cluster/node/key");
+router.get('/node/token', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/node/token");
 
     if (req.user == "wazuh"){
         req.apicacheGroup = "cluster";
 
-        var data_request = {'function': '/cluster/node/key', 'arguments': {}};
+        var data_request = {'function': '/cluster/node/token', 'arguments': {}};
         execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
     }
     else {
