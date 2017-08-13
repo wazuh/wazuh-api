@@ -344,6 +344,11 @@ setup_api() {
         exec_cmd "chmod ugo-x $API_PATH/package.json"
         exec_cmd "chmod ugo-x $API_PATH/scripts/wazuh-api*"
 
+        # config.js
+        exec_cmd "chown root:ossec $API_PATH/configuration"
+        exec_cmd "chown root:ossec $API_PATH/configuration/config.js"
+        exec_cmd "chmod 740 $API_PATH/configuration/config.js"
+
         if [ -f "$API_PATH/configuration/ssl/.gitignore" ]; then
             exec_cmd "rm -f $API_PATH/configuration/ssl/.gitignore"
         fi

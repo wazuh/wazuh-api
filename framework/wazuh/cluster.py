@@ -57,19 +57,15 @@ class Node:
 
     @staticmethod
     def cluster_nodes():
-        error = 0
-        config_cluster = {}
-        data = {}
-        data["items"] = []
 
         config_cluster = cluster_get_config()
         if not config_cluster:
-            error = "1008"
-            return (error, data)
+            raise WazuhException(3000, "No config found")
 
         # TODO: Add my self as a node
-        item = {}
+        data = []
         for url in config_cluster["cluster.nodes"]:
+            item = {}
             item["url"] = url
 
             base_url = "{0}".format(url)
@@ -82,27 +78,24 @@ class Node:
             if error:
                 item["error"] = {'api_error': response, "code": error}
                 item["status"] = "disconnected"
-                data["items"].append(item)
+                data.append(item)
                 continue
 
             item["node"] = response["data"]["node"]
             item["status"] = "connected"
 
-            data["items"].append(item)
+            data.append(item)
 
-        return data
+        return {'items': data, 'totalItems': len(data)}
 
     @staticmethod
     def node_info():
-        error = 0
-        config_cluster = {}
-        data = {}
-
         config_cluster = cluster_get_config()
-        if not config_cluster:
-            error = "1008"
-            return (error, data)
 
+        if not config_cluster:
+            raise WazuhException(3000, "No config found")
+
+        data = {}
         data["node"] = config_cluster["cluster.node"]
         data["cluster"] = config_cluster["cluster.name"]
 
@@ -359,18 +352,17 @@ def cluster_get_config():
     # Get api/configuration/config.js content
     config_cluster = {}
     try:
-      with open(common.api_config_path) as api_config_file:
-          for line in api_config_file:
-              if line.startswith('cluster.'):
-                      name, var = line.partition("=")[::2]
-                      config_cluster[name.strip()] = var.replace("\n","").replace("]","").replace("[","").replace('\"',"").replace(";","").strip()
+        with open(common.api_config_path) as api_config_file:
+            for line in api_config_file:
+                if line.startswith('config.cluster.'):
+                    name, var = line.partition("=")[::2]
+                    config_cluster[name.strip().split("config.")[1]] = var.replace("\n","").replace("]","").replace("[","").replace('\"',"").replace(";","").strip()
 
-          if config_cluster:
-              config_cluster["cluster.nodes"] = config_cluster["cluster.nodes"].split(",")
-
-    except EnvironmentError as e:
-        data = str(e)
-        error = 1
-        return {}
+        if "cluster.nodes" in config_cluster:
+            config_cluster["cluster.nodes"] = config_cluster["cluster.nodes"].split(",")
+        else:
+            config_cluster["cluster.nodes"] = []
+    except Exception as e:
+        raise WazuhException(3000, str(e))
 
     return config_cluster

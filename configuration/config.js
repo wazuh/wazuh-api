@@ -23,12 +23,13 @@ config.BehindProxyServer = "no";
 //config.https_ca = "configuration/ssl/ca.crt"
 
 // Cluster settings
-cluster.name = "wazuh";
-cluster.node = "node1";
-//cluster.nodes = ["http://172.0.0.16:55000","http://172.0.0.15:55000"];
-cluster.user = "wazuh";
-cluster.password = "wazuh";
-cluster.key = "";
+config.cluster = {}
+config.cluster.name = "wazuh";
+config.cluster.node = "node1";
+//config.cluster.nodes = ["http://172.0.0.16:55000","http://172.0.0.15:55000"];
+config.cluster.user = "wazuh";
+config.cluster.password = "wazuh";
+config.cluster.key = "";
 
 // Advanced configuration
 
