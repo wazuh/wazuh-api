@@ -30,6 +30,7 @@ config.cluster.node = "node1";
 config.cluster.user = "wazuh";
 config.cluster.password = "wazuh";
 config.cluster.key = "";
+config.cluster.schedule = "*/5 * * * *"; //every 5 minutes
 
 // Advanced configuration
 

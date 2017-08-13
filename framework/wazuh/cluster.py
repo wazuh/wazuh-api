@@ -184,7 +184,7 @@ class Node:
             return False
 
     @staticmethod
-    def sync():
+    def sync(output_file=False):
         """
         Sync this node with others
         :return: Files synced.
@@ -369,6 +369,15 @@ class Node:
             'error': error_list,
             'updated': sychronize_list
         }
+
+        if output_file:
+            f_o = open("{0}/logs/cluster.log".format(common.ossec_path), "a")
+            f_o.write("### ")
+            f_o.write(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            f_o.write("\n")
+            f_o.write(json.dumps(final_output, indent=4))
+            f_o.write("\n")
+            f_o.close
 
         return final_output
 

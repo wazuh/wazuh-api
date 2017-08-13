@@ -12,6 +12,9 @@
 
 var router = require('express').Router();
 
+var cron = require('node-cron');
+var task = null;
+var task_status = "disabled";
 
 
 /**
@@ -81,6 +84,32 @@ router.get('/node/key', cache(), function(req, res) {
 
 })
 
+
+/**
+ * @api {get} /cluster/sync/status Get sync status
+ * @apiName GetNodeKey
+ * @apiGroup cluster
+ *
+ * @apiDescription Returns sync status
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u wazuh:wazuh -k -X GET "https://127.0.0.1:55000/cluster/sync/status"
+ *
+ */
+router.get('/sync/status', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/sync/status");
+
+    if (task_status == "enabled"){
+        json_res = {'error': 0, 'data': "Sync enabled"};
+    }
+    else{
+        json_res = {'error': 0, 'data': "Sync disabled"};
+    }
+    res_h.send(req, res, json_res);
+
+})
+
+
 /**
  * @api {put} /cluster/sync Get pending files
  * @apiName GetSync
@@ -107,5 +136,77 @@ router.put('/sync', cache(), function(req, res) {
 
 })
 
+/**
+ * @api {put} /cluster/sync/enable Enable syncrhonization
+ * @apiName PutSync
+ * @apiGroup cluster
+ *
+ * @apiDescription Enables sync
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u wazuh:wazuh -k -X PUT "https://127.0.0.1:55000/cluster/sync/enable"
+ *
+ */
+router.put('/sync/enable', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " PUT /cluster/sync/enable");
+
+    if (req.user == "wazuh"){
+        try {
+            var valid = cron.validate(config.cluster.schedule);
+
+            if (valid){
+                task = cron.schedule(config.cluster.schedule, function() {
+                  var data_request = {'function': 'PUT/cluster/sync', 'arguments': {}};
+                  data_request['arguments']['output_file'] = "True";
+                  execute.exec(python_bin, [wazuh_control], data_request, function (data) {});
+                });
+
+                task.start();
+                task_status = "enabled";
+                json_res = {'error': 0, 'data': "Sync enabled"};
+            }
+            else{
+                json_res = {'error': 3, 'data': "Invalid config.cluster.schedule"};
+            }
+        }
+        catch (e) {
+            json_res = {'error': 3, 'data': "Internal error."};
+        }
+
+        res_h.send(req, res, json_res);
+    }
+    else {
+        res_h.unauthorized_request(req, res, 100, "User: " + req.user);
+    }
+
+})
+
+/**
+ * @api {put} /cluster/sync/disable Disable syncrhonization
+ * @apiName PutSync
+ * @apiGroup cluster
+ *
+ * @apiDescription Disables sync
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u wazuh:wazuh -k -X PUT "https://127.0.0.1:55000/cluster/sync/disable"
+ *
+ */
+router.put('/sync/disable', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " PUT /cluster/sync/disable");
+
+    if (req.user == "wazuh"){
+        if (task){
+            task.stop();
+        }
+        json_res = {'error': 0, 'data': "Sync disabled"};
+        task_status = "disabled";
+        res_h.send(req, res, json_res);
+    }
+    else {
+        res_h.unauthorized_request(req, res, 100, "User: " + req.user);
+    }
+
+})
 
 module.exports = router;
