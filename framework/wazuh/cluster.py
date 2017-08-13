@@ -129,7 +129,7 @@ class Node:
             error = 1
             return (error, data)
 
-        data["node"] = config_cluster["cluster.node.name"]
+        data["node"] = config_cluster["cluster.node"]
         data["cluster"] = config_cluster["cluster.name"]
 
         return data

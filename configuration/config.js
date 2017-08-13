@@ -24,7 +24,7 @@ config.BehindProxyServer = "no";
 
 // Cluster settings
 cluster.name = "wazuh";
-cluster.node.name = "node1";
+cluster.node = "node1";
 //cluster.nodes = ["http://172.0.0.16:55000","http://172.0.0.15:55000"];
 cluster.user = "wazuh";
 cluster.password = "wazuh";

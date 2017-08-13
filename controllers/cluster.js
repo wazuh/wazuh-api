@@ -36,6 +36,26 @@ router.get('/nodes', cache(), function(req, res) {
 
 
 /**
+ * @api {get} /cluster/node Get node info
+ * @apiName GetNodeList
+ * @apiGroup cluster
+ *
+ * @apiDescription Returns the Node info
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node"
+ *
+ */
+router.get('/node', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/node");
+
+    req.apicacheGroup = "cluster";
+
+    var data_request = {'function': '/cluster/node', 'arguments': {}};
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
  * @api {get} /cluster/sync Get pending files
  * @apiName GetSync
  * @apiGroup cluster
@@ -54,38 +74,6 @@ router.get('/sync', cache(), function(req, res) {
     var data_request = {'function': '/cluster/sync', 'arguments': {}};
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
-
-
-/**
- * @api {post} /nodes Add Node
- * @apiName PostAddNode
- * @apiGroup Cluster
- *
- * @apiParam {String} name Agent name.
- *
- * @apiDescription Add a new node
- *
- * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X POST -d '{"node":"node1","ip":"https://172.0.0.16","user":"foo","password":"bar"}' -H 'Content-Type:application/json' "https://127.0.0.1:55000/nodes?pretty"
- *
- */
-router.post('/nodes', function(req, res) {
-    logger.debug(req.connection.remoteAddress + " POST /nodes");
-
-    var data_request = {'function': 'POST/cluster/nodes', 'arguments': {}};
-
-    if ('node' in req.body && 'user' in req.body && 'password' in req.body && 'ip' in req.body){
-
-      data_request['arguments']['ip'] = req.body.ip;
-      data_request['arguments']['user'] = req.body.user;
-      data_request['arguments']['password'] = req.body.password;
-      data_request['arguments']['node'] = req.body.node;
-
-        execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
-    }else
-        res_h.bad_request(req, res, 604, "Missing field: 'node', 'ip', 'user' or 'password'");
-})
-
 
 
 module.exports = router;
