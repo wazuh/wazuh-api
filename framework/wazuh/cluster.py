@@ -371,7 +371,7 @@ class Node:
         }
 
         if output_file:
-            f_o = open("{0}/logs/cluster.log".format(common.ossec_path), "a")
+            f_o = open("{0}/logs/cluster.log".format(common.ossec_path), "a+")
             f_o.write("### ")
             f_o.write(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
             f_o.write("\n")
