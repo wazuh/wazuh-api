@@ -17,7 +17,7 @@ errors['2'] = "Command output not in JSON";
 errors['3'] = "Internal error";
 
 // Auth
-errors['100'] = "Unauthorized request";
+errors['100'] = "Unauthorized request. Cluster privileges required";
 
 // 600 - 699 Requests
 errors['600'] = "Param not valid. Integer expected";  // Integer
