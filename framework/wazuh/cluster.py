@@ -39,7 +39,7 @@ class Node:
         self.password = None
         self.user = None
         self.status = None
-        self.last_check = None
+
 
         if args:
             if len(args) == 1:
@@ -55,11 +55,6 @@ class Node:
     def __str__(self):
         return str(self.to_dict())
 
-    def to_dict(self):
-        dictionary = {'id': self.id, 'node': self.node, 'ip': self.ip, 'user': self.user, 'password': self.password, 'status': self.status, 'last_check': self.last_check }
-
-        return dictionary
-
     @staticmethod
     def cluster_nodes():
         error = 0
@@ -67,20 +62,9 @@ class Node:
         data = {}
         data["items"] = []
 
-        # Get api/configuration/config.js content
-        try:
-          with open(common.api_config_path) as api_config_file:
-              for line in api_config_file:
-                  if line.startswith('cluster.'):
-                          name, var = line.partition("=")[::2]
-                          config_cluster[name.strip()] = var.replace("\n","").replace("]","").replace("[","").replace('\"',"").replace(";","").strip()
-
-              if config_cluster:
-                  config_cluster["cluster.nodes"] = config_cluster["cluster.nodes"].split(",")
-
-        except EnvironmentError as e:
-            data = str(e)
-            error = 1
+        config_cluster = cluster_get_config()
+        if not config_cluster:
+            error = "1008"
             return (error, data)
 
         # TODO: Add my self as a node
@@ -89,6 +73,7 @@ class Node:
             item["url"] = url
 
             base_url = "{0}".format(url)
+
             auth = requests.auth.HTTPBasicAuth(config_cluster["cluster.user"], config_cluster["cluster.password"])
             verify = False
             url = '{0}{1}'.format(base_url, "/cluster/node")
@@ -100,7 +85,7 @@ class Node:
                 data["items"].append(item)
                 continue
 
-            item["name"] = response["data"]["name"]
+            item["node"] = response["data"]["node"]
             item["status"] = "connected"
 
             data["items"].append(item)
@@ -113,20 +98,9 @@ class Node:
         config_cluster = {}
         data = {}
 
-        # Get api/configuration/config.js content
-        try:
-          with open(common.api_config_path) as api_config_file:
-              for line in api_config_file:
-                  if line.startswith('cluster.'):
-                          name, var = line.partition("=")[::2]
-                          config_cluster[name.strip()] = var.replace("\n","").replace("]","").replace("[","").replace('\"',"").replace(";","").strip()
-
-              if config_cluster:
-                  config_cluster["cluster.nodes"] = config_cluster["cluster.nodes"].split(",")
-
-        except EnvironmentError as e:
-            data = str(e)
-            error = 1
+        config_cluster = cluster_get_config()
+        if not config_cluster:
+            error = "1008"
             return (error, data)
 
         data["node"] = config_cluster["cluster.node"]
@@ -152,7 +126,10 @@ class Node:
             data = str(e)
             error = 4
 
-        if error == 0:
+        if r.status_code == 401:
+              data = str(r.text)
+              error = 401
+        elif error == 0:
             if type == "json":
                 try:
                     data = json.loads(r.text)
@@ -201,20 +178,26 @@ class Node:
         :return: Files synced.
         """
 
+        #Cluster config
+        config_cluster = cluster_get_config()
+        if not config_cluster:
+            error = "1008"
+            return (error, {})
+
         #Get its own files status
         own_items = manager.get_files()
 
         #Get other nodes files
         cluster = Node()
-        nodes = cluster.cluster_nodes()["items"]
+        nodes = config_cluster["cluster.nodes"]
 
 
         pushed_files = []
         info = []
         for node in nodes:
             # Configuration
-            base_url = "http://{0}:55000".format(node["ip"])
-            auth = requests.auth.HTTPBasicAuth(node["user"], node["password"])
+            base_url = "{0}".format(node)
+            auth = requests.auth.HTTPBasicAuth(config_cluster["cluster.user"], config_cluster["cluster.password"])
             verify = False
             url = '{0}{1}'.format(base_url, "/manager/files")
             error, response = Node.send_request_api(url, auth, verify, "json")
@@ -299,7 +282,7 @@ class Node:
                     "file": remote_file,
                     "checked_conditions": conditions,
                     "updated": False,
-                    "node": node["node"]
+                    "node": node
                 }
 
                 all_conds = 0
@@ -371,3 +354,23 @@ class Node:
         }
 
         return final_output
+
+def cluster_get_config():
+    # Get api/configuration/config.js content
+    config_cluster = {}
+    try:
+      with open(common.api_config_path) as api_config_file:
+          for line in api_config_file:
+              if line.startswith('cluster.'):
+                      name, var = line.partition("=")[::2]
+                      config_cluster[name.strip()] = var.replace("\n","").replace("]","").replace("[","").replace('\"',"").replace(";","").strip()
+
+          if config_cluster:
+              config_cluster["cluster.nodes"] = config_cluster["cluster.nodes"].split(",")
+
+    except EnvironmentError as e:
+        data = str(e)
+        error = 1
+        return {}
+
+    return config_cluster
