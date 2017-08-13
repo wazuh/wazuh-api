@@ -56,22 +56,22 @@ router.get('/node', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /cluster/sync Get pending files
+ * @api {put} /cluster/sync Get pending files
  * @apiName GetSync
  * @apiGroup cluster
  *
  * @apiDescription Returns files pending to by sync
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/sync"
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/cluster/sync"
  *
  */
-router.get('/sync', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /cluster/sync");
+router.put('/sync', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " PUT /cluster/sync");
 
     req.apicacheGroup = "cluster";
 
-    var data_request = {'function': '/cluster/sync', 'arguments': {}};
+    var data_request = {'function': 'PUT/cluster/sync', 'arguments': {}};
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 

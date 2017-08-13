@@ -203,7 +203,7 @@ if __name__ == "__main__":
 
             '/cluster/node': Node.node_info,
             '/cluster/nodes': Node.cluster_nodes,
-            '/cluster/sync': Node.sync,
+            'PUT/cluster/sync': Node.sync,
 
             '/rootcheck/:agent_id': rootcheck.print_db,
             '/rootcheck/:agent_id/pci': rootcheck.get_pci,
