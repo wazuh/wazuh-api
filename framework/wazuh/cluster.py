@@ -10,7 +10,7 @@ from wazuh import manager
 from wazuh import common
 from glob import glob
 from datetime import date, datetime
-from hashlib import md5
+from hashlib import md5, sha1
 from time import time, mktime
 from platform import platform
 from os import remove, chown, chmod, path, rename, stat, utime, environ
@@ -165,6 +165,25 @@ class Node:
         rename(f_temp, fullpath)
 
     @staticmethod
+    def get_key():
+        config_cluster = cluster_get_config()
+
+        if not config_cluster:
+            raise WazuhException(3000, "No config found")
+
+        raw_key = config_cluster["cluster.key"]
+        sha1_key = sha1(raw_key).hexdigest()
+        return sha1_key
+
+    @staticmethod
+    def check_key(other_key):
+        my_key = Node.get_key()
+        if my_key == other_key:
+            return True
+        else:
+            return False
+
+    @staticmethod
     def sync():
         """
         Sync this node with others
@@ -178,6 +197,7 @@ class Node:
 
         #Get its own files status
         own_items = manager.get_files()
+        local_files = own_items.keys()
 
         #Get other nodes files
         cluster = Node()
@@ -193,6 +213,7 @@ class Node:
         for node in nodes:
             download_list = []
 
+            # Get remote files
             url = '{0}{1}'.format(node, "/manager/files")
             error, response = Node.send_request_api(url, auth, verify, "json")
 
@@ -200,11 +221,22 @@ class Node:
                 error_list.append({'node': node, 'api_error': response, "code": error})
                 continue
 
-            # Items - files
             their_items = response["data"]
-
             remote_files = response['data'].keys()
-            local_files = own_items.keys()
+
+            # Get remote key
+            url = '{0}{1}'.format(node, "/cluster/node/key")
+            error, response = Node.send_request_api(url, auth, verify, "json")
+
+            if error:
+                error_list.append({'node': node, 'api_error': response, "code": error})
+                continue
+
+            remote_node_key = response['data']
+            if not Node.check_key(remote_node_key):
+                error_list.append({'node': node, 'error': "Invalid cluster key"})
+                continue
+
 
             missing_files_locally = set(remote_files) - set(local_files)
             missing_files_remotely =  set(local_files) - set(remote_files)

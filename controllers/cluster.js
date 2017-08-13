@@ -56,6 +56,32 @@ router.get('/node', cache(), function(req, res) {
 })
 
 /**
+ * @api {get} /cluster/node/key Get node key
+ * @apiName GetNodeKey
+ * @apiGroup cluster
+ *
+ * @apiDescription Returns the Node key
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u wazuh:wazuh -k -X GET "https://127.0.0.1:55000/cluster/node/key"
+ *
+ */
+router.get('/node/key', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/node/key");
+
+    if (req.user == "wazuh"){
+        req.apicacheGroup = "cluster";
+
+        var data_request = {'function': '/cluster/node/key', 'arguments': {}};
+        execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    }
+    else {
+        res_h.unauthorized_request(req, res, 100, "User: " + req.user);
+    }
+
+})
+
+/**
  * @api {put} /cluster/sync Get pending files
  * @apiName GetSync
  * @apiGroup cluster
@@ -63,7 +89,7 @@ router.get('/node', cache(), function(req, res) {
  * @apiDescription Returns files pending to by sync
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/cluster/sync"
+ *     curl -u wazuh:wazuh -k -X PUT "https://127.0.0.1:55000/cluster/sync"
  *
  */
 router.put('/sync', cache(), function(req, res) {
