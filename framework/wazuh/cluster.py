@@ -113,6 +113,9 @@ class Node:
         error = 0
         try:
             r = requests.get(url, auth=auth, params=None, verify=verify)
+            if r.status_code == 401:
+                  data = str(r.text)
+                  error = 401
         except requests.exceptions.Timeout as e:
             data = str(e)
             error = 1
@@ -126,10 +129,7 @@ class Node:
             data = str(e)
             error = 4
 
-        if r.status_code == 401:
-              data = str(r.text)
-              error = 401
-        elif error == 0:
+        if error == 0:
             if type == "json":
                 try:
                     data = json.loads(r.text)
