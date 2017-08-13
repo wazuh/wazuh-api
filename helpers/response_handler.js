@@ -60,6 +60,17 @@ exports.bad_request = function(req, res, internal_error, extra_msg){
     this.send(req, res, json_res, 400);
 }
 
+exports.unauthorized_request = function(req, res, internal_error, extra_msg){
+    var msg = errors.description(internal_error);
+
+    if (extra_msg)
+        msg = msg + ". " + extra_msg;
+
+    json_res = {'error': internal_error, 'message': msg};
+
+    this.send(req, res, json_res, 401);
+}
+
 exports.send_file = function(req, res, file_name, type){
 
     if (type == 'files') {

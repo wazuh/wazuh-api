@@ -69,10 +69,16 @@ router.get('/node', cache(), function(req, res) {
 router.put('/sync', cache(), function(req, res) {
     logger.debug(req.connection.remoteAddress + " PUT /cluster/sync");
 
-    req.apicacheGroup = "cluster";
+    if (req.user == "wazuh"){
+        req.apicacheGroup = "cluster";
 
-    var data_request = {'function': 'PUT/cluster/sync', 'arguments': {}};
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+        var data_request = {'function': 'PUT/cluster/sync', 'arguments': {}};
+        execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    }
+    else {
+        res_h.unauthorized_request(req, res, 100, "User: " + req.user);
+    }
+
 })
 
 

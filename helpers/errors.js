@@ -16,6 +16,9 @@ errors['1'] = "Error executing internal command";
 errors['2'] = "Command output not in JSON";
 errors['3'] = "Internal error";
 
+// Auth
+errors['100'] = "Unauthorized request";
+
 // 600 - 699 Requests
 errors['600'] = "Param not valid. Integer expected";  // Integer
 errors['numbers'] = 600;
@@ -43,8 +46,7 @@ errors['hashes'] = 613;
 errors['614'] = "Invalid request"
 errors['615'] = "Param not valid. Valid characters: a-z A-Z 0-9";  // keys
 errors['ossec_key'] = 615;
-
-errors['616'] = "Param not valid. Valid characters: array of numbers"; 
+errors['616'] = "Param not valid. Valid characters: array of numbers";
 errors['array_numbers'] = 616;
 
 errors['700'] = "File not found"
@@ -53,6 +55,10 @@ errors['700'] = "File not found"
 errors['800'] = "Error adding agent due to header 'x-forwarded-for' is not present";
 errors['801'] = "Wrong format for 'wazuh-app-version' header. Expected format: 'X.Y.Z'";
 errors['802'] = "Invalid 'wazuh-app-version' header";
+
+
+
+
 
 
 exports.description = function(n){
