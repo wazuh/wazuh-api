@@ -10,7 +10,7 @@ from wazuh import manager
 from wazuh import common
 from glob import glob
 from datetime import date, datetime
-from hashlib import md5, sha1
+from hashlib import md5, sha512
 from time import time, mktime
 from platform import platform
 from os import remove, chown, chmod, path, rename, stat, utime, environ
@@ -172,7 +172,7 @@ class Node:
             raise WazuhException(3000, "No config found")
 
         raw_key = config_cluster["cluster.key"]
-        token = sha1(raw_key).hexdigest()
+        token = sha512(raw_key).hexdigest()
         return token
 
     @staticmethod
