@@ -136,11 +136,17 @@ class Node:
     @staticmethod
     def update_file(fullpath, content, owner=None, group=None, mode=None, mtime=None, w_mode=None):
 
+        # Set atomic replaces
+        atomic = False
         # Set Timezone to epoch converter
         environ['TZ']='UTC'
 
         # Write
-        f_temp = '{0}.tmp.cluster'.format(fullpath)
+        if atomic:
+            f_temp = '{0}.tmp.cluster'.format(fullpath)
+        else:
+            f_temp = '{0}'.format(fullpath)
+            
         dest_file = open(f_temp, "w")
         dest_file.write(content)
         dest_file.close()
@@ -162,7 +168,8 @@ class Node:
         utime(f_temp, (mtime_epoch, mtime_epoch)) # (atime, mtime)
 
         # Atomic
-        rename(f_temp, fullpath)
+        if atomic:
+            rename(f_temp, fullpath)
 
     @staticmethod
     def get_token():
