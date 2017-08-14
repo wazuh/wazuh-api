@@ -335,7 +335,7 @@ class Node:
                     "file": remote_file,
                     "checked_conditions": { "missing": True},
                     "updated": False,
-                    "node": node["node"]
+                    "node": node
                 }
 
                 download_list.append(remote_item)
