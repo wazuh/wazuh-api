@@ -1335,7 +1335,7 @@ class Agent:
 
                 if new_file:
                     chown(agent_group_path, ossec_uid, ossec_gid)
-                    chmod(agent_group_path, 0o640)
+                    chmod(agent_group_path, 0o660)
             except Exception as e:
                 raise WazuhException(1005, str(e))
 
