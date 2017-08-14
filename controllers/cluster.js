@@ -111,11 +111,11 @@ router.get('/sync/status', cache(), function(req, res) {
 
 
 /**
- * @api {put} /cluster/sync Get pending files
+ * @api {put} /cluster/sync Sync files
  * @apiName GetSync
  * @apiGroup cluster
  *
- * @apiDescription Returns files pending to by sync
+ * @apiDescription Sync files
  *
  * @apiExample {curl} Example usage:
  *     curl -u wazuh:wazuh -k -X PUT "https://127.0.0.1:55000/cluster/sync"
@@ -135,6 +135,34 @@ router.put('/sync', cache(), function(req, res) {
     }
 
 })
+
+/**
+ * @api {put} /cluster/sync/force Sync files (force)
+ * @apiName GetSync
+ * @apiGroup cluster
+ *
+ * @apiDescription Sync files (force)
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u wazuh:wazuh -k -X PUT "https://127.0.0.1:55000/cluster/sync/force"
+ *
+ */
+router.put('/sync/force', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " PUT /cluster/sync/force");
+
+    if (req.user == "wazuh"){
+        req.apicacheGroup = "cluster";
+
+        var data_request = {'function': 'PUT/cluster/sync', 'arguments': {}};
+        data_request['arguments']['force'] = "True";
+        execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    }
+    else {
+        res_h.unauthorized_request(req, res, 100, "User: " + req.user);
+    }
+
+})
+
 
 /**
  * @api {put} /cluster/sync/enable Enable syncrhonization

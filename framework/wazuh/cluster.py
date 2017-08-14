@@ -146,7 +146,7 @@ class Node:
             f_temp = '{0}.tmp.cluster'.format(fullpath)
         else:
             f_temp = '{0}'.format(fullpath)
-            
+
         dest_file = open(f_temp, "w")
         dest_file.write(content)
         dest_file.close()
@@ -191,7 +191,7 @@ class Node:
             return False
 
     @staticmethod
-    def sync(output_file=False):
+    def sync(output_file=False, force=None):
         """
         Sync this node with others
         :return: Files synced.
@@ -284,26 +284,29 @@ class Node:
                 checked_conditions = []
                 conditions = {}
 
-                if remote_file["conditions"]["different_md5"]:
-                    checked_conditions.append("different_md5")
-                    if remote_file["md5"] != local_file["md5"]:
-                        conditions["different_md5"] = True
-                    else:
-                        conditions["different_md5"] = False
+                if not force:
+                    if remote_file["conditions"]["different_md5"]:
+                        checked_conditions.append("different_md5")
+                        if remote_file["md5"] != local_file["md5"]:
+                            conditions["different_md5"] = True
+                        else:
+                            conditions["different_md5"] = False
 
-                if remote_file["conditions"]["remote_time_higher"]:
-                    checked_conditions.append("remote_time_higher")
-                    if remote_file_time > local_file_time:
-                        conditions["remote_time_higher"] = True
-                    else:
-                        conditions["remote_time_higher"] = False
+                    if remote_file["conditions"]["remote_time_higher"]:
+                        checked_conditions.append("remote_time_higher")
+                        if remote_file_time > local_file_time:
+                            conditions["remote_time_higher"] = True
+                        else:
+                            conditions["remote_time_higher"] = False
 
-                if remote_file["conditions"]["larger_file_size"]:
-                    checked_conditions.append("larger_file_size")
-                    if remote_file_size > local_file_size:
-                        conditions["larger_file_size"] = True
-                    else:
-                        conditions["larger_file_size"] = False
+                    if remote_file["conditions"]["larger_file_size"]:
+                        checked_conditions.append("larger_file_size")
+                        if remote_file_size > local_file_size:
+                            conditions["larger_file_size"] = True
+                        else:
+                            conditions["larger_file_size"] = False
+                else:
+                    conditions["force"] = True
 
                 check_item = {
                     "file": remote_file,
