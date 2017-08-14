@@ -1814,7 +1814,7 @@ class Agent:
             raise WazuhException(1715, data.replace("err ",""))
 
         # Sending file to agent
-        file = open(common.ossec_path + "/var/upgrade/" + wpk_file, "rb")
+        file = open(file_path, "rb")
         if not file:
             raise WazuhException(1715, data.replace("err ",""))
         try:
