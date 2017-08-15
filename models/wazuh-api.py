@@ -141,7 +141,7 @@ if __name__ == "__main__":
 
     if error_wazuh_package < 0:
         if error_wazuh_package == -1:
-            print_json("Wazuh-Python Internal Error: wazuh-framework not found.", 1000)
+            print_json("Wazuh-Python Internal Error: wazuh-framework not found or requests package not installed.", 1000)
         if error_wazuh_package == -2:
             print_json("Wazuh-Python Internal Error: uncaught exception: {0}".format(exception_error), 1000)
         exit(0)  # error code 0 shows the msg in the API response.
