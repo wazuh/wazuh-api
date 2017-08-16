@@ -33,7 +33,7 @@ var router = require('express').Router();
  *
  * @apiDescription Returns the syscheck files of an agent.
  *
- * @apiExample {curl} Example usage:
+ * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscheck/000?offset=0&limit=2&pretty"
  *
  */

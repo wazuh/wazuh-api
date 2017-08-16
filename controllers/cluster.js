@@ -20,7 +20,7 @@ var task_status = "disabled";
 /**
  * @api {get} /cluster/nodes Get nodes list
  * @apiName GetNodeList
- * @apiGroup cluster
+ * @apiGroup Nodes
  *
  * @apiDescription Returns the Nodes list
  *
@@ -40,8 +40,8 @@ router.get('/nodes', cache(), function(req, res) {
 
 /**
  * @api {get} /cluster/node Get node info
- * @apiName GetNodeList
- * @apiGroup cluster
+ * @apiName GetNodeInfo
+ * @apiGroup Nodes
  *
  * @apiDescription Returns the Node info
  *
@@ -61,7 +61,7 @@ router.get('/node', cache(), function(req, res) {
 /**
  * @api {get} /cluster/node/token Get node token
  * @apiName GetNodetoken
- * @apiGroup cluster
+ * @apiGroup Nodes
  *
  * @apiDescription Returns the Node token
  *
@@ -88,7 +88,7 @@ router.get('/node/token', cache(), function(req, res) {
 /**
  * @api {get} /cluster/sync/status Get sync status
  * @apiName GetNodeKey
- * @apiGroup cluster
+ * @apiGroup Syncrhonization
  *
  * @apiDescription Returns sync status
  *
@@ -113,7 +113,7 @@ router.get('/sync/status', cache(), function(req, res) {
 /**
  * @api {put} /cluster/sync Sync files
  * @apiName GetSync
- * @apiGroup cluster
+ * @apiGroup Syncrhonization
  *
  * @apiDescription Sync files
  *
@@ -138,8 +138,8 @@ router.put('/sync', cache(), function(req, res) {
 
 /**
  * @api {put} /cluster/sync/force Sync files (force)
- * @apiName GetSync
- * @apiGroup cluster
+ * @apiName GetSyncForce
+ * @apiGroup Syncrhonization
  *
  * @apiDescription Sync files (force)
  *
@@ -166,8 +166,8 @@ router.put('/sync/force', cache(), function(req, res) {
 
 /**
  * @api {put} /cluster/sync/enable Enable syncrhonization
- * @apiName PutSync
- * @apiGroup cluster
+ * @apiName PutSyncEnable
+ * @apiGroup Syncrhonization
  *
  * @apiDescription Enables sync
  *
@@ -211,8 +211,8 @@ router.put('/sync/enable', cache(), function(req, res) {
 
 /**
  * @api {put} /cluster/sync/disable Disable syncrhonization
- * @apiName PutSync
- * @apiGroup cluster
+ * @apiName PutSyncDisable
+ * @apiGroup Syncrhonization
  *
  * @apiDescription Disables sync
  *

@@ -173,7 +173,7 @@ router.get('/groups', cache(), function(req, res) {
  * @apiDescription Returns the list of agent in a group.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/groups/webserver?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/groups/dmz?pretty"
  *
  */
 router.get('/groups/:group_id', cache(), function(req, res) {
@@ -329,7 +329,7 @@ router.get('/groups/:group_id/files', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /outdated Get outdated agents
+ * @api {get} /agents/outdated Get outdated agents
  * @apiName GetOutdatedAgents
  * @apiGroup Upgrade
  *
@@ -339,7 +339,7 @@ router.get('/groups/:group_id/files', cache(), function(req, res) {
  *
  * @apiDescription Returns the list of outdated groups.
  *
- * @apiExample {curl} Example usage:
+ * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/outdated?pretty"
  *
  */
@@ -403,7 +403,7 @@ router.get('/:agent_id', cache(), function(req, res) {
  * @apiDescription Returns the key of an agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/001/key?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/004/key?pretty"
  *
  */
 router.get('/:agent_id/key', function(req, res) {
@@ -429,8 +429,8 @@ router.get('/:agent_id/key', function(req, res) {
  *
  * @apiDescription Returns the upgrade result from an agent.
  *
- * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/001/upgrade_result?pretty"
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/003/upgrade_result?pretty"
  *
  */
 router.get('/:agent_id/upgrade_result', function(req, res) {
@@ -481,8 +481,8 @@ router.put('/restart', function(req, res) {
  *
  * @apiDescription Restarts a list of agents.
  *
- * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X POST -H "Content-Type:application/json" -d '{"ids":["001","002"]}' "https://127.0.0.1:55000/agents/restart?pretty"
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X POST -H "Content-Type:application/json" -d '{"ids":["002","004"]}' "https://127.0.0.1:55000/agents/restart?pretty"
  *
  */
 router.post('/restart', function(req, res) {
@@ -512,7 +512,7 @@ router.post('/restart', function(req, res) {
  * @apiDescription Restarts the agent.
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/000/restart?pretty"
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/007/restart?pretty"
  *
  */
 router.put('/:agent_id/restart', function(req, res) {
@@ -529,19 +529,19 @@ router.put('/:agent_id/restart', function(req, res) {
 })
 
 /**
- * @api {put} /agents/:agent_id/upgrade Upgrade an agent
+ * @api {put} /agents/:agent_id/upgrade Upgrade agent using online repository
  * @apiName PutAgentsUpgradeId
  * @apiGroup Upgrade
  *
  * @apiParam {Number} agent_id Agent unique ID.
  * @apiParam {String} [wpk_repo] WPK repository.
  * @apiParam {String} [version] Wazuh version.
- * @apiParam {number=0,1} [force] Force upgrade.
+ * @apiParam {number="0","1"} [force] Force upgrade.
  *
- * @apiDescription Upgrade the agent.
+ * @apiDescription Upgrade the agent using a WPK file from online repository.
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/000/upgrade?pretty"
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/002/upgrade?pretty"
  *
  */
 router.put('/:agent_id/upgrade', function(req, res) {
@@ -568,8 +568,8 @@ router.put('/:agent_id/upgrade', function(req, res) {
 })
 
 /**
- * @api {put} /agents/:agent_id/upgrade_custom Upgrade an agent
- * @apiName PutAgentsUpgradeId
+ * @api {put} /agents/:agent_id/upgrade_custom Upgrade agent using custom file
+ * @apiName PutAgentsUpgradeCustomId
  * @apiGroup Upgrade
  *
  * @apiParam {Number} agent_id Agent unique ID.
@@ -579,7 +579,7 @@ router.put('/:agent_id/upgrade', function(req, res) {
  * @apiDescription Upgrade the agent using a custom file.
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/000/upgrade_custom?pretty"
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/002/upgrade_custom?pretty"
  *
  */
 router.put('/:agent_id/upgrade_custom', function(req, res) {
@@ -667,7 +667,7 @@ router.put('/groups/:group_id', function(req, res) {
  * @apiDescription Sets the specified group to the agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/001/group/webserver?pretty"
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/004/group/webserver?pretty"
  *
  */
 router.put('/:agent_id/group/:group_id', function(req, res) {
@@ -696,7 +696,7 @@ router.put('/:agent_id/group/:group_id', function(req, res) {
  * @apiDescription Removes an agent. You must restart OSSEC after removing an agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/002?pretty"
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/001?pretty"
  *
  */
 router.delete('/:agent_id', function(req, res) {
@@ -773,7 +773,7 @@ router.delete('/groups/:group_id', function(req, res) {
  * @apiDescription Removes a list of agents. You must restart OSSEC after removing an agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE -H "Content-Type:application/json" -d '{"ids":["001","002"]}' "https://127.0.0.1:55000/agents?pretty"
+ *     curl -u foo:bar -k -X DELETE -H "Content-Type:application/json" -d '{"ids":["003","005"]}' "https://127.0.0.1:55000/agents?pretty"
  *
  */
 router.delete('/', function(req, res) {

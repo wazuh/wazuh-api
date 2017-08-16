@@ -65,7 +65,26 @@ hardcoded_items = {
         'PutRootcheck' : {"error":0,"data":"Restarting Syscheck/Rootcheck on all agents"},
 
         # GET /agents/groups/:group_id/files/:filename
-        'GetAgentGroupFile' : {"error":0,"data":{"controls":[{"...":"..."},{"reference":"CIS_Debian_Benchmark_v1.0pdf","name":"CIS - Testing against the CIS Debian Linux Benchmark v1","condition":"all required","checks":["f:/etc/debian_version;"]}]}}
+        'GetAgentGroupFile' : {"error":0,"data":{"controls":[{"...":"..."},{"reference":"CIS_Debian_Benchmark_v1.0pdf","name":"CIS - Testing against the CIS Debian Linux Benchmark v1","condition":"all required","checks":["f:/etc/debian_version;"]}]}},
+
+        # GET /agents/outdated
+        'GetOutdatedAgents' : {"error":0,"data":{"totalItems":2,"items":[{"version": "Wazuh v3.0.0","id": "003","name": "main_database"},{"version": "Wazuh v3.0.0","id": "004","name": "dmz002"}]}},
+
+        # PUT /agents/:agent_id/upgrade
+        'PutAgentsUpgradeId' : {"error": 0,"data": "Upgrade procedure started"},
+
+        # PUT /agents/:agent_id/upgrade_custom
+        'PutAgentsUpgradeCustomId' : {"error": 0,"data": "Installation started"},
+
+        # GET /agents/:agent_id/upgrade_result
+        'GetUpgradeResult' : {"error": 0,"data": "Agent upgraded successfully"},
+
+        # POST /agents/restart
+        'PostAgentListRestart' : {"error": 0,"data": "All selected agents were restarted"},
+
+        # GET /syscheck/:agent_id
+        'GetSyscheckAgent' : {"error":0,"data":{"totalItems":2762,"items":[{"sha1":"4fed08ccbd0168593a6fffcd925adad65e5ae6d9","group":"root","uid":0,"scanDate":"2017-03-02 23:43:28","gid":0,"user":"root","file":"!1488498208 /boot/config-3.16.0-4-amd64","modificationDate":"2016-10-19 06:45:50","octalMode":"100644","permissions":"-rw-r--r--","md5":"46d43391ae54c1084a2d40e8d1b4873c","inode":5217,"event":"added","size":157721},{"sha1":"d48151a3d3638b723f5d7bc1e9c71d478fcde4e6","group":"root","uid":0,"scanDate":"2017-03-02 23:43:26","gid":0,"user":"root","file":"!1488498206 /boot/System.map-3.16.0-4-amd64","modificationDate":"2016-10-19 06:45:50","octalMode":"100644","permissions":"-rw-r--r--","md5":"29cc12246faecd4a14d212b4d9bac0fe","inode":5216,"event":"added","size":2679264}]}}
+
     }
 ### ### ###
 
