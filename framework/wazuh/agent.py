@@ -1459,7 +1459,11 @@ class Agent:
         except HTTPError as e:
             raise WazuhException(1713, e.code)
         except URLError as e:
-            raise WazuhException(1713, e.reason)
+            if "SSL23_GET_SERVER_HELLO" in str(e.reason):
+              error = "HTTPS requires Python 2.7.9 or newer. You may also run with Python 3."
+            else:
+              error = str(e.reason)
+            raise WazuhException(1713, error)
 
         lines = result.readlines()
         lines = filter(None, lines)
@@ -1559,7 +1563,11 @@ class Agent:
         except HTTPError as e:
             raise WazuhException(1714, e.code)
         except URLError as e:
-            raise WazuhException(1714, e.reason)
+            if "SSL23_GET_SERVER_HELLO" in str(e.reason):
+              error = "HTTPS requires Python 2.7.9 or newer. You may also run with Python 3."
+            else:
+              error = str(e.reason)
+            raise WazuhException(1714, error)
 
         # Get SHA1 file sum
         sha1hash = sha1(open(wpk_file_path, 'rb').read()).hexdigest()
