@@ -94,7 +94,7 @@ change_port () {
 
 change_https () {
     print ""
-    read -p "Enable HTTPS and generate SSL certificate? [Y/n]: " https
+    read -p "Enable HTTPS and generate SSL certificate? [Y/n/s]: " https
     if [ "X${https,,}" == "X" ] || [ "X${https,,}" == "Xy" ]; then
         edit_configuration "https" "yes"
 
@@ -112,36 +112,59 @@ change_https () {
         print "\nKey: $API_PATH/configuration/ssl/server.key.\nCertificate: $API_PATH/configuration/ssl/server.crt\n"
 
         read -p "Continue with next section [Press Enter]" enter
-    else
+    elif [ "X${https,,}" == "Xn" ]; then
         edit_configuration "https" "no"
         print "Using HTTP (not secure)."
+    elif [ "X${https,,}" == "Xs" ]; then
+        print "Skipping configuration."
     fi
 }
 
 change_auth () {
     print ""
-    read -p "Enable user authentication? [Y/n]: " auth
+    read -p "Enable user authentication? [Y/n/s]: " auth
     if [ "X${auth,,}" == "X" ] || [ "X${auth,,}" == "Xy" ]; then
         auth="y"
         edit_configuration "basic_auth" "yes"
         read -p "API user: " user
 
-        exec_cmd_bash "cd $API_PATH/configuration/auth && $API_PATH/node_modules/htpasswd/bin/htpasswd -c user $user"
-    else
+        stty -echo
+        printf "New password: "
+        read user_pass
+        printf "\nRe-type new password: "
+        read user_pass_chk
+        while [ ! $user_pass = $user_pass_chk ]; do
+             printf "\nPassword verification error."
+             printf "\nNew password: "
+             read user_pass
+             printf "\nRe-type new password: "
+             read user_pass_chk
+        done
+        printf "\n"
+        stty echo
+
+        exec_cmd_bash "cd $API_PATH/configuration/auth && $API_PATH/node_modules/htpasswd/bin/htpasswd -bc user $user $user_pass"
+        exec_cmd_bash "cd $API_PATH/configuration/auth && $API_PATH/node_modules/htpasswd/bin/htpasswd -nb wazuh wazuh >> user"
+    elif [ "X${auth,,}" == "Xn" ]; then
         auth="n"
         print "Disabling authentication (not secure)."
         edit_configuration "basic_auth" "no"
+    elif [ "X${auth,,}" == "Xs" ]; then
+        print "Skipping configuration."
     fi
 }
 
 change_proxy () {
     print ""
-    read -p "is the API running behind a proxy server? [y/N]: " proxy
+    read -p "is the API running behind a proxy server? [y/N/s]: " proxy
     if [ "X${proxy,,}" == "Xy" ]; then
         print "API running behind proxy server."
         edit_configuration "BehindProxyServer" "yes"
-    else
+    elif [ "X${proxy,,}" == "X" ] || [ "X${proxy,,}" == "Xn" ]; then
+        print "API not running behind proxy server."
         edit_configuration "BehindProxyServer" "no"
+    elif [ "X${proxy,,}" == "Xs" ]; then
+        print "Skipping configuration."
     fi
 }
 
