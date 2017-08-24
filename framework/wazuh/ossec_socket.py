@@ -47,4 +47,7 @@ class OssecSocket:
             if response['error'] != 0:
                 raise WazuhException(response['error'], response['message'], cmd_error=True)
             else:
-                return response['data']
+                if 'message' in response.keys():
+                    return response['message']
+                else:
+                    return response['data']
