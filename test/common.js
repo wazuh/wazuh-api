@@ -12,6 +12,7 @@
 
 var config = {};
 
+config.ossec_path = "/var/ossec"
 config.url = 'https://127.0.0.1:55000';
 config.credentials = {'user':'foo', 'password':'bar'};
 
