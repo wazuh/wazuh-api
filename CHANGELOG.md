@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v2.1.1]
+### Fixed
+- Issue issue when deleting and restarting a list of agents
+- Issue with socket comunication in authd.
 
 ## [v2.1.0]
 ### Added
