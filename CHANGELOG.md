@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.0.0]
+### Fixed
+- When adding a new agent, now it checks that its name is different than manager's name. 
 
 ## [v2.1.0]
 ### Added

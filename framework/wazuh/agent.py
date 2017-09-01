@@ -398,7 +398,6 @@ class Agent:
         :param force: Remove old agents with same IP if disconnected since <force> seconds
         :return: Agent ID.
         """
-
         manager_status = manager.status()
         if 'ossec-authd' not in manager_status or manager_status['ossec-authd'] != 'running':
             data = self._add_manual(name, ip, id, key, force)
@@ -472,6 +471,18 @@ class Agent:
             raise WazuhException(1709)
 
         force = force if type(force) == int else int(force)
+
+        # Check manager name
+        db_global = glob(common.database_path_global)
+        if not db_global:
+            raise WazuhException(1600)
+
+        conn = Connection(db_global[0])
+        conn.execute("SELECT name FROM agent WHERE (id = 0)")
+        manager_name = str(conn.fetch()[0])
+
+        if name == manager_name:
+            raise WazuhException(1705, name)
 
         # Check if ip, name or id exist in client.keys
         last_id = 0
