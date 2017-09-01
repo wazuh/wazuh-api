@@ -650,10 +650,10 @@ class Agent:
             query += ' ORDER BY id ASC'
 
 
-
-        query += ' LIMIT :offset,:limit'
-        request['offset'] = offset
-        request['limit'] = limit
+        if limit:
+            query += ' LIMIT :offset,:limit'
+            request['offset'] = offset
+            request['limit'] = limit
 
         conn.execute(query.format(','.join(select)), request)
 
