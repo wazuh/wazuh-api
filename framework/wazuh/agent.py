@@ -1737,7 +1737,7 @@ class Agent:
         return Agent(agent_id).upgrade(wpk_repo=wpk_repo, version=version, force=True if int(force)==1 else False)
 
 
-    def upgrade_result(self, debug=False, timeout=60):
+    def upgrade_result(self, debug=False, timeout=common.upgrade_result_retries):
         """
         Read upgrade result output from agent.
         """
@@ -1755,7 +1755,7 @@ class Agent:
             print("RESPONSE: {0}".format(data))
         counter = 0
         while data.startswith('err') and counter < timeout:
-            sleep(1)
+            sleep(common.upgrade_result_sleep)
             counter = counter + 1
             s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             s.connect(common.ossec_path + "/queue/ossec/request")
