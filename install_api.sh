@@ -18,7 +18,7 @@
 #  ./install_api.sh dev            Install API from current path in development mode
 
 
-arg=$1  # emtpy, help, dependencies, download or dev
+arg=$1  # empty, help, dependencies, download or dev
 
 # Aux functions
 print() {
