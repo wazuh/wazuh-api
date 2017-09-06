@@ -19,7 +19,7 @@ var router = require('express').Router();
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
- * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {string="active","never connected", "disconnected"} [status] Filters by agent status.
  * @apiParam {String} [os.platform] Filters by OS platform
@@ -88,7 +88,7 @@ router.get('/summary', cache(), function(req, res) {
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
- * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  *
  * @apiDescription Returns a summary of OS.
@@ -127,7 +127,7 @@ router.get('/summary/os', cache(), function(req, res) {
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
- * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  *
  * @apiDescription Returns the list of existing agent groups.
@@ -167,7 +167,7 @@ router.get('/groups', cache(), function(req, res) {
  * @apiParam {String} group_id Group ID.
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
- * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  *
  * @apiDescription Returns the list of agent in a group.
@@ -291,7 +291,7 @@ router.get('/groups/:group_id/files/:filename', cache(), function(req, res) {
  * @apiParam {String} group_id Group ID.
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
- * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  *
  * @apiDescription Returns the files belonging to the group.
@@ -335,7 +335,7 @@ router.get('/groups/:group_id/files', cache(), function(req, res) {
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
- * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
  *
  * @apiDescription Returns the list of outdated groups.
  *
