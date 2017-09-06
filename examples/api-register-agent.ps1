@@ -55,7 +55,7 @@ try{
 
     Write-Output "The Wazuh manager is contactable via the API, the response is: `n $($testresponse)"
     }catch{
-    Write-Host -ForegroundColor Red "IE has not had it's initial startup dialogue dismissed, please complete this step and try again. Script will exit. Error: $($geterr)`n .Please Run OSSEC_AgentConfig Seperately once you correct the error."
+    Write-Host -ForegroundColor Red "IE has not had it's initial startup dialogue dismissed, please complete this step and try again. Script will exit. Error: $($geterr)`n .Please Run OSSEC_AgentConfig Separately once you correct the error."
     Exit
     }
 
