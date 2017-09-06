@@ -88,7 +88,7 @@ router.get('/node/token', cache(), function(req, res) {
 /**
  * @api {get} /cluster/sync/status Get sync status
  * @apiName GetNodeKey
- * @apiGroup Syncrhonization
+ * @apiGroup Synchronization
  *
  * @apiDescription Returns sync status
  *
@@ -113,7 +113,7 @@ router.get('/sync/status', cache(), function(req, res) {
 /**
  * @api {put} /cluster/sync Sync files
  * @apiName GetSync
- * @apiGroup Syncrhonization
+ * @apiGroup Synchronization
  *
  * @apiDescription Sync files
  *
@@ -139,7 +139,7 @@ router.put('/sync', cache(), function(req, res) {
 /**
  * @api {put} /cluster/sync/force Sync files (force)
  * @apiName GetSyncForce
- * @apiGroup Syncrhonization
+ * @apiGroup Synchronization
  *
  * @apiDescription Sync files (force)
  *
@@ -165,9 +165,9 @@ router.put('/sync/force', cache(), function(req, res) {
 
 
 /**
- * @api {put} /cluster/sync/enable Enable syncrhonization
+ * @api {put} /cluster/sync/enable Enable synchronization
  * @apiName PutSyncEnable
- * @apiGroup Syncrhonization
+ * @apiGroup Synchronization
  *
  * @apiDescription Enables sync
  *
@@ -210,9 +210,9 @@ router.put('/sync/enable', cache(), function(req, res) {
 })
 
 /**
- * @api {put} /cluster/sync/disable Disable syncrhonization
+ * @api {put} /cluster/sync/disable Disable synchronization
  * @apiName PutSyncDisable
- * @apiGroup Syncrhonization
+ * @apiGroup Synchronization
  *
  * @apiDescription Disables sync
  *

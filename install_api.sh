@@ -14,11 +14,11 @@
 #  ./install_api.sh [dependencies|download|dev]
 #  ./install_api.sh                Install API from current path
 #  ./install_api.sh dependencies   List dependencies
-#  ./install_api.sh download       Download and install lastest release (stable branch)
+#  ./install_api.sh download       Download and install latest release (stable branch)
 #  ./install_api.sh dev            Install API from current path in development mode
 
 
-arg=$1  # emtpy, help, dependencies, download or dev
+arg=$1  # empty, help, dependencies, download or dev
 
 # Aux functions
 print() {
@@ -68,7 +68,7 @@ get_type_service() {
     fi
 }
 
-url_lastest_release () {
+url_latest_release () {
     LATEST_RELEASE=$(curl -L -s -H 'Accept: application/json' https://github.com/$1/$2/releases/latest)
     #LATEST_VERSION=$(echo $LATEST_RELEASE | sed -e 's/.*"tag_name":"\(.*\)".*/\1/')
     LATEST_VERSION=$(echo $LATEST_RELEASE | grep -P "\"tag_name\":\".+\"update_url" -o | grep -P "v\d+(?:\.\d+){0,2}\-*\w*" -o)
@@ -134,7 +134,7 @@ help() {
     echo "./install_api.sh [dependencies|download|dev]"
     echo "./install_api.sh                Install API from current path"
     echo "./install_api.sh dependencies   List dependencies"
-    echo "./install_api.sh download       Download and install lastest release (stable branch)"
+    echo "./install_api.sh download       Download and install latest release (stable branch)"
     echo "./install_api.sh dev            Install API from current path in development mode"
 }
 
@@ -162,7 +162,7 @@ previous_checks() {
         API_SOURCES=`pwd`
     elif [ "X${arg}" == "Xdownload" ]; then   # download argument
         API_SOURCES="/root"
-        DOWNLOAD_PATH=$(url_lastest_release "wazuh" "wazuh-api")
+        DOWNLOAD_PATH=$(url_latest_release "wazuh" "wazuh-api")
     else
         API_SOURCES="."  # empty argument
     fi

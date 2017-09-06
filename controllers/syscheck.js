@@ -21,7 +21,7 @@ var router = require('express').Router();
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
- * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the begining to ascending or descending order.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String="added","readded", "modified", "deleted"} [event] Filters files by event.
  * @apiParam {String} [file] Filters file by filename.

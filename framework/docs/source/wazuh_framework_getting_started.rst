@@ -58,7 +58,7 @@ The example should work with a default installation. In case you do not have OSS
 
 Error Handling
 ------------------------
-The next code snnipet adds an agent to OSSEC with name 'WazuhTestAgent' and IP 'ANY'.
+The next code snipet adds an agent to OSSEC with name 'WazuhTestAgent' and IP 'ANY'.
 
 ::
 
