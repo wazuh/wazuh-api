@@ -7,7 +7,13 @@ All notable changes to this project will be documented in this file.
 - Added a new class on the Python framework: `InputValidation`.
 
 ### Fixed
-- When adding a new agent, now it checks that its name is different than manager's name. 
+- When adding a new agent, now it checks that its name is different than manager's name.
+
+
+## [v2.1.1]
+### Fixed
+- Issue issue when deleting and restarting a list of agents
+- Issue with socket comunication in authd.
 
 
 ## [v2.1.0]
