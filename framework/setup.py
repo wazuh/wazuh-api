@@ -9,7 +9,7 @@ from setuptools import setup
 # Install the package dev: python setup.py develop
 
 setup(name='wazuh',
-      version='0.1',
+      version='2.1.1',
       description='OSSEC control with python',
       url='https://github.com/wazuh',
       author='Wazuh',

@@ -85,7 +85,7 @@ router.get('/version',function(req, res) {
 
     // Temporary patch
     if( !req.get('wazuh-app-version') && req.get('user-agent') && req.get('user-agent').startsWith('Needle')){
-        json_res = {'error': 0, 'data': "v2.0.0"};
+        json_res = {'error': 0, 'data': "v2.1.1"};
     }
     else{
         json_res = {'error': 0, 'data': "v" + info_package.version};
