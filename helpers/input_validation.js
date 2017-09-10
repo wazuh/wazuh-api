@@ -36,6 +36,13 @@ exports.names = function(name) {
         return false;
 }
 
+exports.array_names = function(names) {
+    if (typeof names != 'undefined') {
+        var regex = /^[a-zA-Z0-9_\-\.]+(,[a-zA-Z0-9_\-\.]+)*$/;
+        return regex.test(names);
+    } else return false;
+}
+
 exports.paths = function(path) {
     if (typeof path != 'undefined'){
         var regex = /^[a-zA-Z0-9\-\_\.\\\/:]+$/;

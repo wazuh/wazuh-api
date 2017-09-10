@@ -693,13 +693,42 @@ router.put('/:agent_id/group/:group_id', function(req, res) {
 
 
 /**
+ * @api {delete} /agents/groups Delete a list of groups
+ * @apiName DeleteAgentsGroups
+ * @apiGroup Delete
+ *
+ * @apiParam {String[]} ids Array of group ID's.
+ *
+ * @apiDescription Removes a list of groups. 
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X DELETE -H "Content-Type:application/json" -d '{"ids":["webserver","dmz"]}' "https://127.0.0.1:55000/agents/groups?pretty"
+ *
+ */
+router.delete('/groups', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " DELETE /agents/groups");
+
+    var data_request = {'function': 'DELETE/agents/groups', 'arguments': {}};
+
+    if (!filter.check(req.body, {'ids':'array_names'}, req, res))  // Filter with error
+        return;
+
+    if ('ids' in req.body){
+        data_request['arguments']['group_id'] = req.body.ids;
+        execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    }else
+        res_h.bad_request(req, res, 604, "Missing field: 'ids'");
+})
+
+
+/**
  * @api {delete} /agents/:agent_id Delete an agent
  * @apiName DeleteAgentId
  * @apiGroup Delete
  *
  * @apiParam {Number} agent_id Agent ID.
  *
- * @apiDescription Removes an agent. You must restart OSSEC after removing an agent.
+ * @apiDescription Removes an agent.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/001?pretty"

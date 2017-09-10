@@ -174,6 +174,7 @@ if __name__ == "__main__":
             'POST/agents/restart': Agent.restart_agents,
             'POST/agents': Agent.add_agent,
             'POST/agents/insert': Agent.insert_agent,
+            'DELETE/agents/groups': Agent.remove_group,
             'DELETE/agents/:agent_id': Agent.remove_agent,
             'DELETE/agents/': Agent.remove_agent,
 

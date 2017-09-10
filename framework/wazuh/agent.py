@@ -562,6 +562,39 @@ class Agent:
 
         self.id = agent_id
 
+    def _remove_single_group(self, group_id):
+        """
+        Remove the group in every agent.
+
+        :param group_id: Group ID.
+        :return: Confirmation message.
+        """
+
+        if group_id.lower() == "default":
+            raise WazuhException(1712)
+
+        if not self.group_exists(group_id):
+            raise WazuhException(1710, group_id)
+
+        ids = []
+
+        # Remove agent group
+        agents = self.get_agent_group(group_id=group_id, limit=None)
+        for agent in agents['items']:
+            self.unset_group(agent['id'])
+            ids.append(agent['id'])
+
+        # Remove group directory
+        group_path = "{0}/{1}".format(common.shared_path, group_id)
+        group_backup = "{0}/groups/{1}_{2}".format(common.backup_path, group_id, int(time()))
+        if path.exists(group_path):
+            move(group_path, group_backup)
+
+        # msg = "Group '{0}' removed.".format(group_id)
+
+        # return {'msg': msg, 'affected_agents': ids}
+
+
     @staticmethod
     def get_agents_overview(status="all", os_platform="all", os_version="all", offset=0, limit=common.database_limit, sort=None, search=None):
         """
@@ -1292,30 +1325,28 @@ class Agent:
         :param group_id: Group ID.
         :return: Confirmation message.
         """
-
-        if group_id.lower() == "default":
-            raise WazuhException(1712)
-
-        if not Agent.group_exists(group_id):
-            raise WazuhException(1710, group_id)
-
         ids = []
+        if isinstance(group_id, list):
+            for id in group_id:
+                try:
+                    Agent()._remove_single_group(id)
+                except Exception as e:
+                    ids.append(create_exception_dic(id, e))
+        else:
+            try:
+                Agent()._remove_single_group(group_id)
+            except Exception as e:
+                ids.append(create_exception_dic(group_id, e))
 
-        # Remove agent group
-        agents = Agent.get_agent_group(group_id=group_id, limit=None)
-        for agent in agents['items']:
-            Agent.unset_group(agent['id'])
-            ids.append(agent['id'])
+        final_dict = {}
+        if not ids:
+            message = 'All selected groups were removed'
+            final_dict = {'msg': message}
+        else:
+            message = 'Some groups were not removed'
+            final_dict = {'msg': message, 'ids': ids}
 
-        # Remove group directory
-        group_path = "{0}/{1}".format(common.shared_path, group_id)
-        group_backup = "{0}/groups/{1}_{2}".format(common.backup_path, group_id, int(time()))
-        if path.exists(group_path):
-            move(group_path, group_backup)
-
-        msg = "Group '{0}' removed.".format(group_id)
-
-        return {'msg': msg, 'affected_agents': ids}
+        return final_dict
 
     @staticmethod
     def set_group(agent_id, group_id, force=False):
