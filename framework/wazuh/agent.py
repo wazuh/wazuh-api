@@ -1130,6 +1130,9 @@ class Agent:
         :param group_id: Group ID.
         :return: True if group exists, False otherwise
         """
+        # Input Validation of group_id
+        if not InputValidator().group(group_id):
+            raise WazuhException(1722)
 
         db_global = glob(common.database_path_global)
         if not db_global:
@@ -1157,6 +1160,9 @@ class Agent:
         :param group_id: Group ID.
         :return: True if group exists, False otherwise
         """
+        # Input Validation of group_id
+        if not InputValidator().group(group_id):
+            raise WazuhException(1722)
 
         if path.exists("{0}/{1}".format(common.shared_path, group_id)):
             return True
@@ -1295,6 +1301,9 @@ class Agent:
         :param group_id: Group ID.
         :return: Confirmation message.
         """
+        # Input Validation of group_id
+        if not InputValidator().group(group_id):
+            raise WazuhException(1722)
 
         group_path = "{0}/{1}".format(common.shared_path, group_id)
 
@@ -1325,6 +1334,17 @@ class Agent:
         :param group_id: Group ID.
         :return: Confirmation message.
         """
+
+        # Input Validation of group_id
+        if not InputValidator().group(group_id):
+            raise WazuhException(1722)
+
+        if group_id.lower() == "default":
+            raise WazuhException(1712)
+
+        if not Agent.group_exists(group_id):
+            raise WazuhException(1710, group_id)
+
         ids = []
         if isinstance(group_id, list):
             for id in group_id:
@@ -1358,6 +1378,9 @@ class Agent:
         :param force: No check if agent exists
         :return: Confirmation message.
         """
+        # Input Validation of group_id
+        if not InputValidator().group(group_id):
+            raise WazuhException(1722)
 
         agent_id = agent_id.zfill(3)
         if agent_id == "000":
@@ -1404,7 +1427,6 @@ class Agent:
         :param force: No check if agent exists
         :return: Confirmation message.
         """
-
         # Check if agent exists
         if not force:
             Agent(agent_id).get_basic_information()
