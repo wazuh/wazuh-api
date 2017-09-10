@@ -97,6 +97,21 @@ exports.search_param_to_json = function (search_param){
     return search
 }
 
+/*
+ * filters = "field1,field2"
+ * Return:
+ * select_param = {"fields":["field1", "field1"]}
+*/
+exports.select_param_to_json = function (select_param){
+    var select = {"fields": []};
+
+    select_param.split(',').map(function(x) {
+        select['fields'].push(x);
+    });  
+
+    return select
+}
+
 filters_to_string = function (filters){
     var output = "Allowed filters: [";
     for(var field in filters)

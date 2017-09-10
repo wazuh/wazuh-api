@@ -142,7 +142,8 @@ router.get('/groups', cache(), function(req, res) {
     req.apicacheGroup = "agents";
 
     var data_request = {'function': '/agents/groups', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 
+                   'search':'search_param', 'hash':'names'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -155,6 +156,8 @@ router.get('/groups', cache(), function(req, res) {
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+    if ('hash' in req.query)
+        data_request['arguments']['hash_algorithm'] = req.query.hash
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -182,7 +185,7 @@ router.get('/groups/:group_id', cache(), function(req, res) {
     req.apicacheGroup = "agents";
 
     var data_request = {'function': '/agents/groups/:group_id', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'select':'select_param'};
 
     if (!filter.check(req.params, {'group_id':'names'}, req, res))  // Filter with error
         return;
@@ -201,9 +204,12 @@ router.get('/groups/:group_id', cache(), function(req, res) {
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+    if ('select' in req.query)
+        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select);
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
+
 
 /**
  * @api {get} /agents/groups/:group_id/configuration Get group configuration
