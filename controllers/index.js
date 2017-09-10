@@ -76,7 +76,7 @@ router.use('/cluster', require('./cluster'));
 // Index
 router.get('/',function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /");
-    data = { 'msg': "Welcome to Wazuh HIDS API", 'api_version': "v" + info_package.version, 'hostname': os.hostname()}
+    data = { 'msg': "Welcome to Wazuh HIDS API", 'api_version': "v" + info_package.version, 'hostname': os.hostname(), 'timestamp': new Date().toString()}
     json_res = {'error': 0, 'data': data};
     res_h.send(req, res, json_res);
 });
