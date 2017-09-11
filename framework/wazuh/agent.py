@@ -8,6 +8,7 @@ from wazuh.exception import WazuhException
 from wazuh.ossec_queue import OssecQueue
 from wazuh.ossec_socket import OssecSocket
 from wazuh.database import Connection
+from wazuh.InputValidator import InputValidator
 from wazuh import manager
 from wazuh import common
 from glob import glob
