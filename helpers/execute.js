@@ -11,7 +11,7 @@
 
 var logger = require('../helpers/logger');
 var errors = require('../helpers/errors');
-var timeout = 30; // seconds
+var timeout = 240; // seconds
 
 if (config.ld_library_path.length > 0) {
     if (typeof process.env.LD_LIBRARY_PATH == 'undefined')

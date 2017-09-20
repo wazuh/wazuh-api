@@ -11,6 +11,7 @@
 
 var errors = require('../helpers/errors');
 var logger = require('../helpers/logger');
+var conf   = require('../configuration/config');
 var fileSystem = require('fs');
 
 exports.pretty = false;
@@ -73,58 +74,36 @@ exports.unauthorized_request = function(req, res, internal_error, extra_msg){
 
 exports.send_file = function(req, res, file_name, type){
 
-    if (type == 'files') {
+    if (type == 'zip') {
+        var real_filename = conf.ossec_path + file_name.data;
+        var send_aux = this.send;
 
-      var data_request = {'function': '/manager/files', 'arguments': {'download': file_name}};
+        try {
+            var stat = fileSystem.statSync(real_filename);
 
-      var send_aux = this.send;
-      execute.exec(python_bin, [wazuh_control], data_request, function (data) {
-          try {
-              try {
-                  var files = Object.keys(data.data);
-                  var file_name = files[0];
-                  var fileformat = data.data[file_name]["format"];
-                  var wazuhpath = ""; // fix me
-              } catch (e) {
-                  json_res = {'error': 700, 'message': errors.description(700) + ": " + file_name};
-                  send_aux(req, res, json_res, 404);
-                  return;
-              }
-              var stat = fileSystem.statSync(wazuhpath+file_name);
+            res.writeHead(200, {
+            'Content-Type': 'text/xml',
+            'Content-Length': stat.size
+            });
 
-            if (fileformat == "xml") {
-              res.writeHead(200, {
-              'Content-Type': 'text/xml',
-              'Content-Length': stat.size
-              });
+            var readStream = fileSystem.createReadStream(real_filename);
+            readStream
+                .on('close', function(err) {
+                    // remove .zip file once it has been sent
+                    fileSystem.unlink(real_filename);
+                });
 
-            }else{
-              res.writeHead(200, {
-              'Content-Type': 'text/plain',
-              'Content-Length': stat.size
-              });
-            }
+            readStream.pipe(res)
 
-              var readStream = fileSystem.createReadStream(wazuhpath+file_name);
+            // Logging
+            var log_msg = "[" + req.connection.remoteAddress + "] " + req.method + " " + req.baseUrl + req.url + " - 200 - error: '0'.";
+            logger.log(log_msg);
+        } catch (e) {
 
-              readStream.pipe(res)
-
-              // Logging
-              var log_msg = "[" + req.connection.remoteAddress + "] " + req.method + " " + req.baseUrl + req.url + " - 200 - error: '0'.";
-              logger.log(log_msg);
-          } catch (e) {
-              if (e.code === 'ENOENT') {
-                  json_res = {'error': 700, 'message': errors.description(700) + ": " + wazuhpath+file_name};
-                  send_aux(req, res, json_res, 404);
-                  return;
-              } else {
-                  json_res = {'error': 3, 'message': errors.description(3)};
-                  send_aux(req, res, json_res, 500);
-                  return;
-              }
-          }
-      });
-
+            json_res = {'error': 3, 'message': errors.description(3)};
+            send_aux(req, res, json_res, 500);
+            return;
+        }
 
     }else{
 
@@ -166,5 +145,5 @@ exports.send_file = function(req, res, file_name, type){
                 }
             }
         });
-      }
+    }
 }

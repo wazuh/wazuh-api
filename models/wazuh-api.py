@@ -20,10 +20,10 @@ try:
     path.append(new_path)
     from wazuh import Wazuh
     from wazuh.agent import Agent
-    from wazuh.cluster import Node
     from wazuh.rule import Rule
     from wazuh.decoder import Decoder
     from wazuh.exception import WazuhException
+    import wazuh.cluster as cluster
     import wazuh.configuration as configuration
     import wazuh.manager as manager
     import wazuh.stats as stats
@@ -200,12 +200,12 @@ if __name__ == "__main__":
             '/manager/logs/summary': manager.ossec_log_summary,
             '/manager/logs': manager.ossec_log,
 
-            '/manager/files': manager.get_files,
-
-            '/cluster/node': Node.node_info,
-            '/cluster/nodes': Node.cluster_nodes,
-            '/cluster/node/token': Node.get_token,
-            'PUT/cluster/sync': Node.sync,
+            '/cluster/node/files': cluster.get_files,
+            '/cluster/node': cluster.get_node,
+            '/cluster/nodes': cluster.get_nodes,
+            '/cluster/node/token': cluster.get_token,
+            '/cluster/node/files/zip': cluster.compress_files,
+            'PUT/cluster/sync': cluster.sync,
 
             '/rootcheck/:agent_id': rootcheck.print_db,
             '/rootcheck/:agent_id/pci': rootcheck.get_pci,

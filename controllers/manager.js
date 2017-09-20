@@ -239,49 +239,4 @@ router.get('/logs/summary', cache(), function(req, res) {
 })
 
 
-/**
- * @api {get} /manager/files Check files status
- * @apiName GetManagerFile
- * @apiGroup Info
- *
- * @apiParam {string} file_name File Name
- *
- * @apiDescription Returns the file content
- *
- * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/files?file=ossec.conf&download
- *
- */
-router.get('/files', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /manager/files");
-
-    req.apicacheGroup = "manager";
-
-    var data_request = {'function': '/manager/files', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'download':'search_param','path':'paths', 'file':'alphanumeric_param'};
-
-    if (!filter.check(req.query, filters, req, res))  // Filter with error
-        return;
-
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('status' in req.query)
-        data_request['arguments']['status'] = req.query.status;
-    if ('path' in req.query)
-        data_request['arguments']['path'] = req.query.path;
-    if ('file' in req.query)
-        data_request['arguments']['file'] = req.query.file;
-
-    if ('download' in req.query)
-        res_h.send_file(req, res, req.query.download, 'files');
-    else
-        execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
-})
-
 module.exports = router;

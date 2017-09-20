@@ -127,7 +127,9 @@ router.put('/sync', cache(), function(req, res) {
     if (req.user == "wazuh"){
         req.apicacheGroup = "cluster";
 
-        var data_request = {'function': 'PUT/cluster/sync', 'arguments': {}};
+        debug = 'debug' in req.query ? true : false;
+
+        var data_request = {'function': 'PUT/cluster/sync', 'arguments': {'debug': debug}};
         execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
     }
     else {
@@ -236,5 +238,75 @@ router.put('/sync/disable', cache(), function(req, res) {
     }
 
 })
+
+/**
+ curl -u foo:bar -k -X POST -H "Content-Type:application/json" -d '{"list_path":["/tmp/test/1.txt"], "node_orig": "mynode"}' "http://127.0.0.1:55000/cluster/node/zip"
+
+**/
+router.post('/node/zip', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/node/files/zip");
+
+    req.apicacheGroup = "manager";
+
+    var data_request = {'function': '/cluster/node/files/zip', 'arguments': {}};
+    var filters = {'node_orig': 'alphanumeric_param', 'list_path': 'alphanumeric_param'};
+
+    // if (!filter.check(req.query, filters, req, res))  // Filter with error
+    //     return;
+
+    if ('node_orig' in req.body)
+        data_request['arguments']['node_orig'] = req.body.node_orig;
+    if ('list_path' in req.body)
+        data_request['arguments']['list_path'] = req.body.list_path;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send_file(req, res, data, 'zip'); });
+})
+
+/**
+ * @api {get} /cluster/node/files Check files status
+ * @apiName GetManagerFile
+ * @apiGroup Info
+ *
+ * @apiParam {string} file_name File Name
+ *
+ * @apiDescription Returns the file content
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node/files?file=ossec.conf&download
+ *
+ */
+router.get('/node/files', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/node/files");
+
+    req.apicacheGroup = "manager";
+
+    var data_request = {'function': '/cluster/node/files', 'arguments': {}};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'download':'search_param','path':'paths', 'file':'alphanumeric_param', 'orig_node':'alphanumeric_param'};
+
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
+
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+    if ('status' in req.query)
+        data_request['arguments']['status'] = req.query.status;
+    if ('path' in req.query)
+        data_request['arguments']['path'] = req.query.path;
+    if ('file' in req.query)
+        data_request['arguments']['file'] = req.query.file;
+
+    if ('download' in req.query)
+        res_h.send_file(req, res, req.query.download, 'files');
+    else
+        execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+
 
 module.exports = router;
