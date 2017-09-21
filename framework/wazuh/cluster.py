@@ -77,7 +77,10 @@ def compress_files(list_path, node_orig):
     zf = zipfile.ZipFile("{0}{1}".format(common.ossec_path, zip_name), mode='w')
     try:
         for f in list_path:
-            zf.write(filename = common.ossec_path + f, arcname = f, compress_type=compression)
+            try:
+                zf.write(filename = common.ossec_path + f, arcname = f, compress_type=compression)
+            except Exception as e:
+                raise WazuhException(3001, str(e))
     finally:
         zf.close()
 

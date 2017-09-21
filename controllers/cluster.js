@@ -155,7 +155,9 @@ router.put('/sync/force', cache(), function(req, res) {
     if (req.user == "wazuh"){
         req.apicacheGroup = "cluster";
 
-        var data_request = {'function': 'PUT/cluster/sync', 'arguments': {}};
+        debug = 'debug' in req.query ? true : false;
+
+        var data_request = {'function': 'PUT/cluster/sync', 'arguments': {'debug': debug}};
         data_request['arguments']['force'] = "True";
         execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
     }
@@ -240,6 +242,17 @@ router.put('/sync/disable', cache(), function(req, res) {
 })
 
 /**
+ * @api {get} /cluster/node/zip Download a list of files in zip format
+ * @apiName GetZipFile
+ * @apiGroup Zip
+ *
+ * @apiParam {list} list_path List of files to include in zip file
+ *
+ * @apiDescription Returns a zip file with requested files in list_path
+ * 
+ * @apiExample {curl} Example usage:
+ * curl -u foo:bar 
+
  curl -u foo:bar -k -X POST -H "Content-Type:application/json" -d '{"list_path":["/tmp/test/1.txt"], "node_orig": "mynode"}' "http://127.0.0.1:55000/cluster/node/zip"
 
 **/
@@ -251,8 +264,8 @@ router.post('/node/zip', cache(), function(req, res) {
     var data_request = {'function': '/cluster/node/files/zip', 'arguments': {}};
     var filters = {'node_orig': 'alphanumeric_param', 'list_path': 'alphanumeric_param'};
 
-    // if (!filter.check(req.query, filters, req, res))  // Filter with error
-    //     return;
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
 
     if ('node_orig' in req.body)
         data_request['arguments']['node_orig'] = req.body.node_orig;
@@ -272,7 +285,7 @@ router.post('/node/zip', cache(), function(req, res) {
  * @apiDescription Returns the file content
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node/files?file=ossec.conf&download
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node/files
  *
  */
 router.get('/node/files', cache(), function(req, res) {
