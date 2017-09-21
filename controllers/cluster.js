@@ -251,10 +251,8 @@ router.put('/sync/disable', cache(), function(req, res) {
  * @apiDescription Returns a zip file with requested files in list_path
  * 
  * @apiExample {curl} Example usage:
- * curl -u foo:bar 
-
- curl -u foo:bar -k -X POST -H "Content-Type:application/json" -d '{"list_path":["/tmp/test/1.txt"], "node_orig": "mynode"}' "http://127.0.0.1:55000/cluster/node/zip"
-
+ *     curl -u foo:bar -k -X POST -H "Content-Type:application/json" -d '{"list_path":["/tmp/test/1.txt"], "node_orig": "mynode"}' "http://127.0.0.1:55000/cluster/node/zip"
+ *
 **/
 router.post('/node/zip', cache(), function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /cluster/node/files/zip");
