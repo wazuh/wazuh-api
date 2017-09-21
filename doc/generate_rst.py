@@ -204,9 +204,6 @@ if __name__ == "__main__":
     # Introduction
     secs = ""
     for req in sorted(request_list.keys()):
-        if req.lower() == "cache":  # ignore cache requests
-            continue
-
         secs += '* `{0}`_\n'.format(req.title())
     f.write(introduction.format(secs))
 
@@ -214,8 +211,6 @@ if __name__ == "__main__":
     f.write('\n{0}\n'.format(str_request_list))
     f.write('---------------------------------' + '\n\n')
     for req in sorted(request_list.keys()):
-        if req.lower() == "cache":  # ignore cache requests
-            continue
         f.write('`{0}`_\n'.format(req.title()))
         for item in sorted(request_list[req]):
             f.write('\t* {0}  (`{1}`_)\n'.format(item[0], item[1]))
@@ -223,9 +218,6 @@ if __name__ == "__main__":
 
     for s in sorted(sections.keys()):
         print(s.title())
-
-        if s.lower() == "cache":  # ignore cache requests
-            continue
 
         # Section
         f.write(s.title() + '\n')
