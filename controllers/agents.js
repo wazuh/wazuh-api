@@ -142,7 +142,7 @@ router.get('/groups', cache(), function(req, res) {
     req.apicacheGroup = "agents";
 
     var data_request = {'function': '/agents/groups', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
                    'search':'search_param', 'hash':'names'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
@@ -223,7 +223,7 @@ router.get('/groups/:group_id', cache(), function(req, res) {
  * @apiDescription Returns the group configuration (agent.conf).
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/groups/webserver/configuration?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/groups/dmz/configuration?pretty"
  *
  */
 router.get('/groups/:group_id/configuration', cache(), function(req, res) {
@@ -303,7 +303,7 @@ router.get('/groups/:group_id/files/:filename', cache(), function(req, res) {
  * @apiDescription Returns the files belonging to the group.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/groups/webserver/files?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/groups/default/files?pretty"
  *
  */
 router.get('/groups/:group_id/files', cache(), function(req, res) {
@@ -699,10 +699,10 @@ router.put('/:agent_id/group/:group_id', function(req, res) {
  *
  * @apiParam {String[]} ids Array of group ID's.
  *
- * @apiDescription Removes a list of groups. 
+ * @apiDescription Removes a list of groups.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE -H "Content-Type:application/json" -d '{"ids":["webserver","dmz"]}' "https://127.0.0.1:55000/agents/groups?pretty"
+ *     curl -u foo:bar -k -X DELETE -H "Content-Type:application/json" -d '{"ids":["webserver","database"]}' "https://127.0.0.1:55000/agents/groups?pretty"
  *
  */
 router.delete('/groups', function(req, res) {
