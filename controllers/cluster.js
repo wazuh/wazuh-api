@@ -12,9 +12,11 @@
 
 var router = require('express').Router();
 
-var cron = require('node-cron');
+var cron       = require('node-cron');
+var fileSystem = require('fs');
+var config     = require('../configuration/config.js')
+
 var task = null;
-var task_status = "disabled";
 
 
 /**
@@ -99,12 +101,15 @@ router.get('/node/token', cache(), function(req, res) {
 router.get('/sync/status', cache(), function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /cluster/sync/status");
 
-    if (task_status == "enabled"){
-        json_res = {'error': 0, 'data': "Sync enabled"};
+    try {
+        status = fileSystem.readFileSync(config.ossec_path + '/stats/.cluster_status');
+        json_res = {'error': 0, 'data': "Sync " + (status == 1 ? "enabled" : "disabled")};
+    } catch (e) {
+        if (e.code === 'ENOENT') json_res = {'error': 0, 'data': "Sync disabled"};
+        else json_res = {'error': 3, 'data': "Internal error: " + e.toString()};
     }
-    else{
-        json_res = {'error': 0, 'data': "Sync disabled"};
-    }
+
+
     res_h.send(req, res, json_res);
 
 })
@@ -194,7 +199,9 @@ router.put('/sync/enable', cache(), function(req, res) {
                 });
 
                 task.start();
-                task_status = "enabled";
+
+                fileSystem.writeFileSync(config.ossec_path + '/stats/.cluster_status', '1');
+
                 json_res = {'error': 0, 'data': "Sync enabled"};
             }
             else{
@@ -202,7 +209,7 @@ router.put('/sync/enable', cache(), function(req, res) {
             }
         }
         catch (e) {
-            json_res = {'error': 3, 'data': "Internal error."};
+            json_res = {'error': 3, 'data': "Internal error: " + e.toString()};
         }
 
         res_h.send(req, res, json_res);
@@ -232,13 +239,18 @@ router.put('/sync/disable', cache(), function(req, res) {
             task.stop();
         }
         json_res = {'error': 0, 'data': "Sync disabled"};
-        task_status = "disabled";
+
+        try {
+            fileSystem.writeFileSync(config.ossec_path + '/stats/.cluster_status', '0');
+        } catch (e) {
+            json_res = {'error': 3, 'data': "Internal error: " + e.toString()};
+        }
+
         res_h.send(req, res, json_res);
     }
     else {
         res_h.unauthorized_request(req, res, 100, "User: " + req.user);
     }
-
 })
 
 /**
