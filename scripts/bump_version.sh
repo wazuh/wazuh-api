@@ -4,7 +4,7 @@
 # Wazuh Inc.
 
 # Syntax:
-# bump_version [ <version> ] [ -r <revision> ]
+# bump_version [ <version> ] [ <revision> ]
 # Example:
 # ./bump_version.sh v3.0.0-alpha1 -r 1000
 
@@ -14,7 +14,7 @@ revision=$2
 if [ -z "$version" ] && [ -z "$revision" ]
 then
     echo "Error: no arguments given."
-    echo "Syntax: $0 [ <version> ] [ -r <revision> ]"
+    echo "Syntax: $0 [ <version> ] [ <revision> ]"
     exit 1
 fi
 
