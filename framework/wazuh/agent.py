@@ -1095,8 +1095,13 @@ class Agent:
             raise WazuhException(1600)
 
         # check hash algorithm
-        if not hash_algorithm in hashlib.algorithms:
-            raise WazuhException(1723, "Available algorithms are {0}.".format(hashlib.algorithms))
+        try:
+            algorithm_list = hashlib.algorithms_available
+        except Exception as e:
+            algorithm_list = hashlib.algorithms
+
+        if not hash_algorithm in algorithm_list:
+            raise WazuhException(1723, "Available algorithms are {0}.".format(algorithm_list))
 
         hashing = hashlib.new(hash_algorithm)
 
