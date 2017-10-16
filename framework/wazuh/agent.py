@@ -13,7 +13,6 @@ from wazuh import manager
 from wazuh import common
 from glob import glob
 from datetime import date, datetime, timedelta
-from hashlib import md5, sha1
 from base64 import b64encode
 from shutil import copyfile, move, copytree
 from time import time
@@ -1096,8 +1095,8 @@ class Agent:
             raise WazuhException(1600)
 
         # check hash algorithm
-        if not hash_algorithm in hashlib.algorithms_available:
-            raise WazuhException(1723)
+        if not hash_algorithm in hashlib.algorithms:
+            raise WazuhException(1723, "Available algorithms are {0}.".format(hashlib.algorithms))
 
         hashing = hashlib.new(hash_algorithm)
 
