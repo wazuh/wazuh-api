@@ -108,7 +108,7 @@ def ossec_log(type_log='all', category='all', months=3, offset=0, limit=common.d
         logs = search_array(logs, search['value'], search['negation'])
 
     if sort:
-        logs = sort_array(logs, order=sort['order'])
+        logs = sort_array(logs, order=sort['order'], sort_by=sort['fields'])
     else:
         logs = sort_array(logs, order='desc', sort_by=['timestamp'])
 
