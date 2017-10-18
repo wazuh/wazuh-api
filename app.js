@@ -73,6 +73,10 @@ if (config.https.toLowerCase() == "yes"){
 
         options.ca = fs.readFileSync(option_paths.ca);
     }
+    if (config.secureProtocol && config.secureProtocol != "") options.secureProtocol = config.secureProtocol;
+    if (config.ciphers && config.ciphers != "") options.ciphers = config.ciphers;
+    if (config.honorCipherOrder) options.honorCipherOrder = config.honorCipherOrder;
+    if (config.secureOptions) options.secureOptions = config.secureOptions;
 }
 
 

@@ -2,8 +2,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [v3.0.0]
-
 ### Added
+- Parameter in config.js file to configure the SSL version to use in the API.
 - Added a new class on the Python framework: `InputValidation`.
 - New request: Delete a list of groups - `DELETE /agents/groups - Params: {"ids":["id_1",...,"id_n"]}`
 - Input Validation at framework level of `group_id` parameter.
