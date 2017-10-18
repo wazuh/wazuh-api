@@ -140,7 +140,7 @@ def ossec_log_summary(months=3):
             if log_date < first_date:
                 break
 
-            category = __get_ossec_log_category(line)
+            _, category, _, _, = __get_ossec_log_fields(line)
             if category:
                 if category in categories:
                     categories[category]['all'] += 1
