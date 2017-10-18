@@ -14,7 +14,7 @@ var router = require('express').Router();
 
 var cron       = require('node-cron');
 var fileSystem = require('fs');
-var config     = require('../configuration/config.js')
+var config     = require('../configuration/config.js');
 
 var task = null;
 
@@ -135,6 +135,7 @@ router.put('/sync', cache(), function(req, res) {
         debug = 'debug' in req.query ? true : false;
 
         var data_request = {'function': 'PUT/cluster/sync', 'arguments': {'debug': debug}};
+
         execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
     }
     else {
@@ -184,40 +185,41 @@ router.put('/sync/force', cache(), function(req, res) {
  *     curl -u wazuh:wazuh -k -X PUT "https://127.0.0.1:55000/cluster/sync/enable"
  *
  */
+var enable = function() {
+    try {
+        var valid = cron.validate(config.cluster.schedule);
+
+        if (valid){
+            task = cron.schedule(config.cluster.schedule, function() {
+              var data_request = {'function': 'PUT/cluster/sync', 'arguments': {}};
+              data_request['arguments']['debug'] = "False";
+              execute.exec(python_bin, [wazuh_control], data_request, function (data) {});
+            });
+
+            task.start();
+
+            fileSystem.writeFileSync(config.ossec_path + '/stats/.cluster_status', '1');
+
+            json_res = {'error': 0, 'data': "Sync enabled"};
+        }
+        else{
+            json_res = {'error': 3, 'data': "Invalid config.cluster.schedule"};
+        }
+    }
+    catch (e) {
+        json_res = {'error': 3, 'data': "Internal error: " + e.toString()};
+    }
+
+    return json_res;
+}
 router.put('/sync/enable', cache(), function(req, res) {
     logger.debug(req.connection.remoteAddress + " PUT /cluster/sync/enable");
-
-    if (req.user == "wazuh"){
-        try {
-            var valid = cron.validate(config.cluster.schedule);
-
-            if (valid){
-                task = cron.schedule(config.cluster.schedule, function() {
-                  var data_request = {'function': 'PUT/cluster/sync', 'arguments': {}};
-                  data_request['arguments']['output_file'] = "True";
-                  execute.exec(python_bin, [wazuh_control], data_request, function (data) {});
-                });
-
-                task.start();
-
-                fileSystem.writeFileSync(config.ossec_path + '/stats/.cluster_status', '1');
-
-                json_res = {'error': 0, 'data': "Sync enabled"};
-            }
-            else{
-                json_res = {'error': 3, 'data': "Invalid config.cluster.schedule"};
-            }
-        }
-        catch (e) {
-            json_res = {'error': 3, 'data': "Internal error: " + e.toString()};
-        }
-
+    if (req.user == 'wazuh') {
+        json_res = enable();
         res_h.send(req, res, json_res);
     }
-    else {
+    else
         res_h.unauthorized_request(req, res, 100, "User: " + req.user);
-    }
-
 })
 
 /**
@@ -231,26 +233,29 @@ router.put('/sync/enable', cache(), function(req, res) {
  *     curl -u wazuh:wazuh -k -X PUT "https://127.0.0.1:55000/cluster/sync/disable"
  *
  */
+var disable = function() {
+    if (task){
+        task.stop();
+    }
+    json_res = {'error': 0, 'data': "Sync disabled"};
+
+    try {
+        fileSystem.writeFileSync(config.ossec_path + '/stats/.cluster_status', '0');
+    } catch (e) {
+        json_res = {'error': 3, 'data': "Internal error: " + e.toString()};
+    }
+
+    return json_res;
+}
+
 router.put('/sync/disable', cache(), function(req, res) {
     logger.debug(req.connection.remoteAddress + " PUT /cluster/sync/disable");
-
-    if (req.user == "wazuh"){
-        if (task){
-            task.stop();
-        }
-        json_res = {'error': 0, 'data': "Sync disabled"};
-
-        try {
-            fileSystem.writeFileSync(config.ossec_path + '/stats/.cluster_status', '0');
-        } catch (e) {
-            json_res = {'error': 3, 'data': "Internal error: " + e.toString()};
-        }
-
+    if (req.user == 'wazuh') {
+        json_res = disable();
         res_h.send(req, res, json_res);
     }
-    else {
+    else
         res_h.unauthorized_request(req, res, 100, "User: " + req.user);
-    }
 })
 
 /**
@@ -272,17 +277,19 @@ router.post('/node/zip', cache(), function(req, res) {
     req.apicacheGroup = "manager";
 
     var data_request = {'function': '/cluster/node/files/zip', 'arguments': {}};
-    var filters = {'node_orig': 'alphanumeric_param', 'list_path': 'alphanumeric_param'};
 
-    if (!filter.check(req.query, filters, req, res))  // Filter with error
-        return;
+    var zip = new require('node-zip')(req.body, {base64: false, checkCRC32: true});
+    zip_file = {}
+    Object.keys(zip['files']).forEach(function(element,key,_array) {
+        zip_file[element] = {
+            'data': zip['files'][element]['_data'],
+            'time': new Date(zip['files'][element]['options']['date']).toISOString().replace('T', ' ').substr(0, 19)
+        };
+    });
 
-    if ('node_orig' in req.body)
-        data_request['arguments']['node_orig'] = req.body.node_orig;
-    if ('list_path' in req.body)
-        data_request['arguments']['list_path'] = req.body.list_path;
+    data_request['arguments']['zip_file'] = zip_file;
 
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send_file(req, res, data, 'zip'); });
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
@@ -331,5 +338,4 @@ router.get('/node/files', cache(), function(req, res) {
 })
 
 
-
-module.exports = router;
+module.exports = {router, enable, disable};

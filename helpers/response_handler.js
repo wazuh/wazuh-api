@@ -14,8 +14,6 @@ var logger = require('../helpers/logger');
 var conf   = require('../configuration/config');
 var fileSystem = require('fs');
 
-exports.pretty = false;
-
 exports.send = function(req, res, json_r, status){
 
     if (typeof status == 'undefined')
@@ -43,7 +41,7 @@ exports.send = function(req, res, json_r, status){
 
     // Send
     if (!res.headersSent){
-        if (this.pretty)
+        if (req['pretty'])
             res.status(status).send(JSON.stringify( json_r, null, 3) + "\n");
         else
             res.status(status).json(json_r);
@@ -99,7 +97,6 @@ exports.send_file = function(req, res, file_name, type){
             var log_msg = "[" + req.connection.remoteAddress + "] " + req.method + " " + req.baseUrl + req.url + " - 200 - error: '0'.";
             logger.log(log_msg);
         } catch (e) {
-
             json_res = {'error': 3, 'message': errors.description(3)};
             send_aux(req, res, json_res, 500);
             return;

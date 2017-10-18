@@ -65,4 +65,28 @@ config.python = [
 // Shared library path
 config.ld_library_path = config.ossec_path + "/api/framework/lib"
 
+/************************* SSL OPTIONS ****************************************/
+// SSL protocol
+
+// SSL protocol to use. All available secure protocols available at:
+// https://www.openssl.org/docs/man1.0.2/ssl/ssl.html#DEALING-WITH-PROTOCOL-METHODS
+config.secureProtocol = "TLSv1_2_method";
+// Disable the use of SSLv3, TLSv1.1 and TLSv1.0. All available secureOptions at: 
+// https://nodejs.org/api/crypto.html#crypto_openssl_options
+const crypto = require('crypto');
+config.secureOptions = crypto.constants.SSL_OP_NO_SSLv3 |
+                       crypto.constants.SSL_OP_NO_TLSv1 | 
+                       crypto.constants.SSL_OP_NO_TLSv1_1;
+
+// SSL ciphersuit
+
+// When choosing a cipher, use the server's preferences instead of the client 
+// preferences. When not set, the SSL server will always follow the clients 
+// preferences. More info at: 
+// https://www.openssl.org/docs/man1.0.2/ssl/SSL_CTX_set_options.html
+config.honorCipherOrder = true;
+// Modify default ciphersuit. More info: 
+// https://nodejs.org/api/tls.html#tls_modifying_the_default_tls_cipher_suite
+config.ciphers =  "";
+
 module.exports = config;

@@ -296,25 +296,40 @@ setup_api() {
     if [ -d $API_PATH ]; then
         backup_api
         print ""
-        while true; do
-            read -p "Wazuh API is already installed (version $API_OLD_VERSION). Do you want to update it? [y/n]: " yn
-            case $yn in
-                [Yy] ) update="yes"; break;;
-                [Nn] ) update="no"; break;;
+        reinstall_preloaded=$(cat preloaded_vars.conf | sed -e '/^#/ d' | grep REINSTALL)
+        if [[ ! -z "$reinstall_preloaded" ]]; then
+            response=$(echo $reinstall_preloaded | cut -d'=' -f 2 | tr -d '\r')
+            case $response in
+                [nN] ) update="no";;
+                [yY] ) update="yes";;
             esac
-        done
-
-        if [ "X${update}" == "Xno" ]; then
+        else
             while true; do
-                print ""
-                read -p "The installation directory already exists. Should I delete it? [y/n]: " yn
+                read -p "Wazuh API is already installed (version $API_OLD_VERSION). Do you want to update it? [y/n]: " yn
                 case $yn in
-                    [Yy] ) break;;
-                    [Nn] ) print "Not possible to install the API.\nExiting."; exit 1; break;;
+                    [Yy] ) update="yes"; break;;
+                    [Nn] ) update="no"; break;;
                 esac
             done
         fi
-
+        if [ "X${update}" == "Xno" ]; then
+            remove_preloaded=$(cat preloaded_vars.conf | sed -e '/^#/ d' | grep REMOVE)
+            if [[ ! -z "$remove_preloaded" ]]; then
+                response=$(echo $remove_preloaded | cut -d'=' -f 2 | tr -d '\r')
+                case $response in
+                    [nN] ) print "Not possible to install the API.\nExiting."; exit 1; break;;
+                esac
+            else
+                while true; do
+                    print ""
+                    read -p "The installation directory already exists. Should I delete it? [y/n]: " yn
+                    case $yn in
+                        [Yy] ) break;;
+                        [Nn] ) print "Not possible to install the API.\nExiting."; exit 1; break;;
+                    esac
+                done
+            fi
+        fi
         exec_cmd "rm -rf $API_PATH"
     fi
 
@@ -391,6 +406,30 @@ setup_api() {
     fi
     exec_cmd "chown root:ossec $APILOG_PATH"
     exec_cmd "chmod 660 $APILOG_PATH"
+
+    # Create/check cluster.log
+    CLUSTERLOG_PATH="${DIRECTORY}/logs/cluster.log"
+    if [ ! -f $CLUSTERLOG_PATH ]; then
+        touch $CLUSTERLOG_PATH
+    fi
+    exec_cmd "chown root:ossec $CLUSTERLOG_PATH"
+    exec_cmd "chmod 660 $CLUSTERLOG_PATH"
+
+    # Create/check cluster_debug.log
+    CLUSTERLOG_DEBUG_PATH_SOCKET="${DIRECTORY}/logs/cluster_debug_socket.log"
+    if [ ! -f $CLUSTERLOG_DEBUG_PATH_SOCKET ]; then
+        touch $CLUSTERLOG_DEBUG_PATH_SOCKET
+    fi
+    exec_cmd "chown root:ossec $CLUSTERLOG_DEBUG_PATH_SOCKET"
+    exec_cmd "chmod 660 $CLUSTERLOG_DEBUG_PATH_SOCKET"
+
+    # Create/check cluster_debug.log
+    CLUSTERLOG_DEBUG_PATH_INOTIFY="${DIRECTORY}/logs/cluster_debug_inotify.log"
+    if [ ! -f $CLUSTERLOG_DEBUG_PATH_INOTIFY ]; then
+        touch $CLUSTERLOG_DEBUG_PATH_INOTIFY
+    fi
+    exec_cmd "chown root:ossec $CLUSTERLOG_DEBUG_PATH_INOTIFY"
+    exec_cmd "chmod 660 $CLUSTERLOG_DEBUG_PATH_INOTIFY"
 
     print "\nInstalling service."
     echo "----------------------------------------------------------------"
