@@ -296,25 +296,40 @@ setup_api() {
     if [ -d $API_PATH ]; then
         backup_api
         print ""
-        while true; do
-            read -p "Wazuh API is already installed (version $API_OLD_VERSION). Do you want to update it? [y/n]: " yn
-            case $yn in
-                [Yy] ) update="yes"; break;;
-                [Nn] ) update="no"; break;;
+        reinstall_preloaded=$(cat preloaded_vars.conf | sed -e '/^#/ d' | grep REINSTALL)
+        if [[ ! -z "$reinstall_preloaded" ]]; then
+            response=$(echo $reinstall_preloaded | cut -d'=' -f 2 | tr -d '\r')
+            case $response in
+                [nN] ) update="no";;
+                [yY] ) update="yes";;
             esac
-        done
-
-        if [ "X${update}" == "Xno" ]; then
+        else
             while true; do
-                print ""
-                read -p "The installation directory already exists. Should I delete it? [y/n]: " yn
+                read -p "Wazuh API is already installed (version $API_OLD_VERSION). Do you want to update it? [y/n]: " yn
                 case $yn in
-                    [Yy] ) break;;
-                    [Nn] ) print "Not possible to install the API.\nExiting."; exit 1; break;;
+                    [Yy] ) update="yes"; break;;
+                    [Nn] ) update="no"; break;;
                 esac
             done
         fi
-
+        if [ "X${update}" == "Xno" ]; then
+            remove_preloaded=$(cat preloaded_vars.conf | sed -e '/^#/ d' | grep REMOVE)
+            if [[ ! -z "$remove_preloaded" ]]; then
+                response=$(echo $remove_preloaded | cut -d'=' -f 2 | tr -d '\r')
+                case $response in
+                    [nN] ) print "Not possible to install the API.\nExiting."; exit 1; break;;
+                esac
+            else
+                while true; do
+                    print ""
+                    read -p "The installation directory already exists. Should I delete it? [y/n]: " yn
+                    case $yn in
+                        [Yy] ) break;;
+                        [Nn] ) print "Not possible to install the API.\nExiting."; exit 1; break;;
+                    esac
+                done
+            fi
+        fi
         exec_cmd "rm -rf $API_PATH"
     fi
 
