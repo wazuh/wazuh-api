@@ -44,8 +44,8 @@ if (config.basic_auth.toLowerCase() == "yes"){
 //  Get Certs
 var options = {};
 
+var fs = require('fs');
 if (config.https.toLowerCase() == "yes"){
-    var fs = require('fs');
     var api_route = config.ossec_path + '/api/';
     var option_paths = {};
 
@@ -152,8 +152,28 @@ if (config.basic_auth.toLowerCase() == "yes"){
 }
 
 // Body
+app.use(bodyParser.raw({limit: '10mb', type: 'application/zip'}));
 app.use(bodyParser.json({limit: '10mb'}));
 app.use(bodyParser.urlencoded({extended: true, limit: '10mb'}));
+
+// Controllers
+app.use("/", require('./controllers'));
+
+// sync status
+// var cron    = require('node-cron');
+var cluster = require('./controllers/cluster');
+fs.open(config.ossec_path + '/stats/.cluster_status', 'r', (err, fd) => {
+    if (err) {
+        if (err.code === 'ENOENT') {return;}
+        // else throw err;
+    }
+    logger.debug("Checking sync status");
+    status = fs.readFileSync(fd);
+    if (status == 1) {
+        cluster.enable();
+        logger.debug("Sync is enabled");
+    } else logger.debug("Sync is disabled");
+});
 
 /**
  * Check Wazuh app version
@@ -178,11 +198,6 @@ app.use(function(req, res, next) {
 
     next();
 });
-
-
-// Controllers
-app.use("/", require('./controllers'));
-
 
 // APP Errors
 app.use (function (err, req, res, next){
