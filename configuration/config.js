@@ -22,16 +22,6 @@ config.BehindProxyServer = "no";
 //config.https_use_ca = "no"
 //config.https_ca = "configuration/ssl/ca.crt"
 
-// Cluster settings
-config.cluster = {}
-config.cluster.name = "wazuh";
-config.cluster.node = "node1";
-//config.cluster.nodes = ["http://172.0.0.16:55000","http://172.0.0.15:55000"];
-config.cluster.user = "wazuh";
-config.cluster.password = "wazuh";
-config.cluster.key = "";
-config.cluster.schedule = "*/5 * * * *"; //every 5 minutes
-
 // Advanced configuration
 
 // Values for API log: disabled, info, warning, error, debug (each level includes the previous level).
