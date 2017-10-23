@@ -5,12 +5,14 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Parameter in config.js file to configure the SSL version to use in the API.
 - Added a new class on the Python framework: `InputValidation`.
-- New request: Delete a list of groups - `DELETE /agents/groups - Params: {"ids":["id_1",...,"id_n"]}`
 - Input Validation at framework level of `group_id` parameter.
+- Add requests to manage groups.
+- Silent install and configure mode using `preloaded_vars.conf`.
+- Add `timestampp` field at index query.
+- Improve output of delete and restart agents requests: each ID includes error information. 
 
 ### Fixed
 - When adding a new agent, now it checks that its name is different than manager's name.
-
 
 ## [v2.1.1]
 ### Fixed
