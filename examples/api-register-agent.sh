@@ -29,7 +29,7 @@ fi
 echo ""
 echo "Adding agent:"
 echo "curl -s -u $USER:**** -k -X POST -d 'name=$AGENT_NAME' $PROTOCOL://$API_IP:$API_PORT/agents"
-GET_ID=$(curl -s -u $USER:$PASSWORD -k -X POST -d 'name='$AGENT_NAME $PROTOCOL://$API_IP:$API_PORT/agents)
+GET_ID=$(curl -s -u $USER:"$PASSWORD" -k -X POST -d 'name='$AGENT_NAME $PROTOCOL://$API_IP:$API_PORT/agents)
 ERROR=$(echo $GET_ID | sed -rn 's/.*"error":(.+)\,.*/\1/p')
 
 if [ ! "$ERROR" = "0" ]; then
@@ -45,7 +45,7 @@ echo "Agent '$AGENT_NAME' with ID '$AGENT_ID' added."
 echo ""
 echo "Getting agent key:"
 echo "curl -s -u $USER:**** -k -X GET $PROTOCOL://$API_IP:$API_PORT/agents/$AGENT_ID/key"
-GET_KEY=$(curl -s -u $USER:$PASSWORD -k -X GET $PROTOCOL://$API_IP:$API_PORT/agents/$AGENT_ID/key)
+GET_KEY=$(curl -s -u $USER:"$PASSWORD" -k -X GET $PROTOCOL://$API_IP:$API_PORT/agents/$AGENT_ID/key)
 ERROR=$(echo $GET_KEY | sed -rn 's/.*"error":(.+)\,.*/\1/p')
 
 if [ ! "$ERROR" = "0" ]; then
