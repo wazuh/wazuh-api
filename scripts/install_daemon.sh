@@ -69,8 +69,8 @@ if [ -n "$(ps -e | egrep ^\ *1\ .*systemd$)" ]; then
     sed "s:^ExecStart=.*:ExecStart=$BIN_DIR $APP_PATH:g" $SCRIPTS_PATH/wazuh-api.service > $SCRIPTS_PATH/wazuh-api.service.tmp
     install -m $I_FMODE -o $I_OWNER -g $I_GROUP $SCRIPTS_PATH/wazuh-api.service.tmp $I_SYSTEMD/wazuh-api.service
     rm $SCRIPTS_PATH/wazuh-api.service.tmp
-    systemctl enable wazuh-api
     systemctl daemon-reload
+    systemctl enable wazuh-api
     systemctl restart wazuh-api
 
     echo "Daemon installed successfully. Please check the status running:"
