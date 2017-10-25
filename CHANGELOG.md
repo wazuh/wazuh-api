@@ -9,7 +9,8 @@ All notable changes to this project will be documented in this file.
 - Add requests to manage groups.
 - Silent install and configure mode using `preloaded_vars.conf`.
 - Add `timestampp` field at index query.
-- Improve output of delete and restart agents requests: each ID includes error information. 
+- Improve output of delete and restart agents requests: each ID includes error information.
+- Add requests to manage remote agent upgrades.
 
 ### Fixed
 - When adding a new agent, now it checks that its name is different than manager's name.
