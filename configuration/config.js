@@ -71,12 +71,16 @@ config.ld_library_path = config.ossec_path + "/api/framework/lib"
 // SSL protocol to use. All available secure protocols available at:
 // https://www.openssl.org/docs/man1.0.2/ssl/ssl.html#DEALING-WITH-PROTOCOL-METHODS
 config.secureProtocol = "TLSv1_2_method";
-// Disable the use of SSLv3, TLSv1.1 and TLSv1.0. All available secureOptions at: 
-// https://nodejs.org/api/crypto.html#crypto_openssl_options
-const crypto = require('crypto');
-config.secureOptions = crypto.constants.SSL_OP_NO_SSLv3 |
-                       crypto.constants.SSL_OP_NO_TLSv1 | 
-                       crypto.constants.SSL_OP_NO_TLSv1_1;
+try {
+    // Disable the use of SSLv3, TLSv1.1 and TLSv1.0. All available secureOptions at: 
+    // https://nodejs.org/api/crypto.html#crypto_openssl_options
+    const crypto = require('crypto');
+    config.secureOptions = crypto.constants.SSL_OP_NO_SSLv3 |
+                           crypto.constants.SSL_OP_NO_TLSv1 | 
+                           crypto.constants.SSL_OP_NO_TLSv1_1;
+} catch (err) {
+    console.log("Could not configure NodeJS to avoid unsecure SSL/TLS protocols: " + err)
+}
 
 // SSL ciphersuit
 
