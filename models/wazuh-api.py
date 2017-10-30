@@ -32,8 +32,11 @@ try:
 except ImportError:
     error_wazuh_package = -1
 except Exception as e:
-    error_wazuh_package = -2
-    exception_error = e
+    if str(e).startswith("Error 4000"):
+        error_wazuh_package=-1
+    else:
+        error_wazuh_package = -2
+        exception_error = e
 
 def print_json(data, error=0):
     output = {'error': error}
