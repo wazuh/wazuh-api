@@ -22,8 +22,6 @@ cd $(dirname $0)
 
 PACKAGE_FILE="../package.json"
 # APP_FILE="../app.js"
-FRAMEWORK_FILE_SETUP="../framework/setup.py"
-FRAMEWORK_FILE="../framework/wazuh/__init__.py"
 INDEX_FILE="../controllers/index.js"
 
 if [ -n "$version" ]
@@ -48,26 +46,6 @@ then
     # fi
 
     # sed -E -i'' "s/current_version = \".+\";/current_version = \"v$version\";/g" $APP_FILE
-
-    grep "version=" $FRAMEWORK_FILE_SETUP > /dev/null
-
-    if [ $? != 0 ]
-    then
-        echo "Error: no suitable version definition found at file $FRAMEWORK_FILE_SETUP"
-        exit 1
-    fi
-
-    sed -E -i'' "s/version='.+',/version='$version',/g" $FRAMEWORK_FILE_SETUP
-
-    grep "__version__ =" $FRAMEWORK_FILE > /dev/null
-
-    if [ $? != 0 ]
-    then
-        echo "Error: no suitable version definition found at file $FRAMEWORK_FILE"
-        exit 1
-    fi
-
-    sed -E -i'' "s/__version__ = '.+'/__version__ = '$version'/g" $FRAMEWORK_FILE
 
     grep "'data': \"v[0-9].[0-9].[0-9]" $INDEX_FILE > /dev/null
     if [ $? != 0 ]
