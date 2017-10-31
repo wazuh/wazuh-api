@@ -278,6 +278,9 @@ restore_configuration () {
     if [[ ${API_OLD_VERSION} =~ ^3 ]] || [[ ${API_OLD_VERSION} =~ ^2 ]]; then
         exec_cmd "rm -rf $API_PATH/configuration"
         exec_cmd "cp -rfp $API_PATH_BACKUP/configuration $API_PATH/configuration"
+        # Assign the right permissions
+        setup_api_permissions
+
     elif [[ ${API_OLD_VERSION} =~ ^1 ]]; then
         exec_cmd "cp -rfp $API_PATH_BACKUP/ssl/htpasswd $API_PATH/configuration/auth/user"
         exec_cmd "cp -p $API_PATH_BACKUP/ssl/*.key $API_PATH_BACKUP/ssl/*.crt $API_PATH/configuration/ssl/"
@@ -288,6 +291,24 @@ restore_configuration () {
     else
         RESTORE_WARNING="2"
     fi
+}
+
+setup_api_permissions () {
+
+    # General permissions
+    exec_cmd "chown -R root:ossec $API_PATH"
+    exec_cmd "chown -R root:root $API_PATH/scripts"
+    exec_cmd "chown -R root:root $API_PATH/configuration"
+    exec_cmd "chmod -R 750 $API_PATH"
+
+    # Remove execution permissions
+    exec_cmd "chmod ugo-x $API_PATH/package.json"
+    exec_cmd "chmod ugo-x $API_PATH/scripts/wazuh-api*"
+
+    # config.js
+    exec_cmd "chown root:ossec $API_PATH/configuration"
+    exec_cmd "chown root:ossec $API_PATH/configuration/config.js"
+    exec_cmd "chmod 740 $API_PATH/configuration/config.js"
 }
 
 setup_api() {
@@ -357,20 +378,8 @@ setup_api() {
         exec_cmd "cp --parents -r app.js configuration controllers examples helpers models package.json scripts $API_PATH"
         exec_cmd "cd -"
 
-        # General permissions
-        exec_cmd "chown -R root:ossec $API_PATH"
-        exec_cmd "chown -R root:root $API_PATH/scripts"
-        exec_cmd "chown -R root:root $API_PATH/configuration"
-        exec_cmd "chmod -R 750 $API_PATH"
-
-        # Remove execution permissions
-        exec_cmd "chmod ugo-x $API_PATH/package.json"
-        exec_cmd "chmod ugo-x $API_PATH/scripts/wazuh-api*"
-
-        # config.js
-        exec_cmd "chown root:ossec $API_PATH/configuration"
-        exec_cmd "chown root:ossec $API_PATH/configuration/config.js"
-        exec_cmd "chmod 740 $API_PATH/configuration/config.js"
+        # Set up the right permissions for Wazuh API
+        setup_api_permissions
 
         if [ -f "$API_PATH/configuration/ssl/.gitignore" ]; then
             exec_cmd "rm -f $API_PATH/configuration/ssl/.gitignore"
