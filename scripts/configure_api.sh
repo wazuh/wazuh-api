@@ -7,6 +7,22 @@
 # License (version 2) as published by the FSF - Free Software
 # Foundation.
 
+PREDEF_FILE=$(dirname $0)/../configuration/preloaded_vars.conf
+TRUE="true";
+FALSE="false";
+
+isFile()
+{
+    FILE=$1
+    ls ${FILE} >/dev/null 2>&1
+    if [ $? = 0 ]; then
+        echo "${TRUE}"
+        return 0;
+    fi
+    echo "${FALSE}"
+    return 1;
+}
+
 # Aux functions
 print() {
     echo -e $1
@@ -82,17 +98,11 @@ previous_checks() {
 
 change_port () {
     print ""
-    port_preloaded=""
-    if [[ -f preloaded_vars.conf ]]; then
-        port_preloaded=$(cat preloaded_vars.conf | sed -e '/^#/ d' | grep PORT)
-        if [[ ! -z $port_preloaded ]]; then
-            response=$(echo $port_preloaded | cut -d'=' -f 2 | tr -d '\r')
-            print "Using $response port."
-            edit_configuration "port" $response
-        fi
-        return
-    fi
-    if [[ ! -f preloaded_vars.conf || -z $port_preloaded ]]; then
+
+    if [[ "X${PORT}" != "X" ]]; then
+        print "Using $PORT port."
+        edit_configuration "port" $PORT
+    else
         read -p "TCP port [55000]: " port
         if [ "X${port}" == "X" ] || [ "X${port}" == "X55000" ]; then
             edit_configuration "port" "55000"
@@ -107,39 +117,32 @@ change_port () {
 change_https () {
     print ""
     https_preloaded=""
-    if [[ -f preloaded_vars.conf ]]; then
-        https_preloaded=$(cat preloaded_vars.conf | sed -e '/^#/ d' | grep HTTPS)
-        if [[ ! -z "$https_preloaded" ]]; then
-            response=$(echo $https_preloaded | cut -d'=' -f 2 | tr -d '\r')
-            case $response in
-                [yY] ) edit_configuration "https" "yes";;
-            esac
-            country=$(cat preloaded_vars.conf | sed -e '/^#/ d' | grep C= | cut -d'=' -f 2 | tr -d '\"\r')
-            state=$(cat preloaded_vars.conf | sed -e '/^#/ d' | grep ST= | cut -d'=' -f 2 | tr -d '\"\r')
-            locality=$(cat preloaded_vars.conf | sed -e '/^#/ d' | grep L= | cut -d'=' -f 2 | tr -d '\"\r')
-            org=$(cat preloaded_vars.conf | sed -e '/^#/ d' | grep O= | cut -d'=' -f 2 | tr -d '\"\r')
-            orgunit=$(cat preloaded_vars.conf | sed -e '/^#/ d' | grep OU= | cut -d'=' -f 2 | tr -d '\"\r')
-            commonname=$(cat preloaded_vars.conf | sed -e '/^#/ d' | grep CN= | cut -d'=' -f 2 | tr -d '\"\r')
-            
-            subject=$(echo "/C=$country/ST=$state/L=$locality/O=$org/O=$orgunit/CN=$commonname")
-            actual_dir=$(pwd)
 
-            # Step 1
-            exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl genrsa -des3 -out server.key -passout pass:foo 1024 && cp server.key server.key.org && openssl rsa -in server.key.org -out server.key -passin pass:foo"
+    if [[ "X${HTTPS}" != "X" ]]; then
+        case $HTTPS in
+            [yY] ) edit_configuration "https" "yes"
+                   subject=$(echo "/C=$COUNTRY/ST=$STATE/L=$LOCALITY/O=$ORG_NAME/O=$ORG_UNIT/CN=$COMMON_NAME")
+                   current_path=$(pwd)
 
-            # Step 2
-            exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl req -new -key server.key -out server.csr -subj \"$subject\""
-            exec_cmd "cd $API_PATH/configuration/ssl && openssl x509 -req -days 2048 -in server.csr -signkey server.key -out server.crt -passin pass:foo"
-            exec_cmd "cd $API_PATH/configuration/ssl && rm -f server.csr && rm -f server.key.org"
+                    # Step 1
+                   exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl genrsa -des3 -out server.key -passout pass:$PASSWORD 1024 && cp server.key server.key.org && openssl rsa -in server.key.org -out server.key -passin pass:$PASSWORD"
 
-            exec_cmd "chmod 600 $API_PATH/configuration/ssl/server.*"
-            print "\nKey: $API_PATH/configuration/ssl/server.key.\nCertificate: $API_PATH/configuration/ssl/server.crt\n"
+                   # Step 2
+                   exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl req -new -key server.key -out server.csr -subj \"$subject\""
+                   exec_cmd "cd $API_PATH/configuration/ssl && openssl x509 -req -days 2048 -in server.csr -signkey server.key -out server.crt -passin pass:$PASSWORD"
+                   exec_cmd "cd $API_PATH/configuration/ssl && rm -f server.csr && rm -f server.key.org"
+                   exec_cmd "chmod 400 $API_PATH/configuration/ssl/server.*"
 
-            cd $actual_dir
-        fi
-        return
-    fi
-    if [[ ! -f preloaded_vars.conf || -z $https_preloaded ]]; then
+                   print "HTTPS enabled."
+                   print "\nKey: $API_PATH/configuration/ssl/server.key.\nCertificate: $API_PATH/configuration/ssl/server.crt\n"
+
+                   cd $current_path;;
+
+            [nN] ) edit_configuration "https" "no"
+                   print "Using HTTP (not secure).";;
+        esac
+
+    else
         read -p "Enable HTTPS and generate SSL certificate? [Y/n/s]: " https
         if [ "X${https,,}" == "X" ] || [ "X${https,,}" == "Xy" ]; then
             edit_configuration "https" "yes"
@@ -166,30 +169,24 @@ change_https () {
         fi
     fi
 
-    exec_cmd "cd $actual_dir"
+    exec_cmd "cd $current_path"
 }
 
 change_auth () {
     print ""
-    auth_preloaded=""
-    if [[ -f preloaded_vars.conf ]]; then
-        auth_preloaded=$(cat preloaded_vars.conf | sed -e '/^#/ d' | grep AUTH)
-        if [[ ! -z "$auth_preloaded" ]]; then
-            response=$(echo $auth_preloaded | cut -d'=' -f 2 | tr -d '\r')
-            case $response in
-                [yY] ) edit_configuration "basic_auth" "yes";;
-            esac
-            if [[ $response == 'y' || $response == 'Y' ]]; then
-                user=$(cat preloaded_vars.conf | sed -e '/^#/ d' | grep USER= | cut -d'=' -f 2 | tr -d '\r')
-                user_pass=$(cat preloaded_vars.conf | sed -e '/^#/ d' | grep PASS= | cut -d'=' -f 2 | tr -d '\r')
 
-                exec_cmd_bash "cd $API_PATH/configuration/auth && $API_PATH/node_modules/htpasswd/bin/htpasswd -bc user $user $user_pass"
-                exec_cmd_bash "cd $API_PATH/configuration/auth && $API_PATH/node_modules/htpasswd/bin/htpasswd -nb wazuh wazuh >> user"
-            fi
-        fi
-        return
-    fi
-    if [[ ! -f preloaded_vars.conf || -z $auth_preloaded ]]; then
+    if [[ "X${AUTH}" != "X" ]]; then
+        case $AUTH in
+            [yY] ) edit_configuration "basic_auth" "yes"
+                   
+                   exec_cmd_bash "cd $API_PATH/configuration/auth && $API_PATH/node_modules/htpasswd/bin/htpasswd -bc user $USER $PASS"
+                   exec_cmd_bash "cd $API_PATH/configuration/auth && $API_PATH/node_modules/htpasswd/bin/htpasswd -nb wazuh wazuh >> user";;
+
+            [nN] ) auth="n"
+                   print "Disabling authentication (not secure)."
+                   edit_configuration "basic_auth" "no";;
+        esac
+    else
         read -p "Enable user authentication? [Y/n/s]: " auth
         if [ "X${auth,,}" == "X" ] || [ "X${auth,,}" == "Xy" ]; then
             auth="y"
@@ -201,12 +198,13 @@ change_auth () {
             read user_pass
             printf "\nRe-type new password: "
             read user_pass_chk
-            while [ ! $user_pass = $user_pass_chk ]; do
-                 printf "\nPassword verification error."
-                 printf "\nNew password: "
-                 read user_pass
-                 printf "\nRe-type new password: "
-                 read user_pass_chk
+            while [[  "$user_pass" != "$user_pass_chk" ]] || [[ -z "$user_pass" ]]; do
+                printf "\nPassword verification error: Passwords don't match or password is empty."
+                printf "\nIntroduce a valid password.\n"
+                printf "\nNew password: "
+                read user_pass
+                printf "\nRe-type new password: "
+                read user_pass_chk
             done
             printf "\n"
             stty echo
@@ -225,19 +223,14 @@ change_auth () {
 
 change_proxy () {
     print ""
-    proxy_preloaded=""
-    if [[ -f preloaded_vars.conf ]]; then
-        proxy_preloaded=$(cat preloaded_vars.conf | sed -e '/^#/ d' | grep PROXY)
-        if [[ ! -z "$proxy_preloaded" ]]; then
-            response=$(echo $proxy_preloaded | cut -d'=' -f 2 | tr -d '\r')
-            case $response in
-                [yY] ) edit_configuration "BehindProxyServer" "yes";;
-                [nN] ) edit_configuration "BehindProxyServer" "no";;
-            esac
-        fi
-        return
-    fi
-    if [[ ! -f preloaded_vars.conf || -z $proxy_preloaded ]]; then
+
+    if [[ "X${PROXY}" != "X" ]]; then
+        case $PROXY in
+            [yY] )  edit_configuration "BehindProxyServer" "yes";;
+            [nN] )  edit_configuration "BehindProxyServer" "no";;
+        esac
+        return 
+    else
         read -p "is the API running behind a proxy server? [y/N/s]: " proxy
         if [ "X${proxy,,}" == "Xy" ]; then
             print "API running behind proxy server."
@@ -252,6 +245,12 @@ change_proxy () {
 }
 
 main () {
+
+    # Reading pre-defined file
+    if [ ! `isFile ${PREDEF_FILE}` = "${FALSE}" ]; then
+        . ${PREDEF_FILE}
+    fi
+
     previous_checks
 
     print "### Wazuh API Configuration ###"
@@ -271,6 +270,7 @@ main () {
     fi
 
     print "\n### [Configuration changed] ###"
+    rm $PREDEF_FILE
     exit 0
 }
 
