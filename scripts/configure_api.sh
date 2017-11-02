@@ -7,7 +7,7 @@
 # License (version 2) as published by the FSF - Free Software
 # Foundation.
 
-PREDEF_FILE="../configuration/preloaded_vars.conf"
+PREDEF_FILE=$(dirname $0)/../configuration/preloaded_vars.conf
 TRUE="true";
 FALSE="false";
 
@@ -270,6 +270,7 @@ main () {
     fi
 
     print "\n### [Configuration changed] ###"
+    rm $PREDEF_FILE
     exit 0
 }
 
