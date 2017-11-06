@@ -424,14 +424,6 @@ setup_api() {
     exec_cmd "chown root:ossec $APILOG_PATH"
     exec_cmd "chmod 660 $APILOG_PATH"
 
-    # Create/check cluster.log
-    CLUSTERLOG_PATH="${DIRECTORY}/logs/cluster.log"
-    if [ ! -f $CLUSTERLOG_PATH ]; then
-        touch $CLUSTERLOG_PATH
-    fi
-    exec_cmd "chown root:ossec $CLUSTERLOG_PATH"
-    exec_cmd "chmod 660 $CLUSTERLOG_PATH"
-
     print "\nInstalling service."
     echo "----------------------------------------------------------------"
     exec_cmd_bash "$API_PATH/scripts/install_daemon.sh"

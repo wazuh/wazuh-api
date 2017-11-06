@@ -203,12 +203,7 @@ if __name__ == "__main__":
             '/manager/logs/summary': manager.ossec_log_summary,
             '/manager/logs': manager.ossec_log,
 
-            '/cluster/node/files': cluster.get_files,
             '/cluster/node': cluster.get_node,
-            '/cluster/nodes': cluster.get_nodes,
-            '/cluster/node/token': cluster.get_token,
-            '/cluster/node/files/zip': cluster.receive_zip,
-            'PUT/cluster/sync': cluster.sync,
 
             '/rootcheck/:agent_id': rootcheck.print_db,
             '/rootcheck/:agent_id/pci': rootcheck.get_pci,

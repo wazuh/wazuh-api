@@ -156,25 +156,6 @@ app.use(bodyParser.raw({limit: '10mb', type: 'application/zip'}));
 app.use(bodyParser.json({limit: '10mb'}));
 app.use(bodyParser.urlencoded({extended: true, limit: '10mb'}));
 
-// Controllers
-app.use("/", require('./controllers'));
-
-// sync status
-// var cron    = require('node-cron');
-var cluster = require('./controllers/cluster');
-fs.open(config.ossec_path + '/stats/.cluster_status', 'r', (err, fd) => {
-    if (err) {
-        if (err.code === 'ENOENT') {return;}
-        // else throw err;
-    }
-    logger.debug("Checking sync status");
-    status = fs.readFileSync(fd);
-    if (status == 1) {
-        cluster.enable();
-        logger.debug("Sync is enabled");
-    } else logger.debug("Sync is disabled");
-});
-
 /**
  * Check Wazuh app version
  * Using: Header: "wazuh-app-version: X.Y.Z"
@@ -198,6 +179,9 @@ app.use(function(req, res, next) {
 
     next();
 });
+
+// Controllers
+app.use("/", require('./controllers'));
 
 // APP Errors
 app.use (function (err, req, res, next){

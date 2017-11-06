@@ -13,9 +13,7 @@
     "express": "^4.14.0",
     "htpasswd": "^2.3.4",
     "http-auth": "^3.0.1",
-    "moment": "^2.15.0",
-    "node-cron": "^1.2.1",
-    "node-zip": "^1.1.1"
+    "moment": "^2.15.0"
   },
   "repository": {
     "type": "git",

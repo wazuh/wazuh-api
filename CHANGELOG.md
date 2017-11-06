@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 - Add `timestampp` field at index query.
 - Improve output of delete and restart agents requests: each ID includes error information.
 - Add requests to manage remote agent upgrades.
+- New request: Get information about the actual manager node in the cluster - `GET/cluster/node`
 
 ### Fixed
 - When adding a new agent, now it checks that its name is different than manager's name.
