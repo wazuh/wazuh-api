@@ -122,7 +122,6 @@ change_https () {
         case $HTTPS in
             [yY] ) edit_configuration "https" "yes"
                    subject=$(echo "/C=$COUNTRY/ST=$STATE/L=$LOCALITY/O=$ORG_NAME/O=$ORG_UNIT/CN=$COMMON_NAME")
-                   current_path=$(pwd)
 
                     # Step 1
                    exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl genrsa -des3 -out server.key -passout pass:$PASSWORD 1024 && cp server.key server.key.org && openssl rsa -in server.key.org -out server.key -passin pass:$PASSWORD"
@@ -136,7 +135,7 @@ change_https () {
                    print "HTTPS enabled."
                    print "\nKey: $API_PATH/configuration/ssl/server.key.\nCertificate: $API_PATH/configuration/ssl/server.crt\n"
 
-                   cd $current_path;;
+                   cd $CURRENT_PATH;;
 
             [nN] ) edit_configuration "https" "no"
                    print "Using HTTP (not secure).";;
@@ -169,7 +168,7 @@ change_https () {
         fi
     fi
 
-    exec_cmd "cd $current_path"
+    exec_cmd "cd $CURRENT_PATH"
 }
 
 change_auth () {
@@ -191,7 +190,14 @@ change_auth () {
         if [ "X${auth,,}" == "X" ] || [ "X${auth,,}" == "Xy" ]; then
             auth="y"
             edit_configuration "basic_auth" "yes"
+            
             read -p "API user: " user
+
+            while [[ -z "$user" ]]; do
+                printf "\nUser verification error: Empty user."
+                printf "\nPlease introduce a new user.\n\n"
+                read -p "API user: " user
+            done
 
             stty -echo
             printf "New password: "
@@ -250,6 +256,8 @@ main () {
     if [ ! `isFile ${PREDEF_FILE}` = "${FALSE}" ]; then
         . ${PREDEF_FILE}
     fi
+
+    CURRENT_PATH=$(pwd)
 
     previous_checks
 
