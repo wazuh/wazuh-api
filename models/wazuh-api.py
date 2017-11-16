@@ -29,9 +29,11 @@ try:
     import wazuh.stats as stats
     import wazuh.rootcheck as rootcheck
     import wazuh.syscheck as syscheck
-except ImportError:
+except ImportError as e:
+    error = str(e)
     error_wazuh_package = -1
 except Exception as e:
+    error = str(e)
     if str(e).startswith("Error 4000"):
         error_wazuh_package=-1
     else:
@@ -144,7 +146,7 @@ if __name__ == "__main__":
 
     if error_wazuh_package < 0:
         if error_wazuh_package == -1:
-            print_json("Wazuh-Python Internal Error: wazuh-framework not found or requests package not installed.", 1000)
+            print_json("Wazuh-Python Internal Error: {0}".format(error), 1000)
         if error_wazuh_package == -2:
             print_json("Wazuh-Python Internal Error: uncaught exception: {0}".format(exception_error), 1000)
         exit(0)  # error code 0 shows the msg in the API response.
