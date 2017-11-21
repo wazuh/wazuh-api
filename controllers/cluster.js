@@ -62,4 +62,25 @@ router.get('/files', cache(), function(req, res) {
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
+/**
+ * @api {get} /cluster/agents Get info about agents in cluster
+ * @apiName GetClusteragentsInfo
+ * @apiGroup Nodes
+ *
+ * @apiDescription Returns the state of each agent and the manager it's reporting to in the cluster
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/agents"
+ *
+ */
+router.get('/agents', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/agents");
+
+    req.apicacheGroup = "cluster";
+
+    var data_request = {'function': '/cluster/agents', 'arguments': {}};
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
 module.exports = router;
