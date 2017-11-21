@@ -32,4 +32,34 @@ router.get('/node', cache(), function(req, res) {
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
+/**
+ * @api {get} /cluster/files Get info about files in cluster
+ * @apiName GetClusterFilesInfo
+ * @apiGroup Nodes
+ *
+ * @apiDescription Returns the state of each file in the cluster
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/files"
+ *
+ */
+router.get('/files', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/files");
+
+    req.apicacheGroup = "cluster";
+
+    var data_request = {'function': '/cluster/files', 'arguments': {}};
+    var filters = {'managers': 'alphanumeric_param', 'files': 'paths'}
+
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
+
+    if ('managers' in req.query)
+        data_request['arguments']['manager'] = filter.select_param_to_json(req.query.managers);
+    if ('files' in req.query)
+        data_request['arguments']['file_list'] = filter.select_param_to_json(req.query.files);
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
 module.exports = router;
