@@ -38,7 +38,7 @@ router.get('/', cache(), function(req, res) {
     req.apicacheGroup = "agents";
 
     var data_request = {'function': '/agents', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'os.platform':'alphanumeric_param', 'os.version':'alphanumeric_param', 'manager':'alphanumeric_param'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'select':'select_param', 'search':'search_param', 'status':'alphanumeric_param', 'os.platform':'alphanumeric_param', 'os.version':'alphanumeric_param', 'manager':'alphanumeric_param'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -51,6 +51,8 @@ router.get('/', cache(), function(req, res) {
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+    if ('select' in req.query)
+        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select);
     if ('status' in req.query)
         data_request['arguments']['status'] = req.query.status;
     if ('os.platform' in req.query)
