@@ -12,9 +12,16 @@ All notable changes to this project will be documented in this file.
 - Improve output of delete and restart agents requests: each ID includes error information.
 - Add requests to manage remote agent upgrades.
 - New request: Get information about the actual manager node in the cluster - `GET/cluster/node`
+- New request: Get information about the status of the synchronized files in the cluster - `GET/cluster/files`
+- New request: Get information about the agents in the cluster - `GET/cluster/agents`
+- Add a selector for the API call to retrieve information about an agent using its ID.
 
 ### Fixed
 - When adding a new agent, now it checks that its name is different than manager's name.
+- Bug in XML parser of rules, decoders and configuration.
+
+### Changed
+- Change output format of `GET/manager/logs` call to JSON.
 
 ## [v2.1.1]
 ### Fixed
