@@ -206,6 +206,8 @@ if __name__ == "__main__":
             '/manager/logs': manager.ossec_log,
 
             '/cluster/node': cluster.get_node,
+            '/cluster/files': cluster.get_file_status_json,
+            '/cluster/agents': cluster.get_agent_status_json,
 
             '/rootcheck/:agent_id': rootcheck.print_db,
             '/rootcheck/:agent_id/pci': rootcheck.get_pci,
