@@ -13,9 +13,29 @@
 var router = require('express').Router();
 
 /**
+ * @api {get} /cluster/nodes Get nodes info
+ * @apiName GetNodesInfo
+ * @apiGroup Nodes
+ *
+ * @apiDescription Returns the Nodes info
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/nodes"
+ *
+ */
+router.get('/nodes', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/nodes");
+
+    req.apicacheGroup = "cluster";
+
+    var data_request = {'function': '/cluster/nodes', 'arguments': {}};
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
  * @api {get} /cluster/node Get node info
  * @apiName GetNodeInfo
- * @apiGroup Nodes
+ * @apiGroup Node
  *
  * @apiDescription Returns the Node info
  *
