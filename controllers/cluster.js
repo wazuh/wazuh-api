@@ -103,4 +103,25 @@ router.get('/agents', cache(), function(req, res) {
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
+/**
+ * @api {get} /cluster/status Get info about cluster status 
+ * @apiName GetClusterstatus
+ * @apiGroup Status
+ *
+ * @apiDescription Returns if the cluster is enabled or disabled
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/status"
+ *
+ */
+router.get('/status', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/status");
+
+    req.apicacheGroup = "cluster";
+
+    var data_request = {'function': '/cluster/status', 'arguments': {}};
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
 module.exports = router;
