@@ -210,6 +210,7 @@ if __name__ == "__main__":
             '/cluster/files': cluster.get_file_status_json,
             '/cluster/agents': cluster.get_agent_status_json,
             '/cluster/status': cluster.get_status_json,
+            '/cluster/config': cluster.read_config,
 
             '/rootcheck/:agent_id': rootcheck.print_db,
             '/rootcheck/:agent_id/pci': rootcheck.get_pci,

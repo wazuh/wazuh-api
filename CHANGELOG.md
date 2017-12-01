@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 - New request: Get information about the status of the synchronized files in the cluster - `GET/cluster/files`
 - New request: Get information about the agents in the cluster - `GET/cluster/agents`
 - New request: Get the cluster status (enabled or disabled) - `GET/cluster/status`
+- New request: Get the cluster configuration - `GET/cluster/config`
 - Add a selector for the API call to retrieve information about an agent using its ID.
 
 ### Fixed

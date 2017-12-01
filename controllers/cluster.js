@@ -124,4 +124,25 @@ router.get('/status', cache(), function(req, res) {
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
+/**
+ * @api {get} /cluster/config Get the cluster configuration
+ * @apiName GetClusterconfig
+ * @apiGroup config
+ *
+ * @apiDescription Returns the cluster configuration
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/config"
+ *
+ */
+router.get('/config', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/config");
+
+    req.apicacheGroup = "cluster";
+
+    var data_request = {'function': '/cluster/config', 'arguments': {}};
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
 module.exports = router;
