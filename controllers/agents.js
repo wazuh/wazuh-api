@@ -965,5 +965,32 @@ router.post('/insert', function(req, res) {
         res_h.bad_request(req, res, 604, "Missing fields. Mandatory fields: id, name, ip, key");
 })
 
+/**
+ * @api {post} /agents/purge Purge old agents from manager
+ * @apiName PostAgentsPurge
+ * @apiGroup Purge
+ *
+ * @apiParam {Number} timeframe Time from last connection.
+ *
+ * @apiDescription Deletes all agents that did not connected in the last timeframe seconds.
+ *
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X POST -H "Content-Type:application/json" -d '{"timeframe":10800}' "https://127.0.0.1:55000/agents/purge?pretty"
+ *
+ */
+router.post('/purge', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " POST /agents/purge");
+
+    var data_request = {'function': 'POST/agents/purge', 'arguments': {}};
+
+	if (!filter.check(req.body, {'timeframe':'numbers'}, req, res))  // Filter with error
+        return;
+
+    if ('timeframe' in req.body){
+        data_request['arguments']['timeframe'] = req.body.timeframe;
+        execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    }else
+        res_h.bad_request(req, res, 604, "Missing field: 'timeframe'");
+})
 
 module.exports = router;
