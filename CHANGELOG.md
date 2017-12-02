@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.1.0]
+### Added
+
+- Option for agent deletion to purge agents definitely from keystore.
+
 ## [v3.0.0]
 ### Added
 - Parameter in config.js file to configure the SSL version to use in the API.
