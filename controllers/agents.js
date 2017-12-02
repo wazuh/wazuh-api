@@ -740,6 +740,7 @@ router.delete('/groups', function(req, res) {
  * @apiGroup Delete
  *
  * @apiParam {Number} agent_id Agent ID.
+ * @apiParam purge Delete agent definitely from the key store.
  *
  * @apiDescription Removes an agent.
  *
@@ -756,6 +757,7 @@ router.delete('/:agent_id', function(req, res) {
         return;
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
+    data_request['arguments']['purge'] = 'purge' in req.query ? true : false;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -817,6 +819,7 @@ router.delete('/groups/:group_id', function(req, res) {
  * @apiGroup Delete
  *
  * @apiParam {String[]} ids Array of agent ID's.
+ * @apiParam {Boolean} purge Delete agent definitely from the key store.
  *
  * @apiDescription Removes a list of agents. You must restart OSSEC after removing an agent.
  *
@@ -829,8 +832,10 @@ router.delete('/', function(req, res) {
 
     var data_request = {'function': 'DELETE/agents/', 'arguments': {}};
 
-	if (!filter.check(req.body, {'ids':'array_numbers'}, req, res))  // Filter with error
+	if (!filter.check(req.body, {'ids':'array_numbers', 'purge':'boolean'}, req, res))  // Filter with error
         return;
+
+    data_request['arguments']['purge'] = 'purge' in req.body && (req.body['purge'] == true || req.body['purge'] == 'true');
 
     if ('ids' in req.body){
         data_request['arguments']['agent_id'] = req.body.ids;
