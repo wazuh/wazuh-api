@@ -132,3 +132,12 @@ exports.ossec_key = function(param) {
     else
         return false;
 }
+
+exports.boolean = function(n) {
+    if (typeof n != 'undefined'){
+        var regex = /^true|false$/;
+        return regex.test(n);
+    }
+    else
+        return false;
+}
