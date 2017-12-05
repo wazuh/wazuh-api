@@ -165,6 +165,7 @@ if __name__ == "__main__":
 
         functions = {
             '/agents/:agent_id': Agent.get_agent,
+            '/agents/name/:agent_name': Agent.get_agent_by_name,
             '/agents/:agent_id/key': Agent.get_agent_key,
             '/agents': Agent.get_agents_overview,
             '/agents/summary': Agent.get_agents_summary,
