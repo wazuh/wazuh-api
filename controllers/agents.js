@@ -976,6 +976,7 @@ router.post('/insert', function(req, res) {
  *
  * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X POST -H "Content-Type:application/json" -d '{"timeframe":10800}' "https://127.0.0.1:55000/agents/purge?pretty"
+ *     curl -u foo:bar -k -X POST -H "Content-Type:application/json" -d '{"timeframe":"3h6m"}' "https://127.0.0.1:55000/agents/purge?pretty"
  *
  */
 router.post('/purge', function(req, res) {
@@ -983,7 +984,7 @@ router.post('/purge', function(req, res) {
 
     var data_request = {'function': 'POST/agents/purge', 'arguments': {}};
 
-	if (!filter.check(req.body, {'timeframe':'numbers'}, req, res))  // Filter with error
+    if (!filter.check(req.body, {'timeframe':'timeframe_type'}, req, res))  // Filter with error
         return;
 
     if ('timeframe' in req.body){
@@ -992,5 +993,4 @@ router.post('/purge', function(req, res) {
     }else
         res_h.bad_request(req, res, 604, "Missing field: 'timeframe'");
 })
-
 module.exports = router;
