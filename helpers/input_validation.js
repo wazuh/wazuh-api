@@ -142,3 +142,12 @@ exports.timeframe_type = function(param) {
     else
         return false;
 }
+
+exports.boolean = function(param) {
+    if (typeof param != 'undefined'){
+        var regex = /^(true|false)$/;
+        return regex.test(param);
+    }
+    else
+        return false;
+}
