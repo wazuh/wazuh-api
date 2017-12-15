@@ -10,6 +10,10 @@ All notable changes to this project will be documented in this file.
 
 - Changed the SSL certificate key size from 1024 bits to 2048 bits.
 
+### Removed
+
+- Do not create HTTP user "wazuh" automatically, it's no longer necessary.
+
 
 ## [v3.0.0]
 ### Added
