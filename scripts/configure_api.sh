@@ -177,9 +177,8 @@ change_auth () {
     if [[ "X${AUTH}" != "X" ]]; then
         case $AUTH in
             [yY] ) edit_configuration "basic_auth" "yes"
-                   
+
                    exec_cmd_bash "cd $API_PATH/configuration/auth && $API_PATH/node_modules/htpasswd/bin/htpasswd -bc user $USER $PASS"
-                   exec_cmd_bash "cd $API_PATH/configuration/auth && $API_PATH/node_modules/htpasswd/bin/htpasswd -nb wazuh wazuh >> user";;
 
             [nN] ) auth="n"
                    print "Disabling authentication (not secure)."
@@ -190,7 +189,7 @@ change_auth () {
         if [ "X${auth,,}" == "X" ] || [ "X${auth,,}" == "Xy" ]; then
             auth="y"
             edit_configuration "basic_auth" "yes"
-            
+
             read -p "API user: " user
 
             while [[ -z "$user" ]]; do
@@ -216,7 +215,6 @@ change_auth () {
             stty echo
 
             exec_cmd_bash "cd $API_PATH/configuration/auth && $API_PATH/node_modules/htpasswd/bin/htpasswd -bc user $user $user_pass"
-            exec_cmd_bash "cd $API_PATH/configuration/auth && $API_PATH/node_modules/htpasswd/bin/htpasswd -nb wazuh wazuh >> user"
         elif [ "X${auth,,}" == "Xn" ]; then
             auth="n"
             print "Disabling authentication (not secure)."
@@ -235,7 +233,7 @@ change_proxy () {
             [yY] )  edit_configuration "BehindProxyServer" "yes";;
             [nN] )  edit_configuration "BehindProxyServer" "no";;
         esac
-        return 
+        return
     else
         read -p "is the API running behind a proxy server? [y/N/s]: " proxy
         if [ "X${proxy,,}" == "Xy" ]; then
