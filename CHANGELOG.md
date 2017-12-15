@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 - Option for agent deletion to purge agents definitely from keystore.
 
+### Changed
+
+- Changed the SSL certificate key size from 1024 bits to 2048 bits.
+
+
 ## [v3.0.0]
 ### Added
 - Parameter in config.js file to configure the SSL version to use in the API.
