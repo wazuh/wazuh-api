@@ -124,7 +124,7 @@ change_https () {
                    subject=$(echo "/C=$COUNTRY/ST=$STATE/L=$LOCALITY/O=$ORG_NAME/O=$ORG_UNIT/CN=$COMMON_NAME")
 
                     # Step 1
-                   exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl genrsa -des3 -out server.key -passout pass:$PASSWORD 1024 && cp server.key server.key.org && openssl rsa -in server.key.org -out server.key -passin pass:$PASSWORD"
+                   exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl genrsa -des3 -out server.key -passout pass:$PASSWORD 2048 && cp server.key server.key.org && openssl rsa -in server.key.org -out server.key -passin pass:$PASSWORD"
 
                    # Step 2
                    exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl req -new -key server.key -out server.csr -subj \"$subject\""
@@ -148,7 +148,7 @@ change_https () {
 
             print ""
             read -p "Step 1: Create key [Press Enter]" enter
-            exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl genrsa -des3 -out server.key 1024 && cp server.key server.key.org && openssl rsa -in server.key.org -out server.key"
+            exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl genrsa -des3 -out server.key 2048 && cp server.key server.key.org && openssl rsa -in server.key.org -out server.key"
 
             print ""
             read -p "Step 2: Create self-signed certificate [Press Enter]" enter
