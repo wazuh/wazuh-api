@@ -214,7 +214,10 @@ change_auth () {
             done
             printf "\n"
             stty echo
-
+            
+            user=$(echo $user | sed 's/["'"'"']/\\&/g' | sed -e 's/|/\\|/g' | sed -e 's/`/\\`/g' | sed -e 's/(/\\(/g' | sed -e 's/)/\\)/g' | sed -e 's/&/\\&/g')
+            user_pass=$(echo $user_pass | sed 's/["'"'"']/\\&/g' | sed -e 's/|/\\|/g' | sed -e 's/`/\\`/g' | sed -e 's/(/\\(/g' | sed -e 's/)/\\)/g' | sed -e 's/&/\\&/g')
+            
             exec_cmd_bash "cd $API_PATH/configuration/auth && $API_PATH/node_modules/htpasswd/bin/htpasswd -bc user $user $user_pass"
             exec_cmd_bash "cd $API_PATH/configuration/auth && $API_PATH/node_modules/htpasswd/bin/htpasswd -nb wazuh wazuh >> user"
         elif [ "X${auth,,}" == "Xn" ]; then
