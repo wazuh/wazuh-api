@@ -124,7 +124,7 @@ change_https () {
                    subject=$(echo "/C=$COUNTRY/ST=$STATE/L=$LOCALITY/O=$ORG_NAME/O=$ORG_UNIT/CN=$COMMON_NAME")
 
                     # Step 1
-                   exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl genrsa -des3 -out server.key -passout pass:$PASSWORD 1024 && cp server.key server.key.org && openssl rsa -in server.key.org -out server.key -passin pass:$PASSWORD"
+                   exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl genrsa -des3 -out server.key -passout pass:$PASSWORD 2048 && cp server.key server.key.org && openssl rsa -in server.key.org -out server.key -passin pass:$PASSWORD"
 
                    # Step 2
                    exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl req -new -key server.key -out server.csr -subj \"$subject\""
@@ -148,7 +148,7 @@ change_https () {
 
             print ""
             read -p "Step 1: Create key [Press Enter]" enter
-            exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl genrsa -des3 -out server.key 1024 && cp server.key server.key.org && openssl rsa -in server.key.org -out server.key"
+            exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl genrsa -des3 -out server.key 2048 && cp server.key server.key.org && openssl rsa -in server.key.org -out server.key"
 
             print ""
             read -p "Step 2: Create self-signed certificate [Press Enter]" enter
@@ -177,9 +177,8 @@ change_auth () {
     if [[ "X${AUTH}" != "X" ]]; then
         case $AUTH in
             [yY] ) edit_configuration "basic_auth" "yes"
-                   
+
                    exec_cmd_bash "cd $API_PATH/configuration/auth && $API_PATH/node_modules/htpasswd/bin/htpasswd -bc user $USER $PASS"
-                   exec_cmd_bash "cd $API_PATH/configuration/auth && $API_PATH/node_modules/htpasswd/bin/htpasswd -nb wazuh wazuh >> user";;
 
             [nN] ) auth="n"
                    print "Disabling authentication (not secure)."
@@ -190,7 +189,7 @@ change_auth () {
         if [ "X${auth,,}" == "X" ] || [ "X${auth,,}" == "Xy" ]; then
             auth="y"
             edit_configuration "basic_auth" "yes"
-            
+
             read -p "API user: " user
 
             while [[ -z "$user" ]]; do
@@ -216,7 +215,6 @@ change_auth () {
             stty echo
 
             exec_cmd_bash "cd $API_PATH/configuration/auth && $API_PATH/node_modules/htpasswd/bin/htpasswd -bc user $user $user_pass"
-            exec_cmd_bash "cd $API_PATH/configuration/auth && $API_PATH/node_modules/htpasswd/bin/htpasswd -nb wazuh wazuh >> user"
         elif [ "X${auth,,}" == "Xn" ]; then
             auth="n"
             print "Disabling authentication (not secure)."
@@ -235,7 +233,7 @@ change_proxy () {
             [yY] )  edit_configuration "BehindProxyServer" "yes";;
             [nN] )  edit_configuration "BehindProxyServer" "no";;
         esac
-        return 
+        return
     else
         read -p "is the API running behind a proxy server? [y/N/s]: " proxy
         if [ "X${proxy,,}" == "Xy" ]; then

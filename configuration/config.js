@@ -53,7 +53,7 @@ config.python = [
     }
 ];
 // Shared library path
-config.ld_library_path = config.ossec_path + "/api/framework/lib";
+config.ld_library_path = config.ossec_path + "/framework/lib"
 
 // Option to force the use of authd to remove and add agents
 config.use_only_authd = false;

@@ -1,5 +1,10 @@
 # Wazuh RESTful API
 
+[![Slack](https://img.shields.io/badge/slack-join-blue.svg)](https://goo.gl/forms/M2AoZC4b2R9A9Zy12)
+[![Email](https://img.shields.io/badge/email-join-blue.svg)](https://groups.google.com/forum/#!forum/wazuh)
+[![Documentation](https://img.shields.io/badge/docs-view-green.svg)](https://documentation.wazuh.com)
+[![Documentation](https://img.shields.io/badge/web-view-green.svg)](https://wazuh.com)
+
 Wazuh API is an open source RESTful API to interact with Wazuh from your own application or with a simple web browser or tools like cURL.
 
 Our goal is to completely manage Wazuh remotely. Perform everyday actions like adding an agent, check configuration, or look for syscheck files are now simplest using Wazuh API.
