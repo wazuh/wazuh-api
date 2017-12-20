@@ -32,6 +32,10 @@ try:
 except ImportError as e:
     error = str(e)
     error_wazuh_package = -1
+except WazuhException as e:
+    error_wazuh_package = -3
+    error = e.message
+    error_code = e.code
 except Exception as e:
     error = str(e)
     if str(e).startswith("Error 4000"):
@@ -149,6 +153,8 @@ if __name__ == "__main__":
             print_json("Wazuh-Python Internal Error: {0}".format(error), 1000)
         if error_wazuh_package == -2:
             print_json("Wazuh-Python Internal Error: uncaught exception: {0}".format(exception_error), 1000)
+        if error_wazuh_package == -3:
+            print_json(error, error_code)
         exit(0)  # error code 0 shows the msg in the API response.
 
     if 'function' not in request:
@@ -210,6 +216,7 @@ if __name__ == "__main__":
             '/cluster/files': cluster.get_file_status_json,
             '/cluster/agents': cluster.get_agent_status_json,
             '/cluster/status': cluster.get_status_json,
+            '/cluster/config': cluster.read_config,
 
             '/rootcheck/:agent_id': rootcheck.print_db,
             '/rootcheck/:agent_id/pci': rootcheck.get_pci,

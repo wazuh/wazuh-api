@@ -18,18 +18,27 @@ All notable changes to this project will be documented in this file.
 ## [v3.0.0]
 ### Added
 - Parameter in config.js file to configure the SSL version to use in the API.
-- Added a new class on the Python framework: `InputValidation`.
-- Input Validation at framework level of `group_id` parameter.
 - Add requests to manage groups.
-- Silent install and configure mode using `preloaded_vars.conf`.
-- Add `timestampp` field at index query.
+    - Get basic information about all groups: `GET/agents/groups`
+    - Get the agents of `:group_id` group: `GET/agents/groups/:group_id`
+    - Get `:group_id`'s shared configuration: `GET/agents/groups/:group_id/configuration`
+    - Get `:group_id`'s files: `GET/agents/groups/:group_id/files`
+    - Get `:filename` file of `:group_id` group: `GET/agents/groups/:group_id/files/:filename`
+    - Set `:agent_id` agent to group `:group_id`: `PUT/agents/:agent_id/group/:group_id`
+    - Create the `:group_id` group: `PUT/agents/groups/:group_id`
+    - Remove `:group_id` group: `DELETE/agents/groups/:group_id`
+    - Unset `:agent_id`'s group: `DELETE/agents/groups/:group_id`
+- Unattended install and configure mode using `preloaded_vars.conf`.
+- Add `timestamp` field at index query.
 - Improve output of delete and restart agents requests: each ID includes error information.
 - Add requests to manage remote agent upgrades.
-- New request: Get information about the actual manager node in the cluster - `GET/cluster/node`
-- New request: Get information about  all nodes in the cluster - `GET/cluster/nodes`
-- New request: Get information about the status of the synchronized files in the cluster - `GET/cluster/files`
-- New request: Get information about the agents in the cluster - `GET/cluster/agents`
-- New request: Get the cluster status (enabled or disabled) - `GET/cluster/status`
+- Add requests to manage cluster:
+    - Get information about the actual manager node in the cluster - `GET/cluster/node`
+    - Get information about  all nodes in the cluster - `GET/cluster/nodes`
+    - Get information about the status of the synchronized files in the cluster - `GET/cluster/files`
+    - Get information about the agents in the cluster - `GET/cluster/agents`
+    - Get the cluster status (enabled or disabled) - `GET/cluster/status`
+    - Get the cluster configuration - `GET/cluster/config`
 - Add a selector for the API call to retrieve information about an agent using its ID.
 
 ### Fixed

@@ -53,7 +53,7 @@ config.python = [
     }
 ];
 // Shared library path
-config.ld_library_path = config.ossec_path + "/api/framework/lib"
+config.ld_library_path = config.ossec_path + "/framework/lib"
 
 /************************* SSL OPTIONS ****************************************/
 // SSL protocol
