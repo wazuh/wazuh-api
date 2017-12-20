@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - Option for agent deletion to purge agents definitely from keystore.
+- New request: Get agent information by agent name - `GET/agents/name/:agent_name`
 
 ### Changed
 
