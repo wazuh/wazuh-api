@@ -430,10 +430,11 @@ describe('Agents', function() {
                     if (err) return done(err);
 
                     res.body.should.have.properties(['error', 'data']);
-
+                    res.body.data.should.have.properties(['id','key']);
                     res.body.error.should.equal(0);
-                    res.body.data.should.match(/^\d+$/);
-                    agent_id = res.body.data;
+                    res.body.data.id.should.match(/^\d+$/);
+                    res.body.data.key.should.match(/^[a-zA-Z0-9=]+/);
+                    agent_id = res.body.data.id;
                     done();
                 });
             });
@@ -560,10 +561,11 @@ describe('Agents', function() {
                     if (err) return done(err);
 
                     res.body.should.have.properties(['error', 'data']);
-
+                    res.body.data.should.have.properties(['id', 'key']);
                     res.body.error.should.equal(0);
-                    res.body.data.should.match(/^\d+$/);
-                    agent_id = res.body.data;
+                    res.body.data.id.should.match(/^\d+$/);
+                    res.body.data.key.should.match(/^[a-zA-Z0-9=]+/);
+                    agent_id = res.body.data.id;
                     done();
                 });
             });
@@ -621,9 +623,10 @@ describe('Agents', function() {
                     if (err) return done(err);
 
                     res.body.should.have.properties(['error', 'data']);
-
+                    res.body.data.should.have.properties(['id','key']);
                     res.body.error.should.equal(0);
-                    res.body.data.should.match(/^\d+$/);
+                    res.body.data.id.should.match(/^\d+$/);
+                    res.body.data.key.should.match(/^[a-zA-Z0-9=]+/);
                     agent_id = res.body.data;
                     done();
                 });
