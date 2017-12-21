@@ -4,16 +4,27 @@ All notable changes to this project will be documented in this file.
 ## [v3.1.0]
 ### Added
 
-- Option for agent deletion to purge agents definitely from keystore.
-- New request: Get agent information by agent name - `GET/agents/name/:agent_name`
+- [Option for agent deletion to purge agents definitely from keystore.](https://github.com/wazuh/wazuh-api/pull/41)
+- [New option in config.js to force the use of authd.](https://github.com/wazuh/wazuh-api/pull/43).
+- [New request: Get agent information by agent name - `GET/agents/name/:agent_name`](https://github.com/wazuh/wazuh-api/pull/42)
+- [New request: purge never connected or disconnected more than :timeframe time agents - `POST/agents/purge`](https://github.com/wazuh/wazuh-api/pull/40)
+- [New request: get purgeable agents - `GET/agents/purgeable/:timeframe`](https://github.com/wazuh/wazuh-api/pull/40)
 
 ### Changed
 
-- Changed the SSL certificate key size from 1024 bits to 2048 bits.
+- [Changed the SSL certificate key size from 1024 bits to 2048 bits.](https://github.com/wazuh/wazuh-api/pull/45)
+- [Return `key` when inserting new agents.](https://github.com/wazuh/wazuh/pull/303).
+
+### Fixed
+
+- [Use special characters as user/password in configure_api.sh.](https://github.com/wazuh/wazuh-api/pull/46)
+- [Wrong field returned by `GET/agents/:agent_id/key`](https://github.com/wazuh/wazuh/commit/24a5a04ccff80c26e7a5b592514ca7fcd8a3a026).
+- [Race condition when doing massive requests to the API call of inserting agents](https://github.com/wazuh/wazuh/pull/306).
+
 
 ### Removed
 
-- Do not create HTTP user "wazuh" automatically, it's no longer necessary.
+- [Do not create HTTP user "wazuh" automatically, it's no longer necessary.](https://github.com/wazuh/wazuh-api/pull/45)
 
 
 ## [v3.0.0]
