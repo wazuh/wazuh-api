@@ -151,6 +151,11 @@ if (config.basic_auth.toLowerCase() == "yes"){
     });
 }
 
+// temporary
+if (config.ld_library_path.indexOf('api') != -1) {
+    logger.warning("Using a deprecated API configuration. The value config.ld_library_path must be config.ossec_path + \"/framework/lib\" instead of config.ossec_path + \"/api/framework/lib\"");
+}
+
 // Body
 app.use(bodyParser.raw({limit: '10mb', type: 'application/zip'}));
 app.use(bodyParser.json({limit: '10mb'}));
