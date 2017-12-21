@@ -157,9 +157,8 @@ if (config.ld_library_path.indexOf('api') != -1) {
 }
 
 // Body
-app.use(bodyParser.raw({limit: '10mb', type: 'application/zip'}));
-app.use(bodyParser.json({limit: '10mb'}));
-app.use(bodyParser.urlencoded({extended: true, limit: '10mb'}));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
 /**
  * Check Wazuh app version
