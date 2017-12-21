@@ -416,6 +416,43 @@ router.get('/purgeable/:timeframe', cache(), function(req, res) {
 })
 
 /**
+ * @api {get} /agents/name/:agent_name Get an agent by its name
+ * @apiName GetAgentsName
+ * @apiGroup Info
+ *
+ * @apiParam {String} agent_name Agent name.
+ *
+ * @apiDescription Returns the information of an agent called :agent_name.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/name/myAgent?pretty"
+ *
+ */
+router.get('/name/:agent_name', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /agents/name/:agent_name");
+
+    req.apicacheGroup = "agents";
+
+    var data_request = {'function': '/agents/name/:agent_name', 'arguments': {}};
+    var filters = {'select':'select_param'};
+
+    if (!filter.check(req.params, {'agent_name':'names'}, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['agent_name'] = req.params.agent_name;
+
+    if(!filter.check(req.query, filters, req, res)) // Filter with error
+        return;
+
+    if ('select' in req.query)
+        data_request['arguments']['select'] =
+        filter.select_param_to_json(req.query.select);
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+
+})
+
+/**
  * @api {get} /agents/:agent_id Get an agent
  * @apiName GetAgentsID
  * @apiGroup Info
@@ -780,6 +817,7 @@ router.delete('/groups', function(req, res) {
  * @apiGroup Delete
  *
  * @apiParam {Number} agent_id Agent ID.
+ * @apiParam purge Delete agent definitely from the key store.
  *
  * @apiDescription Removes an agent.
  *
@@ -796,6 +834,7 @@ router.delete('/:agent_id', function(req, res) {
         return;
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
+    data_request['arguments']['purge'] = 'purge' in req.query ? true : false;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -857,6 +896,7 @@ router.delete('/groups/:group_id', function(req, res) {
  * @apiGroup Delete
  *
  * @apiParam {String[]} ids Array of agent ID's.
+ * @apiParam {Boolean} purge Delete agent definitely from the key store.
  *
  * @apiDescription Removes a list of agents. You must restart OSSEC after removing an agent.
  *
@@ -869,8 +909,10 @@ router.delete('/', function(req, res) {
 
     var data_request = {'function': 'DELETE/agents/', 'arguments': {}};
 
-	if (!filter.check(req.body, {'ids':'array_numbers'}, req, res))  // Filter with error
+	if (!filter.check(req.body, {'ids':'array_numbers', 'purge':'boolean'}, req, res))  // Filter with error
         return;
+
+    data_request['arguments']['purge'] = 'purge' in req.body && (req.body['purge'] == true || req.body['purge'] == 'true');
 
     if ('ids' in req.body){
         data_request['arguments']['agent_id'] = req.body.ids;
