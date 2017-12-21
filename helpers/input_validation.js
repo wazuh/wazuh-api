@@ -133,6 +133,16 @@ exports.ossec_key = function(param) {
         return false;
 }
 
+// [n_days]d[n_hours]h[n_minutes]m[n_seconds]s
+exports.timeframe_type = function(param) {
+    if (typeof param != 'undefined'){
+        var regex = /^((\d{1,}[d]){0,1}(\d{1,}[h]){0,1}(\d{1,}[m]){0,1}(\d{1,}[s]){0,1}){1}$|^\d{1,}$/;
+        return regex.test(param);
+    }
+    else
+        return false;
+}
+
 exports.boolean = function(n) {
     if (typeof n != 'undefined'){
         var regex = /^true|false$/;
@@ -141,3 +151,4 @@ exports.boolean = function(n) {
     else
         return false;
 }
+

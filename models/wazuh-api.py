@@ -199,6 +199,8 @@ if __name__ == "__main__":
             'PUT/agents/groups/:group_id': Agent.create_group,
             'DELETE/agents/groups/:group_id':Agent.remove_group,
             'DELETE/agents/:agent_id/group':Agent.unset_group,
+            'POST/agents/purge': Agent.purge_agents,
+            '/agents/purgeable/:timeframe': Agent.get_purgeable_agents_json,
 
             '/decoders': Decoder.get_decoders,
             '/decoders/files': Decoder.get_decoders_files,

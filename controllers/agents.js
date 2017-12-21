@@ -376,6 +376,46 @@ router.get('/outdated', cache(), function(req, res) {
 })
 
 /**
+ * @api {get} /purgeable/:timeframe Get list of purgeable agents
+ * @apiName GetAgentsPurgeable
+ * @apiGroup Info
+ *
+ * @apiParam {Number or [n_days]d[n_hours]h[n_minutes]m[n_seconds]s} timeframe Time from last connection.
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ *
+ * @apiDescription Returns a list of agents that can be purged
+ *
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/purgeable/10800?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/purgeable/3h30m?pretty"
+ *
+ */
+router.get('/purgeable/:timeframe', cache(), function(req, res) {
+
+    logger.debug(req.connection.remoteAddress + " GET /agents/purgeable/:timeframe");
+
+    var data_request = {'function': '/agents/purgeable/:timeframe', 'arguments': {}};
+    var filters = {'timeframe':'timeframe_type', 'offset': 'numbers', 'limit': 'numbers'};
+
+    if (!filter.check(req.params, filters, req, res))  // Filter with error
+        return;
+
+    if ('timeframe' in req.params)
+        data_request['arguments']['timeframe'] = req.params.timeframe;
+    else
+        res_h.bad_request(req, res, 604, "Missing field: 'timeframe'");
+
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
  * @api {get} /agents/name/:agent_name Get an agent by its name
  * @apiName GetAgentsName
  * @apiGroup Info
@@ -1007,5 +1047,38 @@ router.post('/insert', function(req, res) {
         res_h.bad_request(req, res, 604, "Missing fields. Mandatory fields: id, name, ip, key");
 })
 
+/**
+ * @api {post} /agents/purge Purge old agents from manager
+ * @apiName PostAgentsPurge
+ * @apiGroup Purge
+ *
+ * @apiParam {Number or [n_days]d[n_hours]h[n_minutes]m[n_seconds]s} timeframe Time from last connection.
+ * @apiParam {Boolean} verbose Return information about agents purgeds.
+ *
+ * @apiDescription Deletes all agents that did not connected in the last timeframe seconds.
+ *
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X POST -H "Content-Type:application/json" -d '{"timeframe":10800}' "https://127.0.0.1:55000/agents/purge?pretty"
+ *     curl -u foo:bar -k -X POST -H "Content-Type:application/json" -d '{"timeframe":"3h30m"}' "https://127.0.0.1:55000/agents/purge?pretty"
+ *
+ */
+router.post('/purge', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " POST /agents/purge");
+
+    var data_request = {'function': 'POST/agents/purge', 'arguments': {}};
+    var filters = {'timeframe':'timeframe_type', 'verbose':'boolean'};
+
+    if (!filter.check(req.body, filters, req, res))  // Filter with error
+        return;
+
+    if ('verbose' in req.body)
+        data_request['arguments']['verbose'] = req.body.verbose;
+
+    if ('timeframe' in req.body){
+        data_request['arguments']['timeframe'] = req.body.timeframe;
+        execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    }else
+        res_h.bad_request(req, res, 604, "Missing field: 'timeframe'");
+})
 
 module.exports = router;
