@@ -380,7 +380,7 @@ router.get('/outdated', cache(), function(req, res) {
  * @apiName GetAgentsPurgeable
  * @apiGroup Info
  *
- * @apiParam {Number or [n_days]d[n_hours]h[n_minutes]m[n_seconds]s} timeframe Time from last connection.
+ * @apiParam {String} timeframe Time from last connection in seconds or or [n_days]d[n_hours]h[n_minutes]m[n_seconds]s.
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  *
@@ -388,7 +388,6 @@ router.get('/outdated', cache(), function(req, res) {
  *
  * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/purgeable/10800?pretty"
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/purgeable/3h30m?pretty"
  *
  */
 router.get('/purgeable/:timeframe', cache(), function(req, res) {
@@ -586,10 +585,10 @@ router.post('/restart', function(req, res) {
 
     var data_request = {'function': 'POST/agents/restart', 'arguments': {}};
 
-	if (!filter.check(req.body, {'ids':'array_numbers'}, req, res))  // Filter with error
+    if (!filter.check(req.body, {'ids':'array_numbers'}, req, res))  // Filter with error
         return;
 
-	data_request['arguments']['agent_id'] = req.body.ids;
+    data_request['arguments']['agent_id'] = req.body.ids;
 
     if ('ids' in req.body){
         data_request['arguments']['agent_id'] = req.body.ids;
@@ -817,7 +816,7 @@ router.delete('/groups', function(req, res) {
  * @apiGroup Delete
  *
  * @apiParam {Number} agent_id Agent ID.
- * @apiParam purge Delete agent definitely from the key store.
+ * @apiParam {String} purge Delete agent definitely from the key store.
  *
  * @apiDescription Removes an agent.
  *
@@ -909,7 +908,7 @@ router.delete('/', function(req, res) {
 
     var data_request = {'function': 'DELETE/agents/', 'arguments': {}};
 
-	if (!filter.check(req.body, {'ids':'array_numbers', 'purge':'boolean'}, req, res))  // Filter with error
+    if (!filter.check(req.body, {'ids':'array_numbers', 'purge':'boolean'}, req, res))  // Filter with error
         return;
 
     data_request['arguments']['purge'] = 'purge' in req.body && (req.body['purge'] == true || req.body['purge'] == 'true');
@@ -1052,14 +1051,13 @@ router.post('/insert', function(req, res) {
  * @apiName PostAgentsPurge
  * @apiGroup Purge
  *
- * @apiParam {Number or [n_days]d[n_hours]h[n_minutes]m[n_seconds]s} timeframe Time from last connection.
+ * @apiParam {String} timeframe Time from last connection in seconds or or [n_days]d[n_hours]h[n_minutes]m[n_seconds]s.
  * @apiParam {Boolean} verbose Return information about agents purgeds.
  *
  * @apiDescription Deletes all agents that did not connected in the last timeframe seconds.
  *
  * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X POST -H "Content-Type:application/json" -d '{"timeframe":10800}' "https://127.0.0.1:55000/agents/purge?pretty"
- *     curl -u foo:bar -k -X POST -H "Content-Type:application/json" -d '{"timeframe":"3h30m"}' "https://127.0.0.1:55000/agents/purge?pretty"
  *
  */
 router.post('/purge', function(req, res) {
