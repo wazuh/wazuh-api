@@ -24,6 +24,7 @@ function Ignore-SelfSignedCerts {
         }
 "@
     [System.Net.ServicePointManager]::CertificatePolicy = new-object PolicyCert
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12;
 }
 
 function req($method, $resource, $params){
@@ -110,7 +111,7 @@ Write-Output "$($srvName) is now $($srvStat.status)"
 
 Start-Sleep -s 10
 
-Add-Content $config "`n<ossec_config>   <client>      <server-ip>$($wazuh_manager)</server-ip>   </client> </ossec_config>"
+Add-Content $config "`n<ossec_config>   <client>    <server>  <address>$($wazuh_manager)</address> </server>   </client> </ossec_config>"
 
 Start-Sleep -s 10
 
@@ -140,7 +141,7 @@ Write-Output "$($srvName) is now $($srvStat.status)"
 
 Start-Sleep -s 10
 
-Add-Content $config "`n<ossec_config>   <client>      <server-ip>$($wazuh_manager)</server-ip>   </client> </ossec_config>"
+Add-Content $config "`n<ossec_config>   <client>    <server>  <address>$($wazuh_manager)</address> </server>   </client> </ossec_config>"
 
 Start-Sleep -s 10
 
