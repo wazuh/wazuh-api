@@ -53,6 +53,43 @@ router.get('/node', cache(), function(req, res) {
 })
 
 /**
+ * @api {get} /cluster/files/:node_id Get info about node_id's files in cluster
+ * @apiName GetClusterFilesInfo
+ * @apiGroup Nodes
+ *
+ * @apiDescription Returns the state of each node_id's file in the cluster
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/files/192.168.56.104"
+ *
+ */
+router.get('/files/:node_id', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/files");
+
+    req.apicacheGroup = "cluster";
+
+    var data_request = {'function': '/cluster/files/:node_id', 'arguments': {}};
+    var filters = {'managers': 'alphanumeric_param', 'files': 'paths', 'offset': 'numbers', 'limit': 'numbers'}
+
+    if (!filter.check(req.params, {'node_id':'ips'}, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['node_id'] = req.params.node_id;
+
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
+
+    if ('files' in req.query)
+        data_request['arguments']['file_list'] = filter.select_param_to_json(req.query.files);
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
  * @api {get} /cluster/files Get info about files in cluster
  * @apiName GetClusterFilesInfo
  * @apiGroup Nodes

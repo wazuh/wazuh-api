@@ -216,6 +216,7 @@ if __name__ == "__main__":
 
             '/cluster/nodes': cluster.get_nodes,
             '/cluster/node': cluster.get_node,
+            '/cluster/files/:node_id': cluster.get_file_status_one_node_json,
             '/cluster/files': cluster.get_file_status_json,
             '/cluster/agents': cluster.get_agent_status_json,
             '/cluster/status': cluster.get_status_json,
