@@ -59,6 +59,10 @@ router.get('/node', cache(), function(req, res) {
  *
  * @apiDescription Returns the state of each node_id's file in the cluster
  *
+ * @apiParam {String} node_id IP of the node.
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/files/192.168.56.104"
  *
@@ -119,6 +123,44 @@ router.get('/files', cache(), function(req, res) {
         data_request['arguments']['offset'] = req.query.offset;
     if ('limit' in req.query)
         data_request['arguments']['limit'] = req.query.limit;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {get} /cluster/agents/:node_id Get info about agents in cluster
+ * @apiName GetClusteragentsInfo
+ * @apiGroup Nodes
+ *
+ * @apiDescription Returns the state of each agent and the manager it's reporting to in the cluster
+ *
+ *
+ * @apiParam {String} node_id IP of the node.
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/agents"
+ *
+ */
+router.get('/agents/:node_id', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/agents");
+
+    req.apicacheGroup = "cluster";
+
+    var data_request = {'function': '/cluster/agents/:node_id', 'arguments': {}};
+
+    if (!filter.check(req.params, {'node_id':'names'}, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['node_name'] = req.params.node_id;
+
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
+
+    data_request['arguments']['select'] = {'fields': ['ip', 'id', 'status', 'node_name', 'name']}
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
