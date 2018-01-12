@@ -69,7 +69,7 @@ router.get('/files', cache(), function(req, res) {
     req.apicacheGroup = "cluster";
 
     var data_request = {'function': '/cluster/files', 'arguments': {}};
-    var filters = {'managers': 'alphanumeric_param', 'files': 'paths'}
+    var filters = {'managers': 'alphanumeric_param', 'files': 'paths', 'offset': 'numbers', 'limit': 'numbers'}
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -78,6 +78,10 @@ router.get('/files', cache(), function(req, res) {
         data_request['arguments']['manager'] = filter.select_param_to_json(req.query.managers);
     if ('files' in req.query)
         data_request['arguments']['file_list'] = filter.select_param_to_json(req.query.files);
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
