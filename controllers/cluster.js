@@ -33,6 +33,26 @@ router.get('/nodes', cache(), function(req, res) {
 })
 
 /**
+ * @api {get} /cluster/nodes/elected_master Get elected master
+ * @apiName GetElectedMaster
+ * @apiGroup Nodes
+ *
+ * @apiDescription Returns the elected master
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/nodes/elected_master?pretty"
+ *
+ */
+router.get('/nodes/elected_master', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/nodes/elected_master");
+
+    req.apicacheGroup = "cluster";
+
+    var data_request = {'function': '/cluster/nodes/elected_master', 'arguments': {}};
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
  * @api {get} /cluster/node Get node info
  * @apiName GetNodeInfo
  * @apiGroup Node
@@ -104,7 +124,7 @@ router.get('/agents', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /cluster/status Get info about cluster status 
+ * @api {get} /cluster/status Get info about cluster status
  * @apiName GetClusterstatus
  * @apiGroup Status
  *
