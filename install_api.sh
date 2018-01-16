@@ -19,8 +19,23 @@
 
 
 arg=$1  # empty, help, dependencies, download or dev
+PREDEF_FILE=$(dirname $0)/configuration/preloaded_vars.conf
+TRUE="true";
+FALSE="false";
 
 # Aux functions
+isFile()
+{
+    FILE=$1
+    ls ${FILE} >/dev/null 2>&1
+    if [ $? = 0 ]; then
+        echo "${TRUE}"
+        return 0;
+    fi
+    echo "${FALSE}"
+    return 1;
+}
+
 print() {
     echo -e $1
 }
@@ -317,18 +332,12 @@ setup_api() {
     if [ -d $API_PATH ]; then
         backup_api
         print ""
-        reinstall_preloaded=""
-        if [[ -f preloaded_vars.conf ]]; then
-            reinstall_preloaded=$(cat preloaded_vars.conf | sed -e '/^#/ d' | grep REINSTALL)
-            if [[ ! -z "$reinstall_preloaded" ]]; then
-                response=$(echo $reinstall_preloaded | cut -d'=' -f 2 | tr -d '\r')
-                case $response in
-                    [nN] ) update="no";;
-                    [yY] ) update="yes";;
-                esac
-            fi
-        fi
-        if [[ ! -f preloaded_vars.conf || -z "$reinstall_preloaded" ]]; then
+        if [[ "X${REINSTALL}" != "X" ]]; then
+            case $REINSTALL in
+                [nN] ) update="no";;
+                [yY] ) update="yes";;
+            esac
+        else
             while true; do
                 read -p "Wazuh API is already installed (version $API_OLD_VERSION). Do you want to update it? [y/n]: " yn
                 case $yn in
@@ -338,17 +347,11 @@ setup_api() {
             done
         fi
         if [ "X${update}" == "Xno" ]; then
-            remove_preloaded=""
-            if [[ -f preloaded_vars.conf ]]; then
-                remove_preloaded=$(cat preloaded_vars.conf | sed -e '/^#/ d' | grep REMOVE)
-                if [[ ! -z "$remove_preloaded" ]]; then
-                    response=$(echo $remove_preloaded | cut -d'=' -f 2 | tr -d '\r')
-                    case $response in
-                        [nN] ) print "Not possible to install the API.\nExiting."; exit 1; break;;
-                    esac
-                fi
-            fi
-            if [[ ! -f preloaded_vars.conf || -z "$remove_preloaded" ]]; then
+            if [[ "X${REMOVE}" != "X" ]]; then
+                case $REMOVE in
+                    [nN] ) print "Not possible to install the API.\nExiting."; exit 1; break;;
+                esac
+            else
                 while true; do
                     print ""
                     read -p "The installation directory already exists. Should I delete it? [y/n]: " yn
@@ -432,6 +435,12 @@ setup_api() {
 
 main() {
     print "### Wazuh API ###"
+
+    # Reading pre-defined file
+    if [ ! `isFile ${PREDEF_FILE}` = "${FALSE}" ]; then
+        . ${PREDEF_FILE}
+    fi
+
     previous_checks
     get_api
     setup_api
