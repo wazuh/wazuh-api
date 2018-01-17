@@ -23,7 +23,8 @@ try:
     from wazuh.rule import Rule
     from wazuh.decoder import Decoder
     from wazuh.exception import WazuhException
-    import wazuh.cluster as cluster
+    import wazuh.group as group
+    import wazuh.cluster.management as cluster
     import wazuh.configuration as configuration
     import wazuh.manager as manager
     import wazuh.stats as stats
@@ -177,27 +178,27 @@ if __name__ == "__main__":
             '/agents/summary': Agent.get_agents_summary,
             '/agents/summary/os': Agent.get_os_summary,
             '/agents/outdated': Agent.get_outdated_agents,
-            '/agents/:agent_id/upgrade_result': cluster.get_upgrade_result,
-            'PUT/agents/:agent_id/upgrade': cluster.upgrade_agent,
-            'PUT/agents/:agent_id/upgrade_custom': cluster.upgrade_agent_custom,
-            'PUT/agents/:agent_id/restart': cluster.restart_agents,
-            'PUT/agents/restart': cluster.restart_agents,
+            '/agents/:agent_id/upgrade_result': Agent.get_upgrade_result,
+            'PUT/agents/:agent_id/upgrade': Agent.upgrade_agent,
+            'PUT/agents/:agent_id/upgrade_custom': Agent.upgrade_agent_custom,
+            'PUT/agents/:agent_id/restart': Agent.restart_agents,
+            'PUT/agents/restart': Agent.restart_agents,
             'PUT/agents/:agent_name': Agent.add_agent,
-            'POST/agents/restart': cluster.restart_agents,
+            'POST/agents/restart': Agent.restart_agents,
             'POST/agents': Agent.add_agent,
             'POST/agents/insert': Agent.insert_agent,
-            'DELETE/agents/groups': Agent.remove_group,
+            'DELETE/agents/groups': group.remove_group,
             'DELETE/agents/:agent_id': Agent.remove_agent,
             'DELETE/agents/': Agent.remove_agent,
 
-            '/agents/groups': Agent.get_all_groups,
-            '/agents/groups/:group_id': Agent.get_agent_group,
+            '/agents/groups': group.get_all_groups,
+            '/agents/groups/:group_id': group.get_agent_group,
             '/agents/groups/:group_id/configuration':configuration.get_agent_conf,
-            '/agents/groups/:group_id/files':Agent.get_group_files,
+            '/agents/groups/:group_id/files':group.get_group_files,
             '/agents/groups/:group_id/files/:filename':configuration.get_file_conf,
             'PUT/agents/:agent_id/group/:group_id': Agent.set_group,
-            'PUT/agents/groups/:group_id': Agent.create_group,
-            'DELETE/agents/groups/:group_id':Agent.remove_group,
+            'PUT/agents/groups/:group_id': group.create_group,
+            'DELETE/agents/groups/:group_id':group.remove_group,
             'DELETE/agents/:agent_id/group':Agent.unset_group,
             'POST/agents/purge': Agent.purge_agents,
             '/agents/purgeable/:timeframe': Agent.get_purgeable_agents_json,
@@ -206,8 +207,8 @@ if __name__ == "__main__":
             '/decoders/files': Decoder.get_decoders_files,
 
             '/manager/info': wazuh.get_ossec_init,
-            '/manager/status': cluster.managers_status,
-            '/manager/status/:node_id': cluster.managers_status,
+            '/manager/status': manager.status,
+            # '/manager/status/:node_id': cluster.managers_status,
             '/manager/configuration': configuration.get_ossec_conf,
             '/manager/stats': stats.totals,
             '/manager/stats/hourly': stats.hourly,
@@ -216,10 +217,10 @@ if __name__ == "__main__":
             '/manager/logs': manager.ossec_log,
 
             '/cluster/nodes': cluster.get_nodes,
-            '/cluster/nodes/elected_master': cluster.get_actual_master_json,
+            '/cluster/nodes/elected_master': cluster.get_actual_master,
             '/cluster/node': cluster.get_node,
             '/cluster/files': cluster.get_file_status_json,
-            '/cluster/agents': cluster.get_agent_status_json,
+            '/cluster/agents': Agent.get_cluster_agent_status_json,
             '/cluster/status': cluster.get_status_json,
             '/cluster/config': cluster.read_config,
 
