@@ -206,7 +206,8 @@ if __name__ == "__main__":
             '/decoders/files': Decoder.get_decoders_files,
 
             '/manager/info': wazuh.get_ossec_init,
-            '/manager/status': manager.status,
+            '/manager/status': cluster.managers_status,
+            '/manager/status/:node_id': cluster.managers_status,
             '/manager/configuration': configuration.get_ossec_conf,
             '/manager/stats': stats.totals,
             '/manager/stats/hourly': stats.hourly,

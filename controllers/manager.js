@@ -35,6 +35,34 @@ router.get('/status', cache(), function(req, res) {
 })
 
 /**
+ * @api {get} /manager/status/:node_id Get manager status
+ * @apiName GetManagerStatus
+ * @apiGroup Info
+ *
+ * @apiParam {String} Node ID (IP or name)
+ *
+ * @apiDescription Returns the select Manager processes that are running.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/status/:node_id?pretty"
+ *
+ */
+router.get('/status/:node_id', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /manager/status/:node_id");
+
+    req.apicacheGroup = "manager";
+
+    var data_request = {'function': '/manager/status/:node_id', 'arguments': {}};
+    var filters = {'node_id':'names'};
+
+    if (!filter.check(req.params, filters, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['node_id'] = req.params.node_id;
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
  * @api {get} /manager/info Get manager information
  * @apiName GetManagerInfo
  * @apiGroup Info
