@@ -44,7 +44,7 @@ router.get('/status', cache(), function(req, res) {
  * @apiDescription Returns the select Manager processes that are running.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/status/:node_id?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/status/192.168.56.102?pretty"
  *
  */
 router.get('/status/:node_id', cache(), function(req, res) {
@@ -242,6 +242,53 @@ router.get('/logs', cache(), function(req, res) {
     if ('category' in req.query)
         data_request['arguments']['category'] = req.query.category;
 
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {get} /manager/logs/:node_id Get ossec.log
+ * @apiName GetManagerLogs
+ * @apiGroup Logs
+ *
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String="all","error", "warning", "info"} [type_log] Filters by type of log.
+ * @apiParam {String} [category] Filters by category of log.
+ *
+ * @apiDescription Returns the 3 last months of ossec.log.
+ *
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/logs/:node01?offset=0&limit=5&pretty"
+ *
+ */
+router.get('/logs/:node_id', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /manager/logs");
+
+    req.apicacheGroup = "manager";
+
+    var data_request = {'function': '/manager/logs', 'arguments': {}};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'type_log':'names', 'category': 'search_param', 'node_id':'names'};
+
+
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
+
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+    if ('type_log' in req.query)
+        data_request['arguments']['type_log'] = req.query.type_log;
+    if ('category' in req.query)
+        data_request['arguments']['category'] = req.query.category;
+
+    data_request['arguments']['node_id'] = req.params.node_id;
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
