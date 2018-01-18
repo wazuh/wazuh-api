@@ -212,7 +212,8 @@ if __name__ == "__main__":
             '/manager/stats': stats.totals,
             '/manager/stats/hourly': stats.hourly,
             '/manager/stats/weekly': stats.weekly,
-            '/manager/logs/summary': manager.ossec_log_summary,
+            '/manager/logs/summary': cluster.managers_ossec_log_summary,#
+            '/manager/logs/summary/:node_id': cluster.managers_ossec_log_summary,#
             '/manager/logs': cluster.managers_ossec_log,#
             '/manager/logs/:node_id': cluster.managers_ossec_log,#
 
