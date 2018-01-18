@@ -206,15 +206,22 @@ if __name__ == "__main__":
             '/decoders': Decoder.get_decoders,
             '/decoders/files': Decoder.get_decoders_files,
 
-            '/manager/info': wazuh.get_ossec_init,
-            '/manager/status': manager.status,
-            # '/manager/status/:node_id': cluster.managers_status,
-            '/manager/configuration': configuration.get_ossec_conf,
-            '/manager/stats': stats.totals,
-            '/manager/stats/hourly': stats.hourly,
-            '/manager/stats/weekly': stats.weekly,
-            '/manager/logs/summary': manager.ossec_log_summary,
-            '/manager/logs': manager.ossec_log,
+            '/manager/info': wazuh.managers_get_ossec_init,
+            '/manager/info/:node_id': wazuh.managers_get_ossec_init,
+            '/manager/status': manager.managers_status,#
+            '/manager/status/:node_id': manager.managers_status,#
+            '/manager/configuration': manager.managers_get_ossec_conf,#
+            '/manager/configuration/:node_id': manager.managers_get_ossec_conf,#
+            '/manager/stats': stats.totals,#
+            '/manager/stats/:node_id': stats.totals,#
+            '/manager/stats/hourly': stats.hourly,#
+            '/manager/stats/hourly/:node_id': stats.hourly,#
+            '/manager/stats/weekly': stats.weekly,#
+            '/manager/stats/weekly/:node_id': stats.weekly,#
+            '/manager/logs/summary': manager.managers_ossec_log_summary,#
+            '/manager/logs/summary/:node_id': manager.managers_ossec_log_summary,#
+            '/manager/logs': manager.managers_ossec_log,#
+            '/manager/logs/:node_id': manager.managers_ossec_log,#
 
             '/cluster/nodes': cluster.get_nodes,
             '/cluster/nodes/elected_master': cluster.get_actual_master,
