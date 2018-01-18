@@ -205,13 +205,18 @@ if __name__ == "__main__":
             '/decoders': Decoder.get_decoders,
             '/decoders/files': Decoder.get_decoders_files,
 
-            '/manager/info': wazuh.get_ossec_init,
+            '/manager/info': cluster.managers_get_ossec_init,
+            '/manager/info/:node_id': cluster.managers_get_ossec_init,
             '/manager/status': cluster.managers_status,#
             '/manager/status/:node_id': cluster.managers_status,#
-            '/manager/configuration': configuration.get_ossec_conf,
-            '/manager/stats': stats.totals,
-            '/manager/stats/hourly': stats.hourly,
-            '/manager/stats/weekly': stats.weekly,
+            '/manager/configuration': cluster.managers_get_ossec_conf,#
+            '/manager/configuration/:node_id': cluster.managers_get_ossec_conf,#
+            '/manager/stats': stats.totals,#
+            '/manager/stats/:node_id': stats.totals,#
+            '/manager/stats/hourly': stats.hourly,#
+            '/manager/stats/hourly/:node_id': stats.hourly,#
+            '/manager/stats/weekly': stats.weekly,#
+            '/manager/stats/weekly/:node_id': stats.weekly,#
             '/manager/logs/summary': cluster.managers_ossec_log_summary,#
             '/manager/logs/summary/:node_id': cluster.managers_ossec_log_summary,#
             '/manager/logs': cluster.managers_ossec_log,#

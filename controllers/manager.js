@@ -83,6 +83,33 @@ router.get('/info', cache(), function(req, res) {
 })
 
 /**
+ * @api {get} /manager/info Get manager information
+ * @apiName GetManagerInfo
+ * @apiGroup Info
+ *
+ * @apiParam {String} Node ID (IP or name)
+ * @apiDescription Returns basic information about Manager.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/info/node02?pretty"
+ *
+ */
+router.get('/info/:node_id', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /manager/info/:node_id");
+
+    req.apicacheGroup = "manager";
+
+    var data_request = {'function': '/manager/info/:node_id', 'arguments': {}};
+    var filters = {'node_id':'names'};
+
+    if (!filter.check(req.params, filters, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['node_id'] = req.params.node_id;
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
  * @api {get} /manager/configuration Get manager configuration
  * @apiName GetManagerConfiguration
  * @apiGroup Configuration
@@ -115,6 +142,48 @@ router.get('/configuration', cache(), function(req, res) {
         else
             res_h.bad_request(req, res, 604, "Missing field: 'section'");
     }
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {get} /manager/configuration/:node_id Get manager configuration
+ * @apiName GetManagerConfiguration
+ * @apiGroup Configuration
+ *
+ * @apiParam {String} Node ID (IP or name)
+ * @apiParam {String} [section] Indicates the ossec.conf section: global, rules, syscheck, rootcheck, remote, alerts, command, active-response, localfile.
+ * @apiParam {String} [field] Indicates a section child, e.g, fields for rule section are: include, decoder_dir, etc.
+ *
+ * @apiDescription Returns ossec.conf in JSON format.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/configuration/node01?section=global&pretty"
+ *
+ */
+router.get('/configuration/:node_id', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /manager/configuration/:node_id");
+
+    req.apicacheGroup = "manager";
+
+    var data_request = {'function': '/manager/configuration/:node_id', 'arguments': {}};
+    var filters = {'section':'names', 'field': 'names','node_id':'names'};
+
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
+
+    if ('section' in req.query)
+        data_request['arguments']['section'] = req.query.section;
+    if ('field' in req.query){
+        if ('section' in req.query)
+            data_request['arguments']['field'] = req.query.field;
+        else
+            res_h.bad_request(req, res, 604, "Missing field: 'section'");
+    }
+
+    if (!filter.check(req.params, filters, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['node_id'] = req.params.node_id;
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -180,6 +249,35 @@ router.get('/stats/hourly', cache(), function(req, res) {
 })
 
 /**
+ * @api {get} /manager/stats/hourly/:node_id Get manager stats by hour
+ * @apiName GetManagerStatsHourly
+ * @apiGroup Stats
+ *
+ *
+ * @apiParam {String} Node ID (IP or name)
+ * @apiDescription Returns OSSEC statistical information per hour. Each item in averages field represents the average of alerts per hour.
+ *
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/stats/hourly/node01?pretty"
+ *
+ */
+router.get('/stats/hourly/:node_id', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /manager/stats/hourly/:node_id");
+
+    req.apicacheGroup = "manager";
+
+    var data_request = {'function': '/manager/stats/hourly/:node_id', 'arguments': {}};
+    var filters = {'node_id':'names'};
+
+    if (!filter.check(req.params, filters, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['node_id'] = req.params.node_id;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
  * @api {get} /manager/stats/weekly Get manager stats by week
  * @apiName GetManagerStatsWeekly
  * @apiGroup Stats
@@ -197,6 +295,77 @@ router.get('/stats/weekly', cache(), function(req, res) {
     req.apicacheGroup = "manager";
 
     var data_request = {'function': '/manager/stats/weekly', 'arguments': {}};
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {get} /manager/stats/weekly Get manager stats by week
+ * @apiName GetManagerStatsWeekly
+ * @apiGroup Stats
+ *
+ *
+ * @apiParam {String} Node ID (IP or name)
+ * @apiDescription Returns OSSEC statistical information per week. Each item in hours field represents the average of alerts per hour and week day.
+ *
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/stats/weekly/192.168.56.102?pretty"
+ *
+ */
+router.get('/stats/weekly/:node_id', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /manager/stats/weekly/:node_id");
+
+    req.apicacheGroup = "manager";
+    var data_request = {'function': '/manager/stats/weekly/:node_id', 'arguments': {}};
+    var filters = {'node_id':'names'};
+
+    if (!filter.check(req.params, filters, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['node_id'] = req.params.node_id;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {get} /manager/stats/:node_id Get manager stats
+ * @apiName GetManagerStats
+ * @apiGroup Stats
+ *
+ * @apiParam {String} Node ID (IP or name)
+ * @apiParam {String} [date] Selects the date for getting the statistical information. Format: YYYYMMDD
+ *
+ * @apiDescription Returns OSSEC statistical information of current date.
+ *
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/stats/node01?pretty"
+ *
+ */
+router.get('/stats/:node_id', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /manager/stats/:node_id");
+
+    req.apicacheGroup = "manager";
+
+    var data_request = {'function': '/manager/stats/:node_id', 'arguments': {}};
+    var filters = {'date':'dates', 'node_id':'names'};
+
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
+
+    if ('date' in req.query){
+        data_request['arguments']['year'] = req.query.date.substring(0, 4);
+        data_request['arguments']['month'] = req.query.date.substring(4, 6);
+        data_request['arguments']['day'] = req.query.date.substring(6, 8);
+    }
+    else{
+        var moment = require('moment');
+        date = moment().format('YYYYMMDD')
+        data_request['arguments']['year'] = date.substring(0, 4);
+        data_request['arguments']['month'] = date.substring(4, 6);
+        data_request['arguments']['day'] = date.substring(6, 8);
+    }
+
+    data_request['arguments']['node_id'] = req.params.node_id;
+
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
