@@ -39,7 +39,7 @@ router.get('/status', cache(), function(req, res) {
  * @apiName GetManagerStatus
  * @apiGroup Info
  *
- * @apiParam {String} Node ID (IP or name)
+ * @apiParam {String} [node_id] Node ID (IP or name)
  *
  * @apiDescription Returns the select Manager processes that are running.
  *
@@ -87,7 +87,7 @@ router.get('/info', cache(), function(req, res) {
  * @apiName GetManagerInfo
  * @apiGroup Info
  *
- * @apiParam {String} Node ID (IP or name)
+ * @apiParam {String} [node_id] Node ID (IP or name)
  * @apiDescription Returns basic information about Manager.
  *
  * @apiExample {curl} Example usage:
@@ -150,7 +150,7 @@ router.get('/configuration', cache(), function(req, res) {
  * @apiName GetManagerConfiguration
  * @apiGroup Configuration
  *
- * @apiParam {String} Node ID (IP or name)
+ * @apiParam {String} [node_id] Node ID (IP or name)
  * @apiParam {String} [section] Indicates the ossec.conf section: global, rules, syscheck, rootcheck, remote, alerts, command, active-response, localfile.
  * @apiParam {String} [field] Indicates a section child, e.g, fields for rule section are: include, decoder_dir, etc.
  *
@@ -254,7 +254,7 @@ router.get('/stats/hourly', cache(), function(req, res) {
  * @apiGroup Stats
  *
  *
- * @apiParam {String} Node ID (IP or name)
+ * @apiParam {String} [node_id] Node ID (IP or name)
  * @apiDescription Returns OSSEC statistical information per hour. Each item in averages field represents the average of alerts per hour.
  *
  * @apiExample {curl} Example usage*:
@@ -304,7 +304,7 @@ router.get('/stats/weekly', cache(), function(req, res) {
  * @apiGroup Stats
  *
  *
- * @apiParam {String} Node ID (IP or name)
+ * @apiParam {String} [node_id] Node ID (IP or name)
  * @apiDescription Returns OSSEC statistical information per week. Each item in hours field represents the average of alerts per hour and week day.
  *
  * @apiExample {curl} Example usage*:
@@ -331,7 +331,7 @@ router.get('/stats/weekly/:node_id', cache(), function(req, res) {
  * @apiName GetManagerStats
  * @apiGroup Stats
  *
- * @apiParam {String} Node ID (IP or name)
+ * @apiParam {String} [node_id] Node ID (IP or name)
  * @apiParam {String} [date] Selects the date for getting the statistical information. Format: YYYYMMDD
  *
  * @apiDescription Returns OSSEC statistical information of current date.
@@ -443,7 +443,7 @@ router.get('/logs/summary', cache(), function(req, res) {
  * @apiGroup Logs
  *
  *
- * @apiParam {String} Node ID (IP or name)
+ * @apiParam {String} [node_id] Node ID (IP or name)
  * @apiDescription Returns a summary about the 3 last months of ossec.log.
  *
  * @apiExample {curl} Example usage:
@@ -472,7 +472,7 @@ router.get('/logs/summary/:node_id', cache(), function(req, res) {
  * @apiGroup Logs
  *
  *
- * @apiParam {String} Node ID (IP or name)
+ * @apiParam {String} [node_id] Node ID (IP or name)
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.

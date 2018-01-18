@@ -207,28 +207,27 @@ if __name__ == "__main__":
 
             '/manager/info': cluster.managers_get_ossec_init,
             '/manager/info/:node_id': cluster.managers_get_ossec_init,
-            '/manager/status': cluster.managers_status,#
-            '/manager/status/:node_id': cluster.managers_status,#
-            '/manager/configuration': cluster.managers_get_ossec_conf,#
-            '/manager/configuration/:node_id': cluster.managers_get_ossec_conf,#
-            '/manager/stats': stats.totals,#
-            '/manager/stats/:node_id': stats.totals,#
-            '/manager/stats/hourly': stats.hourly,#
-            '/manager/stats/hourly/:node_id': stats.hourly,#
-            '/manager/stats/weekly': stats.weekly,#
-            '/manager/stats/weekly/:node_id': stats.weekly,#
-            '/manager/logs/summary': cluster.managers_ossec_log_summary,#
-            '/manager/logs/summary/:node_id': cluster.managers_ossec_log_summary,#
-            '/manager/logs': cluster.managers_ossec_log,#
-            '/manager/logs/:node_id': cluster.managers_ossec_log,#
+            '/manager/status': cluster.managers_status,
+            '/manager/status/:node_id': cluster.managers_status,
+            '/manager/configuration': cluster.managers_get_ossec_conf,
+            '/manager/configuration/:node_id': cluster.managers_get_ossec_conf,
+            '/manager/stats': stats.totals,
+            '/manager/stats/:node_id': stats.totals,
+            '/manager/stats/hourly': stats.hourly,
+            '/manager/stats/hourly/:node_id': stats.hourly,
+            '/manager/stats/weekly': stats.weekly,
+            '/manager/stats/weekly/:node_id': stats.weekly,
+            '/manager/logs/summary': cluster.managers_ossec_log_summary,
+            '/manager/logs/summary/:node_id': cluster.managers_ossec_log_summary,
+            '/manager/logs': cluster.managers_ossec_log,
+            '/manager/logs/:node_id': cluster.managers_ossec_log,
 
             '/cluster/nodes': cluster.get_nodes,
             '/cluster/nodes/elected_master': cluster.get_actual_master_json,
-            '/cluster/node': cluster.get_node,
             '/cluster/files': cluster.get_file_status_json,
             '/cluster/agents': cluster.get_agent_status_json,
             '/cluster/status': cluster.get_status_json,
-            '/cluster/config': cluster.read_config,
+            '/cluster/config': cluster.get_config_distributed,
 
             '/rootcheck/:agent_id': rootcheck.print_db,
             '/rootcheck/:agent_id/pci': rootcheck.get_pci,
