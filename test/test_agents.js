@@ -733,8 +733,10 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['msg', 'failed_ids', 'affected_agents']);
 
-                res.body.data.ids[0].error.code.should.equal(1703);
+                res.body.data.msg.should.equal("Some agents were not restarted");
+                res.body.data.failed_ids[0].error.code.should.equal(1703);
                 done();
             });
         });

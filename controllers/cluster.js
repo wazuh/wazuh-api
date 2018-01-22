@@ -20,7 +20,7 @@ var router = require('express').Router();
  * @apiDescription Returns the Nodes info
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/nodes"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/nodes?pretty""
  *
  */
 router.get('/nodes', cache(), function(req, res) {
@@ -33,22 +33,22 @@ router.get('/nodes', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /cluster/node Get node info
- * @apiName GetNodeInfo
- * @apiGroup Node
+ * @api {get} /cluster/nodes/elected_master Get elected master
+ * @apiName GetElectedMaster
+ * @apiGroup Nodes
  *
- * @apiDescription Returns the Node info
+ * @apiDescription Returns the elected master
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/nodes/elected_master?pretty"
  *
  */
-router.get('/node', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /cluster/node");
+router.get('/nodes/elected_master', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/nodes/elected_master");
 
     req.apicacheGroup = "cluster";
 
-    var data_request = {'function': '/cluster/node', 'arguments': {}};
+    var data_request = {'function': '/cluster/nodes/elected_master', 'arguments': {}};
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -101,7 +101,7 @@ router.get('/files/:node_id', cache(), function(req, res) {
  * @apiDescription Returns the state of each file in the cluster
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/files"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/files?pretty""
  *
  */
 router.get('/files', cache(), function(req, res) {
@@ -173,7 +173,7 @@ router.get('/agents/:node_id', cache(), function(req, res) {
  * @apiDescription Returns the state of each agent and the manager it's reporting to in the cluster
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/agents"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/agents?pretty""
  *
  */
 router.get('/agents', cache(), function(req, res) {
@@ -187,14 +187,14 @@ router.get('/agents', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /cluster/status Get info about cluster status 
+ * @api {get} /cluster/status Get info about cluster status
  * @apiName GetClusterstatus
  * @apiGroup Status
  *
  * @apiDescription Returns if the cluster is enabled or disabled
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/status"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/status?pretty""
  *
  */
 router.get('/status', cache(), function(req, res) {
@@ -212,10 +212,12 @@ router.get('/status', cache(), function(req, res) {
  * @apiName GetClusterconfig
  * @apiGroup config
  *
+ * @apiParam {String[]} Node ID (IP or name)
+ *
  * @apiDescription Returns the cluster configuration
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/config"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/config?node_id=node02&pretty"
  *
  */
 router.get('/config', cache(), function(req, res) {
@@ -224,8 +226,16 @@ router.get('/config', cache(), function(req, res) {
     req.apicacheGroup = "cluster";
 
     var data_request = {'function': '/cluster/config', 'arguments': {}};
+    var filters = {'node_id':'names'};
+
+    if (!filter.check(req.params, filters, req, res))  // Filter with error
+        return;
+
+    if ('node_id' in req.query)
+        data_request['arguments']['node_id'] = req.query['node_id'];
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
+
 
 module.exports = router;
