@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.2.0]
+### Added
+
+- Added support for API in cluster ([#54](https://github.com/wazuh/wazuh-api/pull/54)).
+- Added new calls for cluster nodes ([#54](https://github.com/wazuh/wazuh-api/pull/54)).
+
 ## [v3.1.0]
 ### Added
 
