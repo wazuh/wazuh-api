@@ -227,8 +227,10 @@ if __name__ == "__main__":
             '/cluster/nodes': cluster.get_nodes,
             '/cluster/nodes/elected_master': cluster.get_actual_master,
             '/cluster/node': cluster.get_node,
+            '/cluster/files/:node_id': cluster.get_file_status_one_node_json,
             '/cluster/files': cluster.get_file_status_json,
             '/cluster/agents': Agent.get_cluster_agent_status_json,
+            '/cluster/agents/:node_id': Agent.get_agents_overview,
             '/cluster/status': cluster.get_status_json,
             '/cluster/config': dapi.get_config_distributed,
 

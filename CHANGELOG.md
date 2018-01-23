@@ -4,8 +4,17 @@ All notable changes to this project will be documented in this file.
 ## [v3.2.0]
 ### Added
 
-- Added support for API in cluster ([#54](https://github.com/wazuh/wazuh-api/pull/54)).
-- Added new calls for cluster nodes ([#54](https://github.com/wazuh/wazuh-api/pull/54)).
+- Added support for distributed API calls. ([#54](https://github.com/wazuh/wazuh-api/pull/54)).
+- Added new distributed cluster API calls.
+    * Get elected master node: `GET/cluster/nodes/elected_master` ([#54](https://github.com/wazuh/wazuh-api/pull/54))
+    * Get status of node `node_id`: `GET/manager/status/:node_id` ([#54](https://github.com/wazuh/wazuh-api/pull/54))
+    * Get logs of node `node_id`: `GET/manager/logs/:node_id` ([#54](https://github.com/wazuh/wazuh-api/pull/54))
+    * Get stats of node `node_id`: `GET/manager/stats/:node_id`([#54](https://github.com/wazuh/wazuh-api/pull/54))
+    * Get configuration of node `node_id`: `GET/manager/configuration/:node_id` ([#54](https://github.com/wazuh/wazuh-api/pull/54))
+    * Get file status of node `node_id`: `GET/cluster/files/:node_id` ([#55](https://github.com/wazuh/wazuh-api/pull/55))
+    * Get agents reporting to node `node_id` : `GET/cluster/agents/:node_id` ([#55](https://github.com/wazuh/wazuh-api/pull/55))
+- Added support to filter by status in `GET/cluster/files` API call. ([#55](https://github.com/wazuh/wazuh-api/pull/55))
+- Changed output of API call `GET/cluster/files` API call to support pagination. ([#55](https://github.com/wazuh/wazuh-api/pull/55))
 
 ## [v3.1.0]
 ### Added
