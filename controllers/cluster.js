@@ -73,7 +73,7 @@ router.get('/files/:node_id', cache(), function(req, res) {
     req.apicacheGroup = "cluster";
 
     var data_request = {'function': '/cluster/files/:node_id', 'arguments': {}};
-    var filters = {'managers': 'alphanumeric_param', 'files': 'paths', 'offset': 'numbers', 'limit': 'numbers'}
+    var filters = {'files': 'paths', 'offset': 'numbers', 'limit': 'numbers', 'status': 'names'}
     
     data_request['arguments']['count'] = 'count' in req.query ? true : false;
     delete req.query["count"];
@@ -92,6 +92,8 @@ router.get('/files/:node_id', cache(), function(req, res) {
         data_request['arguments']['offset'] = req.query.offset;
     if ('limit' in req.query)
         data_request['arguments']['limit'] = req.query.limit;
+    if ('status' in req.query)
+        data_request['arguments']['status'] = req.query.status;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -113,7 +115,7 @@ router.get('/files', cache(), function(req, res) {
     req.apicacheGroup = "cluster";
 
     var data_request = {'function': '/cluster/files', 'arguments': {}};
-    var filters = {'managers': 'alphanumeric_param', 'files': 'paths', 'offset': 'numbers', 'limit': 'numbers'}
+    var filters = {'managers': 'alphanumeric_param', 'files': 'paths', 'offset': 'numbers', 'limit': 'numbers', 'status': 'names'}
     
     data_request['arguments']['count'] = 'count' in req.query ? true : false;
     delete req.query["count"];
@@ -130,6 +132,8 @@ router.get('/files', cache(), function(req, res) {
         data_request['arguments']['offset'] = req.query.offset;
     if ('limit' in req.query)
         data_request['arguments']['limit'] = req.query.limit;
+    if ('status' in req.query)
+        data_request['arguments']['filter_status'] = req.query.status;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
