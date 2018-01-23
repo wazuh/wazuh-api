@@ -75,7 +75,7 @@ router.get('/files/:node_id', cache(), function(req, res) {
     var data_request = {'function': '/cluster/files/:node_id', 'arguments': {}};
     var filters = {'managers': 'alphanumeric_param', 'files': 'paths', 'offset': 'numbers', 'limit': 'numbers'}
 
-    if (!filter.check(req.params, {'node_id':'ips'}, req, res))  // Filter with error
+    if (!filter.check(req.params, {'node_id':'alphanumeric_param'}, req, res))  // Filter with error
         return;
 
     data_request['arguments']['node_id'] = req.params.node_id;
