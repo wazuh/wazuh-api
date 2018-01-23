@@ -74,6 +74,9 @@ router.get('/files/:node_id', cache(), function(req, res) {
 
     var data_request = {'function': '/cluster/files/:node_id', 'arguments': {}};
     var filters = {'managers': 'alphanumeric_param', 'files': 'paths', 'offset': 'numbers', 'limit': 'numbers'}
+    
+    data_request['arguments']['count'] = 'count' in req.query ? true : false;
+    delete req.query["count"];
 
     if (!filter.check(req.params, {'node_id':'alphanumeric_param'}, req, res))  // Filter with error
         return;
@@ -111,9 +114,13 @@ router.get('/files', cache(), function(req, res) {
 
     var data_request = {'function': '/cluster/files', 'arguments': {}};
     var filters = {'managers': 'alphanumeric_param', 'files': 'paths', 'offset': 'numbers', 'limit': 'numbers'}
+    
+    data_request['arguments']['count'] = 'count' in req.query ? true : false;
+    delete req.query["count"];
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
+
 
     if ('managers' in req.query)
         data_request['arguments']['manager'] = filter.select_param_to_json(req.query.managers);
