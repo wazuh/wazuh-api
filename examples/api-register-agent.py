@@ -54,28 +54,18 @@ def code_desc(http_status_code):
 
 def add_agent(agt_name, agt_ip=None):
     if agt_ip:
-        status_code, response = req('post', '/agents', {'name': agt_name, 'ip': agt_ip})
+        status_code, response = req('post', 'agents', {'name': agt_name, 'ip': agt_ip})
     else:
-        status_code, response = req('post', '/agents', {'name': agt_name})
+        status_code, response = req('post', 'agents', {'name': agt_name})
 
     if status_code == 200 and response['error'] == 0:
-        r_id = response['data']
-        return r_id
+        r_id  = response['data']['id']
+        r_key = response['data']['key']
+        return r_id, r_key
     else:
         msg = json.dumps(response, indent=4, sort_keys=True)
         code = "Status: {0} - {1}".format(status_code, code_desc(status_code))
         exit("ERROR - ADD AGENT:\n{0}\n{1}".format(code, msg))
-
-
-def get_key(agent_id):
-    status_code, response = req('get', '/agents/{0}/key'.format(agent_id))
-    if status_code == 200 and response['error'] == 0:
-        r_key = response['data']
-        return r_key
-    else:
-        msg = json.dumps(response, indent=4, sort_keys=True)
-        code = "Status: {0} - {1}".format(status_code, code_desc(status_code))
-        exit("ERROR - GET KEY AGENT:\n{0}\n{1}".format(code, msg))
 
 
 def import_key(agent_key):
@@ -123,11 +113,8 @@ if __name__ == "__main__":
     if agent_name == "auto":
         agent_name = get_hostname()
 
-    agent_id = add_agent(agent_name)
+    agent_id, agent_key = add_agent(agent_name)
     print("Agent '{0}' with ID '{1}' added.".format(agent_name, agent_id))
-
-    print("Getting agent key.")
-    agent_key = get_key(agent_id)
 
     print("Importing authentication key.")
 
