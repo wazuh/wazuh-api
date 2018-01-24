@@ -1,6 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+<<<<<<< HEAD
+=======
+## [v3.2.0]
+### Added
+- Fixed `api-register-agent.sh` script ([#56](https://github.com/wazuh/wazuh-api/pull/56)).
+- Added support for API in cluster ([#54](https://github.com/wazuh/wazuh-api/pull/54)).
+- Added new calls for cluster nodes ([#54](https://github.com/wazuh/wazuh-api/pull/54)).
+
+>>>>>>> b91090e... Fix api register agent script (#56)
 ## [v3.1.0]
 ### Added
 
