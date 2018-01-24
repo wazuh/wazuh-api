@@ -30,13 +30,13 @@ echo ""
 echo "Adding agent:"
 echo "curl -s -u $USER:**** -k -X POST -d 'name=$AGENT_NAME' $PROTOCOL://$API_IP:$API_PORT/agents"
 API_RESULT=$(curl -s -u $USER:"$PASSWORD" -k -X POST -d 'name='$AGENT_NAME $PROTOCOL://$API_IP:$API_PORT/agents)
-ERROR=$(echo $API_RESULT | sed -rn 's/.*"error":(.+)\,.*/\1/p')
+echo -e $API_RESULT | grep "\"error\":0" 2>&1
 
-if [ ! "$ERROR" = "0" ]; then
-  echo $API_RESULT | sed -rn 's/.*"message":"(.+)".*/\1/p'
+if [ "$?" != "0" ]; then
+  echo -e $API_RESULT | sed -rn 's/.*"message":"(.+)".*/\1/p'
   exit 1
 fi
-
+# Get agent id and agent key 
 AGENT_ID=$(echo $API_RESULT | cut -d':' -f 4 | cut -d ',' -f 1)
 AGENT_KEY=$(echo $API_RESULT | cut -d':' -f 5 | cut -d '}' -f 1)
 
