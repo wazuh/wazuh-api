@@ -30,7 +30,7 @@ echo ""
 echo "Adding agent:"
 echo "curl -s -u $USER:**** -k -X POST -d 'name=$AGENT_NAME' $PROTOCOL://$API_IP:$API_PORT/agents"
 API_RESULT=$(curl -s -u $USER:"$PASSWORD" -k -X POST -d 'name='$AGENT_NAME $PROTOCOL://$API_IP:$API_PORT/agents)
-echo -e $API_RESULT | grep "\"error\":0" 2>&1
+echo -e $API_RESULT | grep -q "\"error\":0" 2>&1
 
 if [ "$?" != "0" ]; then
   echo -e $API_RESULT | sed -rn 's/.*"message":"(.+)".*/\1/p'
