@@ -83,7 +83,7 @@ router.get('/info', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /manager/info Get manager information
+ * @api {get} /manager/info/:node_id Get manager information
  * @apiName GetManagerInfo
  * @apiGroup Info
  *
@@ -299,7 +299,7 @@ router.get('/stats/weekly', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /manager/stats/weekly Get manager stats by week
+ * @api {get} /manager/stats/weekly/:node_id Get manager stats by week
  * @apiName GetManagerStatsWeekly
  * @apiGroup Stats
  *
@@ -483,7 +483,7 @@ router.get('/logs/summary/:node_id', cache(), function(req, res) {
  * @apiDescription Returns the 3 last months of ossec.log.
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/logs/:node01?offset=0&limit=5&pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/logs/node01?offset=0&limit=5&pretty"
  *
  */
 router.get('/logs/:node_id', cache(), function(req, res) {
