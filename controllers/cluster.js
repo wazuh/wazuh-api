@@ -33,6 +33,26 @@ router.get('/nodes', cache(), function(req, res) {
 })
 
 /**
+ * @api {get} /cluster/node Get node info
+ * @apiName GetNodeInfo
+ * @apiGroup Node
+ *
+ * @apiDescription Returns the Node info
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node"
+ *
+ */
+router.get('/node', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/node");
+
+    req.apicacheGroup = "cluster";
+
+    var data_request = {'function': '/cluster/node', 'arguments': {}};
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
  * @api {get} /cluster/nodes/elected_master Get elected master
  * @apiName GetElectedMaster
  * @apiGroup Nodes
@@ -60,7 +80,7 @@ router.get('/nodes/elected_master', cache(), function(req, res) {
  * @apiDescription Returns the state of each file in the cluster
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/files?pretty""
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/files?pretty"
  *
  */
 router.get('/files', cache(), function(req, res) {
@@ -111,7 +131,7 @@ router.get('/agents', cache(), function(req, res) {
  * @apiDescription Returns if the cluster is enabled or disabled
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/status?pretty""
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/status?pretty"
  *
  */
 router.get('/status', cache(), function(req, res) {
