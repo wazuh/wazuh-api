@@ -25,6 +25,7 @@ var router = require('express').Router();
  * @apiParam {String} [os.platform] Filters by OS platform.
  * @apiParam {String} [os.version] Filters by OS version.
  * @apiParam {String} [manager] Filters by manager hostname to which agents are connected.
+ * @apiParam {String} [version] Filters by agents version.
  *
  * @apiDescription Returns a list with the available agents.
  *
@@ -38,7 +39,7 @@ router.get('/', cache(), function(req, res) {
     req.apicacheGroup = "agents";
 
     var data_request = {'function': '/agents', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'select':'select_param', 'search':'search_param', 'status':'alphanumeric_param', 'os.platform':'alphanumeric_param', 'os.version':'alphanumeric_param', 'manager':'alphanumeric_param'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'select':'select_param', 'search':'search_param', 'status':'alphanumeric_param', 'os.platform':'alphanumeric_param', 'os.version':'alphanumeric_param', 'manager':'alphanumeric_param', 'version':'alphanumeric_param'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -61,6 +62,8 @@ router.get('/', cache(), function(req, res) {
         data_request['arguments']['os_version'] = req.query['os.version'];
     if ('manager' in req.query)
         data_request['arguments']['manager_host'] = req.query['manager'];
+    if ('version' in req.query)
+        data_request['arguments']['version'] = req.query['version'];
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
