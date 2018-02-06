@@ -92,7 +92,7 @@ describe('Agents', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'ip', 'id', 'name']);
+                res.body.data.items[0].should.have.properties(['status', 'ip', 'id', 'name', 'dateAdd']);
                 done();
             });
         });
@@ -734,7 +734,7 @@ describe('Agents', function() {
 
                 res.body.should.have.properties(['error', 'data']);
 
-                res.body.data.ids[0].error.code.should.equal(1703);
+                res.body.data.failed_ids[0].error.code.should.equal(1703);
                 done();
             });
         });
