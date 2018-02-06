@@ -59,8 +59,8 @@ describe('Agents', function() {
                 res.body.should.have.properties(['error', 'data']);
 
                 res.body.error.should.equal(0);
-                res.body.data.should.match(/^\d+$/);
-                agent_id = res.body.data;
+                res.body.data.id.should.match(/^\d+$/);
+                agent_id = res.body.data.id;
                 done();
             });
         });
@@ -112,7 +112,7 @@ describe('Agents', function() {
             .expect(200)
             .end(function(err, res) {
                 if (err) throw err;
-                agent_id = res.body.data;
+                agent_id = res.body.data.id;
                 done();
               });
         });
@@ -147,8 +147,8 @@ describe('Agents', function() {
 
                 res.body.should.have.properties(['error', 'data']);
 
-                if (is_auth_d_running()) res.body.data.ids[0].error.code.should.equal(9011);
-                else                     res.body.data.ids[0].error.code.should.equal(1701);
+                if (is_auth_d_running()) res.body.data.failed_ids[0].error.code.should.equal(9011);
+                else                     res.body.data.failed_ids[0].error.code.should.equal(1701);
                 res.body.data.msg.should.be.type('string');
                 done();
             });
@@ -202,8 +202,8 @@ describe('Agents', function() {
                     res.body.should.have.properties(['error', 'data']);
 
                     res.body.error.should.equal(0);
-                    res.body.data.should.match(/^\d+$/);
-                    agent_id = res.body.data;
+                    res.body.data.id.should.match(/^\d+$/);
+                    agent_id = res.body.data.id;
                     done();
                 });
             });
@@ -221,7 +221,7 @@ describe('Agents', function() {
                     res.body.should.have.properties(['error', 'message']);
 
                     if (is_auth_d_running()) res.body.error.should.equal(9008);
-                    else                     res.body.error.should.equal(1705);   
+                    else                     res.body.error.should.equal(1705);
                     res.body.message.should.be.type('string');
                     done();
                 });
@@ -295,8 +295,8 @@ describe('Agents', function() {
                     res.body.should.have.properties(['error', 'data']);
 
                     res.body.error.should.equal(0);
-                    res.body.data.should.match(/^\d+$/);
-                    agent_id = res.body.data;
+                    res.body.data.id.should.match(/^\d+$/);
+                    agent_id = res.body.data.id;
                     done();
                 });
             });
@@ -314,7 +314,7 @@ describe('Agents', function() {
                     res.body.should.have.properties(['error', 'message']);
 
                     if (is_auth_d_running()) res.body.error.should.equal(9007);
-                    else                     res.body.error.should.equal(1706);   
+                    else                     res.body.error.should.equal(1706);
                     done();
                 });
             });
@@ -356,8 +356,8 @@ describe('Agents', function() {
                     res.body.should.have.properties(['error', 'data']);
 
                     res.body.error.should.equal(0);
-                    res.body.data.should.match(/^\d+$/);
-                    agent_id = res.body.data;
+                    res.body.data.id.should.match(/^\d+$/);
+                    agent_id = res.body.data.id;
                     done();
                 });
             });
@@ -452,7 +452,7 @@ describe('Agents', function() {
                     res.body.should.have.properties(['error', 'message']);
 
                     if (is_auth_d_running()) res.body.error.should.equal(9008);
-                    else                     res.body.error.should.equal(1705); 
+                    else                     res.body.error.should.equal(1705);
                     res.body.message.should.be.type('string');
                     done();
                 });
@@ -627,7 +627,7 @@ describe('Agents', function() {
                     res.body.error.should.equal(0);
                     res.body.data.id.should.match(/^\d+$/);
                     res.body.data.key.should.match(/^[a-zA-Z0-9=]+/);
-                    agent_id = res.body.data;
+                    agent_id = res.body.data.id;
                     done();
                 });
             });
