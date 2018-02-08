@@ -83,8 +83,13 @@ hardcoded_items = {
         'PostAgentListRestart' : {"error": 0,"data": "All selected agents were restarted"},
 
         # GET /syscheck/:agent_id
-        'GetSyscheckAgent' : {"error":0,"data":{"totalItems":2762,"items":[{"sha1":"4fed08ccbd0168593a6fffcd925adad65e5ae6d9","group":"root","uid":0,"scanDate":"2017-03-02 23:43:28","gid":0,"user":"root","file":"!1488498208 /boot/config-3.16.0-4-amd64","modificationDate":"2016-10-19 06:45:50","octalMode":"100644","permissions":"-rw-r--r--","md5":"46d43391ae54c1084a2d40e8d1b4873c","inode":5217,"event":"added","size":157721},{"sha1":"d48151a3d3638b723f5d7bc1e9c71d478fcde4e6","group":"root","uid":0,"scanDate":"2017-03-02 23:43:26","gid":0,"user":"root","file":"!1488498206 /boot/System.map-3.16.0-4-amd64","modificationDate":"2016-10-19 06:45:50","octalMode":"100644","permissions":"-rw-r--r--","md5":"29cc12246faecd4a14d212b4d9bac0fe","inode":5216,"event":"added","size":2679264}]}}
+        'GetSyscheckAgent' : {"error":0,"data":{"totalItems":2762,"items":[{"sha1":"4fed08ccbd0168593a6fffcd925adad65e5ae6d9","group":"root","uid":0,"scanDate":"2017-03-02 23:43:28","gid":0,"user":"root","file":"!1488498208 /boot/config-3.16.0-4-amd64","modificationDate":"2016-10-19 06:45:50","octalMode":"100644","permissions":"-rw-r--r--","md5":"46d43391ae54c1084a2d40e8d1b4873c","inode":5217,"event":"added","size":157721},{"sha1":"d48151a3d3638b723f5d7bc1e9c71d478fcde4e6","group":"root","uid":0,"scanDate":"2017-03-02 23:43:26","gid":0,"user":"root","file":"!1488498206 /boot/System.map-3.16.0-4-amd64","modificationDate":"2016-10-19 06:45:50","octalMode":"100644","permissions":"-rw-r--r--","md5":"29cc12246faecd4a14d212b4d9bac0fe","inode":5216,"event":"added","size":2679264}]}},
 
+        # GET /agents/purgeable/:timeframe
+        'GetAgentsPurgeable' : {"error":0,"data":{"items":[{"id":"001","name":"test1"},{"id":"002","name":"test2"}],"timeframe":104400}},
+
+        # POST /agents/purge
+        'PostAgentsPurge' : {"error":0,"data":{"totalItems":2,"items":[{"id":"001","name":"test1"},{"id":"002","name":"test2"}],"timeframe":104400}}
     }
 ### ### ###
 

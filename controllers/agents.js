@@ -390,7 +390,7 @@ router.get('/outdated', cache(), function(req, res) {
  * @apiDescription Returns a list of agents that can be purged
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/purgeable/10800?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/purgeable/1d5h?pretty"
  *
  */
 router.get('/purgeable/:timeframe', cache(), function(req, res) {
@@ -1060,7 +1060,7 @@ router.post('/insert', function(req, res) {
  * @apiDescription Deletes all agents that did not connected in the last timeframe seconds.
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X POST -H "Content-Type:application/json" -d '{"timeframe":10800}' "https://127.0.0.1:55000/agents/purge?pretty"
+ *     curl -u foo:bar -k -X POST -H "Content-Type:application/json" -d '{"timeframe":"1d5h","verbose":true}' "https://127.0.0.1:55000/agents/purge?pretty"
  *
  */
 router.post('/purge', function(req, res) {
