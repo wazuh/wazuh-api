@@ -3,9 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [v3.2.0]
 ### Added
-- Version selector added to GET /agents ([#60](https://github.com/wazuh/wazuh-api/pull/60)).
-- It's possible search agents by version in GET /agents ([#60](https://github.com/wazuh/wazuh-api/pull/60)).
-- New attributes added to the output of GET /agents ([Wazuh #375](https://github.com/wazuh/wazuh/pull/375)).
+- Version selector added to `GET /agents` ([#60](https://github.com/wazuh/wazuh-api/pull/60)).
+- It's possible search agents by version in `GET /agents` ([#60](https://github.com/wazuh/wazuh-api/pull/60)).
+- New attributes added to the output of `GET /agents` ([Wazuh #375](https://github.com/wazuh/wazuh/pull/375)).
 
 ### Fixed
 - Fixed `ìnstall_api.sh` script to load preloaded_vars.conf ([#53](https://github.com/wazuh/wazuh-api/pull/53)).
