@@ -20,7 +20,7 @@ var router = require('express').Router();
  * @apiDescription Returns the Nodes info
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/nodes"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/nodes?pretty"
  *
  */
 router.get('/nodes', cache(), function(req, res) {
@@ -40,7 +40,7 @@ router.get('/nodes', cache(), function(req, res) {
  * @apiDescription Returns the Node info
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node?pretty"
  *
  */
 router.get('/node', cache(), function(req, res) {
@@ -60,7 +60,7 @@ router.get('/node', cache(), function(req, res) {
  * @apiDescription Returns the state of each file in the cluster
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/files"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/files?pretty"
  *
  */
 router.get('/files', cache(), function(req, res) {
@@ -90,7 +90,7 @@ router.get('/files', cache(), function(req, res) {
  * @apiDescription Returns the state of each agent and the manager it's reporting to in the cluster
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/agents"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/agents?pretty"
  *
  */
 router.get('/agents', cache(), function(req, res) {
@@ -104,14 +104,14 @@ router.get('/agents', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /cluster/status Get info about cluster status 
+ * @api {get} /cluster/status Get info about cluster status
  * @apiName GetClusterstatus
  * @apiGroup Status
  *
  * @apiDescription Returns if the cluster is enabled or disabled
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/status"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/status?pretty"
  *
  */
 router.get('/status', cache(), function(req, res) {
@@ -132,7 +132,7 @@ router.get('/status', cache(), function(req, res) {
  * @apiDescription Returns the cluster configuration
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/config"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/config?pretty"
  *
  */
 router.get('/config', cache(), function(req, res) {

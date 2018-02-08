@@ -383,7 +383,7 @@ router.get('/outdated', cache(), function(req, res) {
  * @apiName GetAgentsPurgeable
  * @apiGroup Info
  *
- * @apiParam {String} timeframe Time from last connection in seconds or or [n_days]d[n_hours]h[n_minutes]m[n_seconds]s.
+ * @apiParam {String} timeframe Time from last connection in seconds or [n_days]d[n_hours]h[n_minutes]m[n_seconds]s.
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  *
@@ -427,7 +427,7 @@ router.get('/purgeable/:timeframe', cache(), function(req, res) {
  * @apiDescription Returns the information of an agent called :agent_name.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/name/myAgent?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/name/NewHost?pretty"
  *
  */
 router.get('/name/:agent_name', cache(), function(req, res) {
@@ -1054,7 +1054,7 @@ router.post('/insert', function(req, res) {
  * @apiName PostAgentsPurge
  * @apiGroup Purge
  *
- * @apiParam {String} timeframe Time from last connection in seconds or or [n_days]d[n_hours]h[n_minutes]m[n_seconds]s.
+ * @apiParam {String} timeframe Time from last connection in seconds or [n_days]d[n_hours]h[n_minutes]m[n_seconds]s.
  * @apiParam {Boolean} verbose Return information about agents purgeds.
  *
  * @apiDescription Deletes all agents that did not connected in the last timeframe seconds.
