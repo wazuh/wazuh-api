@@ -26,8 +26,8 @@ var router = require('express').Router();
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/os?pretty"
  *
  */
-router.get('/syscollector/:agent_id/os', function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /agents/:agent_id/sys/os");
+router.get('/:agent_id/os', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /syscollector/:agent_id/os");
 
     var data_request = {'function': '/syscollector/:agent_id/os', 'arguments': {}};
     var filters = {'select':'select_param'};
@@ -59,8 +59,8 @@ router.get('/syscollector/:agent_id/os', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/hardware?pretty"
  *
  */
-router.get('/syscollector/:agent_id/hardware', function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /agents/:agent_id/sys/hardware");
+router.get('/:agent_id/hardware', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /syscollector/:agent_id/hardware");
 
     var data_request = {'function': '/syscollector/:agent_id/hardware', 'arguments': {}};
     var filters = {'select':'select_param'};
@@ -96,8 +96,8 @@ router.get('/syscollector/:agent_id/hardware', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/programs?pretty&limit=4&offset=10&sort=-name"
  *
  */
-router.get('/syscollector/:agent_id/programs', function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /agents/:agent_id/sys/programs");
+router.get('/:agent_id/programs', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /syscollector/:agent_id/programs");
 
     var data_request = {'function': '/syscollector/:agent_id/programs', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
