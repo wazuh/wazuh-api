@@ -29,6 +29,7 @@ try:
     import wazuh.stats as stats
     import wazuh.rootcheck as rootcheck
     import wazuh.syscheck as syscheck
+    import wazuh.syscollector as syscollector
 except ImportError as e:
     error = str(e)
     error_wazuh_package = -1
@@ -178,8 +179,6 @@ if __name__ == "__main__":
             '/agents/summary/os': Agent.get_os_summary,
             '/agents/outdated': Agent.get_outdated_agents,
             '/agents/:agent_id/upgrade_result': Agent.get_upgrade_result,
-            '/agents/:agent_id/sys/os': Agent.get_os,
-            '/agents/:agent_id/sys/hardware': Agent.get_hardware,
             'PUT/agents/:agent_id/upgrade': Agent.upgrade_agent,
             'PUT/agents/:agent_id/upgrade_custom': Agent.upgrade_agent_custom,
             'PUT/agents/:agent_id/restart': Agent.restart_agents,
@@ -191,7 +190,11 @@ if __name__ == "__main__":
             'DELETE/agents/groups': Agent.remove_group,
             'DELETE/agents/:agent_id': Agent.remove_agent,
             'DELETE/agents/': Agent.remove_agent,
-
+            # Syscollector
+            '/agents/:agent_id/sys/os': syscollector.get_os,
+            '/agents/:agent_id/sys/hardware': syscollector.get_hardware,
+            '/agents/:agent_id/sys/programs': syscollector.get_programs,
+            # Groups
             '/agents/groups': Agent.get_all_groups,
             '/agents/groups/:group_id': Agent.get_agent_group,
             '/agents/groups/:group_id/configuration':configuration.get_agent_conf,
