@@ -567,7 +567,7 @@ router.get('/:agent_id/sys/os', function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /agents/:agent_id/sys/os");
 
     var data_request = {'function': '/agents/:agent_id/sys/os', 'arguments': {}};
-    var filters = {'select':'select_param'};
+    var filters = {'select':'select_param', 'search':'search_param'};
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
         return;
@@ -579,6 +579,8 @@ router.get('/:agent_id/sys/os', function(req, res) {
 
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search)
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -600,7 +602,7 @@ router.get('/:agent_id/sys/hardware', function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /agents/:agent_id/sys/hardware");
 
     var data_request = {'function': '/agents/:agent_id/sys/hardware', 'arguments': {}};
-    var filters = {'select':'select_param'};
+    var filters = {'select':'select_param', 'search': 'search_param'};
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
         return;
@@ -612,6 +614,8 @@ router.get('/:agent_id/sys/hardware', function(req, res) {
 
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search)
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -633,7 +637,7 @@ router.get('/:agent_id/sys/programs', function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /agents/:agent_id/sys/programs");
 
     var data_request = {'function': '/agents/:agent_id/sys/programs', 'arguments': {}};
-    var filters = {'select':'select_param'};
+    var filters = {'select':'select_param', 'search':'search_param'};
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
         return;
@@ -645,6 +649,8 @@ router.get('/:agent_id/sys/programs', function(req, res) {
 
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search)
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
