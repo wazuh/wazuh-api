@@ -178,6 +178,8 @@ if __name__ == "__main__":
             '/agents/summary/os': Agent.get_os_summary,
             '/agents/outdated': Agent.get_outdated_agents,
             '/agents/:agent_id/upgrade_result': Agent.get_upgrade_result,
+            '/agents/:agent_id/sys/os': Agent.get_os,
+            '/agents/:agent_id/sys/hardware': Agent.get_hardware,
             'PUT/agents/:agent_id/upgrade': Agent.upgrade_agent,
             'PUT/agents/:agent_id/upgrade_custom': Agent.upgrade_agent_custom,
             'PUT/agents/:agent_id/restart': Agent.restart_agents,
