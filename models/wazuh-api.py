@@ -239,9 +239,9 @@ if __name__ == "__main__":
             'PUT/syscheck': syscheck.run,
             'DELETE/syscheck': syscheck.clear,
 
-            '/syscollector/:agent_id/os': syscollector.get_os,
-            '/syscollector/:agent_id/hardware': syscollector.get_hardware,
-            '/syscollector/:agent_id/programs': syscollector.get_programs
+            '/syscollector/:agent_id/os': syscollector.get_os_agent,
+            '/syscollector/:agent_id/hardware': syscollector.get_hardware_agent,
+            '/syscollector/:agent_id/programs': syscollector.get_programs_agent,
             '/syscollector/os': syscollector.get_os,
             '/syscollector/hardware': syscollector.get_hardware,
             '/syscollector/programs': syscollector.get_programs
