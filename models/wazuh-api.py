@@ -190,10 +190,6 @@ if __name__ == "__main__":
             'DELETE/agents/groups': Agent.remove_group,
             'DELETE/agents/:agent_id': Agent.remove_agent,
             'DELETE/agents/': Agent.remove_agent,
-            # Syscollector
-            '/agents/:agent_id/sys/os': syscollector.get_os,
-            '/agents/:agent_id/sys/hardware': syscollector.get_hardware,
-            '/agents/:agent_id/sys/programs': syscollector.get_programs,
             # Groups
             '/agents/groups': Agent.get_all_groups,
             '/agents/groups/:group_id': Agent.get_agent_group,
@@ -241,13 +237,11 @@ if __name__ == "__main__":
             '/syscheck/:agent_id': syscheck.files,
             '/syscheck/:agent_id/last_scan': syscheck.last_scan,
             'PUT/syscheck': syscheck.run,
-            'DELETE/syscheck': syscheck.clear
+            'DELETE/syscheck': syscheck.clear,
 
-
-
-
-
-
+            '/syscollector/:agent_id/os': syscollector.get_os,
+            '/syscollector/:agent_id/hardware': syscollector.get_hardware,
+            '/syscollector/:agent_id/programs': syscollector.get_programs
 
         }
 
