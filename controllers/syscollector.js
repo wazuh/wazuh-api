@@ -159,7 +159,9 @@ router.get('/programs', function(req, res) {
 
     var data_request = {'function': '/syscollector/programs', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
-                   'search':'search_param', 'select':'select_param'};
+                   'search':'search_param', 'select':'select_param',
+                    'vendor': 'alphanumeric_param', 'name': 'alphanumeric_param',
+                    'architecture': 'alphanumeric_param', 'format': 'alphanumeric_param'};
 
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
@@ -169,6 +171,7 @@ router.get('/programs', function(req, res) {
         return;
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
+    data_request['arguments']['filters']  = {};
 
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
@@ -180,6 +183,14 @@ router.get('/programs', function(req, res) {
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+    if ('vendor' in req.query)
+        data_request['arguments']['filters']['vendor'] = req.query.vendor
+    if ('name' in req.query)
+        data_request['arguments']['filters']['name'] = req.query.name
+    if ('architecture' in req.query)
+        data_request['arguments']['filters']['architecture'] = req.query.architecture
+    if ('format' in req.query)
+        data_request['arguments']['filters']['format'] = req.query.format
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -205,8 +216,7 @@ router.get('/os', function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /syscollector/os");
 
     var data_request = {'function': '/syscollector/os', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
-                   'search':'search_param', 'select':'select_param'};
+    var filters = {'select':'select_param'};
 
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
@@ -216,17 +226,10 @@ router.get('/os', function(req, res) {
         return;
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
+    data_request['arguments']['filters']  = {};
 
     if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select);
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -252,8 +255,7 @@ router.get('/hardware', function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /syscollector/hardware");
 
     var data_request = {'function': '/syscollector/hardware', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
-                   'search':'search_param', 'select':'select_param'};
+    var filters = {'select':'select_param'};
 
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
@@ -266,14 +268,6 @@ router.get('/hardware', function(req, res) {
 
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
