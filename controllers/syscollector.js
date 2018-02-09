@@ -126,4 +126,145 @@ router.get('/:agent_id/programs', function(req, res) {
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
+/**
+ * @api {get} /syscollector/os Get programs info of all agents
+ * @apiName GetOs
+ * @apiGroup Syscollector
+ *
+ * @apiParam {Number} agent_id Agent ID.
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ *
+ * @apiDescription Returns the agent's programs info
+ *
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/programs?pretty&limit=4&offset=10&sort=-name"
+ *
+ */
+router.get('/programs', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /syscollector/programs");
+
+    var data_request = {'function': '/syscollector/programs', 'arguments': {}};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
+                   'search':'search_param', 'select':'select_param'};
+
+
+    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
+        return;
+
+    if (!filter.check(req.query, filters, req, res))
+        return;
+
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+
+    if ('select' in req.query)
+        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {get} /syscollector/programs Get os info of all agents
+ * @apiName GetOs
+ * @apiGroup Syscollector
+ *
+ * @apiParam {Number} agent_id Agent ID.
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ *
+ * @apiDescription Returns the agent's programs info
+ *
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/os?pretty&limit=4&offset=10&sort=-name"
+ *
+ */
+router.get('/os', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /syscollector/os");
+
+    var data_request = {'function': '/syscollector/os', 'arguments': {}};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
+                   'search':'search_param', 'select':'select_param'};
+
+
+    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
+        return;
+
+    if (!filter.check(req.query, filters, req, res))
+        return;
+
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+
+    if ('select' in req.query)
+        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {get} /syscollector/hardware Get hardware info of all agents
+ * @apiName GetHardware
+ * @apiGroup Syscollector
+ *
+ * @apiParam {Number} agent_id Agent ID.
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ *
+ * @apiDescription Returns the agent's programs info
+ *
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/hardware?pretty&limit=4&offset=10&sort=-name"
+ *
+ */
+router.get('/hardware', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /syscollector/hardware");
+
+    var data_request = {'function': '/syscollector/hardware', 'arguments': {}};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
+                   'search':'search_param', 'select':'select_param'};
+
+
+    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
+        return;
+
+    if (!filter.check(req.query, filters, req, res))
+        return;
+
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+
+    if ('select' in req.query)
+        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
 module.exports = router;

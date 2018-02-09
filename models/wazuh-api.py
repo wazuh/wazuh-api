@@ -242,6 +242,9 @@ if __name__ == "__main__":
             '/syscollector/:agent_id/os': syscollector.get_os,
             '/syscollector/:agent_id/hardware': syscollector.get_hardware,
             '/syscollector/:agent_id/programs': syscollector.get_programs
+            '/syscollector/os': syscollector.get_os,
+            '/syscollector/hardware': syscollector.get_hardware,
+            '/syscollector/programs': syscollector.get_programs
 
         }
 
