@@ -80,8 +80,8 @@ router.get('/:agent_id/hardware', function(req, res) {
 })
 
 /**
- * @api {get} /syscollector/:agent_id/programs Get programs info
- * @apiName GetPrograms
+ * @api {get} /syscollector/:agent_id/packages Get packages info
+ * @apiName GetPackages
  * @apiGroup Syscollector
  *
  * @apiParam {Number} agent_id Agent ID.
@@ -90,16 +90,16 @@ router.get('/:agent_id/hardware', function(req, res) {
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  *
- * @apiDescription Returns the agent's programs info
+ * @apiDescription Returns the agent's packages info
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/programs?pretty&limit=4&offset=10&sort=-name"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/packages?pretty&limit=4&offset=10&sort=-name"
  *
  */
-router.get('/:agent_id/programs', function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /syscollector/:agent_id/programs");
+router.get('/:agent_id/packages', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /syscollector/:agent_id/packages");
 
-    var data_request = {'function': '/syscollector/:agent_id/programs', 'arguments': {}};
+    var data_request = {'function': '/syscollector/:agent_id/packages', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
                    'search':'search_param', 'select':'select_param',
                     'vendor': 'alphanumeric_param', 'name': 'alphanumeric_param',
@@ -138,8 +138,8 @@ router.get('/:agent_id/programs', function(req, res) {
 })
 
 /**
- * @api {get} /syscollector/os Get programs info of all agents
- * @apiName GetOs
+ * @api {get} /syscollector/os Get packages info of all agents
+ * @apiName GetPackages
  * @apiGroup Syscollector
  *
  * @apiParam {Number} agent_id Agent ID.
@@ -148,16 +148,16 @@ router.get('/:agent_id/programs', function(req, res) {
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  *
- * @apiDescription Returns the agent's programs info
+ * @apiDescription Returns the agent's packages info
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/programs?pretty&limit=4&offset=10&sort=-name"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/packages?pretty&limit=4&offset=10&sort=-name"
  *
  */
-router.get('/programs', function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /syscollector/programs");
+router.get('/packages', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /syscollector/packages");
 
-    var data_request = {'function': '/syscollector/programs', 'arguments': {}};
+    var data_request = {'function': '/syscollector/packages', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
                    'search':'search_param', 'select':'select_param',
                     'vendor': 'alphanumeric_param', 'name': 'alphanumeric_param',
