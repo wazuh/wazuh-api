@@ -216,7 +216,7 @@ router.get('/os', function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /syscollector/os");
 
     var data_request = {'function': '/syscollector/os', 'arguments': {}};
-    var filters = {'select':'select_param'};
+    var filters = {'os_name': 'alphanumeric_param', 'architecture': 'alphanumeric_param', 'limit': 'numbers', 'offset': 'numbers'};
 
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
@@ -228,8 +228,14 @@ router.get('/os', function(req, res) {
     data_request['arguments']['agent_id'] = req.params.agent_id;
     data_request['arguments']['filters']  = {};
 
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select);
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = limit;
+    if ('architecture' in req.query)
+        data_request['arguments']['filters']['architecture'] = req.query.architecture
+    if ('os_name' in req.query)
+        data_request['arguments']['filters']['os_name'] = req.query.os_name
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
