@@ -97,7 +97,7 @@ router.get('/:agent_id/hardware', function(req, res) {
  * @apiDescription Returns the agent's packages info
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/packages?pretty&limit=4&offset=10&sort=-name"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/packages?pretty&limit=2&offset=10&sort=-name"
  *
  */
 router.get('/:agent_id/packages', function(req, res) {
@@ -142,7 +142,7 @@ router.get('/:agent_id/packages', function(req, res) {
 })
 
 /**
- * @api {get} /syscollector/os Get OS info of all agents
+ * @api {get} /syscollector/packages Get packages info of all agents
  * @apiName GetPackages
  * @apiGroup Syscollector
  *
@@ -155,7 +155,7 @@ router.get('/:agent_id/packages', function(req, res) {
  * @apiDescription Returns the agent's packages info
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/packages?pretty&limit=4&offset=10&sort=-name"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/packages?pretty&sort=-name&limit=2&offset=4"
  *
  */
 router.get('/packages', function(req, res) {
@@ -213,7 +213,7 @@ router.get('/packages', function(req, res) {
  * @apiDescription Returns the agent's os info
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/os?pretty&limit=4&offset=10&sort=-os_name"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/os?pretty&sort=-os_name"
  *
  */
 router.get('/os', function(req, res) {
@@ -239,7 +239,9 @@ router.get('/os', function(req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
     if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);        
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);        
     if ('offset' in req.query)
         data_request['arguments']['offset'] = req.query.offset;
     if ('limit' in req.query)
@@ -273,7 +275,7 @@ router.get('/os', function(req, res) {
  * @apiDescription Returns the agent's hardware info
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/hardware?pretty&limit=4&offset=10&sort=-cpu_name"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/hardware?pretty&sort=-ram_free"
  *
  */
 router.get('/hardware', function(req, res) {
