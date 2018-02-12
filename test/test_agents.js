@@ -332,6 +332,29 @@ describe('Agents', function() {
 
     });  // GET/agents/summary
 
+    describe('GET/agents/summary/os', function() {
+
+        it('Request', function(done) {
+            request(common.url)
+            .get("/agents/summary/os")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items[0].should.be.instanceof(String)
+                done();
+            });
+        });
+
+    });  // GET/agents/summary/os
+
     describe('GET/agents/:agent_id', function() {
 
         it('Request (manager)', function(done) {
@@ -968,5 +991,48 @@ describe('Agents', function() {
         });
 
     });  // PUT/agents/:agent_id/restart
+
+
+    describe('GET/agents/purgeable/:timeframe', function() {
+
+        it('Request', function(done) {
+            this.timeout(common.timeout);
+
+            request(common.url)
+            .get("/agents/purgeable/0")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.should.have.properties(['items', 'totalItems', 'timeframe']);
+                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items[0].should.have.properties(['id', 'name']);
+                res.body.data.items[0].id.should.be.equal("001");
+                done();
+            });
+        });
+
+        it('Params: timeframe not valid', function(done) {
+            request(common.url)
+            .get("/agents/purgeable/wrongTimeframe")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(617);
+                done();
+            });
+        });
+
+    });  // GET/agents/purgeable/:timeframe
 
 });  // Agents
