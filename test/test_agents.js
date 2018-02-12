@@ -192,7 +192,7 @@ describe('Agents', function() {
                 res.body.should.have.properties(['error', 'data']);
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
-                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items.should.be.instanceof(Array);
                 expected_os_platform = res.body.data.items[0].os.platform;
                 expected_os_version = res.body.data.items[0].os.version;
                 expected_manager_host = res.body.data.items[0].manager_host;
@@ -435,6 +435,42 @@ describe('Agents', function() {
             });
         });
     });  // GET/agents/:agent_id
+
+    describe('GET/agents/:agent_name', function() {
+        var expected_name = ""
+        before(function(done) {
+            request(common.url)
+            .get("/agents/001")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+                res.body.should.have.properties(['error', 'data']);
+                res.body.error.should.equal(0);
+                expected_name = res.body.data.name;
+                done();
+            });
+        });
+        it('Request (manager)', function(done) {
+            request(common.url)
+            .get("/agents/name/"+expected_name)
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.Object;
+                res.body.data.should.have.properties(['status', 'name', 'ip', 'dateAdd', 'version', 'os', 'id', 'manager_host', 'lastKeepAlive']);
+                res.body.data.os.should.have.properties(['major', 'name', 'uname', 'platform', 'version', 'codename', 'arch']);
+                done();
+            });
+        });
+    });  // GET/agents/:agent_name
 
     describe('GET/agents/:agent_id/key', function() {
 
