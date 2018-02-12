@@ -200,7 +200,7 @@ router.get('/packages', function(req, res) {
 })
 
 /**
- * @api {get} /syscollector/packages Get os info of all agents
+ * @api {get} /syscollector/os Get os info of all agents
  * @apiName GetOS
  * @apiGroup Syscollector
  *
@@ -210,7 +210,7 @@ router.get('/packages', function(req, res) {
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  *
- * @apiDescription Returns the agent's packages info
+ * @apiDescription Returns the agent's os info
  *
  * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/os?pretty&limit=4&offset=10&sort=-os_name"
@@ -241,9 +241,9 @@ router.get('/os', function(req, res) {
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);        
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = offset;
+        data_request['arguments']['offset'] = req.query.offset;
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = limit;
+        data_request['arguments']['limit'] = req.query.limit;
     if ('architecture' in req.query)
         data_request['arguments']['filters']['architecture'] = req.query.architecture
     if ('os_name' in req.query)
