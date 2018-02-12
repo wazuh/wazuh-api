@@ -79,7 +79,7 @@ describe('Agents', function() {
             });
         });
 
-        it('Sort', function(done) {
+        it('Wrong Sort', function(done) {
             request(common.url)
             .get("/agents?sort=-wrongParameter")
             .auth(common.credentials.user, common.credentials.password)
@@ -109,6 +109,39 @@ describe('Agents', function() {
                 res.body.data.items.should.be.instanceof(Array)
                 res.body.data.items[0].should.have.properties(['status', 'ip', 'id', 'name', 'dateAdd', 'manager_host', 'os', 'lastKeepAlive']);
                 res.body.data.items[0].os.should.have.properties(['major', 'name', 'uname', 'platform', 'version', 'codename', 'arch']);
+                done();
+            });
+        });
+
+        it('Selector', function(done) {
+            request(common.url)
+            .get("/agents?select=date_add")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items[0].should.have.properties(['dateAdd', 'id']);
+                done();
+            });
+        });
+
+        it('Not allowed selector', function(done) {
+            request(common.url)
+            .get("/agents?select=wrongParam")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1724);
                 done();
             });
         });
@@ -314,7 +347,8 @@ describe('Agents', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.should.be.an.Object;
-                res.body.data.should.have.properties(['status', 'name', 'ip', 'dateAdd', 'version', 'os', 'id']);
+                res.body.data.should.have.properties(['status', 'name', 'ip', 'dateAdd', 'version', 'os', 'id', 'manager_host', 'lastKeepAlive']);
+                res.body.data.os.should.have.properties(['major', 'name', 'uname', 'platform', 'version', 'codename', 'arch']);
                 done();
             });
         });
@@ -332,7 +366,41 @@ describe('Agents', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.should.be.an.Object;
-                res.body.data.should.have.properties(['status', 'name', 'ip', 'dateAdd', 'id']);  //version, lastKeepAlive, os
+                res.body.data.should.have.properties(['status', 'name', 'ip', 'dateAdd', 'version', 'os', 'id', 'manager_host', 'lastKeepAlive', 'configSum', 'mergedSum', 'group']);
+                res.body.data.os.should.have.properties(['major', 'name', 'uname', 'platform', 'version', 'codename', 'arch']);
+                done();
+            });
+        });
+
+
+
+        it('Selector', function(done) {
+            request(common.url)
+            .get("/agents/001?select=date_add")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.have.properties(['dateAdd']);
+                done();
+            });
+        });
+
+        it('Not allowed selector', function(done) {
+            request(common.url)
+            .get("/agents/001?select=wrongParam")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1724);
                 done();
             });
         });
