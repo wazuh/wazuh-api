@@ -14,6 +14,7 @@ var assert  = require('assert');
 var request = require('supertest');
 var common  = require('./common.js');
 
+
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 describe('Agents', function() {
@@ -78,6 +79,20 @@ describe('Agents', function() {
             });
         });
 
+        it('Sort', function(done) {
+            request(common.url)
+            .get("/agents?sort=-wrongParameter")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1403);
+                done();
+            });
+        });
+
         it('Search', function(done) {
             request(common.url)
             .get("/agents?search=1")
@@ -92,7 +107,116 @@ describe('Agents', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'ip', 'id', 'name', 'dateAdd']);
+                res.body.data.items[0].should.have.properties(['status', 'ip', 'id', 'name', 'dateAdd', 'manager_host', 'os', 'lastKeepAlive']);
+                res.body.data.items[0].os.should.have.properties(['major', 'name', 'uname', 'platform', 'version', 'codename', 'arch']);
+                done();
+            });
+        });
+
+        var expected_version = 0;
+        before(function(done) {
+            request(common.url)
+            .get("/version")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+              expected_version="Wazuh "+String(res.body.data);
+              done();
+            });
+        });
+
+        it('Version', function(done) {
+            request(common.url)
+            .get("/agents?version="+expected_version.replace(/\s/g, ''))
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+                res.body.should.have.properties(['error', 'data']);
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items[0].should.have.properties(['version']);
+                res.body.data.items[0].version.should.be.equal(expected_version);
+                done();
+            });
+        });
+
+
+        var expected_os_platform = "";
+        var expected_os_version = "";
+        var expected_manager_host = "";
+        before(function(done) {
+            request(common.url)
+            .get("/agents")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+                res.body.should.have.properties(['error', 'data']);
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array)
+                expected_os_platform = res.body.data.items[0].os.platform;
+                expected_os_version = res.body.data.items[0].os.version;
+                expected_manager_host = res.body.data.items[0].manager_host;
+                done();
+            });
+        });
+
+        it('Os.platform', function(done) {
+            request(common.url)
+            .get("/agents?os.platform=" + expected_os_platform)
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+                res.body.should.have.properties(['error', 'data']);
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items[0].os.should.have.properties(['platform']);
+                res.body.data.items[0].os.platform.should.be.equal(expected_os_platform);
+                done();
+            });
+        });
+
+        it('Os.version', function(done) {
+            request(common.url)
+            .get("/agents?os.version=" + expected_os_version)
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+                res.body.should.have.properties(['error', 'data']);
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items[0].os.should.have.properties(['version']);
+                res.body.data.items[0].os.version.should.be.equal(expected_os_version);
+                done();
+            });
+        });
+
+        it('ManagerHost', function(done) {
+            request(common.url)
+            .get("/agents?manager=" + expected_manager_host)
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+                res.body.should.have.properties(['error', 'data']);
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items[0].os.should.have.properties(['version']);
+                res.body.data.items[0].manager_host.should.be.equal(expected_manager_host);
                 done();
             });
         });
