@@ -63,7 +63,7 @@ router.get('/:agent_id/hardware', function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /syscollector/:agent_id/hardware");
 
     var data_request = {'function': '/syscollector/:agent_id/hardware', 'arguments': {}};
-    
+
     var filters = {'select':'select_param'};
 
 
@@ -77,9 +77,9 @@ router.get('/:agent_id/hardware', function(req, res) {
     data_request['arguments']['filters']  = {};
 
     if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)     
-        
-        
+        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
+
+
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -91,7 +91,7 @@ router.get('/:agent_id/hardware', function(req, res) {
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
- * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  *
  * @apiDescription Returns the agent's packages info
@@ -139,7 +139,7 @@ router.get('/:agent_id/packages', function(req, res) {
         data_request['arguments']['filters']['format'] = req.query.format
     if ('version' in req.query)
         data_request['arguments']['filters']['version'] = req.query.version
-            
+
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -151,7 +151,7 @@ router.get('/:agent_id/packages', function(req, res) {
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
- * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  *
  * @apiDescription Returns the agent's packages info
@@ -209,7 +209,7 @@ router.get('/packages', function(req, res) {
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
- * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  *
  * @apiDescription Returns the agent's os info
@@ -222,7 +222,7 @@ router.get('/os', function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /syscollector/os");
 
     var data_request = {'function': '/syscollector/os', 'arguments': {}};
-    
+
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
                    'search':'search_param', 'select':'select_param',
                    'os_name': 'alphanumeric_param', 'architecture': 'alphanumeric_param',
@@ -243,7 +243,7 @@ router.get('/os', function(req, res) {
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
     if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);        
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('offset' in req.query)
         data_request['arguments']['offset'] = req.query.offset;
     if ('limit' in req.query)
@@ -257,9 +257,9 @@ router.get('/os', function(req, res) {
     if ('version' in req.query)
         data_request['arguments']['filters']['version'] = req.query.version
     if ('release' in req.query)
-        data_request['arguments']['filters']['release'] = req.query.release         
-        
-             
+        data_request['arguments']['filters']['release'] = req.query.release
+
+
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -271,7 +271,7 @@ router.get('/os', function(req, res) {
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
- * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  *
  * @apiDescription Returns the agent's hardware info
@@ -286,7 +286,7 @@ router.get('/hardware', function(req, res) {
     var data_request = {'function': '/syscollector/hardware', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
                    'search':'search_param', 'select':'select_param',
-                    'ram_free': 'numbers', 'ram_total': 'numbers', 'cpu_cores': 'numbers', 'cpu_mhz': 'alphanumeric_param', 
+                    'ram_free': 'numbers', 'ram_total': 'numbers', 'cpu_cores': 'numbers', 'cpu_mhz': 'alphanumeric_param',
                     'cpu_name': 'alphanumeric_param', 'board_serial': 'alphanumeric_param'};
 
 
@@ -320,9 +320,9 @@ router.get('/hardware', function(req, res) {
     if ('cpu_name' in req.query)
         data_request['arguments']['filters']['cpu_name'] = req.query.cpu_name
     if ('board_serial' in req.query)
-        data_request['arguments']['filters']['board_serial'] = req.query.board_serial        
-        
-        
+        data_request['arguments']['filters']['board_serial'] = req.query.board_serial
+
+
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 

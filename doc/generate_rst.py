@@ -17,7 +17,7 @@ TIMEOUT = 30  # cURL TIMEOUT. 0 to disable "example response"
 ### Hardcoded text ###
 rst_header = '.. _api_reference:\n\n'
 warning="\n.. Do not modify this file manually. It is generated automatically.\n\n"
-introduction = "Reference\n======================\nThis API reference is organized by resources:\n\n{0}\nAlso, it is provided an `Request List`_ with all available requests.\n\n.. _request_list:\n"
+introduction = "Reference\n======================\nThis API reference is organized by resources:\n\n{0}\nBelow is the `Request List`_ that shows all of the available requests.\n\n.. _request_list:\n"
 str_request_list = 'Request List'
 section_separator = '-'*40
 subsection_separator = '+'*40
@@ -136,6 +136,8 @@ def insert_row(fields, sizes, highlight=False):
     row = ''
     for i in range(len(fields)):
         if i == 0 and highlight:
+            row += '| ``' + fields[i] + '``' + ' '*(sizes[i]-len(fields[i])-1-2-2)
+        elif i == 0 and fields[i] != 'Param' and fields[i] and fields[i] != ' ':
             row += '| ``' + fields[i] + '``' + ' '*(sizes[i]-len(fields[i])-1-2-2)
         else:
             row += '| ' + fields[i] + ' '*(sizes[i]-len(fields[i])-1)

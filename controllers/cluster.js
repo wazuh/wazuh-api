@@ -37,7 +37,7 @@ router.get('/nodes', cache(), function(req, res) {
  * @apiName GetNodeInfo
  * @apiGroup Node
  *
- * @apiDescription Returns the Node info
+ * @apiDescription Returns the Node information
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node?pretty"
@@ -108,7 +108,7 @@ router.get('/agents', cache(), function(req, res) {
  * @apiName GetClusterstatus
  * @apiGroup Status
  *
- * @apiDescription Returns if the cluster is enabled or disabled
+ * @apiDescription Returns whether the cluster is enabled or disabled
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/status?pretty"
