@@ -107,7 +107,7 @@ router.get('/:agent_id/packages', function(req, res) {
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
                    'search':'search_param', 'select':'select_param',
                     'vendor': 'alphanumeric_param', 'name': 'alphanumeric_param',
-                    'architecture': 'alphanumeric_param', 'format': 'alphanumeric_param'};
+                    'architecture': 'alphanumeric_param', 'format': 'alphanumeric_param', 'version' : 'alphanumeric_param'};
 
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
@@ -137,7 +137,9 @@ router.get('/:agent_id/packages', function(req, res) {
         data_request['arguments']['filters']['architecture'] = req.query.architecture
     if ('format' in req.query)
         data_request['arguments']['filters']['format'] = req.query.format
-
+    if ('version' in req.query)
+        data_request['arguments']['filters']['version'] = req.query.version
+            
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
