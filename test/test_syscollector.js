@@ -1101,43 +1101,6 @@ describe('Syscollector', function() {
           });
       });
 
-      var expected_version = "";
-      before(function(done) {
-          request(common.url)
-          .get("/syscollector/os?limit=1")
-          .auth(common.credentials.user, common.credentials.password)
-          .expect("Content-type",/json/)
-          .expect(200)
-          .end(function(err,res){
-              if (err) return done(err);
-              res.body.should.have.properties(['error', 'data']);
-              res.body.error.should.equal(0);
-              res.body.data.totalItems.should.be.above(0);
-              res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-              res.body.data.items[0].should.have.properties(['version']);
-              expected_version= res.body.data.items[0].version;
-              done();
-          });
-      });
-
-      it('Filter version', function(done) {
-          request(common.url)
-          .get("/syscollector/os?version=" + expected_version.replace(/\s/g, '%20'))
-          .auth(common.credentials.user, common.credentials.password)
-          .expect("Content-type",/json/)
-          .expect(200)
-          .end(function(err,res){
-              if (err) return done(err);
-              res.body.should.have.properties(['error', 'data']);
-              res.body.error.should.equal(0);
-              res.body.data.totalItems.should.be.above(0);
-              res.body.data.items.should.be.instanceof(Array)
-              res.body.data.items[0].should.have.properties(['version']);
-              res.body.data.items[0].version.should.be.equal(expected_version);
-              done();
-          });
-      });
-
       var expected_release = "";
       before(function(done) {
           request(common.url)
@@ -1453,42 +1416,6 @@ describe('Syscollector', function() {
               res.body.data.items.should.be.instanceof(Array)
               res.body.data.items[0].should.have.properties(['cpu_mhz']);
               res.body.data.items[0].cpu_mhz.should.be.equal(expected_cpu_mhz);
-              done();
-          });
-      });
-
-      var expected_cpu_name = "";
-      before(function(done) {
-          request(common.url)
-          .get("/syscollector/001/hardware")
-          .auth(common.credentials.user, common.credentials.password)
-          .expect("Content-type",/json/)
-          .expect(200)
-          .end(function(err,res){
-              if (err) return done(err);
-              res.body.should.have.properties(['error', 'data']);
-              res.body.error.should.equal(0);
-              res.body.data.should.have.properties(['cpu']);
-              res.body.data.cpu.should.have.properties(['name']);
-              expected_cpu_name = res.body.data.cpu.name;
-              done();
-          });
-      });
-
-      it('Filter cpu_name', function(done) {
-          request(common.url)
-          .get("/syscollector/hardware?cpu_name=" + expected_cpu_name.replace(/\s/g, '%20'))
-          .auth(common.credentials.user, common.credentials.password)
-          .expect("Content-type",/json/)
-          .expect(200)
-          .end(function(err,res){
-              if (err) return done(err);
-              res.body.should.have.properties(['error', 'data']);
-              res.body.error.should.equal(0);
-              res.body.data.totalItems.should.be.above(0);
-              res.body.data.items.should.be.instanceof(Array)
-              res.body.data.items[0].should.have.properties(['cpu_name']);
-              res.body.data.items[0].cpu_name.should.be.equal(expected_cpu_name);
               done();
           });
       });
