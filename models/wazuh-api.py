@@ -19,11 +19,11 @@ try:
         new_path = "/{0}/{1}/framework".format(current_path[1], current_path[2])
     path.append(new_path)
     from wazuh import Wazuh
+    import wazuh.group as group
     from wazuh.agent import Agent
     from wazuh.rule import Rule
     from wazuh.decoder import Decoder
     from wazuh.exception import WazuhException
-    import wazuh.group as group
     import wazuh.cluster.management as cluster
     import wazuh.configuration as configuration
     import wazuh.manager as manager
@@ -195,11 +195,11 @@ if __name__ == "__main__":
             '/agents/groups/:group_id': group.get_agent_group,
             '/agents/groups/:group_id/configuration':Agent.get_agent_conf,
             '/agents/groups/:group_id/files':group.get_group_files,
-            '/agents/groups/:group_id/files/:filename': configuration.get_file_conf,
-            'PUT/agents/:agent_id/group/:group_id': Agent.set_group,
+            '/agents/groups/:group_id/files/:filename': group.get_file_conf,
+            'PUT/agents/:agent_id/group/:group_id': group.set_group,
             'PUT/agents/groups/:group_id': group.create_group,
             'DELETE/agents/groups/:group_id':group.remove_group,
-            'DELETE/agents/:agent_id/group':Agent.unset_group,
+            'DELETE/agents/:agent_id/group':group.unset_group,
             'DELETE/agents/groups': group.remove_group,
             'POST/agents/purge': Agent.purge_agents,
             '/agents/purgeable/:timeframe': Agent.get_purgeable_agents_json,
