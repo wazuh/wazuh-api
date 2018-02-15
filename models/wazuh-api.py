@@ -193,7 +193,7 @@ if __name__ == "__main__":
             # Groups
             '/agents/groups': Agent.get_all_groups,
             '/agents/groups/:group_id': Agent.get_agent_group,
-            '/agents/groups/:group_id/configuration':configuration.get_agent_conf,
+            '/agents/groups/:group_id/configuration':Agent.get_agent_conf,
             '/agents/groups/:group_id/files':Agent.get_group_files,
             '/agents/groups/:group_id/files/:filename':configuration.get_file_conf,
             'PUT/agents/:agent_id/group/:group_id': Agent.set_group,
