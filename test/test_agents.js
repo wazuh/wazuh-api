@@ -484,13 +484,13 @@ describe('Agents', function() {
             .expect(200)
             .end(function(err,res){
                 if (err) return done(err);
-                res.body.should.have.properties(agent_properties);
+                res.body.data.should.have.properties(agent_properties);
                 res.body.error.should.equal(0);
                 expected_name = res.body.data.name;
                 done();
             });
         });
-        it('Request (manager)', function(done) {
+        it('Request', function(done) {
             request(common.url)
             .get("/agents/name/"+expected_name)
             .auth(common.credentials.user, common.credentials.password)
@@ -526,7 +526,7 @@ describe('Agents', function() {
 
         it('Selector', function(done) {
             request(common.url)
-            .get("/agents/name/"+expected_name+"select=date_add,merged_sum")
+            .get("/agents/name/"+expected_name+"?select=date_add,merged_sum,os_name")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -537,7 +537,7 @@ describe('Agents', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.should.be.an.Object;
-                res.body.data.should.have.properties(['merged_sum','date_add','os']);
+                res.body.data.should.have.properties(['mergedSum','dateAdd','os']);
                 res.body.data.os.should.have.properties(['name']);
                 done();
             });
@@ -545,7 +545,7 @@ describe('Agents', function() {
 
         it('Not allowed selector', function(done) {
             request(common.url)
-            .get("/agents/name/"+expected_name+"select=wrongField")
+            .get("/agents/name/"+expected_name+"?select=wrongField")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
