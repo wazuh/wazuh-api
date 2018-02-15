@@ -23,7 +23,7 @@ try:
     from wazuh.rule import Rule
     from wazuh.decoder import Decoder
     from wazuh.exception import WazuhException
-    import wazuh.cluster as cluster
+    import wazuh.cluster.management as cluster
     import wazuh.configuration as configuration
     import wazuh.manager as manager
     import wazuh.stats as stats
