@@ -33,22 +33,22 @@ router.get('/nodes', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /cluster/nodes/elected_master Get elected master
- * @apiName GetElectedMaster
- * @apiGroup Nodes
+ * @api {get} /cluster/node Get node info
+ * @apiName GetNodeInfo
+ * @apiGroup Node
  *
- * @apiDescription Returns the elected master
+ * @apiDescription Returns the Node information
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/nodes/elected_master?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node?pretty"
  *
  */
-router.get('/nodes/elected_master', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /cluster/nodes/elected_master");
+router.get('/node', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/node");
 
     req.apicacheGroup = "cluster";
 
-    var data_request = {'function': '/cluster/nodes/elected_master', 'arguments': {}};
+    var data_request = {'function': '/cluster/node', 'arguments': {}};
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -129,8 +129,6 @@ router.get('/status', cache(), function(req, res) {
  * @apiName GetClusterconfig
  * @apiGroup config
  *
- * @apiParam {String[]} Node ID (IP or name)
- *
  * @apiDescription Returns the cluster configuration
  *
  * @apiExample {curl} Example usage:
@@ -144,11 +142,7 @@ router.get('/config', cache(), function(req, res) {
 
     var data_request = {'function': '/cluster/config', 'arguments': {}};
 
-    if (!filter.check(req.params, filters, req, res))  // Filter with error
-        return;
-
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
-
 
 module.exports = router;
