@@ -1085,7 +1085,7 @@ describe('Syscollector', function() {
 
       it('Filter os_version', function(done) {
           request(common.url)
-          .get("/syscollector/os?os_version=" + expected_os_version)
+          .get("/syscollector/os?os_version=" + expected_os_version.replace(/\s/g, '%20'))
           .auth(common.credentials.user, common.credentials.password)
           .expect("Content-type",/json/)
           .expect(200)
@@ -1122,7 +1122,7 @@ describe('Syscollector', function() {
 
       it('Filter version', function(done) {
           request(common.url)
-          .get("/syscollector/os?version=" + expected_version)
+          .get("/syscollector/os?version=" + expected_version.replace(/\s/g, '%20'))
           .auth(common.credentials.user, common.credentials.password)
           .expect("Content-type",/json/)
           .expect(200)
@@ -1477,7 +1477,7 @@ describe('Syscollector', function() {
 
       it('Filter cpu_name', function(done) {
           request(common.url)
-          .get("/syscollector/hardware?cpu_name=" + expected_cpu_name)
+          .get("/syscollector/hardware?cpu_name=" + expected_cpu_name.replace(/\s/g, '%20'))
           .auth(common.credentials.user, common.credentials.password)
           .expect("Content-type",/json/)
           .expect(200)
