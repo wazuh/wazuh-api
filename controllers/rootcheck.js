@@ -22,7 +22,7 @@ var router = require('express').Router();
  * @apiParam {String} [cis] Filters by CIS.
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
- * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  *
  * @apiDescription Returns the rootcheck database of an agent.
@@ -73,7 +73,7 @@ router.get('/:agent_id', cache(), function(req, res) {
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
- * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  *
  * @apiDescription Returns the PCI requirements of all rootchecks of the agent.
@@ -117,10 +117,10 @@ router.get('/:agent_id/pci', cache(), function(req, res) {
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
- * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  *
- * @apiDescription Returns the CIS requirements of all rootchecks of the agent.
+ * @apiDescription Returns the CIS requirements of all rootchecks of the specified agent.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rootcheck/000/cis?offset=0&limit=10&pretty"
@@ -161,7 +161,7 @@ router.get('/:agent_id/cis', cache(), function(req, res) {
  *
  * @apiParam {Number} agent_id Agent ID.
  *
- * @apiDescription Return the timestamp of the last rootcheck scan.
+ * @apiDescription Returns the timestamp of the last rootcheck scan.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rootcheck/000/last_scan?pretty"
@@ -189,7 +189,7 @@ router.get('/:agent_id/last_scan', cache(), function(req, res) {
  * @apiGroup Run
  *
  *
- * @apiDescription Runs syscheck and rootcheck on all agent, due to OSSEC launches both processes at once.
+ * @apiDescription Runs syscheck and rootcheck on all agents (Wazuh launches both processes simultaneously).
  *
  * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/rootcheck?pretty"
@@ -210,7 +210,7 @@ router.put('/', function(req, res) {
  *
  * @apiParam {Number} agent_id Agent ID.
  *
- * @apiDescription Runs syscheck and rootcheck on an agent, due to OSSEC launches both processes at once.
+ * @apiDescription Runs syscheck and rootcheck on a specified agent (Wazuh launches both processes simultaneously)
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/rootcheck/000?pretty"
@@ -259,7 +259,7 @@ router.delete('/', function(req, res) {
  *
  * @apiParam {Number} agent_id Agent ID.
  *
- * @apiDescription Clears the rootcheck database for an agent.
+ * @apiDescription Clears the rootcheck database for a specific agent.
  *
  * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/rootcheck/000?pretty"
