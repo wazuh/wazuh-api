@@ -92,7 +92,7 @@ describe('Agents', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'ip', 'id', 'name']);
+                res.body.data.items[0].should.have.properties(['status', 'ip', 'id', 'name', 'dateAdd']);
                 done();
             });
         });
@@ -735,7 +735,6 @@ describe('Agents', function() {
                 res.body.should.have.properties(['error', 'data']);
                 res.body.data.should.have.properties(['msg', 'failed_ids', 'affected_agents']);
 
-                res.body.data.msg.should.equal("Some agents were not restarted");
                 res.body.data.failed_ids[0].error.code.should.equal(1703);
                 done();
             });

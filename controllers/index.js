@@ -73,6 +73,7 @@ router.use('/rules', require('./rules'));
 router.use('/decoders', require('./decoders'));
 router.use('/cache', require('./cache'));
 router.use('/cluster', require('./cluster'));
+router.use('/syscollector', require('./syscollector'));
 
 // Index
 router.get('/',function(req, res) {

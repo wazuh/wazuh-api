@@ -55,7 +55,7 @@ describe('Manager', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.should.be.an.Object;
-                res.body.data.should.have.properties(['path', 'installation_date', 'version', 'type']);
+                res.body.data.should.have.properties(['path', 'compilation_date', 'version', 'type']);
                 done();
             });
         });

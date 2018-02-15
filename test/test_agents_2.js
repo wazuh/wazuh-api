@@ -227,7 +227,7 @@ describe('Agents', function() {
                     res.body.should.have.properties(['error', 'message']);
 
                     if (is_auth_d_running()) res.body.error.should.equal(9008);
-                    else                     res.body.error.should.equal(1705);   
+                    else                     res.body.error.should.equal(1705);
                     res.body.message.should.be.type('string');
                     done();
                 });
@@ -322,7 +322,7 @@ describe('Agents', function() {
                     res.body.should.have.properties(['error', 'message']);
 
                     if (is_auth_d_running()) res.body.error.should.equal(9007);
-                    else                     res.body.error.should.equal(1706);   
+                    else                     res.body.error.should.equal(1706);
                     done();
                 });
             });
@@ -461,7 +461,7 @@ describe('Agents', function() {
                     res.body.should.have.properties(['error', 'message']);
 
                     if (is_auth_d_running()) res.body.error.should.equal(9008);
-                    else                     res.body.error.should.equal(1705); 
+                    else                     res.body.error.should.equal(1705);
                     res.body.message.should.be.type('string');
                     done();
                 });
