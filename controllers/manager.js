@@ -19,7 +19,7 @@ var router = require('express').Router();
  * @apiName GetManagerStatus
  * @apiGroup Info
  *
- * @apiDescription Returns the Manager processes that are running.
+ * @apiDescription Returns the status of the manager processes.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/status?pretty"
@@ -67,7 +67,7 @@ router.get('/status/:node_id', cache(), function(req, res) {
  * @apiName GetManagerInfo
  * @apiGroup Info
  *
- * @apiDescription Returns basic information about Manager.
+ * @apiDescription Returns basic information about manager.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/info?pretty"
@@ -194,7 +194,7 @@ router.get('/configuration/:node_id', cache(), function(req, res) {
  *
  * @apiParam {String} [date] Selects the date for getting the statistical information. Format: YYYYMMDD
  *
- * @apiDescription Returns OSSEC statistical information of current date.
+ * @apiDescription Returns Wazuh statistical information for the current or specified date.
  *
  * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/stats?pretty"
@@ -233,7 +233,7 @@ router.get('/stats', cache(), function(req, res) {
  * @apiGroup Stats
  *
  *
- * @apiDescription Returns OSSEC statistical information per hour. Each item in averages field represents the average of alerts per hour.
+ * @apiDescription Returns Wazuh statistical information per hour. Each number in the averages field represents the average of alerts per hour.
  *
  * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/stats/hourly?pretty"
@@ -283,7 +283,7 @@ router.get('/stats/hourly/:node_id', cache(), function(req, res) {
  * @apiGroup Stats
  *
  *
- * @apiDescription Returns OSSEC statistical information per week. Each item in hours field represents the average of alerts per hour and week day.
+ * @apiDescription Returns Wazuh statistical information per week. Each number in the hours field represents the average alerts per hour for that specific day.
  *
  * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/stats/weekly?pretty"
@@ -376,12 +376,12 @@ router.get('/stats/:node_id', cache(), function(req, res) {
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
- * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String="all","error", "warning", "info"} [type_log] Filters by type of log.
  * @apiParam {String} [category] Filters by category of log.
  *
- * @apiDescription Returns the 3 last months of ossec.log.
+ * @apiDescription Returns the three last months of ossec.log.
  *
  * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/logs?offset=0&limit=5&pretty"
@@ -421,7 +421,7 @@ router.get('/logs', cache(), function(req, res) {
  * @apiGroup Logs
  *
  *
- * @apiDescription Returns a summary about the 3 last months of ossec.log.
+ * @apiDescription Returns a summary of the last three months of the ``ossec.log`` file.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/logs/summary?pretty"

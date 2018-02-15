@@ -23,14 +23,13 @@ try:
     from wazuh.rule import Rule
     from wazuh.decoder import Decoder
     from wazuh.exception import WazuhException
-    import wazuh.group as group
-    import wazuh.cluster.management as cluster
-    import wazuh.cluster.distributed_api as dapi
+    import wazuh.cluster as cluster
     import wazuh.configuration as configuration
     import wazuh.manager as manager
     import wazuh.stats as stats
     import wazuh.rootcheck as rootcheck
     import wazuh.syscheck as syscheck
+    import wazuh.syscollector as syscollector
 except ImportError as e:
     error = str(e)
     error_wazuh_package = -1
@@ -191,9 +190,9 @@ if __name__ == "__main__":
             'DELETE/agents/groups': group.remove_group,
             'DELETE/agents/:agent_id': Agent.remove_agent,
             'DELETE/agents/': Agent.remove_agent,
-
-            '/agents/groups': group.get_all_groups,
-            '/agents/groups/:group_id': group.get_agent_group,
+            # Groups
+            '/agents/groups': Agent.get_all_groups,
+            '/agents/groups/:group_id': Agent.get_agent_group,
             '/agents/groups/:group_id/configuration':configuration.get_agent_conf,
             '/agents/groups/:group_id/files':group.get_group_files,
             '/agents/groups/:group_id/files/:filename':configuration.get_file_conf,
@@ -247,13 +246,14 @@ if __name__ == "__main__":
             '/syscheck/:agent_id': syscheck.files,
             '/syscheck/:agent_id/last_scan': syscheck.last_scan,
             'PUT/syscheck': syscheck.run,
-            'DELETE/syscheck': syscheck.clear
+            'DELETE/syscheck': syscheck.clear,
 
-
-
-
-
-
+            '/syscollector/:agent_id/os': syscollector.get_os_agent,
+            '/syscollector/:agent_id/hardware': syscollector.get_hardware_agent,
+            '/syscollector/:agent_id/packages': syscollector.get_packages_agent,
+            '/syscollector/os': syscollector.get_os,
+            '/syscollector/hardware': syscollector.get_hardware,
+            '/syscollector/packages': syscollector.get_packages
 
         }
 

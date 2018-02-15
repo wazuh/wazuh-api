@@ -19,12 +19,13 @@ var router = require('express').Router();
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
- * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String="active","pending","never connected", "disconnected"} [status] Filters by agent status.
  * @apiParam {String} [os.platform] Filters by OS platform.
  * @apiParam {String} [os.version] Filters by OS version.
  * @apiParam {String} [manager] Filters by manager hostname to which agents are connected.
+ * @apiParam {String} [version] Filters by agents version.
  *
  * @apiDescription Returns a list with the available agents.
  *
@@ -38,7 +39,7 @@ router.get('/', cache(), function(req, res) {
     req.apicacheGroup = "agents";
 
     var data_request = {'function': '/agents', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'select':'select_param', 'search':'search_param', 'status':'alphanumeric_param', 'os.platform':'alphanumeric_param', 'os.version':'alphanumeric_param', 'manager':'alphanumeric_param'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'select':'select_param', 'search':'search_param', 'status':'alphanumeric_param', 'os.platform':'alphanumeric_param', 'os.version':'alphanumeric_param', 'manager':'alphanumeric_param', 'version':'alphanumeric_param'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -61,6 +62,8 @@ router.get('/', cache(), function(req, res) {
         data_request['arguments']['os_version'] = req.query['os.version'];
     if ('manager' in req.query)
         data_request['arguments']['manager_host'] = req.query['manager'];
+    if ('version' in req.query)
+        data_request['arguments']['version'] = req.query['version'];
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -93,10 +96,10 @@ router.get('/summary', cache(), function(req, res) {
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
- * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  *
- * @apiDescription Returns a summary of OS.
+ * @apiDescription Returns a summary of the OS.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/summary/os?pretty"
@@ -132,7 +135,7 @@ router.get('/summary/os', cache(), function(req, res) {
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
- * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  *
  * @apiDescription Returns the list of existing agent groups.
@@ -175,10 +178,10 @@ router.get('/groups', cache(), function(req, res) {
  * @apiParam {String} group_id Group ID.
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
- * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  *
- * @apiDescription Returns the list of agent in a group.
+ * @apiDescription Returns the list of agents in a group.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/groups/dmz?pretty"
@@ -302,7 +305,7 @@ router.get('/groups/:group_id/files/:filename', cache(), function(req, res) {
  * @apiParam {String} group_id Group ID.
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
- * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  *
  * @apiDescription Returns the files belonging to the group.
@@ -346,9 +349,9 @@ router.get('/groups/:group_id/files', cache(), function(req, res) {
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
- * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to ascending or descending order.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  *
- * @apiDescription Returns the list of outdated groups.
+ * @apiDescription Returns the list of outdated agents.
  *
  * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/outdated?pretty"
@@ -380,14 +383,14 @@ router.get('/outdated', cache(), function(req, res) {
  * @apiName GetAgentsPurgeable
  * @apiGroup Info
  *
- * @apiParam {String} timeframe Time from last connection in seconds or or [n_days]d[n_hours]h[n_minutes]m[n_seconds]s.
+ * @apiParam {String} timeframe Time from last connection in seconds or [n_days]d[n_hours]h[n_minutes]m[n_seconds]s.
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  *
- * @apiDescription Returns a list of agents that can be purged
+ * @apiDescription Returns a list of agents that can be purged.
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/purgeable/10800?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/purgeable/1d5h?pretty"
  *
  */
 router.get('/purgeable/:timeframe', cache(), function(req, res) {
@@ -421,10 +424,10 @@ router.get('/purgeable/:timeframe', cache(), function(req, res) {
  *
  * @apiParam {String} agent_name Agent name.
  *
- * @apiDescription Returns the information of an agent called :agent_name.
+ * @apiDescription Returns various information from an agent called :agent_name.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/name/myAgent?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/name/NewHost?pretty"
  *
  */
 router.get('/name/:agent_name', cache(), function(req, res) {
@@ -458,7 +461,7 @@ router.get('/name/:agent_name', cache(), function(req, res) {
  *
  * @apiParam {Number} agent_id Agent ID.
  *
- * @apiDescription Returns the information of an agent.
+ * @apiDescription Returns various information from an agent.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/000?pretty"
@@ -520,7 +523,7 @@ router.get('/:agent_id/key', function(req, res) {
  * @apiGroup Upgrade
  *
  * @apiParam {Number} agent_id Agent ID.
- * @apiParam {Number} [timeout=3] Seconds waiting for agent response.
+ * @apiParam {Number} [timeout=3] Seconds to wait for the agent to respond.
  *
  * @apiDescription Returns the upgrade result from an agent.
  *
@@ -545,6 +548,7 @@ router.get('/:agent_id/upgrade_result', function(req, res) {
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
+
 
 /**
  * @api {put} /agents/restart Restart all agents
@@ -604,7 +608,7 @@ router.post('/restart', function(req, res) {
  *
  * @apiParam {Number} agent_id Agent unique ID.
  *
- * @apiDescription Restarts the agent.
+ * @apiDescription Restarts the specified agent.
  *
  * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/007/restart?pretty"
@@ -759,7 +763,7 @@ router.put('/groups/:group_id', function(req, res) {
  * @apiParam {Number} agent_id Agent unique ID.
  * @apiParam {String} group_id Group ID.
  *
- * @apiDescription Sets the specified group to the agent.
+ * @apiDescription Sets an agent to the specified group.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/004/group/webserver?pretty"
@@ -816,7 +820,7 @@ router.delete('/groups', function(req, res) {
  * @apiGroup Delete
  *
  * @apiParam {Number} agent_id Agent ID.
- * @apiParam {String} purge Delete agent definitely from the key store.
+ * @apiParam {String} purge Delete an agent from the key store.
  *
  * @apiDescription Removes an agent.
  *
@@ -845,7 +849,7 @@ router.delete('/:agent_id', function(req, res) {
  *
  * @apiParam {Number} agent_id Agent ID.
  *
- * @apiDescription Unsets the group of the agent. The group will be 'default'.
+ * @apiDescription Unsets the group of the agent. The agent will automatically revert to the 'default' group.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/004/group?pretty"
@@ -871,7 +875,7 @@ router.delete('/:agent_id/group', function(req, res) {
  *
  * @apiParam {String} group_id Group ID.
  *
- * @apiDescription Removes the group. Agents will have 'default' group.
+ * @apiDescription Removes the group. Agents that were assigned to the removed group will automatically revert to the 'default' group.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/groups/dmz?pretty"
@@ -895,9 +899,9 @@ router.delete('/groups/:group_id', function(req, res) {
  * @apiGroup Delete
  *
  * @apiParam {String[]} ids Array of agent ID's.
- * @apiParam {Boolean} purge Delete agent definitely from the key store.
+ * @apiParam {Boolean} purge Delete an agent from the key store.
  *
- * @apiDescription Removes a list of agents. You must restart OSSEC after removing an agent.
+ * @apiDescription Removes a list of agents. The Wazuh API must be restarted after removing an agent.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X DELETE -H "Content-Type:application/json" -d '{"ids":["003","005"]}' "https://127.0.0.1:55000/agents?pretty"
@@ -927,8 +931,8 @@ router.delete('/', function(req, res) {
  * @apiGroup Add
  *
  * @apiParam {String} name Agent name.
- * @apiParam {String="IP","IP/NET", "ANY"} [ip] If you do not include this param, the API will get the IP automatically. If you are behind a proxy, you must set the option config.BehindProxyServer to yes at config.js.
- * @apiParam {Number} [force] Remove old agent with same IP if disconnected since <force> seconds.
+ * @apiParam {String="IP","IP/NET", "ANY"} [ip] If this is not included, the API will get the IP automatically. If you are behind a proxy, you must set the option config.BehindProxyServer to yes at config.js.
+ * @apiParam {Number} [force] Remove the old agent with the same IP if disconnected since <force> seconds.
  *
  * @apiDescription Add a new agent.
  *
@@ -988,10 +992,10 @@ router.post('/', function(req, res) {
  * @apiGroup Add
  *
  * @apiParam {String} name Agent name.
- * @apiParam {String="IP","IP/NET", "ANY"} [ip] If you do not include this param, the API will get the IP automatically. If you are behind a proxy, you must set the option config.BehindProxyServer to yes at config.js.
+ * @apiParam {String="IP","IP/NET", "ANY"} [ip] If this is not included, the API will get the IP automatically. If you are behind a proxy, you must set the option config.BehindProxyServer to yes at config.js.
  * @apiParam {String} id Agent ID.
  * @apiParam {String} key Agent key. Minimum length: 64 characters. Allowed values: ^[a-zA-Z0-9]+$
- * @apiParam {Number} [force] Remove old agent with same IP if disconnected since <force> seconds.
+ * @apiParam {Number} [force] Remove the old agent the with same IP if disconnected since <force> seconds.
  *
  * @apiDescription Insert an agent with an existing id and key.
  *
@@ -1051,13 +1055,13 @@ router.post('/insert', function(req, res) {
  * @apiName PostAgentsPurge
  * @apiGroup Purge
  *
- * @apiParam {String} timeframe Time from last connection in seconds or or [n_days]d[n_hours]h[n_minutes]m[n_seconds]s.
- * @apiParam {Boolean} verbose Return information about agents purgeds.
+ * @apiParam {String} timeframe Time from last connection in seconds or [n_days]d[n_hours]h[n_minutes]m[n_seconds]s.
+ * @apiParam {Boolean} verbose Return information about agents purged.
  *
- * @apiDescription Deletes all agents that did not connected in the last timeframe seconds.
+ * @apiDescription Deletes all agents that did not connect in the last timeframe seconds.
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X POST -H "Content-Type:application/json" -d '{"timeframe":10800}' "https://127.0.0.1:55000/agents/purge?pretty"
+ *     curl -u foo:bar -k -X POST -H "Content-Type:application/json" -d '{"timeframe":"1d5h","verbose":true}' "https://127.0.0.1:55000/agents/purge?pretty"
  *
  */
 router.post('/purge', function(req, res) {
