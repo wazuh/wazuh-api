@@ -79,6 +79,15 @@ exports.alphanumeric_param = function(param) {
         return false;
 }
 
+exports.alphanumeric_parenthesis_param = function(param) {
+    if (typeof param != 'undefined'){
+        var regex = /^[a-zA-Z0-9_\-\.\+\s\(\)]+$/;
+        return regex.test(param);
+    }
+    else
+        return false;
+}
+
 exports.sort_param = function(param) {
     if (typeof param != 'undefined'){
         var regex = /^[a-zA-Z0-9_\-\,\s\+\.]+$/; // + is translated as \s
@@ -151,4 +160,3 @@ exports.boolean = function(n) {
     else
         return false;
 }
-
