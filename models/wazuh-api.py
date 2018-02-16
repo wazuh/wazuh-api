@@ -19,12 +19,11 @@ try:
         new_path = "/{0}/{1}/framework".format(current_path[1], current_path[2])
     path.append(new_path)
     from wazuh import Wazuh
-    import wazuh.group as group
     from wazuh.agent import Agent
     from wazuh.rule import Rule
     from wazuh.decoder import Decoder
     from wazuh.exception import WazuhException
-    import wazuh.cluster.management as cluster
+    import wazuh.cluster as cluster
     import wazuh.configuration as configuration
     import wazuh.manager as manager
     import wazuh.stats as stats
@@ -188,40 +187,49 @@ if __name__ == "__main__":
             'POST/agents/restart': Agent.restart_agents,
             'POST/agents': Agent.add_agent,
             'POST/agents/insert': Agent.insert_agent,
+            'DELETE/agents/groups': group.remove_group,
             'DELETE/agents/:agent_id': Agent.remove_agent,
             'DELETE/agents/': Agent.remove_agent,
             # Groups
-            '/agents/groups': group.get_all_groups,
-            '/agents/groups/:group_id': group.get_agent_group,
-            '/agents/groups/:group_id/configuration':group.get_agent_conf,
+            '/agents/groups': Agent.get_all_groups,
+            '/agents/groups/:group_id': Agent.get_agent_group,
+            '/agents/groups/:group_id/configuration':configuration.get_agent_conf,
             '/agents/groups/:group_id/files':group.get_group_files,
-            '/agents/groups/:group_id/files/:filename': group.get_file_conf,
-            'PUT/agents/:agent_id/group/:group_id': group.set_group,
+            '/agents/groups/:group_id/files/:filename':configuration.get_file_conf,
+            'PUT/agents/:agent_id/group/:group_id': Agent.set_group,
             'PUT/agents/groups/:group_id': group.create_group,
             'DELETE/agents/groups/:group_id':group.remove_group,
-            'DELETE/agents/:agent_id/group':group.unset_group,
-            'DELETE/agents/groups': group.remove_group,
+            'DELETE/agents/:agent_id/group':Agent.unset_group,
             'POST/agents/purge': Agent.purge_agents,
             '/agents/purgeable/:timeframe': Agent.get_purgeable_agents_json,
 
             '/decoders': Decoder.get_decoders,
             '/decoders/files': Decoder.get_decoders_files,
 
-            '/manager/info': wazuh.get_ossec_init,
-            '/manager/status': manager.status,
-            '/manager/configuration': configuration.get_ossec_conf,
+            '/manager/info': wazuh.managers_get_ossec_init,
+            '/manager/info/:node_id': wazuh.managers_get_ossec_init,
+            '/manager/status': manager.managers_status,
+            '/manager/status/:node_id': manager.managers_status,
+            '/manager/configuration': manager.managers_get_ossec_conf,
+            '/manager/configuration/:node_id': manager.managers_get_ossec_conf,
             '/manager/stats': stats.totals,
+            '/manager/stats/:node_id': stats.totals,
             '/manager/stats/hourly': stats.hourly,
+            '/manager/stats/hourly/:node_id': stats.hourly,
             '/manager/stats/weekly': stats.weekly,
-            '/manager/logs/summary': manager.ossec_log_summary,
-            '/manager/logs': manager.ossec_log,
+            '/manager/stats/weekly/:node_id': stats.weekly,
+            '/manager/logs/summary': manager.managers_ossec_log_summary,
+            '/manager/logs/summary/:node_id': manager.managers_ossec_log_summary,
+            '/manager/logs': manager.managers_ossec_log,
+            '/manager/logs/:node_id': manager.managers_ossec_log,
 
             '/cluster/nodes': cluster.get_nodes,
+            '/cluster/nodes/elected_master': cluster.get_actual_master,
             '/cluster/node': cluster.get_node,
             '/cluster/files': cluster.get_file_status_json,
-            '/cluster/agents': cluster.get_agent_status_json,
+            '/cluster/agents': Agent.get_cluster_agent_status_json,
             '/cluster/status': cluster.get_status_json,
-            '/cluster/config': cluster.read_config,
+            '/cluster/config': dapi.get_config_distributed,
 
             '/rootcheck/:agent_id': rootcheck.print_db,
             '/rootcheck/:agent_id/pci': rootcheck.get_pci,
