@@ -226,7 +226,7 @@ router.get('/os', function(req, res) {
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
                    'search':'search_param', 'select':'select_param',
                    'os_name': 'alphanumeric_param', 'architecture': 'alphanumeric_param',
-                    'os_version': 'alphanumeric_param','version': 'alphanumeric_param','release': 'alphanumeric_param' };
+                    'os_version': 'alphanumeric_parenthesis_param','release': 'alphanumeric_param' };
 
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
@@ -254,8 +254,6 @@ router.get('/os', function(req, res) {
         data_request['arguments']['filters']['os_name'] = req.query.os_name
     if ('os_version' in req.query)
         data_request['arguments']['filters']['os_version'] = req.query.os_version
-    if ('version' in req.query)
-        data_request['arguments']['filters']['version'] = req.query.version
     if ('release' in req.query)
         data_request['arguments']['filters']['release'] = req.query.release
 
@@ -287,7 +285,7 @@ router.get('/hardware', function(req, res) {
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
                    'search':'search_param', 'select':'select_param',
                     'ram_free': 'numbers', 'ram_total': 'numbers', 'cpu_cores': 'numbers', 'cpu_mhz': 'alphanumeric_param',
-                    'cpu_name': 'alphanumeric_param', 'board_serial': 'alphanumeric_param'};
+                    'board_serial': 'alphanumeric_param'};
 
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
@@ -317,8 +315,6 @@ router.get('/hardware', function(req, res) {
         data_request['arguments']['filters']['cpu_cores'] = req.query.cpu_cores
     if ('cpu_mhz' in req.query)
         data_request['arguments']['filters']['cpu_mhz'] = req.query.cpu_mhz
-    if ('cpu_name' in req.query)
-        data_request['arguments']['filters']['cpu_name'] = req.query.cpu_name
     if ('board_serial' in req.query)
         data_request['arguments']['filters']['board_serial'] = req.query.board_serial
 
