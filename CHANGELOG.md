@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.2.1]
+
+There are no changes for Wazuh API in this version.
+
+
 ## [v3.2.0]
 ### Added
 - Version selector added to `GET /agents` ([#60](https://github.com/wazuh/wazuh-api/pull/60)).
