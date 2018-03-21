@@ -83,12 +83,14 @@ if (config.https.toLowerCase() == "yes"){
 /********************************************/
 /* Drop privileges
 /********************************************/
-try {
-    process.setgid('ossec');
-    process.setuid('ossec');
-} catch(err) {
-    console.log('Drop privileges failed: ' + err.message);
-    process.exit(1);
+if (config.drop_privileges || config.drop_privileges == undefined) {
+    try {
+        process.setgid('ossec');
+        process.setuid('ossec');
+    } catch(err) {
+        console.log('Drop privileges failed: ' + err.message);
+        process.exit(1);
+    }
 }
 
 /********************************************/

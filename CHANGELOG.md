@@ -1,6 +1,16 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.2.2]
+## Added
+- Added an option in `config.js` to run the API with root privileges for debug purposes and troubleshoutting. The API runs as ossec by default. ([#68](https://github.com/wazuh/wazuh-api/pull/68))
+
+
+## [v3.2.1]
+
+There are no changes for Wazuh API in this version.
+
+
 ## [v3.2.0]
 ### Added
 - Version selector added to `GET /agents` ([#60](https://github.com/wazuh/wazuh-api/pull/60)).

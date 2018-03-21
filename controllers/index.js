@@ -87,13 +87,7 @@ router.get('/',function(req, res) {
 router.get('/version',function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /version");
 
-    // Temporary patch
-    if( !req.get('wazuh-app-version') && req.get('user-agent') && req.get('user-agent').startsWith('Needle')){
-        json_res = {'error': 0, 'data': "v3.0.0-beta8"};
-    }
-    else{
-        json_res = {'error': 0, 'data': "v" + info_package.version};
-    }
+    json_res = {'error': 0, 'data': "v" + info_package.version};
 
     res_h.send(req, res, json_res);
 });
