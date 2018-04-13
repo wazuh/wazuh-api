@@ -190,11 +190,14 @@ if __name__ == "__main__":
             'POST/agents/insert': Agent.insert_agent,
             'DELETE/agents/:agent_id': Agent.remove_agent,
             'DELETE/agents/': Agent.remove_agents,
-            
+
             # Upgrade agents
             'PUT/agents/:agent_id/upgrade': Agent.upgrade_agent,
             'PUT/agents/:agent_id/upgrade_custom': Agent.upgrade_agent_custom,
             '/agents/:agent_id/upgrade_result': Agent.get_upgrade_result,
+
+            # Read remote configuration
+            '/agents/:agent_id/getconfig/:config': Agent.get_config,
 
             '/agents/stats/distinct': distinct.get_distinct_agents,
 

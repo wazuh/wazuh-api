@@ -594,6 +594,36 @@ router.get('/:agent_id/upgrade_result', function(req, res) {
 
 
 /**
+ * @api {get} /agents/:agent_id/getconfig Get loaded configuration from agent
+ * @apiName GetConfig
+ * @apiGroup Config
+ *
+ * @apiParam {Number} agent_id Agent ID.
+ * @apiParam {String} config Configuration to read.
+ *
+ * @apiDescription Returns the loaded configuration from agent in JSON format.
+ *
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/003/getconfig/syscheck?pretty"
+ *
+ */
+ router.get('/:agent_id/getconfig/:config', function(req, res) {
+     logger.debug(req.connection.remoteAddress + " GET /agents/:agent_id/getconfig/:config");
+
+     var data_request = {'function': '/agents/:agent_id/getconfig/:config', 'arguments': {}};
+     var filters = {'agent_id': 'names', 'config': 'names'};
+
+     if (!filter.check(req.params, filters, req, res))  // Filter with error
+         return;
+
+     data_request['arguments']['agent_id'] = req.params.agent_id;
+     data_request['arguments']['config'] = req.params.config;
+
+     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+ })
+
+
+/**
  * @api {put} /agents/restart Restart all agents
  * @apiName PutAgentsRestart
  * @apiGroup Restart
