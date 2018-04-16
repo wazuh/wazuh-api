@@ -25,6 +25,21 @@ else
   AGENT_NAME=$1
 fi
 
+# On large deployments this will be done using an automated process. Avoid possible errors by removing the agent (if exists)
+# check if the agent is already present . Requires jq package to be installed
+AGENT_ID=$(curl -s -u $USER:"$PASSWORD" -k -X GET $PROTOCOL://$API_IP:$API_PORT/agents/name/$AGENT_NAME | jq .data.id | tr -d '"')
+echo ""
+echo "Checking for Agent ID..."
+if [ $AGENT_ID = "null" ]; then
+  echo "Agent not found. Moving on ..."
+else
+  echo "Found: $AGENT_ID"
+  echo "Removing previous registration for '$AGENT_NAME' using ID:$AGENT_ID ..."
+  REMOVE_AGENT=$(curl -s -u $USER:"$PASSWORD" -k -X DELETE $PROTOCOL://$API_IP:$API_PORT/agents/$AGENT_ID)
+  echo -e $REMOVE_AGENT
+fi
+
+
 # Adding agent and getting Id from manager
 echo ""
 echo "Adding agent:"
