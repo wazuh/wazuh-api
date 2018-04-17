@@ -594,32 +594,32 @@ router.get('/:agent_id/upgrade_result', function(req, res) {
 
 
 /**
- * @api {get} /agents/:agent_id/getconfig Get loaded configuration from agent
+ * @api {get} /agents/:agent_id/config/:component/:configuration Get loaded configuration from agent
  * @apiName GetConfig
  * @apiGroup Config
  *
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {String} component Selected component.
- * @apiParam {String} config Configuration to read.
+ * @apiParam {String} configuration Configuration to read.
  *
  * @apiDescription Returns the loaded configuration from agent in JSON format.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/001/getconfig/logcollector/localfile?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/001/config/logcollector/localfile?pretty"
  *
  */
- router.get('/:agent_id/getconfig/:component/:config', function(req, res) {
-     logger.debug(req.connection.remoteAddress + " GET /agents/:agent_id/getconfig/:component/:config");
+ router.get('/:agent_id/config/:component/:configuration', function(req, res) {
+     logger.debug(req.connection.remoteAddress + " GET /agents/:agent_id/config/:component/:configuration");
 
-     var data_request = {'function': '/agents/:agent_id/getconfig/:component/:config', 'arguments': {}};
-     var filters = {'agent_id': 'names', 'component': 'names', 'config': 'names'};
+     var data_request = {'function': '/agents/:agent_id/config/:component/:configuration', 'arguments': {}};
+     var filters = {'agent_id': 'names', 'component': 'names', 'configuration': 'names'};
 
      if (!filter.check(req.params, filters, req, res))  // Filter with error
          return;
 
      data_request['arguments']['agent_id'] = req.params.agent_id;
      data_request['arguments']['component'] = req.params.component;
-     data_request['arguments']['config'] = req.params.config;
+     data_request['arguments']['configuration'] = req.params.configuration;
 
      execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
  })
