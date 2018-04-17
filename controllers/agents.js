@@ -599,24 +599,26 @@ router.get('/:agent_id/upgrade_result', function(req, res) {
  * @apiGroup Config
  *
  * @apiParam {Number} agent_id Agent ID.
+ * @apiParam {String} component Selected component.
  * @apiParam {String} config Configuration to read.
  *
  * @apiDescription Returns the loaded configuration from agent in JSON format.
  *
- * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/003/getconfig/syscheck?pretty"
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/001/getconfig/logcollector/localfile?pretty"
  *
  */
- router.get('/:agent_id/getconfig/:config', function(req, res) {
-     logger.debug(req.connection.remoteAddress + " GET /agents/:agent_id/getconfig/:config");
+ router.get('/:agent_id/getconfig/:component/:config', function(req, res) {
+     logger.debug(req.connection.remoteAddress + " GET /agents/:agent_id/getconfig/:component/:config");
 
-     var data_request = {'function': '/agents/:agent_id/getconfig/:config', 'arguments': {}};
-     var filters = {'agent_id': 'names', 'config': 'names'};
+     var data_request = {'function': '/agents/:agent_id/getconfig/:component/:config', 'arguments': {}};
+     var filters = {'agent_id': 'names', 'component': 'names', 'config': 'names'};
 
      if (!filter.check(req.params, filters, req, res))  // Filter with error
          return;
 
      data_request['arguments']['agent_id'] = req.params.agent_id;
+     data_request['arguments']['component'] = req.params.component;
      data_request['arguments']['config'] = req.params.config;
 
      execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });

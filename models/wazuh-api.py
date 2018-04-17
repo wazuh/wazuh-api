@@ -197,7 +197,7 @@ if __name__ == "__main__":
             '/agents/:agent_id/upgrade_result': Agent.get_upgrade_result,
 
             # Read remote configuration
-            '/agents/:agent_id/getconfig/:config': Agent.get_config,
+            '/agents/:agent_id/getconfig/:component/:config': Agent.get_config,
 
             '/agents/stats/distinct': distinct.get_distinct_agents,
 
