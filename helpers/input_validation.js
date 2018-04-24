@@ -90,7 +90,7 @@ exports.sort_param = function(param) {
 
 exports.search_param = function(param) {
     if (typeof param != 'undefined'){
-        var regex = /^[a-zA-Z0-9\s_\-/\\:\.\"\'@~\+]+$/;
+        var regex = /^[a-zA-Z0-9\s_\-/\\:\.\"\'\(\)@~\+]+$/;
         return regex.test(param);
     }
     else
@@ -151,4 +151,3 @@ exports.boolean = function(n) {
     else
         return false;
 }
-
