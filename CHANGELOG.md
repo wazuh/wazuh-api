@@ -3,9 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [v3.2.2]
 ## Added
-- Added an option in `config.js` to run the API with root privileges for debug purposes and troubleshoutting. The API runs as ossec by default. ([#68](https://github.com/wazuh/wazuh-api/pull/68))
+- Added an option in `config.js` to run the API with root privileges for debug purposes and troubleshooting. The API runs as ossec by default. ([#68](https://github.com/wazuh/wazuh-api/pull/68))
 ## Changed
-- Changed mode from 750 to 660 in `/configuration/auth/user file` after installing it.
+- Changed mode from 750 to 660 in `/configuration/auth/user` file after installing it.
 
 
 ## [v3.2.1]
