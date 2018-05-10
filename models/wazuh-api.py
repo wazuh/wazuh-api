@@ -195,6 +195,7 @@ if __name__ == "__main__":
 
             # Groups
             '/agents/groups': Agent.get_all_groups,
+            '/agents/no_group': Agent.get_agents_without_group,
             '/agents/groups/:group_id': Agent.get_agent_group,
             '/agents/groups/:group_id/configuration':configuration.get_agent_conf,
             '/agents/groups/:group_id/files':Agent.get_group_files,
