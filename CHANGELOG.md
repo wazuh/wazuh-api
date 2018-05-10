@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.3.0]
+### Added
+- Improved agent registration/removal bash script ([#71](https://github.com/wazuh/wazuh-api/pull/71)).
+
 ## [v3.2.0]
 ### Added
 - Version selector added to `GET /agents` ([#60](https://github.com/wazuh/wazuh-api/pull/60)).
