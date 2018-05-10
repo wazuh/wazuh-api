@@ -39,7 +39,7 @@ errors['610'] = "Param not valid. Valid characters: number or interval separated
 errors['ranges'] = 610;
 errors['611'] = "Param not valid. Valid characters: a-z, A-Z, 0-9, _, -, +, ,";  // sort
 errors['sort_param'] = 611;
-errors['612'] = "Param not valid. Valid characters: a-z A-Z 0-9 space _ - / \ : . \" ' @ ~ +";  // search
+errors['612'] = "Param not valid. Valid characters: a-z A-Z 0-9 space _ - / \ : . \" ' \( \) $ % @ ~ +";  // search
 errors['search_param'] = 612;
 errors['613'] = "Param not valid. Valid characters: md5/sha1 hash";  // hashes
 errors['hashes'] = 613;
@@ -59,11 +59,6 @@ errors['700'] = "File not found"
 errors['800'] = "Error adding agent due to header 'x-forwarded-for' is not present";
 errors['801'] = "Wrong format for 'wazuh-app-version' header. Expected format: 'X.Y.Z'";
 errors['802'] = "Invalid 'wazuh-app-version' header";
-
-
-
-
-
 
 exports.description = function(n){
     if (n in errors)
