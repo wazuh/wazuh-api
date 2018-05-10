@@ -28,7 +28,6 @@ There are no changes for Wazuh API in this version.
 - Change output of `GET/manager/info` ([Wazuh #371](https://github.com/wazuh/wazuh/pull/371)).
 - Change timestamp format of ossec logs (affected calls output: `GET /manager/logs` and `GET /manager/summary`) ([Wazuh #355](https://github.com/wazuh/wazuh/pull/355)).
 
-
 ## [v3.1.0]
 ### Added
 

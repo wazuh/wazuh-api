@@ -57,9 +57,11 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['id', 'key']);
 
                 res.body.error.should.equal(0);
                 res.body.data.id.should.match(/^\d+$/);
+                res.body.data.key.should.match(/^[a-zA-Z0-9=]+$/);
                 agent_id = res.body.data.id;
                 done();
             });
@@ -128,9 +130,11 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['msg', 'affected_agents']);
 
                 res.body.error.should.equal(0);
                 res.body.data.msg.should.be.type('string');
+                res.body.data.affected_agents[0].should.equal(agent_id);
                 done();
             });
         });
@@ -200,9 +204,11 @@ describe('Agents', function() {
                     if (err) return done(err);
 
                     res.body.should.have.properties(['error', 'data']);
+                    res.body.data.should.have.properties(['id', 'key']);
 
                     res.body.error.should.equal(0);
                     res.body.data.id.should.match(/^\d+$/);
+                    res.body.data.key.should.match(/^[0-9a-zA-Z=]+$/);
                     agent_id = res.body.data.id;
                     done();
                 });
@@ -293,9 +299,11 @@ describe('Agents', function() {
                     if (err) return done(err);
 
                     res.body.should.have.properties(['error', 'data']);
+                    res.body.data.should.have.properties(['id', 'key']);
 
                     res.body.error.should.equal(0);
                     res.body.data.id.should.match(/^\d+$/);
+                    res.body.data.key.should.match(/^[0-9a-zA-Z=]+$/);
                     agent_id = res.body.data.id;
                     done();
                 });
@@ -357,6 +365,7 @@ describe('Agents', function() {
 
                     res.body.error.should.equal(0);
                     res.body.data.id.should.match(/^\d+$/);
+                    res.body.data.key.should.match(/^[0-9a-zA-Z=]+$/);
                     agent_id = res.body.data.id;
                     done();
                 });
@@ -623,7 +632,7 @@ describe('Agents', function() {
                     if (err) return done(err);
 
                     res.body.should.have.properties(['error', 'data']);
-                    res.body.data.should.have.properties(['id','key']);
+                    // res.body.data.should.have.properties(['id', 'key']);
                     res.body.error.should.equal(0);
                     res.body.data.id.should.match(/^\d+$/);
                     res.body.data.key.should.match(/^[a-zA-Z0-9=]+/);

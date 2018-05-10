@@ -448,7 +448,7 @@ describe('Manager', function() {
 
         it('Filters: category', function(done) {
             request(common.url)
-            .get("/manager/logs?category=ossec-testrule")
+            .get("/manager/logs?category=ossec-analysisd")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -466,7 +466,7 @@ describe('Manager', function() {
 
         it('Filters: type_log and category', function(done) {
             request(common.url)
-            .get("/manager/logs?type_log=info&category=ossec-testrule")
+            .get("/manager/logs?type_log=info&category=ossec-analysisd")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -531,8 +531,8 @@ describe('Manager', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.should.be.an.Object;
-                res.body.data.should.have.properties(['ossec-testrule']);
-                res.body.data['ossec-testrule'].should.have.properties(['info', 'all', 'error']);
+                res.body.data.should.have.properties(['ossec-analysisd']);
+                res.body.data['ossec-analysisd'].should.have.properties(['info', 'all', 'error']);
                 done();
             });
         });
