@@ -15,9 +15,14 @@ var router = require('express').Router();
 /**
  * @api {get} /cluster/nodes Get nodes info
  * @apiName GetNodesInfo
- * @apiGroup Nodes
+ * @apiGroup cluster
  *
- * @apiDescription Returns the Nodes info
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ * *
+ * @apiDescription Returns the nodes info
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/nodes?pretty"
@@ -28,56 +33,74 @@ router.get('/nodes', cache(), function(req, res) {
 
     req.apicacheGroup = "cluster";
 
-    var data_request = {'function': '/cluster/nodes', 'arguments': {}};
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
-})
-
-/**
- * @api {get} /cluster/node Get node info
- * @apiName GetNodeInfo
- * @apiGroup Node
- *
- * @apiDescription Returns the Node information
- *
- * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node?pretty"
- *
- */
-router.get('/node', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /cluster/node");
-
-    req.apicacheGroup = "cluster";
-
-    var data_request = {'function': '/cluster/node', 'arguments': {}};
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
-})
-
-/**
- * @api {get} /cluster/files Get info about files in cluster
- * @apiName GetClusterFilesInfo
- * @apiGroup Nodes
- *
- * @apiDescription Returns the state of each file in the cluster
- *
- * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/files?pretty"
- *
- */
-router.get('/files', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /cluster/files");
-
-    req.apicacheGroup = "cluster";
-
-    var data_request = {'function': '/cluster/files', 'arguments': {}};
-    var filters = {'managers': 'alphanumeric_param', 'files': 'paths'}
+    var data_request = { 'function': '/cluster/nodes', 'arguments': {} };
+    var filters = { 'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param', 'search': 'search_param' }
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
 
-    if ('managers' in req.query)
-        data_request['arguments']['manager'] = filter.select_param_to_json(req.query.managers);
-    if ('files' in req.query)
-        data_request['arguments']['file_list'] = filter.select_param_to_json(req.query.files);
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+
+/**
+ * @api {get} /cluster/nodes/:node_name Get node info
+ * @apiName GetNodeInfo
+ * @apiGroup cluster
+ *
+ * @apiDescription Returns the node info
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/nodes/node01?pretty"
+ *
+ */
+router.get('/nodes/:node_name', cache(), function (req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/nodes/:node_name");
+    req.apicacheGroup = "cluster";
+
+    var data_request = { 'function': '/cluster/nodes/:node_name', 'arguments': {} };
+
+    if (!filter.check(req.params, { 'node_name': 'names' }, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['filter_node'] = req.params.node_name;
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+
+/**
+ * @api {get} /cluster/healthcheck Show cluster health
+ * @apiName GetHealthcheck
+ * @apiGroup cluster
+ *
+ * @apiParam {String} [node] Filter information by node name.
+ * *
+ * @apiDescription Show cluster health
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/healthcheck?pretty"
+ *
+ */
+router.get('/healthcheck', cache(), function (req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/healthcheck");
+
+    req.apicacheGroup = "cluster";
+
+    var data_request = { 'function': '/cluster/healthcheck', 'arguments': {} };
+    var filters = { 'node': 'names'};
+
+    if (!filter.check(req.params, filters, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['filter_node'] = req.query.node;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -87,6 +110,13 @@ router.get('/files', cache(), function(req, res) {
  * @apiName GetClusteragentsInfo
  * @apiGroup Nodes
  *
+ * @apiParam {String} [node] Filters by node name.
+ * @apiParam {String} [status] Filters by agents status.
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ * *
  * @apiDescription Returns the state of each agent and the manager it's reporting to in the cluster
  *
  * @apiExample {curl} Example usage:
@@ -98,7 +128,25 @@ router.get('/agents', cache(), function(req, res) {
 
     req.apicacheGroup = "cluster";
 
-    var data_request = {'function': '/cluster/agents', 'arguments': {}};
+    var data_request = { 'function': '/cluster/agents', 'arguments': {} };
+    var filters = { 'node': 'alphanumeric_param', 'status': 'alphanumeric_param', 'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param', 'select': 'select_param', 'search': 'search_param' }
+
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
+
+    if ('node' in req.query)
+        data_request['arguments']['filter_node'] = req.query.node;
+    if ('status' in req.query)
+        data_request['arguments']['filter_status'] = req.query.status;
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = req.query.offset;
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = req.query.limit;
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })

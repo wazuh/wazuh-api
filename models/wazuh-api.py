@@ -23,7 +23,8 @@ try:
     from wazuh.rule import Rule
     from wazuh.decoder import Decoder
     from wazuh.exception import WazuhException
-    import wazuh.cluster as cluster
+    import wazuh.cluster.cluster as cluster
+    import wazuh.cluster.control as cluster_control
     import wazuh.configuration as configuration
     import wazuh.manager as manager
     import wazuh.stats as stats
@@ -171,6 +172,7 @@ if __name__ == "__main__":
         wazuh = Wazuh(ossec_path=request['ossec_path'])
 
         functions = {
+            # Agents
             '/agents/:agent_id': Agent.get_agent,
             '/agents/name/:agent_name': Agent.get_agent_by_name,
             '/agents/:agent_id/key': Agent.get_agent_key,
@@ -190,8 +192,10 @@ if __name__ == "__main__":
             'DELETE/agents/groups': Agent.remove_group,
             'DELETE/agents/:agent_id': Agent.remove_agent,
             'DELETE/agents/': Agent.remove_agent,
+
             # Groups
             '/agents/groups': Agent.get_all_groups,
+            '/agents/no_group': Agent.get_agents_without_group,
             '/agents/groups/:group_id': Agent.get_agent_group,
             '/agents/groups/:group_id/configuration':configuration.get_agent_conf,
             '/agents/groups/:group_id/files':Agent.get_group_files,
@@ -203,9 +207,11 @@ if __name__ == "__main__":
             'POST/agents/purge': Agent.purge_agents,
             '/agents/purgeable/:timeframe': Agent.get_purgeable_agents_json,
 
+            # Decoders
             '/decoders': Decoder.get_decoders,
             '/decoders/files': Decoder.get_decoders_files,
 
+            # Managers
             '/manager/info': wazuh.get_ossec_init,
             '/manager/status': manager.status,
             '/manager/configuration': configuration.get_ossec_conf,
@@ -215,13 +221,15 @@ if __name__ == "__main__":
             '/manager/logs/summary': manager.ossec_log_summary,
             '/manager/logs': manager.ossec_log,
 
-            '/cluster/nodes': cluster.get_nodes,
-            '/cluster/node': cluster.get_node,
-            '/cluster/files': cluster.get_file_status_json,
-            '/cluster/agents': cluster.get_agent_status_json,
+            # Cluster
             '/cluster/status': cluster.get_status_json,
             '/cluster/config': cluster.read_config,
+            '/cluster/agents': cluster_control.get_agents,
+            '/cluster/nodes': cluster_control.get_nodes_api,
+            '/cluster/nodes/:node_name': cluster_control.get_nodes_api,
+            '/cluster/healthcheck': cluster_control.get_healthcheck,
 
+            # Rootcheck
             '/rootcheck/:agent_id': rootcheck.print_db,
             '/rootcheck/:agent_id/pci': rootcheck.get_pci,
             '/rootcheck/:agent_id/cis': rootcheck.get_cis,
@@ -229,16 +237,19 @@ if __name__ == "__main__":
             'PUT/rootcheck': rootcheck.run,
             'DELETE/rootcheck': rootcheck.clear,
 
+            # Rules
             '/rules': Rule.get_rules,
             '/rules/groups': Rule.get_groups,
             '/rules/pci': Rule.get_pci,
             '/rules/files': Rule.get_rules_files,
 
+            # Syscheck
             '/syscheck/:agent_id': syscheck.files,
             '/syscheck/:agent_id/last_scan': syscheck.last_scan,
             'PUT/syscheck': syscheck.run,
             'DELETE/syscheck': syscheck.clear,
 
+            # Syscollector
             '/syscollector/:agent_id/os': syscollector.get_os_agent,
             '/syscollector/:agent_id/hardware': syscollector.get_hardware_agent,
             '/syscollector/:agent_id/packages': syscollector.get_packages_agent,
@@ -266,3 +277,4 @@ if __name__ == "__main__":
         print_json("Wazuh-Python Internal Error: {0}".format(str(e)), 1000)
         if debug:
             raise
+
