@@ -21,6 +21,7 @@ var router = require('express').Router();
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String} [select] List of selected fields.
  * *
  * @apiDescription Returns the nodes info
  *
@@ -35,7 +36,7 @@ router.get('/nodes', cache(), function(req, res) {
 
     var data_request = { 'function': '/cluster/nodes', 'arguments': {} };
     var filters = { 'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
-                    'search': 'search_param', 'type': 'alphanumeric_param' }
+        'search': 'search_param', 'type': 'alphanumeric_param', 'select': 'select_param' }
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -49,6 +50,8 @@ router.get('/nodes', cache(), function(req, res) {
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
     if ('type' in req.query)
         data_request['arguments']['filter_type'] = req.query.type
+    if ('select' in req.query)
+        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select);
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
