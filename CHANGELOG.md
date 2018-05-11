@@ -1,10 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.2.3]
+### Added
+- Added a new API call `GET/rules/gdpr` ([#78](https://github.com/wazuh/wazuh-api/pull/78)).
+- Added a parameter in `GET/rules` API call to filter by GDPR requirements ([#78](https://github.com/wazuh/wazuh-api/pull/78)).
+
 ## [v3.2.2]
-## Added
+### Added
 - Added an option in `config.js` to run the API with root privileges for debug purposes and troubleshooting. The API runs as ossec by default. ([#68](https://github.com/wazuh/wazuh-api/pull/68))
-## Changed
+### Changed
 - Changed mode from 750 to 660 in `/configuration/auth/user` file after installing it.
 
 
