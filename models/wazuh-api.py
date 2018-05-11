@@ -241,6 +241,7 @@ if __name__ == "__main__":
             '/rules': Rule.get_rules,
             '/rules/groups': Rule.get_groups,
             '/rules/pci': Rule.get_pci,
+            '/rules/gdpr': Rule.get_gdpr,
             '/rules/files': Rule.get_rules_files,
 
             # Syscheck
@@ -277,4 +278,3 @@ if __name__ == "__main__":
         print_json("Wazuh-Python Internal Error: {0}".format(str(e)), 1000)
         if debug:
             raise
-
