@@ -21,6 +21,7 @@ var router = require('express').Router();
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String} [select] List of selected fields.
  * *
  * @apiDescription Returns the nodes info
  *
@@ -34,7 +35,8 @@ router.get('/nodes', cache(), function(req, res) {
     req.apicacheGroup = "cluster";
 
     var data_request = { 'function': '/cluster/nodes', 'arguments': {} };
-    var filters = { 'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param', 'search': 'search_param' }
+    var filters = { 'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
+        'search': 'search_param', 'type': 'alphanumeric_param', 'select': 'select_param' }
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -46,6 +48,10 @@ router.get('/nodes', cache(), function(req, res) {
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+    if ('type' in req.query)
+        data_request['arguments']['filter_type'] = req.query.type
+    if ('select' in req.query)
+        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select);
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -105,51 +111,6 @@ router.get('/healthcheck', cache(), function (req, res) {
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
-/**
- * @api {get} /cluster/agents Get info about agents in cluster
- * @apiName GetClusteragentsInfo
- * @apiGroup Nodes
- *
- * @apiParam {String} [node] Filters by node name.
- * @apiParam {String} [status] Filters by agents status.
- * @apiParam {Number} [offset] First element to return in the collection.
- * @apiParam {Number} [limit=500] Maximum number of elements to return.
- * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
- * @apiParam {String} [search] Looks for elements with the specified string.
- * *
- * @apiDescription Returns the state of each agent and the manager it's reporting to in the cluster
- *
- * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/agents?pretty"
- *
- */
-router.get('/agents', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /cluster/agents");
-
-    req.apicacheGroup = "cluster";
-
-    var data_request = { 'function': '/cluster/agents', 'arguments': {} };
-    var filters = { 'node': 'alphanumeric_param', 'status': 'alphanumeric_param', 'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param', 'select': 'select_param', 'search': 'search_param' }
-
-    if (!filter.check(req.query, filters, req, res))  // Filter with error
-        return;
-
-    if ('node' in req.query)
-        data_request['arguments']['filter_node'] = req.query.node;
-    if ('status' in req.query)
-        data_request['arguments']['filter_status'] = req.query.status;
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
-})
 
 /**
  * @api {get} /cluster/status Get info about cluster status
