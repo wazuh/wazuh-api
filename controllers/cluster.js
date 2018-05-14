@@ -73,7 +73,12 @@ router.get('/nodes/:node_name', cache(), function (req, res) {
     req.apicacheGroup = "cluster";
 
     var data_request = { 'function': '/cluster/nodes/:node_name', 'arguments': {} };
+    var filters = {
+        'select': 'select_param'
+    }
 
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
     if (!filter.check(req.params, { 'node_name': 'names' }, req, res))  // Filter with error
         return;
 
