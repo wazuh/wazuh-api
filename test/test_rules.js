@@ -264,7 +264,7 @@ describe('Rules', function() {
 
         it('Filters: gdpr', function(done) {
             request(common.url)
-            .get("/rules?gdpr=30.1.g")
+            .get("/rules?gdpr=II_5.1.f")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
