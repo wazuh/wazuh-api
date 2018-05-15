@@ -3,8 +3,22 @@ All notable changes to this project will be documented in this file.
 
 ## [v3.2.3]
 ### Added
-- Added a new API call `GET/rules/gdpr` ([#78](https://github.com/wazuh/wazuh-api/pull/78)).
-- Added a parameter in `GET/rules` API call to filter by GDPR requirements ([#78](https://github.com/wazuh/wazuh-api/pull/78)).
+- New API requests:
+    * `GET/rules/gdpr` ([#78](https://github.com/wazuh/wazuh-api/pull/78)).
+    * `GET/agents/no_group`.
+    * `GET/cluster/healthcheck`.
+    * `GET/cluster/nodes/:node_name`.
+- A parameter in request `GET/rules` to filter by GDPR requirements ([#78](https://github.com/wazuh/wazuh-api/pull/78)).
+- Parameters in `GET/cluster/nodes`: `search`, `sort`, `offset`, `limit`, `select`. And a new filter: `type`.
+- A parameter in request `GET/agents` to filter agents by cluster nodes.
+### Changed
+- Output of `GET/nodes`: Added a new attribute `version`.
+
+### Removed
+- The following requests have been removed: 
+    - `GET/cluster/agents`: Duplicated request (`GET/agents`).
+    - `GET/cluster/node`: Duplicated request (`GET/config`).
+    - `GET/cluster/files`: It will not be available in this version of the cluster.
 
 ## [v3.2.2]
 ### Added
