@@ -9,16 +9,14 @@
 #  Foundation.
 ###
 
-###
-
 # How to use OSSEC Wazuh RESTful API from PowerShell 3.0+
-# Documentation: http://wazuh-documentation.readthedocs.org/en/latest/ossec_api.html
+# Documentation: https://documentation.wazuh.com/current/user-manual/api/index.html
 
 function Ignore-SelfSignedCerts {
     add-type @"
         using System.Net;
         using System.Security.Cryptography.X509Certificates;
-    
+
         public class PolicyCert : ICertificatePolicy {
             public PolicyCert() {}
             public bool CheckValidationResult(
@@ -28,7 +26,7 @@ function Ignore-SelfSignedCerts {
             }
         }
 "@
-    [System.Net.ServicePointManager]::CertificatePolicy = new-object PolicyCert 
+    [System.Net.ServicePointManager]::CertificatePolicy = new-object PolicyCert
 }
 
 function req($method, $resource){
@@ -40,7 +38,7 @@ function req($method, $resource){
     }catch{
         return $_.Exception
     }
-    
+
 }
 
 # Configuration

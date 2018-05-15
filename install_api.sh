@@ -324,6 +324,9 @@ setup_api_permissions () {
     exec_cmd "chown root:ossec $API_PATH/configuration"
     exec_cmd "chown root:ossec $API_PATH/configuration/config.js"
     exec_cmd "chmod 740 $API_PATH/configuration/config.js"
+
+    # API users permissions
+    exec_cmd "chmod 660 $API_PATH/configuration/auth/user"
 }
 
 setup_api() {

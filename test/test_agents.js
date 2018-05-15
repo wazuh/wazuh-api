@@ -722,6 +722,158 @@ describe('Agents', function() {
 
     });  // PUT/agents/groups/:group_id
 
+    describe('GET/agents/no_group', function () {
+        var agent_name = "agentWithoutGroup"
+        var agent_id = 0
+        before(function (done) {
+            request(common.url)
+                .put("/agents/" + agent_name)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) throw err;
+                    agent_id = res.body.data.id;
+                    done();
+                });
+        });
+
+        it('Request', function (done) {
+            request(common.url)
+                .get("/agents/no_group")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.array;
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.totalItems.should.above(0);
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(['ip', 'id', 'name']);
+                    done();
+                });
+        });
+
+
+        it('Pagination', function (done) {
+            request(common.url)
+                .get("/agents/no_group?offset=0&limit=1")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.array;
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.totalItems.should.above(0);
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(['ip', 'id', 'name']);
+                    done();
+                });
+        });
+
+        it('Sort', function (done) {
+            request(common.url)
+                .get("/agents/no_group?sort=-id")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.array;
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.totalItems.should.above(0);
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(['ip', 'id', 'name']);
+                    done();
+                });
+        });
+
+        it('Search', function (done) {
+            request(common.url)
+                .get("/agents/no_group?search=1")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.array;
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.totalItems.should.above(0);
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(['ip', 'id', 'name']);
+                    done();
+                });
+        });
+
+        it('Select', function (done) {
+            request(common.url)
+                .get("/agents/no_group?select=name")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.array;
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.totalItems.should.above(0);
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(['name']);
+                    done();
+                });
+        });
+
+        it('Wrong select', function (done) {
+            request(common.url)
+                .get("/agents/no_group?select=worng_select")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'message']);
+
+                    res.body.error.should.equal(1724);
+                    done();
+                });
+        });
+
+        after(function (done) {
+            request(common.url)
+                .delete("/agents/" + agent_id)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) throw err;
+                    done();
+                });
+        });
+
+    });  // GET/agents/no_group
+
     describe('GET/agents/groups', function() {
 
         it('Request', function(done) {
