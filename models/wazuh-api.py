@@ -19,10 +19,10 @@ try:
         new_path = "/{0}/{1}/framework".format(current_path[1], current_path[2])
     path.append(new_path)
     from wazuh import Wazuh
+    from wazuh.exception import WazuhException
     from wazuh.agent import Agent
     from wazuh.rule import Rule
     from wazuh.decoder import Decoder
-    from wazuh.exception import WazuhException
     import wazuh.cluster.cluster as cluster
     import wazuh.cluster.control as cluster_control
     import wazuh.configuration as configuration
@@ -31,7 +31,7 @@ try:
     import wazuh.rootcheck as rootcheck
     import wazuh.syscheck as syscheck
     import wazuh.syscollector as syscollector
-except ImportError as e:
+except (ImportError, SyntaxError) as e:
     error = str(e)
     error_wazuh_package = -1
 except WazuhException as e:
