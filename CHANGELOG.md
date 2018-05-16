@@ -17,7 +17,7 @@ All notable changes to this project will be documented in this file.
 ### Removed
 - The following requests have been removed: 
     - `GET/cluster/agents`: Duplicated request (`GET/agents`).
-    - `GET/cluster/node`: Duplicated request (`GET/config`).
+    - `GET/cluster/node`: Duplicated request (`GET/cluster/config`).
     - `GET/cluster/files`: It will not be available in this version of the cluster.
 
 ## [v3.2.2]
