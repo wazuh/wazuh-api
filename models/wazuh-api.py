@@ -192,9 +192,9 @@ if __name__ == "__main__":
             'POST/agents/insert': Agent.insert_agent,
             'DELETE/agents/:agent_id': Agent.remove_agent,
             'DELETE/agents/': Agent.remove_agent,
-            '/agents/no_group': Agent.get_agents_without_group,
 
             # Groups
+            '/agents/no_group': group.get_agents_without_group,
             '/agents/groups': group.get_all_groups,
             '/agents/groups/:group_id': group.get_agent_group,
             '/agents/groups/:group_id/configuration':group.get_agent_conf,
