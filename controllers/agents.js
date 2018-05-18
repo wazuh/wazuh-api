@@ -137,7 +137,7 @@ router.get('/summary/os', cache(), function(req, res) {
 /**
  * @api {get} /agents/no_group Get agents without group
  * @apiName GetAgentsWithoutGroup
- * @apiGroup NoGroups
+ * @apiGroup Groups
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
@@ -542,7 +542,7 @@ router.get('/:agent_id', cache(), function(req, res) {
 /**
  * @api {get} /agents/:agent_id/key Get agent key
  * @apiName GetAgentsKey
- * @apiGroup Key
+ * @apiGroup Key 
  *
  * @apiParam {Number} agent_id Agent ID.
  *
