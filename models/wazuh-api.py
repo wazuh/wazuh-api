@@ -224,6 +224,7 @@ if __name__ == "__main__":
             # Cluster
             '/cluster/status': cluster.get_status_json,
             '/cluster/config': cluster.read_config,
+            '/cluster/node': cluster.get_node,
             '/cluster/nodes': cluster_control.get_nodes_api,
             '/cluster/nodes/:node_name': cluster_control.get_nodes_api,
             '/cluster/healthcheck': cluster_control.get_healthcheck,
