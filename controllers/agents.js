@@ -929,7 +929,7 @@ router.delete('/', function(req, res) {
 
     var data_request = { 'function': 'DELETE/agents/', 'arguments': {} };
     var filter_body = { 'ids': 'array_numbers', 'purge': 'boolean' };
-    var filter_query = { 'timeframe': 'timeframe_type', 'status': 'status_type2'};
+    var filter_query = { 'timeframe': 'timeframe_type', 'status': 'status_type'};
 
     if (!filter.check(req.body, filter_body, req, res))  // Filter with error
         return;

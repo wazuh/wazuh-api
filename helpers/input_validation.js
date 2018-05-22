@@ -160,12 +160,3 @@ exports.status_type = function (n) {
     else
         return false;
 }
-
-exports.status_type2 = function (n) {
-    if (typeof n != 'undefined') {
-        var regex = /^((^|,)(neverconnected|disconnected))+$/i;
-        return regex.test(n);
-    }
-    else
-        return false;
-}
