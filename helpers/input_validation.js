@@ -151,12 +151,3 @@ exports.boolean = function(n) {
     else
         return false;
 }
-
-exports.status_type = function (n) {
-    if (typeof n != 'undefined') {
-        var regex = /^((^|,)(active|neverconnected|pending|disconnected))+$/i;
-        return regex.test(n);
-    }
-    else
-        return false;
-}

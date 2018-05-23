@@ -3,9 +3,12 @@
 ## Requirements
 
  * API installed and configurated (Configure API: https and auth (foo:bar)).
- * Packages npm installed: `glob`, `supertest`, `mocha`, `should`, `moment` and `getos`.
+ * Packages npm installed: `glob`, `supertest`, `mocha`, `should`, `moment`, `sleep` and `getos`.
  
-    ``` npm install glob supertest mocha should moment getos ```
+    ``` 
+    npm install mocha -g
+    npm install glob supertest mocha should moment getos sleep
+    ```
 
  * Cluster configurated and running with 2 connected nodes: `master` and `client`.
  * A connected agent with id `001`.

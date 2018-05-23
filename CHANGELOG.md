@@ -1,6 +1,22 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+
+## [v3.3.0]
+### Added
+- A parameter in request `GET/agents` to filter by a timeframe ([#82](https://github.com/wazuh/wazuh-api/pull/82)).
+- New filters in request `REMOVE/agents`:
+    - `timeframe`: Filter to remove agents not connected in a specific time ([#82](https://github.com/wazuh/wazuh-api/pull/82)).
+    - `status`: Filter to remove agents with a specific status ([#82](https://github.com/wazuh/wazuh-api/pull/82)).
+
+### Changed
+- Filter `status` in `GET/agents` can filter by several status separated by commas ([#82](https://github.com/wazuh/wazuh-api/pull/82)).
+
+### Removed
+- The following requests have been removed: 
+    - `POST/agents/purge` ([#82](https://github.com/wazuh/wazuh-api/pull/82)).
+    - `GET/agents/purgeable` ([#82](https://github.com/wazuh/wazuh-api/pull/82)).
+
 ## [v3.2.3]
 ### Added
 - New API requests:

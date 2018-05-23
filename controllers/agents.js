@@ -41,7 +41,7 @@ router.get('/', cache(), function(req, res) {
     var data_request = {'function': '/agents', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
                    'select':'select_param', 'search':'search_param',
-                    'status':'status_type', 'os.platform':'alphanumeric_param',
+                    'status':'alphanumeric_param', 'os.platform':'alphanumeric_param',
                    'os.version':'alphanumeric_param', 'manager':'alphanumeric_param',
                    'version':'alphanumeric_param', 'node': 'alphanumeric_param',
                     'timeframe':'timeframe_type'};
@@ -929,7 +929,7 @@ router.delete('/', function(req, res) {
 
     var data_request = { 'function': 'DELETE/agents/', 'arguments': {} };
     var filter_body = { 'ids': 'array_numbers', 'purge': 'boolean' };
-    var filter_query = { 'timeframe': 'timeframe_type', 'status': 'status_type'};
+    var filter_query = { 'timeframe': 'timeframe_type', 'status': 'alphanumeric_param'};
 
     if (!filter.check(req.body, filter_body, req, res))  // Filter with error
         return;
