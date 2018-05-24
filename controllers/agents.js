@@ -936,8 +936,9 @@ router.delete('/', function(req, res) {
     if (!filter.check(req.query, filter_query, req, res))  // Filter with error
         return;
 
-    if (!('ids' in req.body) && !('older_than' in req.query) && !('status' in req.query))
-        res_h.bad_request(req, res, 604, "Missing field: You have to specified 'older_than', 'ids' or status.");
+    if (!('ids' in req.body) && !('status' in req.query))
+        res_h.bad_request(req, res, 604, "Missing field: You have to specified 'ids' or status.");
+        return;
 
     data_request['arguments']['purge'] = 'purge' in req.body && (req.body['purge'] == true || req.body['purge'] == 'true');
 
