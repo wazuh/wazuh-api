@@ -72,7 +72,7 @@ exports.ips = function(ip) {
 
 exports.alphanumeric_param = function(param) {
     if (typeof param != 'undefined'){
-        var regex = /^[a-zA-Z0-9_\-\.\+\s]+$/;
+        var regex = /^[a-zA-Z0-9_,\-\.\+\s]+$/;
         return regex.test(param);
     }
     else

@@ -168,9 +168,9 @@ describe('Agents', function() {
             });
         });
 
-        it('Filters: timeframe', function (done) {
+        it('Filters: older_than', function (done) {
             request(common.url)
-                .get("/agents?timeframe=1s")
+                .get("/agents?older_than=1s")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -986,9 +986,9 @@ describe('Agents', function() {
                 });
         });
 
-        it('Filter: timeframe, status and ids', function (done) {
+        it('Filter: older_than, status and ids', function (done) {
             request(common.url)
-                .delete("/agents?status=neverconnected&timeframe=1s")
+                .delete("/agents?status=neverconnected&older_than=1s")
                 .send({ 'ids': [agent_id1]})
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
@@ -997,7 +997,7 @@ describe('Agents', function() {
                     if (err) return done(err);
 
                     res.body.should.have.properties(['error', 'data']);
-                    res.body.data.should.have.properties(['affected_agents', 'msg', 'timeframe']);
+                    res.body.data.should.have.properties(['affected_agents', 'msg', 'older_than']);
 
                     res.body.data.affected_agents[0].should.equal(agent_id1);
 
@@ -1021,9 +1021,9 @@ describe('Agents', function() {
                 });
         });
         
-        it('Filter: timeframe', function (done) {
+        it('Filter: older_than', function (done) {
             request(common.url)
-                .delete("/agents?timeframe=1s")
+                .delete("/agents?older_than=1s")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1031,7 +1031,7 @@ describe('Agents', function() {
                     if (err) return done(err);
 
                     res.body.should.have.properties(['error', 'data']);
-                    res.body.data.should.have.properties(['affected_agents', 'msg', 'timeframe']);
+                    res.body.data.should.have.properties(['affected_agents', 'msg', 'older_than']);
 
                     res.body.error.should.equal(0);
                     done();

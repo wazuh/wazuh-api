@@ -21,7 +21,8 @@ var router = require('express').Router();
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String="active","pending","never connected", "disconnected"} [status] Filters by agent status.
+ * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
+ * @apiParam {String} older_than Filters out disconnected agents for longer than specified. Time in seconds or [n_days]d[n_hours]h[n_minutes]m[n_seconds]s. For never connected agents, uses the register date.
  * @apiParam {String} [os.platform] Filters by OS platform.
  * @apiParam {String} [os.version] Filters by OS version.
  * @apiParam {String} [manager] Filters by manager hostname to which agents are connected.
@@ -44,7 +45,7 @@ router.get('/', cache(), function(req, res) {
                     'status':'alphanumeric_param', 'os.platform':'alphanumeric_param',
                    'os.version':'alphanumeric_param', 'manager':'alphanumeric_param',
                    'version':'alphanumeric_param', 'node': 'alphanumeric_param',
-                    'timeframe':'timeframe_type'};
+                    'older_than':'timeframe_type'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -71,8 +72,8 @@ router.get('/', cache(), function(req, res) {
         data_request['arguments']['node_name'] = req.query['node'];
     if ('version' in req.query)
         data_request['arguments']['version'] = req.query['version'];
-    if ('timeframe' in req.query)
-        data_request['arguments']['timeframe'] = req.query['timeframe'];
+    if ('older_than' in req.query)
+        data_request['arguments']['older_than'] = req.query['older_than'];
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -834,8 +835,6 @@ router.delete('/groups', function(req, res) {
  *
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {String} purge Delete an agent from the key store.
- * @apiParam {String="never connected", "disconnected"} [status] Filters by agent status.
- * @apiParam {String} timeframe Time from last connection in seconds or [n_days]d[n_hours]h[n_minutes]m[n_seconds]s.
  *
  * @apiDescription Removes an agent.
  *
@@ -909,16 +908,16 @@ router.delete('/groups/:group_id', function(req, res) {
 })
 
 /**
- * @api {delete} /agents Delete a list of agents
+ * @api {delete} /agents Delete agents
  * @apiName DeleteAgents
  * @apiGroup Delete
  *
  * @apiParam {String[]} ids Array of agent ID's.
  * @apiParam {Boolean} purge Delete an agent from the key store.
- * @apiParam {String} timeframe Time from last connection in seconds or [n_days]d[n_hours]h[n_minutes]m[n_seconds]s.
- * @apiParam {String="never connected", "disconnected"} [status] Filters by agent status.
+ * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
+ * @apiParam {String} older_than Filters out disconnected agents for longer than specified. Time in seconds or [n_days]d[n_hours]h[n_minutes]m[n_seconds]s. For never connected agents, uses the register date.
  *
- * @apiDescription Removes a list of agents. The Wazuh API must be restarted after removing an agent.
+ * @apiDescription Removes agents, using a list of them or a criterion based on the status or time of the last connection. The Wazuh API must be restarted after removing an agent.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X DELETE -H "Content-Type:application/json" -d '{"ids":["003","005"]}' "https://127.0.0.1:55000/agents?pretty"
@@ -929,7 +928,7 @@ router.delete('/', function(req, res) {
 
     var data_request = { 'function': 'DELETE/agents/', 'arguments': {} };
     var filter_body = { 'ids': 'array_numbers', 'purge': 'boolean' };
-    var filter_query = { 'timeframe': 'timeframe_type', 'status': 'alphanumeric_param'};
+    var filter_query = { 'older_than': 'timeframe_type', 'status': 'alphanumeric_param'};
 
     if (!filter.check(req.body, filter_body, req, res))  // Filter with error
         return;
@@ -937,16 +936,16 @@ router.delete('/', function(req, res) {
     if (!filter.check(req.query, filter_query, req, res))  // Filter with error
         return;
 
-    if (!('ids' in req.body) && !('timeframe' in req.query) && !('status' in req.query))
-        res_h.bad_request(req, res, 604, "Missing field: You have to specified 'timeframe', 'ids' or status.");
+    if (!('ids' in req.body) && !('older_than' in req.query) && !('status' in req.query))
+        res_h.bad_request(req, res, 604, "Missing field: You have to specified 'older_than', 'ids' or status.");
 
     data_request['arguments']['purge'] = 'purge' in req.body && (req.body['purge'] == true || req.body['purge'] == 'true');
 
     if ('ids' in req.body)
-        data_request['arguments']['agent_id'] = req.body.ids;
+        data_request['arguments']['list_agent_ids'] = req.body.ids;
 
-    if ('timeframe' in req.query)
-        data_request['arguments']['timeframe'] = req.query.timeframe;
+    if ('older_than' in req.query)
+        data_request['arguments']['older_than'] = req.query.older_than;
 
     if ('status' in req.query)
         data_request['arguments']['status'] = req.query.status;
