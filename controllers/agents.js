@@ -936,9 +936,10 @@ router.delete('/', function(req, res) {
     if (!filter.check(req.query, filter_query, req, res))  // Filter with error
         return;
 
-    if (!('ids' in req.body) && !('status' in req.query))
+    if (!('ids' in req.body) && !('status' in req.query)){
         res_h.bad_request(req, res, 604, "Missing field: You have to specified 'ids' or status.");
         return;
+    }
 
     data_request['arguments']['purge'] = 'purge' in req.body && (req.body['purge'] == true || req.body['purge'] == 'true');
 
@@ -950,7 +951,6 @@ router.delete('/', function(req, res) {
 
     if ('status' in req.query)
         data_request['arguments']['status'] = req.query.status;
-
     
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
