@@ -13,6 +13,7 @@ var should  = require('should');
 var assert  = require('assert');
 var request = require('supertest');
 var common  = require('./common.js');
+var sleep = require('sleep');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
@@ -116,6 +117,25 @@ describe('Agents', function() {
             });
         });
 
+        it('Filters: status 2', function (done) {
+            request(common.url)
+                .get("/agents?status=aCtIvE,neverconnected")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.totalItems.should.be.above(0);
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(['status', 'ip', 'id', 'name']);
+                    done();
+                });
+        });
+
         it('Filters: Invalid filter', function(done) {
             request(common.url)
             .get("/agents?random")
@@ -147,6 +167,25 @@ describe('Agents', function() {
                 done();
             });
         });
+
+        it('Filters: older_than', function (done) {
+            request(common.url)
+                .get("/agents?older_than=1s")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(400)
+                .end(function (err, res) {
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.totalItems.should.be.above(0);
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(['status', 'ip', 'id', 'name']);
+                    done();
+                });
+        });
+
 
     });  // GET/agents
 
@@ -490,7 +529,7 @@ describe('Agents', function() {
 
         it('Search', function (done) {
             request(common.url)
-                .get("/agents/no_group?search=1")
+                .get("/agents/no_group?search=" + agent_id)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -892,5 +931,115 @@ describe('Agents', function() {
         });
 
     });  // PUT/agents/:agent_id/restart
+
+
+
+    describe('DELETE/agents', function () {
+
+        var agent_name1 = "agentToDelete"
+        var agent_name2 = "agentToDelete2"
+        var agent_id1 = 0
+        var agent_id2 = 0
+        before(function (done) {
+            request(common.url)
+                .put("/agents/" + agent_name1)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) throw err;
+                    agent_id1 = res.body.data.id;
+                    done();
+                });
+        });
+
+        before(function (done) {
+
+            request(common.url)
+                .put("/agents/" + agent_name2)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) throw err;
+                    agent_id2 = res.body.data.id;
+                    done();
+                });
+        });
+
+        before(function (done) {
+            sleep.sleep(1)
+            done();
+        });
+
+        it('Request', function (done) {
+            request(common.url)
+                .delete("/agents")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(400)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'message']);
+                    done();
+                });
+        });
+
+        it('Filter: older_than, status and ids', function (done) {
+            request(common.url)
+                .delete("/agents?status=neverconnected&older_than=1s")
+                .send({ 'ids': [agent_id1]})
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.data.should.have.properties(['affected_agents', 'msg', 'older_than']);
+
+                    res.body.data.affected_agents[0].should.equal(agent_id1);
+
+                    res.body.error.should.equal(0);
+                    done();
+                });
+        });
+
+        it('Errors: Get deleted agent', function (done) {
+            request(common.url)
+                .get("/agents/" + agent_id1)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'message']);
+                    res.body.error.should.equal(1701);
+                    done();
+                });
+        });
+        
+        it('Filter: older_than', function (done) {
+            request(common.url)
+                .delete("/agents?older_than=1s")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.data.should.have.properties(['affected_agents', 'msg', 'older_than']);
+
+                    res.body.error.should.equal(0);
+                    done();
+                });
+        });
+        
+    });  // DELETE/agents
+
+
 
 });  // Agents

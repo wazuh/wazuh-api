@@ -49,7 +49,7 @@ errors['ossec_key'] = 615;
 errors['616'] = "Param not valid. Valid characters: array of numbers";
 errors['array_numbers'] = 616;
 errors['timeframe_type'] = 617;
-errors['617'] = "Param not valid. Valid characters: \"[0-9]d[0-9]h[0-9]m[0-9]s\" or 0-9"
+errors['617'] = "Param not valid. Valid characters: [0-9]d|[0-9]h|[0-9]m|[0-9]s|0-9"
 errors['boolean'] = 618;
 errors['618'] = "Param not valid. Valid characters: true or false"
 
