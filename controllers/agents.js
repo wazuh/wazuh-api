@@ -22,7 +22,7 @@ var router = require('express').Router();
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
- * @apiParam {String} older_than Filters out disconnected agents for longer than specified. Time in seconds | "[n_days]d" | "[n_hours]h" | "[n_minutes]m" | "[n_seconds]s". For never connected agents, uses the register date.
+ * @apiParam {String} older_than Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date.
  * @apiParam {String} [os.platform] Filters by OS platform.
  * @apiParam {String} [os.version] Filters by OS version.
  * @apiParam {String} [manager] Filters by manager hostname to which agents are connected.
@@ -915,12 +915,12 @@ router.delete('/groups/:group_id', function(req, res) {
  * @apiParam {String[]} ids Array of agent ID's.
  * @apiParam {Boolean} purge Delete an agent from the key store.
  * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
- * @apiParam {String} older_than Filters out disconnected agents for longer than specified. Time in seconds | "[n_days]d" | "[n_hours]h" | "[n_minutes]m" | "[n_seconds]s". For never connected agents, uses the register date.
+ * @apiParam {String} older_than Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date.
  *
  * @apiDescription Removes agents, using a list of them or a criterion based on the status or time of the last connection. The Wazuh API must be restarted after removing an agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE -H "Content-Type:application/json" -d '{"ids":["003","005"]}' "https://127.0.0.1:55000/agents?pretty"
+ *     curl -u foo:bar -k -X DELETE -H "Content-Type:application/json" -d '{"ids":["003","005"]}' "https://127.0.0.1:55000/agents?pretty&older_than=10s"
  *
  */
 router.delete('/', function(req, res) {
