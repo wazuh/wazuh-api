@@ -22,7 +22,6 @@ cd $(dirname $0)
 
 PACKAGE_FILE="../package.json"
 # APP_FILE="../app.js"
-INDEX_FILE="../controllers/index.js"
 
 if [ -n "$version" ]
 then
@@ -47,14 +46,6 @@ then
 
     # sed -E -i'' "s/current_version = \".+\";/current_version = \"v$version\";/g" $APP_FILE
 
-    grep "'data': \"v[0-9].[0-9].[0-9]" $INDEX_FILE > /dev/null
-    if [ $? != 0 ]
-    then
-        echo "Error: no suitable version definition found at $INDEX_FILE"
-        exit 1
-    fi
-
-    sed -E -i'' "s/'data': \"v[0-9].[0-9].[0-9]\"/'data': \"v$version\"/g" $INDEX_FILE
 fi
 
 if [ -n "$revision" ]

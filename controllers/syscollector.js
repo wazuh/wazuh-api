@@ -16,7 +16,7 @@ var router = require('express').Router();
 /**
  * @api {get} /syscollector/:agent_id/os Get os info
  * @apiName GetOs_agent
- * @apiGroup Syscollector
+ * @apiGroup OS
  *
  * @apiParam {Number} agent_id Agent ID.
  *
@@ -49,7 +49,7 @@ router.get('/:agent_id/os', function(req, res) {
 /**
  * @api {get} /syscollector/:agent_id/hardware Get hardware info
  * @apiName GetHardware_agent
- * @apiGroup Syscollector
+ * @apiGroup Hardware
  *
  * @apiParam {Number} agent_id Agent ID.
  *
@@ -86,7 +86,7 @@ router.get('/:agent_id/hardware', function(req, res) {
 /**
  * @api {get} /syscollector/:agent_id/packages Get packages info
  * @apiName GetPackages_agent
- * @apiGroup Syscollector
+ * @apiGroup Packages
  *
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {Number} [offset] First element to return in the collection.
@@ -146,7 +146,7 @@ router.get('/:agent_id/packages', function(req, res) {
 /**
  * @api {get} /syscollector/packages Get packages info of all agents
  * @apiName GetPackages
- * @apiGroup Syscollector
+ * @apiGroup Packages
  *
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {Number} [offset] First element to return in the collection.
@@ -204,7 +204,7 @@ router.get('/packages', function(req, res) {
 /**
  * @api {get} /syscollector/os Get os info of all agents
  * @apiName GetOS
- * @apiGroup Syscollector
+ * @apiGroup OS
  *
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {Number} [offset] First element to return in the collection.
@@ -266,7 +266,7 @@ router.get('/os', function(req, res) {
 /**
  * @api {get} /syscollector/hardware Get hardware info of all agents
  * @apiName GetHardware
- * @apiGroup Syscollector
+ * @apiGroup Hardware
  *
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {Number} [offset] First element to return in the collection.

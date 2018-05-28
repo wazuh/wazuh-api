@@ -1,10 +1,40 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.2.3]
+### Added
+- New API requests:
+    * `GET/rules/gdpr` ([#78](https://github.com/wazuh/wazuh-api/pull/78)).
+    * `GET/agents/no_group`.
+    * `GET/cluster/healthcheck`.
+    * `GET/cluster/nodes/:node_name`.
+- A parameter in request `GET/rules` to filter by GDPR requirements ([#78](https://github.com/wazuh/wazuh-api/pull/78)).
+- Parameters in `GET/cluster/nodes`: `search`, `sort`, `offset`, `limit`, `select`. And a new filter: `type`.
+- Parameters in request `GET/agents`:
+    * `node_name`: Filters agents by cluster nodes.
+    - `older_than`: Filters by agents not connected in a specific time ([#82](https://github.com/wazuh/wazuh-api/pull/82)).
+    - `status`: Filters agents with a specific status ([#82](https://github.com/wazuh/wazuh-api/pull/82)).
+- New filters in request `DELETE/agents`:
+    - `older_than`: Filters by agents not connected in a specific time ([#82](https://github.com/wazuh/wazuh-api/pull/82)).
+    - `status`: Filters agents with a specific status ([#82](https://github.com/wazuh/wazuh-api/pull/82)).
+
+### Changed
+- Output of `GET/nodes`: Added new attribute `version`.
+- Output of `DELETE/agents`: Added new attribute `older_than`.
+- Filter `status` in `GET/agents` can filter by several status separated by commas ([#82](https://github.com/wazuh/wazuh-api/pull/82)).
+
+### Removed
+- The following requests have been removed: 
+    - `GET/cluster/agents`: Duplicated request (`GET/agents`).
+    - `GET/cluster/node`: Duplicated request (`GET/cluster/config`).
+    - `GET/cluster/files`: It will not be available in this version of the cluster.
+    - `POST/agents/purge`: Replaced by `DELETE/agents` ([#82](https://github.com/wazuh/wazuh-api/pull/82)).
+    - `GET/agents/purgeable`: Replaced by `GET/agents` ([#82](https://github.com/wazuh/wazuh-api/pull/82)).
+
 ## [v3.2.2]
-## Added
+### Added
 - Added an option in `config.js` to run the API with root privileges for debug purposes and troubleshooting. The API runs as ossec by default. ([#68](https://github.com/wazuh/wazuh-api/pull/68))
-## Changed
+### Changed
 - Changed mode from 750 to 660 in `/configuration/auth/user` file after installing it.
 
 

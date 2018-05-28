@@ -16,7 +16,7 @@ TIMEOUT = 30  # cURL TIMEOUT. 0 to disable "example response"
 
 ### Hardcoded text ###
 rst_header = '.. _api_reference:\n\n'
-warning="\n.. Do not modify this file manually. It is generated automatically.\n\n"
+warning="\n.. Copyright (C) 2018 Wazuh, Inc.\n.. Do not modify this file manually. It is generated automatically.\n\n"
 introduction = "Reference\n======================\nThis API reference is organized by resources:\n\n{0}\nBelow is the `Request List`_ that shows all of the available requests.\n\n.. _request_list:\n"
 str_request_list = 'Request List'
 section_separator = '-'*40
@@ -223,8 +223,8 @@ if __name__ == "__main__":
     f = open(rst_output, 'w')
 
     # Header
-    f.write(rst_header)
     f.write(warning)
+    f.write(rst_header)
 
     # Introduction
     secs = ""

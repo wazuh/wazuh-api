@@ -466,7 +466,7 @@ describe('Manager', function() {
 
         it('Filters: type_log and category', function(done) {
             request(common.url)
-            .get("/manager/logs?type_log=info&category=ossec-testrule")
+            .get("/manager/logs?type_log=info&category==ossec-analysisd")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
