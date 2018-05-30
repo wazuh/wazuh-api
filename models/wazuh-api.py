@@ -154,6 +154,7 @@ if __name__ == "__main__":
             print_json(sorted(dapi.get_functions()))
             exit(0)
 
+        request['from_cluster'] = False
         data = dapi.distribute_function(request, pretty, debug)
 
         print(data)
