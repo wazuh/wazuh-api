@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.2.4]
+
+There are no changes for Wazuh API in this version.
+
+
 ## [v3.2.3]
 ### Added
 - New API requests:
@@ -24,7 +29,7 @@ All notable changes to this project will be documented in this file.
 - Filter `status` in `GET/agents` can filter by several status separated by commas ([#82](https://github.com/wazuh/wazuh-api/pull/82)).
 
 ### Removed
-- The following requests have been removed: 
+- The following requests have been removed:
     - `GET/cluster/agents`: Duplicated request (`GET/agents`).
     - `GET/cluster/node`: Duplicated request (`GET/cluster/config`).
     - `GET/cluster/files`: It will not be available in this version of the cluster.
