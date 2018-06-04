@@ -4,8 +4,21 @@ All notable changes to this project will be documented in this file.
 ## [v3.3.0]
 ### Added
 - Improved agent registration/removal bash script ([#71](https://github.com/wazuh/wazuh-api/pull/71)).
+- New API requests:
+    * `GET/syscollector/processes`.
+    * `GET/syscollector/:agent_id/processes`.
+    * `GET/syscollector/ports`.
+    * `GET/syscollector/:agent_id/ports`.
+    * `GET/syscollector/netaddr`.
+    * `GET/syscollector/:agent_id/netaddr`.
+    * `GET/syscollector/netproto`.
+    * `GET/syscollector/:agent_id/netproto`.
+    * `GET/syscollector/netiface`.
+    * `GET/syscollector/:agent_id/netiface`.
+
 ## [v3.2.3]
 ### Added
+
 - New API requests:
     * `GET/rules/gdpr` ([#78](https://github.com/wazuh/wazuh-api/pull/78)).
     * `GET/agents/no_group`.
