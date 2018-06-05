@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [v3.3.0]
 ### Added
 - Improved agent registration/removal bash script ([#71](https://github.com/wazuh/wazuh-api/pull/71)).
-- New API requests:
+- New API requests for syscollector ([#89](https://github.com/wazuh/wazuh-api/pull/89)).:
     * `GET/syscollector/processes`.
     * `GET/syscollector/:agent_id/processes`.
     * `GET/syscollector/ports`.
