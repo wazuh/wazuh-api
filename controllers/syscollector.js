@@ -314,7 +314,6 @@ router.get('/packages', function(req, res) {
  * @apiParam {String} [select] List of selected fields.
  * @apiParam {String} [os_name] Filters by os_name.
  * @apiParam {String} [architecture] Filters by architecture.
- * @apiParam {String} [os_version] Filters by os_version.
  * @apiParam {String} [version] Filters by version.
  * @apiParam {String} [release] Filters by release.
  *
@@ -332,7 +331,7 @@ router.get('/os', function(req, res) {
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
                    'search':'search_param', 'select':'select_param',
                    'os_name': 'alphanumeric_param', 'architecture': 'alphanumeric_param',
-                    'os_version': 'alphanumeric_param','version': 'alphanumeric_param','release': 'alphanumeric_param' };
+                    'version': 'alphanumeric_param','release': 'alphanumeric_param' };
 
     if (!filter.check(req.query, filters, req, res))
         return;
@@ -353,8 +352,6 @@ router.get('/os', function(req, res) {
         data_request['arguments']['filters']['architecture'] = req.query.architecture;
     if ('os_name' in req.query)
         data_request['arguments']['filters']['os_name'] = req.query.os_name;
-    if ('os_version' in req.query)
-        data_request['arguments']['filters']['os_version'] = req.query.os_version;
     if ('version' in req.query)
         data_request['arguments']['filters']['version'] = req.query.version;
     if ('release' in req.query)
@@ -756,8 +753,8 @@ router.get('/:agent_id/netaddr', function (req, res) {
     var filters = {
         'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
         'search': 'search_param', 'select': 'select_param',
-        'iface': 'alphanumeric_param', 'type': 'alphanumeric_param',
-        'gateway': 'alphanumeric_param', 'dhcp': 'alphanumeric_param',
+        'proto': 'alphanumeric_param', 'address': 'alphanumeric_param',
+        'broadcast': 'alphanumeric_param', 'netmask': 'alphanumeric_param',
         'id': 'numbers'
     };
 
@@ -936,7 +933,6 @@ router.get('/:agent_id/netproto', function (req, res) {
  * @apiParam {String} [type] Filters by type.
  * @apiParam {String} [state] Filters by state.
  * @apiParam {String} [mtu] Filters by mtu.
- * @apiParam {String} [mac] Filters by mac.
  * @apiParam {String} [tx_packets] Filters by tx_packets.
  * @apiParam {String} [rx_packets] Filters by rx_packets.
  * @apiParam {String} [tx_bytes] Filters by tx_bytes.
@@ -962,8 +958,7 @@ router.get('/netiface', function (req, res) {
         'id': 'numbers', 'name': 'alphanumeric_param',
         'adapter': 'alphanumeric_param', 'type': 'alphanumeric_param',
         'state': 'alphanumeric_param', 'mtu': 'numbers',
-        'mac': 'alphanumeric_param', 'tx_packets': 'numbers',
-        'rx_packets': 'numbers', 'tx_bytes': 'numbers',
+         'tx_packets': 'numbers', 'rx_packets': 'numbers', 'tx_bytes': 'numbers',
         'rx_bytes': 'numbers', 'tx_errors': 'numbers',
         'rx_errors': 'numbers', 'tx_dropped': 'numbers',
         'rx_dropped': 'numbers'
@@ -995,8 +990,6 @@ router.get('/netiface', function (req, res) {
         data_request['arguments']['filters']['state'] = req.query.state;
     if ('mtu' in req.query)
         data_request['arguments']['filters']['mtu'] = req.query.mtu;
-    if ('mac' in req.query)
-        data_request['arguments']['filters']['mac'] = req.query.mac;
     if ('tx_packets' in req.query)
         data_request['arguments']['filters']['tx_packets'] = req.query.tx_packets;
     if ('rx_packets' in req.query)
@@ -1032,7 +1025,6 @@ router.get('/netiface', function (req, res) {
  * @apiParam {String} [type] Filters by type.
  * @apiParam {String} [state] Filters by state.
  * @apiParam {String} [mtu] Filters by mtu.
- * @apiParam {String} [mac] Filters by mac.
  * @apiParam {String} [tx_packets] Filters by tx_packets.
  * @apiParam {String} [rx_packets] Filters by rx_packets.
  * @apiParam {String} [tx_bytes] Filters by tx_bytes.
@@ -1058,8 +1050,7 @@ router.get('/:agent_id/netiface', function (req, res) {
         'id': 'numbers', 'name': 'alphanumeric_param',
         'adapter': 'alphanumeric_param', 'type': 'alphanumeric_param',
         'state': 'alphanumeric_param', 'mtu': 'numbers',
-        'mac': 'alphanumeric_param', 'tx_packets': 'numbers',
-        'rx_packets': 'numbers', 'tx_bytes': 'numbers',
+        'tx_packets': 'numbers', 'rx_packets': 'numbers', 'tx_bytes': 'numbers',
         'rx_bytes': 'numbers', 'tx_errors': 'numbers',
         'rx_errors': 'numbers', 'tx_dropped': 'numbers',
         'rx_dropped': 'numbers'
@@ -1096,8 +1087,6 @@ router.get('/:agent_id/netiface', function (req, res) {
         data_request['arguments']['filters']['state'] = req.query.state;
     if ('mtu' in req.query)
         data_request['arguments']['filters']['mtu'] = req.query.mtu;
-    if ('mac' in req.query)
-        data_request['arguments']['filters']['mac'] = req.query.mac;
     if ('tx_packets' in req.query)
         data_request['arguments']['filters']['tx_packets'] = req.query.tx_packets;
     if ('rx_packets' in req.query)
