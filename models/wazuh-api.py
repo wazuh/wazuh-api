@@ -20,7 +20,6 @@ try:
     path.append(new_path)
     from wazuh import Wazuh
     from wazuh.exception import WazuhException
-    import wazuh.group as group
     from wazuh.agent import Agent
     from wazuh.rule import Rule
     from wazuh.decoder import Decoder
@@ -190,23 +189,21 @@ if __name__ == "__main__":
             'POST/agents/restart': Agent.restart_agents,
             'POST/agents': Agent.add_agent,
             'POST/agents/insert': Agent.insert_agent,
+            'DELETE/agents/groups': Agent.remove_group,
             'DELETE/agents/:agent_id': Agent.remove_agent,
-            'DELETE/agents/': Agent.remove_agent,
+            'DELETE/agents/': Agent.remove_agents,
 
             # Groups
-            '/agents/no_group': group.get_agents_without_group,
-            '/agents/groups': group.get_all_groups,
-            '/agents/groups/:group_id': group.get_agent_group,
-            '/agents/groups/:group_id/configuration':group.get_agent_conf,
-            '/agents/groups/:group_id/files':group.get_group_files,
-            '/agents/groups/:group_id/files/:filename': group.get_file_conf,
-            'PUT/agents/:agent_id/group/:group_id': group.set_group,
-            'PUT/agents/groups/:group_id': group.create_group,
-            'DELETE/agents/groups/:group_id':group.remove_group,
-            'DELETE/agents/:agent_id/group':group.unset_group,
-            'DELETE/agents/groups': group.remove_group,
-            'POST/agents/purge': Agent.purge_agents,
-            '/agents/purgeable/:timeframe': Agent.get_purgeable_agents_json,
+            '/agents/groups': Agent.get_all_groups,
+            '/agents/no_group': Agent.get_agents_without_group,
+            '/agents/groups/:group_id': Agent.get_agent_group,
+            '/agents/groups/:group_id/configuration':configuration.get_agent_conf,
+            '/agents/groups/:group_id/files':Agent.get_group_files,
+            '/agents/groups/:group_id/files/:filename':configuration.get_file_conf,
+            'PUT/agents/:agent_id/group/:group_id': Agent.set_group,
+            'PUT/agents/groups/:group_id': Agent.create_group,
+            'DELETE/agents/groups/:group_id':Agent.remove_group,
+            'DELETE/agents/:agent_id/group':Agent.unset_group,
 
             # Decoders
             '/decoders': Decoder.get_decoders,
@@ -225,6 +222,7 @@ if __name__ == "__main__":
             # Cluster
             '/cluster/status': cluster.get_status_json,
             '/cluster/config': cluster.read_config,
+            '/cluster/node': cluster.get_node,
             '/cluster/nodes': cluster_control.get_nodes_api,
             '/cluster/nodes/:node_name': cluster_control.get_nodes_api,
             '/cluster/healthcheck': cluster_control.get_healthcheck,
