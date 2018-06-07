@@ -300,6 +300,38 @@ describe('Agents', function() {
                 done();
             });
         });
+
+        it('Select', function(done) {
+            request(common.url)
+            .get("/agents/000?select=lastKeepAlive,id,ip,status")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.error.should.equal(0);
+                res.body.data.should.have.properties(['lastKeepAlive','id','ip','status']);
+                done();
+            });
+        });
+
+        it('Select: wrong field', function(done) {
+            request(common.url)
+            .get("/agents/000?select=wrong_field")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1724);
+                done();
+            });
+        });
+
     });  // GET/agents/:agent_id
 
     describe('GET/agents/:agent_id/key', function() {
