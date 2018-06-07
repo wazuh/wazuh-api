@@ -45,10 +45,12 @@ router.get('/', cache(), function(req, res) {
                     'status':'alphanumeric_param', 'os.platform':'alphanumeric_param',
                    'os.version':'alphanumeric_param', 'manager':'alphanumeric_param',
                    'version':'alphanumeric_param', 'node': 'alphanumeric_param',
-                    'older_than':'timeframe_type'};
+                    'older_than':'timeframe_type', 'group':'alphanumeric_param'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
+
+    data_request['arguments']['filters'] = {}
 
     if ('offset' in req.query)
         data_request['arguments']['offset'] = req.query.offset;
@@ -61,19 +63,21 @@ router.get('/', cache(), function(req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select);
     if ('status' in req.query)
-        data_request['arguments']['status'] = req.query.status;
+        data_request['arguments']['filters']['status'] = req.query.status;
     if ('os.platform' in req.query)
-        data_request['arguments']['os_platform'] = req.query['os.platform'];
+        data_request['arguments']['filters']['os_platform'] = req.query['os.platform'];
     if ('os.version' in req.query)
-        data_request['arguments']['os_version'] = req.query['os.version'];
+        data_request['arguments']['filters']['os_version'] = req.query['os.version'];
     if ('manager' in req.query)
-        data_request['arguments']['manager_host'] = req.query['manager'];
+        data_request['arguments']['filters']['manager_host'] = req.query['manager'];
     if ('node' in req.query)
-        data_request['arguments']['node_name'] = req.query['node'];
+        data_request['arguments']['filters']['node_name'] = req.query['node'];
     if ('version' in req.query)
-        data_request['arguments']['version'] = req.query['version'];
+        data_request['arguments']['filters']['version'] = req.query['version'];
     if ('older_than' in req.query)
-        data_request['arguments']['older_than'] = req.query['older_than'];
+        data_request['arguments']['filters']['older_than'] = req.query['older_than'];
+    if ('group' in req.query)
+        data_request['arguments']['filters']['group'] = req.query['group'];
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -508,7 +512,7 @@ router.get('/:agent_id', cache(), function(req, res) {
 /**
  * @api {get} /agents/:agent_id/key Get agent key
  * @apiName GetAgentsKey
- * @apiGroup Key 
+ * @apiGroup Key
  *
  * @apiParam {Number} agent_id Agent ID.
  *
@@ -951,7 +955,7 @@ router.delete('/', function(req, res) {
 
     if ('status' in req.query)
         data_request['arguments']['status'] = req.query.status;
-    
+
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
