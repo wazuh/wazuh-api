@@ -186,6 +186,25 @@ describe('Agents', function() {
                 });
         });
 
+        it('Filters: group', function (done) {
+            request(common.url)
+                .get("/agents?group=default")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(400)
+                .end(function (err, res) {
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['items','totalItems']);
+                    res.body.data.totalItems.should.be.above(0);
+                    res.body.data.items.should.be.instanceof(Array);
+                    res.body.data.items[0].group.should.be.equal('default')
+
+                    done();
+                });
+        });
+
 
     });  // GET/agents
 
@@ -281,6 +300,38 @@ describe('Agents', function() {
                 done();
             });
         });
+
+        it('Select', function(done) {
+            request(common.url)
+            .get("/agents/000?select=lastKeepAlive,id,ip,status")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.error.should.equal(0);
+                res.body.data.should.have.properties(['lastKeepAlive','id','ip','status']);
+                done();
+            });
+        });
+
+        it('Select: wrong field', function(done) {
+            request(common.url)
+            .get("/agents/000?select=wrong_field")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1724);
+                done();
+            });
+        });
+
     });  // GET/agents/:agent_id
 
     describe('GET/agents/:agent_id/key', function() {
@@ -585,6 +636,22 @@ describe('Agents', function() {
                 });
         });
 
+        it('Filter: status', function (done) {
+            request(common.url)
+                .get("/agents/no_group?status=never%20connected")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['items','totalItems']);
+                    done();
+                });
+        });
+
         after(function (done) {
             request(common.url)
                 .delete("/agents/" + agent_id)
@@ -650,6 +717,38 @@ describe('Agents', function() {
 
                 res.body.should.have.properties(['error', 'message']);
                 res.body.error.should.equal(601);
+                done();
+            });
+        });
+
+        it('Select', function(done) {
+            request(common.url)
+            .get("/agents/groups/webserver?select=lastKeepAlive,version")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['totalItems', 'items']);
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+
+        it('Filter: status', function(done) {
+            request(common.url)
+            .get("/agents/groups/webserver?status=Active,Disconnected")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['totalItems', 'items']);
+                res.body.error.should.equal(0);
                 done();
             });
         });
@@ -1020,7 +1119,7 @@ describe('Agents', function() {
                     done();
                 });
         });
-        
+
         it('Filter: older_than', function (done) {
             request(common.url)
                 .delete("/agents?older_than=1s")
@@ -1037,7 +1136,7 @@ describe('Agents', function() {
                     done();
                 });
         });
-        
+
     });  // DELETE/agents
 
 
