@@ -122,9 +122,9 @@ router.get('/:agent_id/packages', function(req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
@@ -182,9 +182,9 @@ router.get('/packages', function(req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
@@ -245,9 +245,9 @@ router.get('/os', function(req, res) {
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('architecture' in req.query)
         data_request['arguments']['filters']['architecture'] = req.query.architecture
     if ('os_name' in req.query)
@@ -302,9 +302,9 @@ router.get('/hardware', function(req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)

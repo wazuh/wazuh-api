@@ -3,10 +3,14 @@ All notable changes to this project will be documented in this file.
 
 ## [v3.3.0]
 
-## Added
+### Added
 - Filter by group in `GET/agents` API call.
 - Filter by status in `GET/agents/groups/:group_id` and `GET/agents/no_group` API calls.
 - Sort by `lastKeepAlive` in `GET/agents` API call.
+
+### Changed
+- Modified `limit` parameter to retrieve all items using `limit=0`. Available in all requests that return lists ([#96]((https://github.com/wazuh/wazuh-api/pull/96))).
+
 
 ## [v3.2.4]
 

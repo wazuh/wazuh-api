@@ -59,6 +59,24 @@ describe('Rules', function() {
             });
         });
 
+        it('Retrieve all elements with limit=0', function(done) {
+            request(common.url)
+            .get("/rules?limit=0")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['items', 'totalItems']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                done();
+            });
+        });
+
         it('Sort', function(done) {
             request(common.url)
             .get("/rules?sort=-file")
@@ -321,6 +339,24 @@ describe('Rules', function() {
             });
         });
 
+        it('Retrieve all elements with limit=0', function(done) {
+            request(common.url)
+            .get("/rules/groups?limit=0")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['items', 'totalItems']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                done();
+            });
+        });
+
         it('Sort', function(done) {
             request(common.url)
             .get("/rules/groups?sort=-")
@@ -412,6 +448,24 @@ describe('Rules', function() {
                 res.body.error.should.equal(0);
                 res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
                 res.body.data.items[0].should.be.string;
+                done();
+            });
+        });
+
+        it('Retrieve all elements with limit=0', function(done) {
+            request(common.url)
+            .get("/rules/pci?limit=0")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['items', 'totalItems']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
                 done();
             });
         });
@@ -511,6 +565,24 @@ describe('Rules', function() {
             });
         });
 
+        it('Retrieve all elements with limit=0', function(done) {
+            request(common.url)
+            .get("/rules/gdpr?limit=0")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['items', 'totalItems']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                done();
+            });
+        });
+
         it('Sort', function(done) {
             request(common.url)
             .get("/rules/gdpr?sort=-")
@@ -602,6 +674,24 @@ describe('Rules', function() {
                 res.body.error.should.equal(0);
                 res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
                 res.body.data.items[0].should.have.properties(['status', 'file', 'path']);
+                done();
+            });
+        });
+
+        it('Retrieve all elements with limit=0', function(done) {
+            request(common.url)
+            .get("/rules/files?limit=0")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['items', 'totalItems']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
                 done();
             });
         });
@@ -746,6 +836,24 @@ describe('Rules', function() {
                 res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
                 res.body.data.items[0].should.have.properties(rule_fields);
                 res.body.data.items[0].id.should.equal(1002);
+                done();
+            });
+        });
+
+        it('Retrieve all elements with limit=0', function(done) {
+            request(common.url)
+            .get("/rules/1002?limit=0")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['items', 'totalItems']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
                 done();
             });
         });

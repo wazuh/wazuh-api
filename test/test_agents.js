@@ -60,6 +60,24 @@ describe('Agents', function() {
             });
         });
 
+        it('Retrieve all elements with limit=0', function(done) {
+            request(common.url)
+            .get("/agents?limit=0")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['items', 'totalItems']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                done();
+            });
+        });
+
         it('Sort', function(done) {
             request(common.url)
             .get("/agents?sort=-id")
@@ -232,6 +250,60 @@ describe('Agents', function() {
         });
 
     });  // GET/agents/summary
+
+    describe('GET/agents/summary/os', function() {
+        it('Request', function(done) {
+            request(common.url)
+                .get('/agents/summary/os')
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) return done(err);
+
+                    res.body.error.should.equal(0);
+                    res.body.should.have.properties(['error','data']);
+                    res.body.data.should.have.properties(['totalItems','items']);
+                    res.body.data.items.should.be.instanceof(Array);
+                    done();
+                });
+        });
+    }); // GET/agents/summary/os
+
+    describe('GET/agents/outdated', function() {
+        before(function (done) {
+            request(common.url)
+                .get("/manager/info")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) throw err;
+                    manager_version = res.body.data.version;
+                    done();
+                });
+        });
+
+        it('Request', function(done) {
+            request(common.url)
+            .get("/agents/outdated")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.error.should.equal(0);
+                res.body.data.should.have.properties(['items','totalItems']);
+                res.body.data.items.should.be.instanceOf(Array);
+                res.body.data.items[0].should.have.properties(['version','id','name']);
+                res.body.data.items[0].should.not.be.eql(manager_version);
+                done();
+            });
+        });
+
+    });  // GET/agents/outdated
 
     describe('GET/agents/:agent_id', function() {
 
@@ -557,6 +629,26 @@ describe('Agents', function() {
                 });
         });
 
+        it('Retrieve all elements with limit=0', function (done) {
+            request(common.url)
+                .get("/agents/no_group?limit=0")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.array;
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.totalItems.should.above(0)
+                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                    done();
+                });
+        });
+
         it('Sort', function (done) {
             request(common.url)
                 .get("/agents/no_group?sort=-id")
@@ -678,11 +770,32 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
-
                 res.body.error.should.equal(0);
                 res.body.data.should.be.an.array;
+                res.body.data.should.have.properties(['totalItems','items']);
+                res.body.data.items.should.be.instanceOf(Array);
                 done();
             });
+        });
+
+        it('Retrieve all elements with limit=0', function (done) {
+            request(common.url)
+                .get("/agents/groups?limit=0")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.array;
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.totalItems.should.above(0)
+                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                    done();
+                });
         });
 
     });  // GET/agents/groups
@@ -721,6 +834,26 @@ describe('Agents', function() {
             });
         });
 
+
+        it('Retrieve all elements with limit=0', function (done) {
+            request(common.url)
+                .get("/agents/groups/webserver?limit=0")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.array;
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.totalItems.should.above(0)
+                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                    done();
+                });
+
         it('Select', function(done) {
             request(common.url)
             .get("/agents/groups/webserver?select=lastKeepAlive,version")
@@ -751,6 +884,7 @@ describe('Agents', function() {
                 res.body.error.should.equal(0);
                 done();
             });
+
         });
 
     });  // GET/agents/groups/:group_id
@@ -789,6 +923,26 @@ describe('Agents', function() {
             });
         });
 
+        it('Retrieve all elements with limit=0', function (done) {
+            request(common.url)
+                .get("/agents/groups/webserver/configuration?limit=0")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.array;
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.totalItems.should.above(0)
+                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                    done();
+                });
+        });
+
     });  // GET/agents/groups/:group_id/configuration
 
     describe('GET/agents/groups/:group_id/files', function() {
@@ -822,6 +976,26 @@ describe('Agents', function() {
                 res.body.error.should.equal(601);
                 done();
             });
+        });
+
+        it('Retrieve all elements with limit=0', function (done) {
+            request(common.url)
+                .get("/agents/groups/webserver/files?limit=0")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.array;
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.totalItems.should.above(0)
+                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                    done();
+                });
         });
 
     });  // GET/agents/groups/:group_id/files
