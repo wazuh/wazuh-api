@@ -604,6 +604,22 @@ describe('Agents', function() {
                 });
         });
 
+        it('Filter: status', function (done) {
+            request(common.url)
+                .get("/agents/no_group?status=never%20connected")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['items','totalItems']);
+                    done();
+                });
+        });
+
         after(function (done) {
             request(common.url)
                 .delete("/agents/" + agent_id)
