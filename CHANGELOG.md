@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.3.0]
+
+## Added
+- Filter by group in `GET/agents` API call.
+- Filter by status in `GET/agents/groups/:group_id` and `GET/agents/no_group` API calls.
+- Sort by `lastKeepAlive` in `GET/agents` API call.
+
 ## [v3.2.4]
 
 There are no changes for Wazuh API in this version.
