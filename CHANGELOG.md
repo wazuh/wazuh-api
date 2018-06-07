@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [v3.2.5]
+## [v3.3.0]
 
 ### Changed
 - Modified `limit` parameter to retrieve all items using `limit=0`. Available in all requests that return lists ([#96]((https://github.com/wazuh/wazuh-api/pull/96))).
