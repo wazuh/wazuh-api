@@ -203,7 +203,7 @@ describe('Agents', function() {
                     done();
                 });
         });
-      
+
         it('Filters: group', function (done) {
             request(common.url)
                 .get("/agents?group=default")
@@ -253,7 +253,7 @@ describe('Agents', function() {
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
                     res.body.data.items[0].should.have.properties(['id', 'status', 'os']);
-                    res.body.data.items[0].os.should.have.properties(['version','platform']);  
+                    res.body.data.items[0].os.should.have.properties(['version','platform']);
                     done();
                 });
         });
@@ -1286,6 +1286,7 @@ describe('Agents', function() {
                     agent_id1 = res.body.data.id;
                     done();
                 });
+            });
         });
 
         before(function (done) {
