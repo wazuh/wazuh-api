@@ -213,7 +213,7 @@ router.get('/groups', cache(), function(req, res) {
 
     var data_request = {'function': '/agents/groups', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
-                   'search':'search_param', 'hash':'names'};
+                   'search':'search_param'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -226,8 +226,6 @@ router.get('/groups', cache(), function(req, res) {
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('hash' in req.query)
-        data_request['arguments']['hash_algorithm'] = req.query.hash
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
