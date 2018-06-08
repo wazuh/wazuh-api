@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Filter by group in `GET/agents` API call. ([#97](https://github.com/wazuh/wazuh-api/pull/97))
-- Filter by status in `GET/agents/groups/:group_id` and `GET/agents/no_group` API calls. ([#97]((https://github.com/wazuh/wazuh-api/pull/97)))
+- Filter by status in `GET/agents/groups/:group_id` and `GET/agents/no_group` API calls. ([#97](https://github.com/wazuh/wazuh-api/pull/97))
 - Sort by `lastKeepAlive` in `GET/agents` API call. ([#97](https://github.com/wazuh/wazuh-api/pull/97))
 
 ### Changed
