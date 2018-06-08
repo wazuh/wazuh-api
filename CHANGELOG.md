@@ -3,8 +3,18 @@ All notable changes to this project will be documented in this file.
 
 ## [v3.3.0]
 
+### Added
+- Filter by group in `GET/agents` API call. ([#97](https://github.com/wazuh/wazuh-api/pull/97))
+- Filter by status in `GET/agents/groups/:group_id` and `GET/agents/no_group` API calls. ([#97](https://github.com/wazuh/wazuh-api/pull/97))
+- Sort by `lastKeepAlive` in `GET/agents` API call. ([#97](https://github.com/wazuh/wazuh-api/pull/97))
+
+### Changed
+- Modified `limit` parameter to retrieve all items using `limit=0`. Available in all requests that return lists. ([#96](https://github.com/wazuh/wazuh-api/pull/96))
+
 ### Fixed
+- Fixed bug that limited the number of agents deleted by `DELETE/agents` to a maximum of 500. ([Wazuh #740](https://github.com/wazuh/wazuh/pull/740))
 - Fixed error message when an invalid character was used with `select` parameter ([#98](https://github.com/wazuh/wazuh-api/pull/98)).
+
 
 ## [v3.2.4]
 

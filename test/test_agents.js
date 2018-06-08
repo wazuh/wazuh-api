@@ -60,6 +60,24 @@ describe('Agents', function() {
             });
         });
 
+        it('Retrieve all elements with limit=0', function(done) {
+            request(common.url)
+            .get("/agents?limit=0")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['items', 'totalItems']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                done();
+            });
+        });
+
         it('Sort', function(done) {
             request(common.url)
             .get("/agents?sort=-id")
@@ -185,6 +203,25 @@ describe('Agents', function() {
                     done();
                 });
         });
+      
+        it('Filters: group', function (done) {
+            request(common.url)
+                .get("/agents?group=default")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(400)
+                .end(function (err, res) {
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['items','totalItems']);
+                    res.body.data.totalItems.should.be.above(0);
+                    res.body.data.items.should.be.instanceof(Array);
+                    res.body.data.items[0].group.should.be.equal('default');
+                    done();
+                });
+        });
 
         it('Select: single field', function (done) {
             request(common.url)
@@ -216,7 +253,7 @@ describe('Agents', function() {
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
                     res.body.data.items[0].should.have.properties(['id', 'status', 'os']);
-                    res.body.data.items[0].os.should.have.properties(['version','platform']);
+                    res.body.data.items[0].os.should.have.properties(['version','platform']);  
                     done();
                 });
         });
@@ -275,6 +312,60 @@ describe('Agents', function() {
         });
 
     });  // GET/agents/summary
+
+    describe('GET/agents/summary/os', function() {
+        it('Request', function(done) {
+            request(common.url)
+                .get('/agents/summary/os')
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function(err, res) {
+                    if (err) return done(err);
+
+                    res.body.error.should.equal(0);
+                    res.body.should.have.properties(['error','data']);
+                    res.body.data.should.have.properties(['totalItems','items']);
+                    res.body.data.items.should.be.instanceof(Array);
+                    done();
+                });
+        });
+    }); // GET/agents/summary/os
+
+    describe('GET/agents/outdated', function() {
+        before(function (done) {
+            request(common.url)
+                .get("/manager/info")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) throw err;
+                    manager_version = res.body.data.version;
+                    done();
+                });
+        });
+
+        it('Request', function(done) {
+            request(common.url)
+            .get("/agents/outdated")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.error.should.equal(0);
+                res.body.data.should.have.properties(['items','totalItems']);
+                res.body.data.items.should.be.instanceOf(Array);
+                res.body.data.items[0].should.have.properties(['version','id','name']);
+                res.body.data.items[0].should.not.be.eql(manager_version);
+                done();
+            });
+        });
+
+    });  // GET/agents/outdated
 
     describe('GET/agents/:agent_id', function() {
 
@@ -343,6 +434,38 @@ describe('Agents', function() {
                 done();
             });
         });
+
+        it('Select', function(done) {
+            request(common.url)
+            .get("/agents/000?select=lastKeepAlive,id,ip,status")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.error.should.equal(0);
+                res.body.data.should.have.properties(['lastKeepAlive','id','ip','status']);
+                done();
+            });
+        });
+
+        it('Select: wrong field', function(done) {
+            request(common.url)
+            .get("/agents/000?select=wrong_field")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1724);
+                done();
+            });
+        });
+
     });  // GET/agents/:agent_id
 
     describe('GET/agents/:agent_id/key', function() {
@@ -568,6 +691,26 @@ describe('Agents', function() {
                 });
         });
 
+        it('Retrieve all elements with limit=0', function (done) {
+            request(common.url)
+                .get("/agents/no_group?limit=0")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.array;
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.totalItems.should.above(0)
+                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                    done();
+                });
+        });
+
         it('Sort', function (done) {
             request(common.url)
                 .get("/agents/no_group?sort=-id")
@@ -647,6 +790,22 @@ describe('Agents', function() {
                 });
         });
 
+        it('Filter: status', function (done) {
+            request(common.url)
+                .get("/agents/no_group?status=never%20connected")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['items','totalItems']);
+                    done();
+                });
+        });
+
         after(function (done) {
             request(common.url)
                 .delete("/agents/" + agent_id)
@@ -673,11 +832,32 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
-
                 res.body.error.should.equal(0);
                 res.body.data.should.be.an.array;
+                res.body.data.should.have.properties(['totalItems','items']);
+                res.body.data.items.should.be.instanceOf(Array);
                 done();
             });
+        });
+
+        it('Retrieve all elements with limit=0', function (done) {
+            request(common.url)
+                .get("/agents/groups?limit=0")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.array;
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.totalItems.should.above(0)
+                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                    done();
+                });
         });
 
     });  // GET/agents/groups
@@ -716,6 +896,59 @@ describe('Agents', function() {
             });
         });
 
+
+        it('Retrieve all elements with limit=0', function (done) {
+            request(common.url)
+                .get("/agents/groups/webserver?limit=0")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.array;
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.totalItems.should.above(0)
+                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                    done();
+                });
+
+        it('Select', function(done) {
+            request(common.url)
+            .get("/agents/groups/webserver?select=lastKeepAlive,version")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['totalItems', 'items']);
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+
+        it('Filter: status', function(done) {
+            request(common.url)
+            .get("/agents/groups/webserver?status=Active,Disconnected")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['totalItems', 'items']);
+                res.body.error.should.equal(0);
+                done();
+            });
+
+        });
+
     });  // GET/agents/groups/:group_id
 
     describe('GET/agents/groups/:group_id/configuration', function() {
@@ -752,6 +985,26 @@ describe('Agents', function() {
             });
         });
 
+        it('Retrieve all elements with limit=0', function (done) {
+            request(common.url)
+                .get("/agents/groups/webserver/configuration?limit=0")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.array;
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.totalItems.should.above(0)
+                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                    done();
+                });
+        });
+
     });  // GET/agents/groups/:group_id/configuration
 
     describe('GET/agents/groups/:group_id/files', function() {
@@ -785,6 +1038,26 @@ describe('Agents', function() {
                 res.body.error.should.equal(601);
                 done();
             });
+        });
+
+        it('Retrieve all elements with limit=0', function (done) {
+            request(common.url)
+                .get("/agents/groups/webserver/files?limit=0")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.array;
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.totalItems.should.above(0)
+                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                    done();
+                });
         });
 
     });  // GET/agents/groups/:group_id/files
