@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.3.0]
+
+### Fixed
+- Fixed error message when an invalid character was used with `select` parameter ([#98](https://github.com/wazuh/wazuh-api/pull/98)).
+
 ## [v3.2.4]
 
 There are no changes for Wazuh API in this version.
