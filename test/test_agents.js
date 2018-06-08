@@ -203,7 +203,7 @@ describe('Agents', function() {
                     done();
                 });
         });
-
+      
         it('Filters: group', function (done) {
             request(common.url)
                 .get("/agents?group=default")
@@ -213,16 +213,78 @@ describe('Agents', function() {
                 .end(function (err, res) {
 
                     res.body.should.have.properties(['error', 'data']);
+
                     res.body.error.should.equal(0);
                     res.body.data.should.have.properties(['items','totalItems']);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array);
-                    res.body.data.items[0].group.should.be.equal('default')
-
+                    res.body.data.items[0].group.should.be.equal('default');
                     done();
                 });
         });
 
+        it('Select: single field', function (done) {
+            request(common.url)
+                .get("/agents?select=lastKeepAlive")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(400)
+                .end(function (err, res) {
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.totalItems.should.be.above(0);
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(['id', 'lastKeepAlive']);
+                    done();
+                });
+        });
+
+        it('Select: multiple fields', function (done) {
+            request(common.url)
+                .get("/agents?select=status,os.platform,os.version")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(400)
+                .end(function (err, res) {
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.totalItems.should.be.above(0);
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(['id', 'status', 'os']);
+                    res.body.data.items[0].os.should.have.properties(['version','platform']);  
+                    done();
+                });
+        });
+
+        it('Select: wrong field', function (done) {
+            request(common.url)
+                .get("/agents?select=wrong_field")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(400)
+                .end(function (err, res) {
+
+                    res.body.should.have.properties(['error', 'message']);
+                    res.body.error.should.equal(1724);
+                    done();
+                });
+        });
+
+        it('Select: invalid character', function (done) {
+            request(common.url)
+                .get("/agents?select=invalidñcharacter")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(400)
+                .end(function (err, res) {
+
+                    res.body.should.have.properties(['error', 'message']);
+                    res.body.error.should.equal(619);
+                    done();
+                });
+        });
 
     });  // GET/agents
 

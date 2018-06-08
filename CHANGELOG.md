@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Fixed bug that limited the number of agents deleted by `DELETE/agents` to a maximum of 500. ([Wazuh #740](https://github.com/wazuh/wazuh/pull/740))
+- Fixed error message when an invalid character was used with `select` parameter ([#98](https://github.com/wazuh/wazuh-api/pull/98)).
 
 
 ## [v3.2.4]
