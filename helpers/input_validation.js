@@ -99,7 +99,7 @@ exports.search_param = function(param) {
 
 exports.select_param = function(param) {
     if (typeof param != 'undefined'){
-        var regex = /^[a-zA-Z0-9_\,]+$/;
+        var regex = /^[a-zA-Z0-9_\,\.]+$/;
         return regex.test(param);
     }
     else

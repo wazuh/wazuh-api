@@ -61,9 +61,9 @@ router.get('/nodes', cache(), function(req, res) {
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)

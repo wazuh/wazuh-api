@@ -56,6 +56,24 @@ describe('Decoders', function() {
             });
         });
 
+        it('Retrieve all elements with limit=0', function(done) {
+            request(common.url)
+            .get("/decoders?limit=0")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['items', 'totalItems']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                done();
+            });
+        });
+
         it('Sort', function(done) {
             request(common.url)
             .get("/decoders?sort=-name")
@@ -203,6 +221,24 @@ describe('Decoders', function() {
             });
         });
 
+        it('Retrieve all elements with limit=0', function(done) {
+            request(common.url)
+            .get("/decoders/files?limit=0")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['items', 'totalItems']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                done();
+            });
+        });
+
         it('Sort', function(done) {
             request(common.url)
             .get("/decoders/files?sort=-file")
@@ -277,6 +313,24 @@ describe('Decoders', function() {
                 res.body.error.should.equal(0);
                 res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
                 res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name', 'status']);
+                done();
+            });
+        });
+
+        it('Retrieve all elements with limit=0', function(done) {
+            request(common.url)
+            .get("/decoders/parents?limit=0")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['items', 'totalItems']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
                 done();
             });
         });
@@ -356,6 +410,24 @@ describe('Decoders', function() {
                     res.body.error.should.equal(0);
                     res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
                     res.body.data.items[0].should.have.properties(['position', 'details', 'path', 'file', 'name', 'status']);
+                    done();
+                });
+            });
+
+            it('Retrieve all elements with limit=0', function(done) {
+                request(common.url)
+                .get("/decoders/ar_log?limit=0")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(200)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
                     done();
                 });
             });
