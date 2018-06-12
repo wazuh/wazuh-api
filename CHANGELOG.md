@@ -1,9 +1,34 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [v3.3.0]
+## [v3.4.0]
+
 ### Added
 - Improved agent registration/removal bash script ([#71](https://github.com/wazuh/wazuh-api/pull/71)).
+
+
+## [v3.3.0]
+
+### Added
+- Filter by group in `GET/agents` API call. ([#97](https://github.com/wazuh/wazuh-api/pull/97))
+- Filter by status in `GET/agents/groups/:group_id` and `GET/agents/no_group` API calls. ([#97](https://github.com/wazuh/wazuh-api/pull/97))
+- Sort by `lastKeepAlive` in `GET/agents` API call. ([#97](https://github.com/wazuh/wazuh-api/pull/97))
+
+### Changed
+- Modified `limit` parameter to retrieve all items using `limit=0`. Available in all requests that return lists. ([#96](https://github.com/wazuh/wazuh-api/pull/96))
+
+### Fixed
+- Fixed bug that limited the number of agents deleted by `DELETE/agents` to a maximum of 500. ([Wazuh #740](https://github.com/wazuh/wazuh/pull/740))
+- Fixed error message when an invalid character was used with `select` parameter ([#98](https://github.com/wazuh/wazuh-api/pull/98)).
+
+
+
+## [v3.2.4]
+
+There are no changes for Wazuh API in this version.
+
+
+
 ## [v3.2.3]
 ### Added
 - New API requests:
@@ -13,15 +38,26 @@ All notable changes to this project will be documented in this file.
     * `GET/cluster/nodes/:node_name`.
 - A parameter in request `GET/rules` to filter by GDPR requirements ([#78](https://github.com/wazuh/wazuh-api/pull/78)).
 - Parameters in `GET/cluster/nodes`: `search`, `sort`, `offset`, `limit`, `select`. And a new filter: `type`.
-- A parameter in request `GET/agents` to filter agents by cluster nodes.
+- Parameters in request `GET/agents`:
+    * `node_name`: Filters agents by cluster nodes.
+    - `older_than`: Filters by agents not connected in a specific time ([#82](https://github.com/wazuh/wazuh-api/pull/82)).
+    - `status`: Filters agents with a specific status ([#82](https://github.com/wazuh/wazuh-api/pull/82)).
+- New filters in request `DELETE/agents`:
+    - `older_than`: Filters by agents not connected in a specific time ([#82](https://github.com/wazuh/wazuh-api/pull/82)).
+    - `status`: Filters agents with a specific status ([#82](https://github.com/wazuh/wazuh-api/pull/82)).
+
 ### Changed
-- Output of `GET/nodes`: Added a new attribute `version`.
+- Output of `GET/nodes`: Added new attribute `version`.
+- Output of `DELETE/agents`: Added new attribute `older_than`.
+- Filter `status` in `GET/agents` can filter by several status separated by commas ([#82](https://github.com/wazuh/wazuh-api/pull/82)).
 
 ### Removed
-- The following requests have been removed: 
+- The following requests have been removed:
     - `GET/cluster/agents`: Duplicated request (`GET/agents`).
     - `GET/cluster/node`: Duplicated request (`GET/cluster/config`).
     - `GET/cluster/files`: It will not be available in this version of the cluster.
+    - `POST/agents/purge`: Replaced by `DELETE/agents` ([#82](https://github.com/wazuh/wazuh-api/pull/82)).
+    - `GET/agents/purgeable`: Replaced by `GET/agents` ([#82](https://github.com/wazuh/wazuh-api/pull/82)).
 
 ## [v3.2.2]
 ### Added

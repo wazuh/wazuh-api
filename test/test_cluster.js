@@ -59,6 +59,24 @@ describe('Cluster', function () {
                 });
         });
 
+        it('Retrieve all elements with limit=0', function(done) {
+            request(common.url)
+            .get("/cluster/nodes?limit=0")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['items', 'totalItems']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                done();
+            });
+        });
+
         it('Sort', function (done) {
             request(common.url)
                 .get("/cluster/nodes?sort=-name")
@@ -153,7 +171,7 @@ describe('Cluster', function () {
                     done();
                 });
         });
-        
+
         it('Select 2', function (done) {
             request(common.url)
                 .get("/cluster/nodes?select=type")

@@ -16,7 +16,7 @@ var router = require('express').Router();
 /**
  * @api {get} /syscollector/:agent_id/os Get os info
  * @apiName GetOs_agent
- * @apiGroup Syscollector
+ * @apiGroup OS
  *
  * @apiParam {Number} agent_id Agent ID.
  *
@@ -49,7 +49,7 @@ router.get('/:agent_id/os', function(req, res) {
 /**
  * @api {get} /syscollector/:agent_id/hardware Get hardware info
  * @apiName GetHardware_agent
- * @apiGroup Syscollector
+ * @apiGroup Hardware
  *
  * @apiParam {Number} agent_id Agent ID.
  *
@@ -86,7 +86,7 @@ router.get('/:agent_id/hardware', function(req, res) {
 /**
  * @api {get} /syscollector/:agent_id/packages Get packages info
  * @apiName GetPackages_agent
- * @apiGroup Syscollector
+ * @apiGroup Packages
  *
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {Number} [offset] First element to return in the collection.
@@ -122,9 +122,9 @@ router.get('/:agent_id/packages', function(req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
@@ -146,7 +146,7 @@ router.get('/:agent_id/packages', function(req, res) {
 /**
  * @api {get} /syscollector/packages Get packages info of all agents
  * @apiName GetPackages
- * @apiGroup Syscollector
+ * @apiGroup Packages
  *
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {Number} [offset] First element to return in the collection.
@@ -182,9 +182,9 @@ router.get('/packages', function(req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
@@ -204,7 +204,7 @@ router.get('/packages', function(req, res) {
 /**
  * @api {get} /syscollector/os Get os info of all agents
  * @apiName GetOS
- * @apiGroup Syscollector
+ * @apiGroup OS
  *
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {Number} [offset] First element to return in the collection.
@@ -245,9 +245,9 @@ router.get('/os', function(req, res) {
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('architecture' in req.query)
         data_request['arguments']['filters']['architecture'] = req.query.architecture
     if ('os_name' in req.query)
@@ -266,7 +266,7 @@ router.get('/os', function(req, res) {
 /**
  * @api {get} /syscollector/hardware Get hardware info of all agents
  * @apiName GetHardware
- * @apiGroup Syscollector
+ * @apiGroup Hardware
  *
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {Number} [offset] First element to return in the collection.
@@ -302,9 +302,9 @@ router.get('/hardware', function(req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
