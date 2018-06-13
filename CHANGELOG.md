@@ -1,8 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [v3.3.0]
+## [v3.3.1]
+### Fixed
+- Fixed `configure_api` tries to remove `preloaded_vars` even if it doesn't exist. ([#106](https://github.com/wazuh/wazuh-api/pull/106))
 
+## [v3.3.0]
 ### Added
 - Filter by group in `GET/agents` API call. ([#97](https://github.com/wazuh/wazuh-api/pull/97))
 - Filter by status in `GET/agents/groups/:group_id` and `GET/agents/no_group` API calls. ([#97](https://github.com/wazuh/wazuh-api/pull/97))
