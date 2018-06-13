@@ -167,23 +167,28 @@ app.use(bodyParser.urlencoded({extended: true}));
  * Using: Header: "wazuh-app-version: X.Y.Z"
  */
 app.use(function(req, res, next) {
-
+    var go_next = true;
     var app_version_header = req.get('wazuh-app-version');
     var regex_version = /^\d+\.\d+\.\d+$/i;
 
     if (typeof app_version_header != 'undefined'){
-        if (!regex_version.test(app_version_header))
+        if (!regex_version.test(app_version_header)){
+            go_next = false;
             res_h.bad_request(req, res, "801");
+        }
         else{
             var app_version_mmp = app_version_header.split('.'); // major.minor.patch
             var app_mm_version = app_version_mmp[0] + '.' + app_version_mmp[1]; // major.minor
 
-            if (app_mm_version != current_mm_version)
+            if (app_mm_version != current_mm_version){
+                go_next = false;
                 res_h.bad_request(req, res, "802", "Expected version '" + current_mm_version + ".x', and found '" + app_mm_version + ".x'.");
+            }
         }
     }
 
-    next();
+    if (go_next)
+        next();
 });
 
 // Controllers
