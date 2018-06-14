@@ -665,6 +665,7 @@ router.put('/:agent_id/restart', function(req, res) {
  * @apiParam {Number} agent_id Agent unique ID.
  * @apiParam {String} [wpk_repo] WPK repository.
  * @apiParam {String} [version] Wazuh version.
+ * @apiParam {Boolean} [secure] Protocol https or http. If secure is true, is used https. By default the value is set to true.
  * @apiParam {number="0","1"} [force] Force upgrade.
  *
  * @apiDescription Upgrade the agent using a WPK file from online repository.
@@ -677,7 +678,7 @@ router.put('/:agent_id/upgrade', function(req, res) {
     logger.debug(req.connection.remoteAddress + " PUT /agents/:agent_id/upgrade");
 
     var data_request = {'function': 'PUT/agents/:agent_id/upgrade', 'arguments': {}};
-    var filters = {'wpk_repo':'paths', 'version':'alphanumeric_param', 'force':'numbers'};
+    var filters = {'wpk_repo': 'paths', 'version': 'alphanumeric_param', 'force': 'numbers', 'secure': 'boolean'};
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))
         return;
@@ -692,6 +693,8 @@ router.put('/:agent_id/upgrade', function(req, res) {
         data_request['arguments']['version'] = req.query.version;
     if ('force' in req.query)
         data_request['arguments']['force'] = req.query.force;
+    if ('secure' in req.query)
+        data_request['arguments']['secure'] = req.query.secure;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })

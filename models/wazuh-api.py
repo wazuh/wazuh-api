@@ -180,18 +180,19 @@ if __name__ == "__main__":
             '/agents/summary': Agent.get_agents_summary,
             '/agents/summary/os': Agent.get_os_summary,
             '/agents/outdated': Agent.get_outdated_agents,
-            '/agents/:agent_id/upgrade_result': Agent.get_upgrade_result,
-            'PUT/agents/:agent_id/upgrade': Agent.upgrade_agent,
-            'PUT/agents/:agent_id/upgrade_custom': Agent.upgrade_agent_custom,
             'PUT/agents/:agent_id/restart': Agent.restart_agents,
             'PUT/agents/restart': Agent.restart_agents,
             'PUT/agents/:agent_name': Agent.add_agent,
             'POST/agents/restart': Agent.restart_agents,
             'POST/agents': Agent.add_agent,
             'POST/agents/insert': Agent.insert_agent,
-            'DELETE/agents/groups': Agent.remove_group,
             'DELETE/agents/:agent_id': Agent.remove_agent,
             'DELETE/agents/': Agent.remove_agents,
+            
+            # Upgrade agents
+            'PUT/agents/:agent_id/upgrade': Agent.upgrade_agent,
+            'PUT/agents/:agent_id/upgrade_custom': Agent.upgrade_agent_custom,
+            '/agents/:agent_id/upgrade_result': Agent.get_upgrade_result,
 
             # Groups
             '/agents/groups': Agent.get_all_groups,
@@ -204,6 +205,7 @@ if __name__ == "__main__":
             'PUT/agents/groups/:group_id': Agent.create_group,
             'DELETE/agents/groups/:group_id':Agent.remove_group,
             'DELETE/agents/:agent_id/group':Agent.unset_group,
+            'DELETE/agents/groups': Agent.remove_group,
 
             # Decoders
             '/decoders': Decoder.get_decoders,
