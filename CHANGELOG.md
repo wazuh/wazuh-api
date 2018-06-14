@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [TBD]
+
+### Added
+
+- Option to download the wpk using http in API request `UPDATE/agents/:agent_id/upgrade`. ([#](https://github.com/wazuh/wazuh-api/pull/))
+
 ## [v3.3.0]
 
 ### Added
