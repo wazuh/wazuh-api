@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 
 ## [v3.3.1]
+### Changed
+- Output of `DELETE/agents`: Added attributes `total_affected_agents` and `total_failed_ids`. ([Wazuh #795](https://github.com/wazuh/wazuh/pull/795))
+
 ### Fixed
 - Fixed `configure_api` tries to remove `preloaded_vars` even if it doesn't exist. ([#106](https://github.com/wazuh/wazuh-api/pull/106))
 - Fixed crash for requests with wrong headers. ([#107](https://github.com/wazuh/wazuh-api/pull/107))
