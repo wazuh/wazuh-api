@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [v3.3.1]
 ### Fixed
 - Fixed `configure_api` tries to remove `preloaded_vars` even if it doesn't exist. ([#106](https://github.com/wazuh/wazuh-api/pull/106))
+- Fixed crash for requests with wrong headers. ([#107](https://github.com/wazuh/wazuh-api/pull/107))
 
 ## [v3.3.0]
 ### Added
