@@ -204,8 +204,26 @@ describe('Agents', function() {
                     res.body.error.should.equal(0);
                     res.body.data.id.should.match(/^\d+$/);
                     agent_id = res.body.data.id;
+                    agent_key = res.body.data.key;
                     done();
                 });
+            });
+
+            it('Check key', function (done) {
+                request(common.url)
+                    .get("/agents/" + agent_id + "/key")
+                    .auth(common.credentials.user, common.credentials.password)
+                    .expect("Content-type", /json/)
+                    .expect(200)
+                    .end(function (err, res) {
+                        if (err) return done(err);
+
+                        res.body.should.have.properties(['error', 'data']);
+
+                        res.body.error.should.equal(0);
+                        res.body.data.should.equal(agent_key);
+                        done();
+                    });
             });
 
             it('Errors: Name already present', function(done) {

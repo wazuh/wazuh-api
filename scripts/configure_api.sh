@@ -279,7 +279,9 @@ main () {
     fi
 
     print "\n### [Configuration changed] ###"
-    rm $PREDEF_FILE
+    if [ ! `isFile ${PREDEF_FILE}` = "${FALSE}" ]; then
+        rm $PREDEF_FILE
+    fi
     exit 0
 }
 
