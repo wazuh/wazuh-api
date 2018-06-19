@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- Option to download the wpk using http in API request `UPDATE/agents/:agent_id/upgrade`. ([#](https://github.com/wazuh/wazuh-api/pull/))
+- Option to download the wpk using http in API request `UPDATE/agents/:agent_id/upgrade`. ([#109](https://github.com/wazuh/wazuh-api/pull/109))
 
 ## [v3.3.0]
 
