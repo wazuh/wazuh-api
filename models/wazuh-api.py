@@ -31,7 +31,7 @@ try:
     import wazuh.rootcheck as rootcheck
     import wazuh.syscheck as syscheck
     import wazuh.syscollector as syscollector
-    import wazuh.unique as unique
+    import wazuh.report as report
 except (ImportError, SyntaxError) as e:
     error = str(e)
     error_wazuh_package = -1
@@ -257,8 +257,8 @@ if __name__ == "__main__":
             '/syscollector/hardware': syscollector.get_hardware,
             '/syscollector/packages': syscollector.get_packages,
 
-            # Unique
-            '/unique/agents': unique.get_unique_agents
+            # report
+            '/report/distinct/agents': report.get_distinct_agents
 
         }
 
