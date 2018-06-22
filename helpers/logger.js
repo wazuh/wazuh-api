@@ -102,5 +102,6 @@ function generator(time, index) {
 
 var stream = rfs(generator, {
     interval: '1d',
-    compress: true
+    compress: true,
+    rotationTime: true
 });
