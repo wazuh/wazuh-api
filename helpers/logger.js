@@ -27,7 +27,7 @@ var LEVEL_ERROR = 3;
 var LEVEL_DEBUG = 4;
 
 var logger_level = LEVEL_INFO;
-switch (config.logs){
+switch (config.logs) {
     case "INFO", "info":
         logger_level = LEVEL_INFO;
         break;
@@ -47,15 +47,15 @@ switch (config.logs){
         logger_level = LEVEL_INFO;
 }
 
-exports.set_foreground = function (){
+exports.set_foreground = function () {
     foreground = true;
 }
 
-function header(){
+function header() {
     return tag + " " + moment().format('YYYY-MM-DD HH:mm:ss') + ": ";
 }
 
-function write_log(msg){
+function write_log(msg) {
     if (foreground)
         console.log(msg);
     fs.appendFile(absolute_path_log, msg + "\n", { 'mode': 0o640 }, function (err) {
@@ -65,22 +65,22 @@ function write_log(msg){
     });
 }
 
-exports.log = function(message){
+exports.log = function (message) {
     if (logger_level >= LEVEL_INFO)
         write_log(header() + message);
 }
 
-exports.warning = function(message){
+exports.warning = function (message) {
     if (logger_level >= LEVEL_WARNING)
         write_log(header() + message);
 }
 
-exports.error = function(message){
+exports.error = function (message) {
     if (logger_level >= LEVEL_ERROR)
         write_log(header() + message);
 }
 
-exports.debug = function(message){
+exports.debug = function (message) {
     if (logger_level >= LEVEL_DEBUG)
         write_log(header() + message);
 }
@@ -89,7 +89,7 @@ function pad(num) {
     return (num > 9 ? "" : "0") + num;
 }
 
-function generator(time, index){
+function generator(time, index) {
     if (!time)
         return path_log + "/" + file_log;
 
@@ -97,9 +97,10 @@ function generator(time, index){
     var day = pad(time.getDate());
     var year = pad(time.getFullYear());
 
-    return path_log + "/archives/" + year + "/" + month + "/api-archive-" + day + ".log-" + index;
+    return path_log + "/api/" + year + "/" + month + "/api-" + day + "-" + index + ".gz";
 }
 
 var stream = rfs(generator, {
-    interval: '1d'
+    interval: '1d',
+    compress: true
 });
