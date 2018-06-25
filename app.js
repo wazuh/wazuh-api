@@ -151,6 +151,11 @@ if (config.basic_auth.toLowerCase() == "yes"){
         var log_msg = "[" + req.connection.remoteAddress + "] Authentication error: " + error.code + " - " + error.message;
         logger.log(log_msg);
     });
+
+    auth_secure.on('success', (result, req) => {
+        var log_msg = "[" + req.connection.remoteAddress + "] Authenticated success: " + result.user;
+        user = result.user
+    });
 }
 
 // temporary

@@ -1,0 +1,12 @@
+{
+    "admin": [
+        "jane",
+        "foo"
+    ],
+    "user": [
+        "test2"
+    ],
+    "viewer": [
+        "test"
+    ]
+}

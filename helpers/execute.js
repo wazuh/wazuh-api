@@ -33,11 +33,13 @@ if (config.ld_library_path.length > 0) {
 exports.exec = function(cmd, args, stdin, callback) {
     const child_process  = require('child_process');
 
-    if (stdin != null)
+    if (stdin != null){
         stdin['ossec_path'] = config.ossec_path;
+        stdin['user'] = user;
+    }
 
     // log
-    var full_cmd = "CMD - Command: " + cmd + " args:" + args.join(' ') + " stdin:" + JSON.stringify(stdin);
+    var full_cmd = "CMD - Command: " + cmd + " user:" + user + " args:" + args.join(' ') + " stdin:" + JSON.stringify(stdin);
     logger.debug(full_cmd);
 
     const child = child_process.spawn(cmd, args);

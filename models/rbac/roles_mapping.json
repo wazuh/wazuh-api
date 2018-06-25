@@ -1,0 +1,22 @@
+{
+    "admin": {
+        "/agents": [
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE"
+        ]
+    },
+    "user": {
+        "/agents": [
+            "GET",
+            "POST",
+            "PUT"
+        ]
+    },
+    "viewer": {
+        "/agents": [
+            "GET"
+        ]
+    }
+}

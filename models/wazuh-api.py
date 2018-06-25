@@ -13,6 +13,7 @@ import signal
 error_wazuh_package = 0
 exception_error = None
 try:
+    import rbac.user as rbac
     new_path = '/var/ossec/framework'
     if not os_path.exists(new_path):
         current_path = path[0].split('/')
@@ -166,6 +167,15 @@ if __name__ == "__main__":
     if 'ossec_path' not in request:
         print_json("Wazuh-Python Internal Error: 'JSON input' must have the 'ossec_path' key", 1000)
         exit(1)
+
+    if 'user' not in request:
+        print_json("Wazuh-Python Internal Error: 'JSON input' must have the 'user' key", 1000)
+        exit(1)
+
+    user = rbac.User(request['user'], request['ossec_path'])
+    if not user.has_permission_to_exec(request):
+        print_json("User {} has no permissions to execute the request.".format(user), 1000)
+        exit(0)
 
     # Main
     try:
