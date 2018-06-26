@@ -9,12 +9,12 @@ class Role():
 
     def __init__(self, role, ossec_path):
         self.role = role
-        self._load_role_permissions(ossec_path)
+        self._load_role_permissions_from_file(ossec_path)
 
     def __str__(self):
         return self.role
 
-    def _load_role_permissions(self, ossec_path):
+    def _load_role_permissions_from_file(self, ossec_path):
         roles_mapping = read_json_from_file(ossec_path + "/api/models/rbac/roles_mapping.json")
 
         self.permissions = roles_mapping.get(self.role)
