@@ -24,29 +24,36 @@ class User():
 
         self.roles = [Role(role_name, ossec_path) for role_name in roles_user]
 
-    def _get_method_and_resource_from_request(self, request_function):
-        split_request = request_function.split("/")
-        if not split_request or split_request < 2:
-            return None, None
+    def _get_method_from_request(self, request):
+        split_request_function = request['function'].split("/", 1)
+        if not split_request_function:
+            return None
 
-        request_method = split_request[0].replace(" ", "").upper() \
-            if split_request[0] else "GET"
-        request_controller = "/" + split_request[1]
+        request_method = split_request_function[0].upper() if split_request_function[0] else "GET"
+        return request_method
 
-        return request_method, request_controller
+    def _get_resource_from_request(self, request):
+        split_request_function = request['function'].split("/", 1)
+        if not split_request_function or split_request_function < 2:
+            return None
+
+        request_resource = "/" + split_request_function[1]
+        return request_resource
+
 
     def _check_permissions_in_roles(self, request_method, request_resource):
         has_permission = False
         for role in self.roles:
-            role_permissions = role.permissions.get(request_resource)
-            has_permission = role_permissions and request_method in role_permissions
+            has_permission = role.can_exec(request_method, request_resource)
             if has_permission:
                 break
 
         return has_permission
 
     def has_permission_to_exec(self, request):
-        request_method, request_resource = self._get_method_and_resource_from_request(request['function'])
+        request_method = self._get_method_from_request(request)
+        request_resource = self._get_resource_from_request(request)
+
         has_permission = self._check_permissions_in_roles(request_method, request_resource) \
             if request_method and request_resource else False
 

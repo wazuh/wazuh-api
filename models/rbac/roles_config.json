@@ -4,9 +4,10 @@
         "foo"
     ],
     "user": [
-        "test2"
+        "test"
     ],
     "viewer": [
+        "test2",
         "test"
     ]
 }
