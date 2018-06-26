@@ -174,7 +174,7 @@ if __name__ == "__main__":
 
     user = rbac.User(request['user'], request['ossec_path'])
     if not user.has_permission_to_exec(request):
-        print_json("User {} has no permissions to execute the request.".format(user), 1000)
+        print_json("Unauthorized request. User '{}' does not have permission to execute the operation.".format(user), 101)
         exit(0)
 
     # Main

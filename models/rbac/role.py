@@ -18,7 +18,6 @@ class Role():
     def _load_role_permissions(self, ossec_path):
         path = ossec_path + "/api/models/rbac/roles_mapping.json"
         with open(path) as f:
-            roles_mapping = json.loads(f)
+            roles_mapping = json.loads(f.read())
 
         self.permissions = roles_mapping[self.role]
-
