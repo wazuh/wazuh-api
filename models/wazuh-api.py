@@ -172,7 +172,12 @@ if __name__ == "__main__":
         print_json("Wazuh-Python Internal Error: 'JSON input' must have the 'user' key", 1000)
         exit(1)
 
-    user = rbac.User(request['user'], request['ossec_path'])
+    try:
+        user = rbac.User(request['user'], request['ossec_path'])
+    except Exception as e:
+        print_json("Wazuh-Python Internal Error: {} (RBAC).".format(e), 1000)
+        exit(1)
+
     if not user.has_permission_to_exec(request):
         print_json("Unauthorized request. User '{}' does not have permission to execute the operation.".format(user), 101)
         exit(0)

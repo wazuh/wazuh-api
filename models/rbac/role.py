@@ -3,8 +3,7 @@
 # Created by Wazuh, Inc. <info@wazuh.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
-import json as json
-
+from utils import read_json_from_file
 
 class Role():
 
@@ -16,8 +15,8 @@ class Role():
         return self.role
 
     def _load_role_permissions(self, ossec_path):
-        path = ossec_path + "/api/models/rbac/roles_mapping.json"
-        with open(path) as f:
-            roles_mapping = json.loads(f.read())
+        roles_mapping = read_json_from_file(ossec_path + "/api/models/rbac/roles_mapping.json")
 
-        self.permissions = roles_mapping[self.role]
+        self.permissions = roles_mapping.get(self.role)
+        if not self.permissions:
+            raise Exception("No mapping found for role `{}`".format(self.role))
