@@ -4,6 +4,7 @@
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 from rbac.role import Role
+from rbac.request import Request
 from utils import read_json_from_file
 
 class User():
@@ -24,23 +25,6 @@ class User():
 
         self.roles = [Role(role_name, ossec_path, realm) for role_name in roles_user]
 
-    def _get_method_from_request(self, request):
-        split_request_function = request['function'].split("/", 1)
-        if not split_request_function:
-            return None
-
-        request_method = split_request_function[0].upper() if split_request_function[0] else "GET"
-        return request_method
-
-    def _get_resource_from_request(self, request):
-        split_request_function = request['function'].split("/", 1)
-        if not split_request_function or split_request_function < 2:
-            return None
-
-        request_resource = "/" + split_request_function[1]
-        return request_resource
-
-
     def _check_permissions_in_roles(self, request_method, request_resource):
         has_permission = False
         for role in self.roles:
@@ -50,11 +34,12 @@ class User():
 
         return has_permission
 
-    def has_permission_to_exec(self, request):
-        request_method = self._get_method_from_request(request)
-        request_resource = self._get_resource_from_request(request)
+    def has_permission_to_exec(self, request_param):
+        request = Request(request_param)
+        request_method = request.get_method()
+        request_url= request.get_url()
 
-        has_permission = self._check_permissions_in_roles(request_method, request_resource) \
-            if request_method and request_resource else False
+        has_permission = self._check_permissions_in_roles(request_method, request_url) \
+            if request_method and request_url else False
 
         return has_permission

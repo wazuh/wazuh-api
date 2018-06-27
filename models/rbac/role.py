@@ -30,15 +30,26 @@ class Role():
         if not self.permissions:
             raise Exception("No mapping found for role `{}`".format(self.role))
 
-    def can_exec(self, request_method, request_resource):
-        can_exec_request = False
-        for role_resource, permissions_for_resource in self.permissions.items():
-            # Check resource
-            if "*" in role_resource:
-                role_resource = role_resource.replace('*', ".*")
+    def _parse_role_url(self, url, ignore_pretty=True):
+        url_parsed = url
+        if "*" in url:
+            url_parsed = url.replace('*', ".*")
 
-            regex = re.compile(r'^' + role_resource + '$')
-            if not regex.match(request_resource):
+        if ignore_pretty and "?pretty" in url:
+            url_parsed = url.replace("?pretty", "")
+        elif ignore_pretty and "&pretty" in url:
+            url_parsed = url.replace("&pretty", "")
+
+        return url_parsed
+
+    def can_exec(self, request_method, request_url):
+        can_exec_request = False
+        for role_url, permissions_for_resource in self.permissions.items():
+
+            # Check url
+            role_url = self._parse_role_url(role_url)
+            regex = re.compile(r'^' + role_url + '$')
+            if not regex.match(request_url):
                 continue
 
             # Check method
