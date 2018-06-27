@@ -43,6 +43,7 @@ router.get('/:agent_id/os', function(req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -80,6 +81,7 @@ router.get('/:agent_id/hardware', function(req, res) {
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
 
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -140,6 +142,7 @@ router.get('/:agent_id/packages', function(req, res) {
     if ('version' in req.query)
         data_request['arguments']['filters']['version'] = req.query.version
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -198,6 +201,7 @@ router.get('/packages', function(req, res) {
     if ('format' in req.query)
         data_request['arguments']['filters']['format'] = req.query.format
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -260,6 +264,7 @@ router.get('/os', function(req, res) {
         data_request['arguments']['filters']['release'] = req.query.release
 
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -323,6 +328,7 @@ router.get('/hardware', function(req, res) {
         data_request['arguments']['filters']['board_serial'] = req.query.board_serial
 
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 

@@ -72,6 +72,7 @@ router.get('/', cache(), function(req, res) {
     if ('gdpr' in req.query)
         data_request['arguments']['gdpr'] = req.query.gdpr;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -111,6 +112,7 @@ router.get('/groups', cache(), function(req, res) {
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -150,6 +152,7 @@ router.get('/pci', cache(), function(req, res) {
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -190,6 +193,7 @@ router.get('/gdpr', cache(), function(req, res) {
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -240,6 +244,7 @@ router.get('/files', cache(), function(req, res) {
     if ('file' in req.query)
         data_request['arguments']['file'] = req.query.file;
 
+    data_request['url'] = req.originalUrl
     if ('download' in req.query)
         res_h.send_file(req, res, req.query.download, 'rules');
     else
@@ -288,6 +293,7 @@ router.get('/:rule_id', cache(), function(req, res) {
 
     data_request['arguments']['id'] = req.params.rule_id;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 

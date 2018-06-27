@@ -30,7 +30,7 @@ if (config.ld_library_path.length > 0) {
  *   Error: {'error': !=0, 'message': 'Error description'}
  *   OK: {'error': 0, 'data' = 'cmd output'}
  */
-exports.exec = function(cmd, args, stdin, callback) {
+exports.exec = function (cmd, args, stdin, callback) {
     const child_process  = require('child_process');
 
     if (stdin != null){

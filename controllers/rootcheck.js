@@ -63,6 +63,7 @@ router.get('/:agent_id', cache(), function(req, res) {
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -107,6 +108,7 @@ router.get('/:agent_id/pci', cache(), function(req, res) {
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -151,6 +153,7 @@ router.get('/:agent_id/cis', cache(), function(req, res) {
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -179,6 +182,7 @@ router.get('/:agent_id/last_scan', cache(), function(req, res) {
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -200,6 +204,7 @@ router.put('/', function(req, res) {
 
     var data_request = {'function': 'PUT/rootcheck', 'arguments': {}};
     data_request['arguments']['all_agents'] = 1;
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -226,6 +231,7 @@ router.put('/:agent_id', function(req, res) {
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -249,6 +255,7 @@ router.delete('/', function(req, res) {
 
     var data_request = {'function': 'DELETE/rootcheck', 'arguments': {}};
     data_request['arguments']['all_agents'] = 1;
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -277,6 +284,7 @@ router.delete('/:agent_id', function(req, res) {
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 

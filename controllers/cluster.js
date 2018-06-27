@@ -29,6 +29,7 @@ router.get('/node', cache(), function (req, res) {
 
     var data_request = { 'function': '/cluster/node', 'arguments': {} };
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -73,6 +74,7 @@ router.get('/nodes', cache(), function(req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select);
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -102,6 +104,7 @@ router.get('/nodes/:node_name', cache(), function (req, res) {
     if (!filter.check(req.params, { 'node_name': 'names' }, req, res))  // Filter with error
         return;
 
+    data_request['url'] = req.originalUrl
     data_request['arguments']['filter_node'] = req.params.node_name;
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -133,6 +136,7 @@ router.get('/healthcheck', cache(), function (req, res) {
 
     data_request['arguments']['filter_node'] = req.query.node;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -176,6 +180,7 @@ router.get('/config', cache(), function(req, res) {
 
     var data_request = {'function': '/cluster/config', 'arguments': {}};
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 

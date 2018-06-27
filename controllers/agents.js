@@ -79,6 +79,7 @@ router.get('/', cache(), function(req, res) {
     if ('group' in req.query)
         data_request['arguments']['filters']['group'] = req.query['group'];
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -99,7 +100,8 @@ router.get('/summary', cache(), function(req, res) {
 
     req.apicacheGroup = "agents";
 
-    var data_request = {'function': '/agents/summary', 'arguments': {}};
+    var data_request = { 'function': '/agents/summary', 'arguments': {} };
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -139,6 +141,7 @@ router.get('/summary/os', cache(), function(req, res) {
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -187,6 +190,7 @@ router.get('/no_group', cache(), function (req, res) {
     if ('status' in req.query)
         data_request['arguments']['filters']['status'] = req.query.status;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -229,6 +233,7 @@ router.get('/groups', cache(), function(req, res) {
     if ('hash' in req.query)
         data_request['arguments']['hash_algorithm'] = req.query.hash
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -283,6 +288,7 @@ router.get('/groups/:group_id', cache(), function(req, res) {
     if ('status' in req.query)
         data_request['arguments']['filters']['status'] = req.query.status;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -324,6 +330,7 @@ router.get('/groups/:group_id/configuration', cache(), function(req, res) {
     if ('limit' in req.query)
         data_request['arguments']['limit'] = Number(req.query.limit);
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -362,6 +369,7 @@ router.get('/groups/:group_id/files/:filename', cache(), function(req, res) {
     if ('type' in req.query)
         data_request['arguments']['type_conf'] = req.query.type;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -407,6 +415,7 @@ router.get('/groups/:group_id/files', cache(), function(req, res) {
 
     data_request['arguments']['group_id'] = req.params.group_id;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -443,6 +452,7 @@ router.get('/outdated', cache(), function(req, res) {
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -480,6 +490,7 @@ router.get('/name/:agent_name', cache(), function(req, res) {
         data_request['arguments']['select'] =
         filter.select_param_to_json(req.query.select);
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 
 })
@@ -517,6 +528,7 @@ router.get('/:agent_id', cache(), function(req, res) {
         data_request['arguments']['select'] =
         filter.select_param_to_json(req.query.select);
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 
 })
@@ -544,6 +556,7 @@ router.get('/:agent_id/key', function(req, res) {
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -576,6 +589,7 @@ router.get('/:agent_id/upgrade_result', function(req, res) {
     if ('timeout' in req.query)
         data_request['arguments']['timeout'] = req.query.timeout;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -598,6 +612,7 @@ router.put('/restart', function(req, res) {
 
     data_request['arguments']['restart_all'] = 'True';
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -624,6 +639,7 @@ router.post('/restart', function(req, res) {
 
     data_request['arguments']['agent_id'] = req.body.ids;
 
+    data_request['url'] = req.originalUrl
     if ('ids' in req.body){
         data_request['arguments']['agent_id'] = req.body.ids;
         execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
@@ -654,6 +670,7 @@ router.put('/:agent_id/restart', function(req, res) {
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -693,6 +710,7 @@ router.put('/:agent_id/upgrade', function(req, res) {
     if ('force' in req.query)
         data_request['arguments']['force'] = req.query.force;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -729,6 +747,7 @@ router.put('/:agent_id/upgrade_custom', function(req, res) {
     if ('installer' in req.query)
         data_request['arguments']['installer'] = req.query.installer;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -755,6 +774,7 @@ router.put('/:agent_name', function(req, res) {
 
     data_request['arguments']['name'] = req.params.agent_name;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -782,6 +802,7 @@ router.put('/groups/:group_id', function(req, res) {
 
     data_request['arguments']['group_id'] = req.params.group_id;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -811,6 +832,7 @@ router.put('/:agent_id/group/:group_id', function(req, res) {
     data_request['arguments']['agent_id'] = req.params.agent_id;
     data_request['arguments']['group_id'] = req.params.group_id;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -836,6 +858,7 @@ router.delete('/groups', function(req, res) {
     if (!filter.check(req.body, {'ids':'array_names'}, req, res))  // Filter with error
         return;
 
+    data_request['url'] = req.originalUrl
     if ('ids' in req.body){
         data_request['arguments']['group_id'] = req.body.ids;
         execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
@@ -869,6 +892,7 @@ router.delete('/:agent_id', function(req, res) {
     data_request['arguments']['agent_id'] = req.params.agent_id;
     data_request['arguments']['purge'] = 'purge' in req.query ? true : false;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -895,6 +919,7 @@ router.delete('/:agent_id/group', function(req, res) {
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -920,6 +945,7 @@ router.delete('/groups/:group_id', function(req, res) {
         return;
 
     data_request['arguments']['group_id'] = req.params.group_id;
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -968,6 +994,7 @@ router.delete('/', function(req, res) {
     if ('status' in req.query)
         data_request['arguments']['status'] = req.query.status;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -1022,6 +1049,7 @@ router.post('/', function(req, res) {
 
     data_request['arguments']['ip'] = req.body.ip;
 
+    data_request['url'] = req.originalUrl
     if ('name' in req.body){
         data_request['arguments']['name'] = req.body.name;
         if ('force' in req.body){
@@ -1091,6 +1119,7 @@ router.post('/insert', function(req, res) {
         data_request['arguments']['force'] = req.body.force;
     }
 
+    data_request['url'] = req.originalUrl
     if ('id' in req.body && 'name' in req.body && 'ip' in req.body && 'key' in req.body){
         execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
     }else

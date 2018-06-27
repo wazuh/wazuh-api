@@ -57,6 +57,7 @@ router.get('/', cache(), function(req, res) {
     if ('path' in req.query)
         data_request['arguments']['path'] = req.query.path;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -106,6 +107,7 @@ router.get('/files', cache(), function(req, res) {
     if ('path' in req.query)
         data_request['arguments']['path'] = req.query.path;
 
+    data_request['url'] = req.originalUrl
     if ('download' in req.query)
         res_h.send_file(req, res, req.query.download, 'decoders');
     else
@@ -150,6 +152,7 @@ router.get('/parents', cache(), function(req, res) {
 
     data_request['arguments']['parents'] = "True";
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -195,6 +198,7 @@ router.get('/:decoder_name', cache(), function(req, res) {
 
     data_request['arguments']['name'] = req.params.decoder_name;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 

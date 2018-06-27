@@ -30,7 +30,8 @@ router.get('/status', cache(), function(req, res) {
 
     req.apicacheGroup = "manager";
 
-    var data_request = {'function': '/manager/status', 'arguments': {}};
+    var data_request = { 'function': '/manager/status', 'arguments': {} };
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -50,7 +51,8 @@ router.get('/info', cache(), function(req, res) {
 
     req.apicacheGroup = "manager";
 
-    var data_request = {'function': '/manager/info', 'arguments': {}};
+    var data_request = { 'function': '/manager/info', 'arguments': {} };
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -87,6 +89,7 @@ router.get('/configuration', cache(), function(req, res) {
         else
             res_h.bad_request(req, res, 604, "Missing field: 'section'");
     }
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -127,6 +130,7 @@ router.get('/stats', cache(), function(req, res) {
         data_request['arguments']['day'] = date.substring(6, 8);
     }
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -147,7 +151,8 @@ router.get('/stats/hourly', cache(), function(req, res) {
 
     req.apicacheGroup = "manager";
 
-    var data_request = {'function': '/manager/stats/hourly', 'arguments': {}};
+    var data_request = { 'function': '/manager/stats/hourly', 'arguments': {} };
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -168,7 +173,8 @@ router.get('/stats/weekly', cache(), function(req, res) {
 
     req.apicacheGroup = "manager";
 
-    var data_request = {'function': '/manager/stats/weekly', 'arguments': {}};
+    var data_request = { 'function': '/manager/stats/weekly', 'arguments': {} };
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -214,6 +220,7 @@ router.get('/logs', cache(), function(req, res) {
     if ('category' in req.query)
         data_request['arguments']['category'] = req.query.category;
 
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -234,7 +241,8 @@ router.get('/logs/summary', cache(), function(req, res) {
 
     req.apicacheGroup = "manager";
 
-    var data_request = {'function': '/manager/logs/summary', 'arguments': {}};
+    var data_request = { 'function': '/manager/logs/summary', 'arguments': {} };
+    data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
