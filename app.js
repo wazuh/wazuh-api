@@ -36,7 +36,7 @@ if (check.configuration_file() < 0) {
 //  Get credentials
 if (config.basic_auth.toLowerCase() == "yes"){
     var auth_secure = auth.basic({
-        realm: "OSSEC API",
+        realm: "native",
         file: __dirname + "/configuration/auth/user"
     });
 }

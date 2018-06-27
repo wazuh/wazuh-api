@@ -8,21 +8,21 @@ from utils import read_json_from_file
 
 class User():
 
-    def __init__(self, user_name, ossec_path):
+    def __init__(self, user_name, ossec_path, realm='native'):
         self.user_name = user_name
-        self._load_user_roles_from_file(ossec_path)
+        self._load_user_roles_from_file(ossec_path, realm)
 
     def __str__(self):
         return self.user_name
 
-    def _load_user_roles_from_file(self, ossec_path):
+    def _load_user_roles_from_file(self, ossec_path, realm):
         roles_config = read_json_from_file(ossec_path + "/api/models/rbac/roles_config.json")
 
         roles_user = [role for role, users in roles_config.items() if self.user_name in users]
         if not roles_user:
             raise Exception("No roles found for user `{}`".format(self.user_name))
 
-        self.roles = [Role(role_name, ossec_path) for role_name in roles_user]
+        self.roles = [Role(role_name, ossec_path, realm) for role_name in roles_user]
 
     def _get_method_from_request(self, request):
         split_request_function = request['function'].split("/", 1)

@@ -8,17 +8,25 @@ import re
 
 class Role():
 
-    def __init__(self, role, ossec_path):
+    def __init__(self, role, ossec_path, realm):
         self.role = role
-        self._load_role_permissions_from_file(ossec_path)
+        self._load_role_permissions_from_file(ossec_path, realm)
 
     def __str__(self):
         return self.role
 
-    def _load_role_permissions_from_file(self, ossec_path):
+    def _load_role_permissions_from_file(self, ossec_path, realm):
         roles_mapping = read_json_from_file(ossec_path + "/api/models/rbac/roles_mapping.json")
 
-        self.permissions = roles_mapping.get(self.role)
+        realms_mapping = roles_mapping.get('realms')
+        if not realms_mapping:
+            raise Exception("No mapping found for realms")
+
+        current_realm_roles = realms_mapping.get(realm)
+        if not current_realm_roles:
+            raise Exception("No mapping found for realm `{}`".format(realm))
+
+        self.permissions = current_realm_roles.get(self.role)
         if not self.permissions:
             raise Exception("No mapping found for role `{}`".format(self.role))
 

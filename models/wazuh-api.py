@@ -173,7 +173,7 @@ if __name__ == "__main__":
         exit(1)
 
     try:
-        user = rbac.User(request['user'], request['ossec_path'])
+        user = rbac.User(user_name=request['user'], ossec_path=request['ossec_path'])
     except Exception as e:
         print_json("Wazuh-Python Internal Error: {} (RBAC).".format(e), 1000)
         exit(1)
