@@ -61,7 +61,7 @@ config.use_only_authd = false;
 // Option to drop privileges (run as ossec)
 config.drop_privileges = true;
 
-// Features still under development
+// Activate features still under development
 config.experimental_features  = false;
 
 /************************* SSL OPTIONS ****************************************/

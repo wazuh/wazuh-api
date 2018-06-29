@@ -13,7 +13,7 @@
 var router = require('express').Router();
 
 /**
- * @api {get} /experimental/packages Get packages info of all agents
+ * @api {get} /experimental/syscollector/packages Get packages info of all agents
  * @apiName GetPackages
  * @apiGroup Packages
  *
@@ -29,10 +29,10 @@ var router = require('express').Router();
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/packages?pretty&sort=-name&limit=2&offset=4"
  *
  */
-router.get('/packages', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /experimental/packages");
+router.get('/syscollector/packages', function (req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /experimental/syscollector/packages");
 
-    var data_request = { 'function': '/experimental/packages', 'arguments': {} };
+    var data_request = { 'function': '/experimental/syscollector/packages', 'arguments': {} };
     var filters = {
         'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
         'search': 'search_param', 'select': 'select_param',
@@ -73,7 +73,7 @@ router.get('/packages', function (req, res) {
 })
 
 /**
- * @api {get} /experimental/os Get os info of all agents
+ * @api {get} /experimental/syscollector/os Get os info of all agents
  * @apiName GetOS
  * @apiGroup OS
  *
@@ -86,13 +86,13 @@ router.get('/packages', function (req, res) {
  * @apiDescription Returns the agent's os info
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/os?pretty&sort=-os_name"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/os?pretty&sort=-os_name"
  *
  */
-router.get('/os', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /experimental/os");
+router.get('/syscollector/os', function (req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /experimental/syscollector/os");
 
-    var data_request = { 'function': '/experimental/os', 'arguments': {} };
+    var data_request = { 'function': '/experimental/syscollector/os', 'arguments': {} };
 
     var filters = {
         'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
@@ -137,7 +137,7 @@ router.get('/os', function (req, res) {
 })
 
 /**
- * @api {get} /experimental/hardware Get hardware info of all agents
+ * @api {get} /experimental/syscollector/hardware Get hardware info of all agents
  * @apiName GetHardware
  * @apiGroup Hardware
  *
@@ -150,13 +150,13 @@ router.get('/os', function (req, res) {
  * @apiDescription Returns the agent's hardware info
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/hardware?pretty&sort=-ram_free"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/hardware?pretty&sort=-ram_free"
  *
  */
-router.get('/hardware', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /experimental/hardware");
+router.get('/syscollector/hardware', function (req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /experimental/syscollector/hardware");
 
-    var data_request = { 'function': '/experimental/hardware', 'arguments': {} };
+    var data_request = { 'function': '/experimental/syscollector/hardware', 'arguments': {} };
     var filters = {
         'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
         'search': 'search_param', 'select': 'select_param',

@@ -254,9 +254,9 @@ if __name__ == "__main__":
             '/syscollector/:agent_id/packages': syscollector.get_packages_agent,
 
             # Experimental 
-            '/experimental/os': syscollector.get_os,
-            '/experimental/hardware': syscollector.get_hardware,
-            '/experimental/packages': syscollector.get_packages
+            '/experimental/syscollector/os': syscollector.get_os,
+            '/experimental/syscollector/hardware': syscollector.get_hardware,
+            '/experimental/syscollector/packages': syscollector.get_packages
 
         }
 
