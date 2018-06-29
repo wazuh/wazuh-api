@@ -942,9 +942,9 @@ router.delete('/groups/:group_id', function(req, res) {
 router.delete('/', function(req, res) {
     logger.debug(req.connection.remoteAddress + " DELETE /agents");
 
-    var data_request = { 'function': 'DELETE/agents/', 'arguments': {} };
-    var filter_body = { 'ids': 'array_numbers', 'purge': 'boolean' };
-    var filter_query = { 'older_than': 'timeframe_type', 'status': 'alphanumeric_param'};
+    var data_request = { 'function': 'DELETE/agents/', 'arguments': {}};
+    var filter_body = { 'ids': 'array_numbers'};
+    var filter_query = { 'older_than': 'timeframe_type', 'status': 'alphanumeric_param', 'purge': 'boolean' };
 
     if (!filter.check(req.body, filter_body, req, res))  // Filter with error
         return;
@@ -957,7 +957,7 @@ router.delete('/', function(req, res) {
         return;
     }
 
-    data_request['arguments']['purge'] = 'purge' in req.body && (req.body['purge'] == true || req.body['purge'] == 'true');
+    data_request['arguments']['purge'] = 'purge' in req.query && (req.query['purge'] == true || req.query['purge'] == 'true');
 
     if ('ids' in req.body)
         data_request['arguments']['list_agent_ids'] = req.body.ids;
