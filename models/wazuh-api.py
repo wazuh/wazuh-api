@@ -9,6 +9,8 @@ from getopt import getopt, GetoptError
 from os import path as os_path
 import json
 import signal
+import logging
+import time
 
 error_wazuh_package = 0
 exception_error = None
@@ -88,6 +90,8 @@ def usage():
     exit(1)
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG)
+
     request = {}
     pretty = False
     debug = False
@@ -148,6 +152,7 @@ if __name__ == "__main__":
 
     # Main
     try:
+        before = time.time()
         wazuh = Wazuh(ossec_path=request['ossec_path'])
 
         if list_f:
@@ -156,6 +161,9 @@ if __name__ == "__main__":
 
         request['from_cluster'] = False
         data = dapi.distribute_function(request, pretty, debug)
+        after = time.time()
+        logging.debug("Total time: {}".format(after - before))
+        logging.debug("Size of all received data: {}".format(len(data)))
 
         print(data)
 
