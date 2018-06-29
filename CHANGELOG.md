@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.4.0]
+
+### Fixed
+- Fixed `purge` filter in `DELETE/agents` ([#122](https://github.com/wazuh/wazuh-api/pull/122))
+
 ## [v3.3.1]
 ### Changed
 - Output of `DELETE/agents`: Added attributes `total_affected_agents` and `total_failed_ids`. ([Wazuh #795](https://github.com/wazuh/wazuh/pull/795))
