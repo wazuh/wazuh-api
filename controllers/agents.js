@@ -957,7 +957,7 @@ router.delete('/', function(req, res) {
         return;
     }
 
-    data_request['arguments']['purge'] = 'purge' in req.query && (req.query['purge'] == true || req.query['purge'] == 'true');
+    data_request['arguments']['purge'] = 'purge' in req.query && (req.query.purge == 'true' || req.query.purge == '');
 
     if ('ids' in req.body)
         data_request['arguments']['list_agent_ids'] = req.body.ids;

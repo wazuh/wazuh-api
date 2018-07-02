@@ -145,7 +145,7 @@ exports.timeframe_type = function(param) {
 
 exports.boolean = function(n) {
     if (typeof n != 'undefined'){
-        var regex = /^true|false$/;
+        var regex = /^$|(^true|false$)/;
         return regex.test(n);
     }
     else
