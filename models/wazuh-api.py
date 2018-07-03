@@ -19,6 +19,7 @@ try:
         new_path = "/{0}/{1}/framework".format(current_path[1], current_path[2])
     path.append(new_path)
     from wazuh import Wazuh
+    from wazuh import common
     from wazuh.exception import WazuhException
     from wazuh.agent import Agent
     from wazuh.rule import Rule
@@ -253,7 +254,7 @@ if __name__ == "__main__":
             '/syscollector/:agent_id/hardware': syscollector.get_hardware_agent,
             '/syscollector/:agent_id/packages': syscollector.get_packages_agent,
 
-            # Experimental 
+            # Experimental
             '/experimental/syscollector/os': syscollector.get_os,
             '/experimental/syscollector/hardware': syscollector.get_hardware,
             '/experimental/syscollector/packages': syscollector.get_packages
@@ -265,6 +266,10 @@ if __name__ == "__main__":
             exit(0)
 
         if 'arguments' in request and request['arguments']:
+            # the api should never return more than 1000 elements
+            if 'limit' in request['arguments'] and request['arguments']['limit'] == 0:
+                request['arguments']['limit'] = common.maximum_database_limit
+
             data = functions[request['function']](**request['arguments'])
         else:
             data = functions[request['function']]()
