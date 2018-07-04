@@ -143,6 +143,15 @@ exports.timeframe_type = function(param) {
         return false;
 }
 
+exports.empty_boolean = function(n) {
+    if (typeof n != 'undefined'){
+        var regex = /^$|(^true|false$)/;
+        return regex.test(n);
+    }
+    else
+        return false;
+}
+
 exports.boolean = function(n) {
     if (typeof n != 'undefined'){
         var regex = /^true|false$/;
