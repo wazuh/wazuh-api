@@ -943,8 +943,8 @@ router.delete('/', function(req, res) {
     logger.debug(req.connection.remoteAddress + " DELETE /agents");
 
     var data_request = { 'function': 'DELETE/agents/', 'arguments': {}};
-    var filter_body = { 'ids': 'array_numbers'};
-    var filter_query = { 'older_than': 'timeframe_type', 'status': 'alphanumeric_param', 'purge': 'boolean' };
+    var filter_body = { 'ids': 'array_numbers', 'purge': 'boolean'};
+    var filter_query = { 'older_than': 'timeframe_type', 'status': 'alphanumeric_param', 'purge': 'empty_boolean' };
 
     if (!filter.check(req.body, filter_body, req, res))  // Filter with error
         return;
@@ -957,7 +957,12 @@ router.delete('/', function(req, res) {
         return;
     }
 
-    data_request['arguments']['purge'] = 'purge' in req.query && (req.query.purge == 'true' || req.query.purge == '');
+    if ('purge' in req.body && 'purge' in req.query) // the most restrictive wins
+        data_request['arguments']['purge'] = (req.query.purge == 'true' || req.query.purge == '') && (req.body.purge == 'true' || req.body.purge == true);
+    else if ('purge' in req.body)
+        data_request['arguments']['purge'] = (req.body.purge == 'true' || req.body.purge == true);
+    else if ('purge' in req.query)
+        data_request['arguments']['purge'] = (req.query.purge == 'true' || req.query.purge == '');
 
     if ('ids' in req.body)
         data_request['arguments']['list_agent_ids'] = req.body.ids;
