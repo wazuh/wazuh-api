@@ -75,6 +75,10 @@ router.use('/cache', require('./cache'));
 router.use('/cluster', require('./cluster'));
 router.use('/syscollector', require('./syscollector'));
 
+if (config.experimental_features){
+    router.use('/experimental', require('./experimental'));
+}
+
 // Index
 router.get('/',function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /");
