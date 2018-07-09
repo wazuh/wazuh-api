@@ -254,9 +254,11 @@ if __name__ == "__main__":
             '/syscollector/:agent_id/os': syscollector.get_os_agent,
             '/syscollector/:agent_id/hardware': syscollector.get_hardware_agent,
             '/syscollector/:agent_id/packages': syscollector.get_packages_agent,
-            '/syscollector/os': syscollector.get_os,
-            '/syscollector/hardware': syscollector.get_hardware,
-            '/syscollector/packages': syscollector.get_packages
+
+            # Experimental 
+            '/experimental/syscollector/os': syscollector.get_os,
+            '/experimental/syscollector/hardware': syscollector.get_hardware,
+            '/experimental/syscollector/packages': syscollector.get_packages
 
         }
 

@@ -549,8 +549,10 @@ describe('Manager', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.should.be.an.Object;
+
                 res.body.data.should.have.properties(['ossec-monitord']);
                 res.body.data['ossec-monitord'].should.have.properties(['info', 'all', 'error']);
+
                 done();
             });
         });
