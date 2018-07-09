@@ -12,10 +12,17 @@
 var should  = require('should');
 var assert  = require('assert');
 var request = require('supertest');
+var fs      = require('fs');
 var common  = require('./common.js');
 var sleep = require('sleep');
 
+
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+var disconnected_agent_properties = ['status', 'ip', 'id', 'name', 'dateAdd'];
+var manager_properties = disconnected_agent_properties.concat(['version', 'manager_host', 'lastKeepAlive', 'os']);
+var agent_properties = manager_properties.concat(['configSum', 'mergedSum', 'group']);
+var agent_os_properties = ['major', 'name', 'uname', 'platform', 'version', 'codename', 'arch'];
 
 describe('Agents', function() {
 
@@ -35,7 +42,11 @@ describe('Agents', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'ip', 'id', 'name']);
+
+                res.body.data.items[0].should.have.properties(manager_properties);
+                res.body.data.items[1].should.have.properties(agent_properties);
+                res.body.data.items[0].os.should.have.properties(agent_os_properties);
+                res.body.data.items[1].os.should.have.properties(agent_os_properties);
                 done();
             });
         });
@@ -53,7 +64,7 @@ describe('Agents', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                res.body.data.items[0].should.have.properties(['status', 'ip', 'id', 'name']);
+                res.body.data.items[0].should.have.properties(manager_properties);
                 res.body.data.items[0].id.should.have.equal('000');
                 res.body.data.items[0].status.should.have.equal('Active');
                 done();
@@ -91,15 +102,51 @@ describe('Agents', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
-                res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'ip', 'id', 'name']);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].id.should.equal('001');
+                res.body.data.items[0].should.have.properties(agent_properties);
+                done();
+            });
+        });
+
+        it('Wrong Sort', function(done) {
+            request(common.url)
+            .get("/agents?sort=-wrongParameter")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1403);
                 done();
             });
         });
 
         it('Search', function(done) {
             request(common.url)
-            .get("/agents?search=1")
+            .get("/agents?search=001")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].id.should.be.equal("001");
+                res.body.data.items[0].should.have.properties(agent_properties);
+                res.body.data.items[0].os.should.have.properties(agent_os_properties);
+                done();
+            });
+        });
+
+        it('Selector', function(done) {
+            request(common.url)
+            .get("/agents?select=date_add,merged_sum")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -111,7 +158,130 @@ describe('Agents', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['status', 'ip', 'id', 'name', 'dateAdd']);
+                res.body.data.items[0].should.have.properties(['dateAdd', 'id']);
+                res.body.data.items[1].should.have.properties(['dateAdd', 'mergedSum', 'id']);
+                done();
+            });
+        });
+
+        it('Not allowed selector', function(done) {
+            request(common.url)
+            .get("/agents?select=wrongParam")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1724);
+                done();
+            });
+        });
+
+        var expected_version = 0;
+        before(function(done) {
+            request(common.url)
+            .get("/version")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+              expected_version="Wazuh "+String(res.body.data);
+              done();
+            });
+        });
+
+        it('Version', function(done) {
+            request(common.url)
+            .get("/agents?version="+expected_version.replace(/\s/g, ''))
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+                res.body.should.have.properties(['error', 'data']);
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items[0].should.have.properties(['version']);
+                res.body.data.items[0].version.should.be.equal(expected_version);
+                done();
+            });
+        });
+
+
+        var expected_os_platform = "";
+        var expected_os_version = "";
+        var expected_manager_host = "";
+        before(function(done) {
+            request(common.url)
+            .get("/agents")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+                res.body.should.have.properties(['error', 'data']);
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                expected_os_platform = res.body.data.items[0].os.platform;
+                expected_os_version = res.body.data.items[0].os.version;
+                expected_manager_host = res.body.data.items[0].manager_host;
+                done();
+            });
+        });
+
+        it('Os.platform', function(done) {
+            request(common.url)
+            .get("/agents?os.platform=" + expected_os_platform)
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+                res.body.should.have.properties(['error', 'data']);
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items[0].os.should.have.properties(['platform']);
+                res.body.data.items[0].os.platform.should.be.equal(expected_os_platform);
+                done();
+            });
+        });
+
+        it('Os.version', function(done) {
+            request(common.url)
+            .get("/agents?os.version=" + expected_os_version)
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+                res.body.should.have.properties(['error', 'data']);
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items[0].os.should.have.properties(['version']);
+                res.body.data.items[0].os.version.should.be.equal(expected_os_version);
+                done();
+            });
+        });
+
+        it('ManagerHost', function(done) {
+            request(common.url)
+            .get("/agents?manager=" + expected_manager_host)
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+                res.body.should.have.properties(['error', 'data']);
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items[0].os.should.have.properties(['version']);
+                res.body.data.items[0].manager_host.should.be.equal(expected_manager_host);
                 done();
             });
         });
@@ -314,6 +484,7 @@ describe('Agents', function() {
     });  // GET/agents/summary
 
     describe('GET/agents/summary/os', function() {
+
         it('Request', function(done) {
             request(common.url)
                 .get('/agents/summary/os')
@@ -356,16 +527,20 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
+
                 res.body.error.should.equal(0);
                 res.body.data.should.have.properties(['items','totalItems']);
                 res.body.data.items.should.be.instanceOf(Array);
                 res.body.data.items[0].should.have.properties(['version','id','name']);
                 res.body.data.items[0].should.not.be.eql(manager_version);
+
                 done();
             });
         });
 
+
     });  // GET/agents/outdated
+
 
     describe('GET/agents/:agent_id', function() {
 
@@ -382,7 +557,9 @@ describe('Agents', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.should.be.an.Object;
-                res.body.data.should.have.properties(['status', 'name', 'ip', 'dateAdd', 'version', 'os', 'id']);
+                res.body.data.id.should.equal("000");
+                res.body.data.should.have.properties(manager_properties);
+                res.body.data.os.should.have.properties(agent_os_properties);
                 done();
             });
         });
@@ -400,7 +577,42 @@ describe('Agents', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.should.be.an.Object;
-                res.body.data.should.have.properties(['status', 'name', 'ip', 'dateAdd', 'id']);  //version, lastKeepAlive, os
+                res.body.data.id.should.equal("001");
+                res.body.data.should.have.properties(agent_properties);
+                res.body.data.os.should.have.properties(agent_os_properties);
+                done();
+            });
+        });
+
+
+
+        it('Selector', function(done) {
+            request(common.url)
+            .get("/agents/001?select=date_add,merged_sum")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.have.properties(['dateAdd', 'mergedSum']);
+                done();
+            });
+        });
+
+        it('Not allowed selector', function(done) {
+            request(common.url)
+            .get("/agents/001?select=wrongParam")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1724);
                 done();
             });
         });
@@ -467,6 +679,90 @@ describe('Agents', function() {
         });
 
     });  // GET/agents/:agent_id
+
+    describe('GET/agents/name/:agent_name', function() {
+        var expected_name = ""
+        before(function(done) {
+            request(common.url)
+            .get("/agents/001")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+                res.body.data.should.have.properties(agent_properties);
+                res.body.error.should.equal(0);
+                expected_name = res.body.data.name;
+                done();
+            });
+        });
+        it('Request', function(done) {
+            request(common.url)
+            .get("/agents/name/"+expected_name)
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.Object;
+                res.body.data.should.have.properties(agent_properties);
+                res.body.data.os.should.have.properties(agent_os_properties);
+                done();
+            });
+        });
+
+        it('Wrong name', function(done) {
+            request(common.url)
+            .get("/agents/name/non_existent_agent")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1701);
+                done();
+            });
+        });
+
+        it('Selector', function(done) {
+            request(common.url)
+            .get("/agents/name/"+expected_name+"?select=date_add,merged_sum,os_name")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.Object;
+                res.body.data.should.have.properties(['mergedSum','dateAdd','os']);
+                res.body.data.os.should.have.properties(['name']);
+                done();
+            });
+        });
+
+        it('Not allowed selector', function(done) {
+            request(common.url)
+            .get("/agents/name/"+expected_name+"?select=wrongField")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1724);
+                done();
+            });
+        });
+    });  // GET/agents/name/:agent_name
 
     describe('GET/agents/:agent_id/key', function() {
 
@@ -833,9 +1129,11 @@ describe('Agents', function() {
 
                 res.body.should.have.properties(['error', 'data']);
                 res.body.error.should.equal(0);
+
                 res.body.data.should.be.an.array;
                 res.body.data.should.have.properties(['totalItems','items']);
                 res.body.data.items.should.be.instanceOf(Array);
+
                 done();
             });
         });
@@ -953,6 +1251,23 @@ describe('Agents', function() {
 
     describe('GET/agents/groups/:group_id/configuration', function() {
 
+        before(function(done) {
+            // write a configuration example
+            var agent_conf_example = "\
+            <agent_config name=\"agent_name\">\
+                <localfile>\
+                    <location>/var/log/my.log</location>\
+                    <log_format>syslog</log_format>\
+                </localfile>\
+            </agent_config>\
+            ";
+            var config_path = common.ossec_path+'/etc/shared/webserver/agent.conf';
+            fs.writeFile(config_path, agent_conf_example, (err) => {
+                if (err) return done(err);
+                done();
+            });
+        });
+
         it('Request', function(done) {
 
             request(common.url)
@@ -966,6 +1281,9 @@ describe('Agents', function() {
                 res.body.should.have.properties(['error', 'data']);
                 res.body.data.should.have.properties(['totalItems', 'items']);
                 res.body.error.should.equal(0);
+                res.body.data.items[0].should.have.properties(['config','filters']);
+                res.body.data.items[0].config.should.have.properties(['localfile']);
+                res.body.data.items[0].filters.should.have.properties(['name']);
                 done();
             });
         });
@@ -1259,6 +1577,7 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['msg', 'failed_ids', 'affected_agents']);
 
                 res.body.data.failed_ids[0].error.code.should.equal(1703);
                 done();
@@ -1266,7 +1585,6 @@ describe('Agents', function() {
         });
 
     });  // PUT/agents/:agent_id/restart
-
 
 
     describe('DELETE/agents', function () {
