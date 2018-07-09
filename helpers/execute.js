@@ -33,6 +33,10 @@ if (config.ld_library_path.length > 0) {
 exports.exec = function (cmd, args, stdin, callback) {
     const child_process  = require('child_process');
 
+
+    if (typeof user == 'undefined' || !user)
+        var user = null;
+
     if (stdin != null){
         stdin['ossec_path'] = config.ossec_path;
         stdin['user'] = user;

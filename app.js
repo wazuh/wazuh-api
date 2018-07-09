@@ -17,13 +17,6 @@ if (process.getuid() !== 0){
 /********************************************/
 /* Root actions
 /********************************************/
-try {
-    var auth = require("http-auth");
-} catch (e) {
-    console.log("Dependencies not found. Try 'npm install' in /var/ossec/api. Exiting...");
-    process.exit(1);
-}
-
 const check = require('./helpers/check');
 
 //  Get configuration
@@ -31,14 +24,6 @@ config = require('./configuration/config');
 if (check.configuration_file() < 0) {
     setTimeout(function(){ process.exit(1); }, 500);
     return;
-}
-
-//  Get credentials
-if (config.basic_auth.toLowerCase() == "yes"){
-    var auth_secure = auth.basic({
-        realm: "native",
-        file: __dirname + "/configuration/auth/user"
-    });
 }
 
 //  Get Certs
@@ -136,26 +121,6 @@ var app = express();
 // CORS
 if (config.cors.toLowerCase() == "yes"){
     app.use(cors());
-}
-
-// Basic authentication
-if (config.basic_auth.toLowerCase() == "yes"){
-    app.use(auth.connect(auth_secure));
-
-    auth_secure.on('fail', (result, req) => {
-        var log_msg = "[" + req.connection.remoteAddress + "] " + "User: \"" + result.user + "\" - Authentication failed.";
-        logger.log(log_msg);
-    });
-
-    auth_secure.on('error', (error, req) => {
-        var log_msg = "[" + req.connection.remoteAddress + "] Authentication error: " + error.code + " - " + error.message;
-        logger.log(log_msg);
-    });
-
-    auth_secure.on('success', (result, req) => {
-        var log_msg = "[" + req.connection.remoteAddress + "] Authenticated success: " + result.user;
-        user = result.user
-    });
 }
 
 // temporary

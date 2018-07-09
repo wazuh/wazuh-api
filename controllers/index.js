@@ -19,6 +19,7 @@ wazuh_control = api_path + "/models/wazuh-api.py";
 
 var router = require('express').Router();
 var validator = require('../helpers/input_validation');
+var auth = require('../helpers/auth');
 var os = require("os");
 
 // Cache options
@@ -60,11 +61,22 @@ router.all("*", function(req, res, next) {
         }
     }
 
+    if (!req.user){
+        var token = req.headers['x-access-token'];
+        if (!auth.verify_token(token)) {
+            res_h.bad_request(req, res, "101");
+            go_next = false;
+        }
+    } else {
+        // check user
+    }
+
     if (go_next)
         next();
 });
 
 // Controllers
+router.use('/api', require('./api'));
 router.use('/agents', require('./agents'));
 router.use('/manager', require('./manager'));
 router.use('/syscheck', require('./syscheck'));

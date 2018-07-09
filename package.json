@@ -8,11 +8,14 @@
   "license": "GPL-2.0",
   "dependencies": {
     "apicache": "^0.2.0",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.15.2",
     "cors": "^2.7.1",
+
     "express": "^4.14.0",
     "htpasswd": "^2.3.4",
-    "http-auth": "^3.0.1",
+    "jsonwebtoken": "^8.3.0",
+    
     "moment": "^2.15.0"
   },
   "repository": {

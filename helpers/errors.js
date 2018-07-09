@@ -18,6 +18,7 @@ errors['3'] = "Internal error";
 
 // Auth
 errors['100'] = "Unauthorized request. Cluster privileges required";
+errors['101'] = "Failed to authenticate token.";
 
 // 600 - 699 Requests
 errors['600'] = "Param not valid. Integer expected";  // Integer
