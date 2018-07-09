@@ -374,6 +374,24 @@ describe('Manager', function() {
             });
         });
 
+        it('Retrieve all elements with limit=0', function(done) {
+            request(common.url)
+            .get("/manager/logs?limit=0")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['items', 'totalItems']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                done();
+            });
+        });
+
         it('Sort', function(done) {
             request(common.url)
             .get("/manager/logs?sort=+")
@@ -448,7 +466,7 @@ describe('Manager', function() {
 
         it('Filters: category', function(done) {
             request(common.url)
-            .get("/manager/logs?category=ossec-analysisd")
+            .get("/manager/logs?category=ossec-monitord")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -531,8 +549,10 @@ describe('Manager', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.should.be.an.Object;
-                res.body.data.should.have.properties(['ossec-analysisd']);
-                res.body.data['ossec-analysisd'].should.have.properties(['info', 'all', 'error']);
+
+                res.body.data.should.have.properties(['ossec-monitord']);
+                res.body.data['ossec-monitord'].should.have.properties(['info', 'all', 'error']);
+
                 done();
             });
         });

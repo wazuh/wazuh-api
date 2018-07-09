@@ -13,9 +13,29 @@
 var router = require('express').Router();
 
 /**
+ * @api {get} /cluster/node Get local node info
+ * @apiName GetLocalNodeInfo
+ * @apiGroup Nodes
+ *
+ * @apiDescription Returns the local node info
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node?pretty"
+ *
+ */
+router.get('/node', cache(), function (req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/node");
+    req.apicacheGroup = "cluster";
+
+    var data_request = { 'function': '/cluster/node', 'arguments': {} };
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
  * @api {get} /cluster/nodes Get nodes info
  * @apiName GetNodesInfo
- * @apiGroup cluster
+ * @apiGroup Nodes
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
@@ -41,9 +61,9 @@ router.get('/nodes', cache(), function(req, res) {
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
@@ -60,7 +80,7 @@ router.get('/nodes', cache(), function(req, res) {
 /**
  * @api {get} /cluster/nodes/:node_name Get node info
  * @apiName GetNodeInfo
- * @apiGroup cluster
+ * @apiGroup Nodes
  *
  * @apiDescription Returns the node info
  *
@@ -90,7 +110,7 @@ router.get('/nodes/:node_name', cache(), function (req, res) {
 /**
  * @api {get} /cluster/healthcheck Show cluster health
  * @apiName GetHealthcheck
- * @apiGroup cluster
+ * @apiGroup Info
  *
  * @apiParam {String} [node] Filter information by node name.
  * *
@@ -120,7 +140,7 @@ router.get('/healthcheck', cache(), function (req, res) {
 /**
  * @api {get} /cluster/status Get info about cluster status
  * @apiName GetClusterstatus
- * @apiGroup Status
+ * @apiGroup Info
  *
  * @apiDescription Returns whether the cluster is enabled or disabled
  *
@@ -141,7 +161,7 @@ router.get('/status', cache(), function(req, res) {
 /**
  * @api {get} /cluster/config Get the cluster configuration
  * @apiName GetClusterconfig
- * @apiGroup config
+ * @apiGroup Configuration
  *
  * @apiDescription Returns the cluster configuration
  *
