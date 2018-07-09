@@ -1,15 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
-## [v3.4.0]
-### Changed
-- Move "Multiple DB requests" to `/experimental`. ([#124](https://github.com/wazuh/wazuh-api/pull/124))
 
 ## [v3.4.0]
-
 ### Added
 - Improved agent registration/removal bash script ([#71](https://github.com/wazuh/wazuh-api/pull/71)).
 
-## [v3.4.0]
+### Changed
+- Move "Multiple DB requests" to `/experimental`. ([#124](https://github.com/wazuh/wazuh-api/pull/124))
 
 ### Fixed
 - Fixed `purge` filter in `DELETE/agents` ([#122](https://github.com/wazuh/wazuh-api/pull/122))
