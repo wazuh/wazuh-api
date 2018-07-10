@@ -74,7 +74,6 @@ router.use('/decoders', require('./decoders'));
 router.use('/cache', require('./cache'));
 router.use('/cluster', require('./cluster'));
 router.use('/syscollector', require('./syscollector'));
-router.use('/report', require('./report'));
 
 if (config.experimental_features){
     router.use('/experimental', require('./experimental'));

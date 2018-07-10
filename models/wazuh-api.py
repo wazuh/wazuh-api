@@ -193,6 +193,7 @@ if __name__ == "__main__":
             'DELETE/agents/groups': Agent.remove_group,
             'DELETE/agents/:agent_id': Agent.remove_agent,
             'DELETE/agents/': Agent.remove_agents,
+            '/agents/stats/distinct': report.get_distinct_agents,
 
             # Groups
             '/agents/groups': Agent.get_all_groups,
@@ -253,13 +254,11 @@ if __name__ == "__main__":
             '/syscollector/:agent_id/os': syscollector.get_os_agent,
             '/syscollector/:agent_id/hardware': syscollector.get_hardware_agent,
             '/syscollector/:agent_id/packages': syscollector.get_packages_agent,
+
             # Experimental 
             '/experimental/syscollector/os': syscollector.get_os,
             '/experimental/syscollector/hardware': syscollector.get_hardware,
-            '/experimental/syscollector/packages': syscollector.get_packages
-
-            # report
-            '/report/distinct/agents': report.get_distinct_agents
+            '/experimental/syscollector/packages': syscollector.get_packages,
 
         }
 
