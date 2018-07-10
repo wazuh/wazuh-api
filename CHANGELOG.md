@@ -1,6 +1,16 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.4.0]
+### Added
+- Improved agent registration/removal bash script ([#71](https://github.com/wazuh/wazuh-api/pull/71)).
+
+### Changed
+- Move "Multiple DB requests" to `/experimental`. ([#124](https://github.com/wazuh/wazuh-api/pull/124))
+
+### Fixed
+- Fixed `purge` filter in `DELETE/agents` ([#122](https://github.com/wazuh/wazuh-api/pull/122))
+
 ## [v3.3.1]
 ### Changed
 - Output of `DELETE/agents`: Added attributes `total_affected_agents` and `total_failed_ids`. ([Wazuh #795](https://github.com/wazuh/wazuh/pull/795))
@@ -23,9 +33,11 @@ All notable changes to this project will be documented in this file.
 - Fixed error message when an invalid character was used with `select` parameter ([#98](https://github.com/wazuh/wazuh-api/pull/98)).
 
 
+
 ## [v3.2.4]
 
 There are no changes for Wazuh API in this version.
+
 
 
 ## [v3.2.3]
@@ -84,7 +96,6 @@ There are no changes for Wazuh API in this version.
 ### Changed
 - Change output of `GET/manager/info` ([Wazuh #371](https://github.com/wazuh/wazuh/pull/371)).
 - Change timestamp format of ossec logs (affected calls output: `GET /manager/logs` and `GET /manager/summary`) ([Wazuh #355](https://github.com/wazuh/wazuh/pull/355)).
-
 
 ## [v3.1.0]
 ### Added

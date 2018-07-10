@@ -22,11 +22,12 @@ var router = require('express').Router();
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
- * @apiParam {String} older_than Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date.
+ * @apiParam {String} [older_than] Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date.
  * @apiParam {String} [os.platform] Filters by OS platform.
  * @apiParam {String} [os.version] Filters by OS version.
  * @apiParam {String} [manager] Filters by manager hostname to which agents are connected.
  * @apiParam {String} [version] Filters by agents version.
+ * @apiParam {String} [group] Filters by group of agents.
  *
  * @apiDescription Returns a list with the available agents.
  *
@@ -968,9 +969,9 @@ router.delete('/groups/:group_id', function(req, res) {
 router.delete('/', function(req, res) {
     logger.debug(req.connection.remoteAddress + " DELETE /agents");
 
-    var data_request = { 'function': 'DELETE/agents/', 'arguments': {} };
-    var filter_body = { 'ids': 'array_numbers', 'purge': 'boolean' };
-    var filter_query = { 'older_than': 'timeframe_type', 'status': 'alphanumeric_param'};
+    var data_request = { 'function': 'DELETE/agents/', 'arguments': {}};
+    var filter_body = { 'ids': 'array_numbers', 'purge': 'boolean'};
+    var filter_query = { 'older_than': 'timeframe_type', 'status': 'alphanumeric_param', 'purge': 'empty_boolean' };
 
     if (!filter.check(req.body, filter_body, req, res))  // Filter with error
         return;
@@ -983,7 +984,12 @@ router.delete('/', function(req, res) {
         return;
     }
 
-    data_request['arguments']['purge'] = 'purge' in req.body && (req.body['purge'] == true || req.body['purge'] == 'true');
+    if ('purge' in req.body && 'purge' in req.query) // the most restrictive wins
+        data_request['arguments']['purge'] = (req.query.purge == 'true' || req.query.purge == '') && (req.body.purge == 'true' || req.body.purge == true);
+    else if ('purge' in req.body)
+        data_request['arguments']['purge'] = (req.body.purge == 'true' || req.body.purge == true);
+    else if ('purge' in req.query)
+        data_request['arguments']['purge'] = (req.query.purge == 'true' || req.query.purge == '');
 
     if ('ids' in req.body)
         data_request['arguments']['list_agent_ids'] = req.body.ids;
