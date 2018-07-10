@@ -31,7 +31,7 @@ try:
     import wazuh.rootcheck as rootcheck
     import wazuh.syscheck as syscheck
     import wazuh.syscollector as syscollector
-    import wazuh.report as report
+    import wazuh.distinct as distinct
 except (ImportError, SyntaxError) as e:
     error = str(e)
     error_wazuh_package = -1
@@ -193,7 +193,7 @@ if __name__ == "__main__":
             'DELETE/agents/groups': Agent.remove_group,
             'DELETE/agents/:agent_id': Agent.remove_agent,
             'DELETE/agents/': Agent.remove_agents,
-            '/agents/stats/distinct': report.get_distinct_agents,
+            '/agents/stats/distinct': distinct.get_distinct_agents,
 
             # Groups
             '/agents/groups': Agent.get_all_groups,
