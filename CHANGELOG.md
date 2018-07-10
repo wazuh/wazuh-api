@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 ## [TBD]
 ### Added
-- New API request: `GET/report/distinct/agents`. ([#115](https://github.com/wazuh/wazuh-api/pull/115))
+- New API request: `GET/agents/stats/distinct`. ([#115](https://github.com/wazuh/wazuh-api/pull/115))
 
 ## [v3.4.0]
 ### Added
