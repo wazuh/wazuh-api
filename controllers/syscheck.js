@@ -47,6 +47,9 @@ router.get('/:agent_id', cache(), function(req, res) {
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
+
+    data_request['arguments']['filters'] = {}
+
     if ('offset' in req.query)
         data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
@@ -56,19 +59,19 @@ router.get('/:agent_id', cache(), function(req, res) {
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
     if ('event' in req.query)
-        data_request['arguments']['event'] = req.query.event;
+        data_request['arguments']['filters']['event'] = req.query.event;
     if ('file' in req.query)
-        data_request['arguments']['filename'] = req.query.file;
+        data_request['arguments']['filters']['filename'] = req.query.file;
     if ('filetype' in req.query)
-        data_request['arguments']['filetype'] = req.query.filetype;
+        data_request['arguments']['filters']['filetype'] = req.query.filetype;
     if ('summary' in req.query && req.query.summary == "yes")
         data_request['arguments']['summary'] = req.query.summary;
     if ('md5' in req.query)
-        data_request['arguments']['md5'] = req.query.md5.toLowerCase();
+        data_request['arguments']['filters']['md5'] = req.query.md5.toLowerCase();
     if ('sha1' in req.query)
-        data_request['arguments']['sha1'] = req.query.sha1.toLowerCase();
+        data_request['arguments']['filters']['sha1'] = req.query.sha1.toLowerCase();
     if ('hash' in req.query)
-        data_request['arguments']['hash'] = req.query.hash.toLowerCase();
+        data_request['arguments']['filters']['hash'] = req.query.hash.toLowerCase();
 
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error

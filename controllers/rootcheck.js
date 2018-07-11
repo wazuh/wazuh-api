@@ -43,6 +43,8 @@ router.get('/:agent_id', cache(), function(req, res) {
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
 
+    data_request['arguments']['filters'] = {}
+
     if ('offset' in req.query)
         data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
@@ -52,11 +54,11 @@ router.get('/:agent_id', cache(), function(req, res) {
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
     if ('status' in req.query)
-        data_request['arguments']['status'] = req.query.status;
+        data_request['arguments']['filters']['status'] = req.query.status;
     if ('cis' in req.query)
-        data_request['arguments']['cis'] = req.query.cis;
+        data_request['arguments']['filters']['cis'] = req.query.cis;
     if ('pci' in req.query)
-        data_request['arguments']['pci'] = req.query.pci;
+        data_request['arguments']['filters']['pci'] = req.query.pci;
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
         return;
