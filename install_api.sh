@@ -147,7 +147,9 @@ show_info () {
 
 help() {
     echo "./install_api.sh [dependencies|download|dev]"
-    echo "./install_api.sh                Install API from current path"
+    echo "./install_api.sh <options>      Install API from current path"
+    echo "  Options:"
+    echo "  --no-service                  Do not install API service"
     echo "./install_api.sh dependencies   List dependencies"
     echo "./install_api.sh download       Download and install latest release (stable branch)"
     echo "./install_api.sh dev            Install API from current path in development mode"
@@ -180,6 +182,10 @@ previous_checks() {
         DOWNLOAD_PATH=$(url_latest_release "wazuh" "wazuh-api")
     else
         API_SOURCES="."  # empty argument
+    fi
+
+    if [ "X${arg}" == "X--no-service" ]; then   # do not install api service
+        NO_SERVICE="1"
     fi
 
     # Test root permissions
@@ -430,10 +436,15 @@ setup_api() {
     exec_cmd "chown root:ossec $APILOG_PATH"
     exec_cmd "chmod 660 $APILOG_PATH"
 
-    print "\nInstalling service."
-    echo "----------------------------------------------------------------"
-    exec_cmd_bash "$API_PATH/scripts/install_daemon.sh"
-    echo "----------------------------------------------------------------"
+    if [ -z "$NO_SERVICE" ]
+    then
+        print "\nInstalling service."
+        echo "----------------------------------------------------------------"
+        exec_cmd_bash "$API_PATH/scripts/install_daemon.sh"
+        echo "----------------------------------------------------------------"
+    else
+        print "\nSkipping service installation."
+    fi
 }
 
 main() {
