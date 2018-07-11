@@ -21,6 +21,16 @@
                     "methods": [
                         "PUT"
                     ]
+                },
+                "/syscollector*": {
+                    "methods": [
+                        "GET"
+                    ]
+                },
+                "/api*": {
+                    "methods": [
+                        "GET"
+                    ]
                 }
             },
             "viewer": {

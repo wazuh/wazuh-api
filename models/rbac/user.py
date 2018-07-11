@@ -43,3 +43,6 @@ class User():
             if request_method and request_url else False
 
         return has_permission
+
+    def get_user_roles_json(self):
+        return {"roles":[str(role) for role in self.roles]}

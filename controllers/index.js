@@ -13,22 +13,22 @@
 errors = require('../helpers/errors');
 filter = require('../helpers/filters');
 execute = require('../helpers/execute');
-apicache  = require('apicache');
-cache     = apicache.middleware;
+apicache = require('apicache');
+cache = apicache.middleware;
 wazuh_control = api_path + "/models/wazuh-api.py";
 
 var router = require('express').Router();
-var validator = require('../helpers/input_validation');
 var auth = require('../helpers/auth');
 var os = require("os");
+var basic_auth = require('basic-auth');
 
 // Cache options
-if (config.cache_enabled.toLowerCase() == "yes"){
+if (config.cache_enabled.toLowerCase() == "yes") {
     if (config.cache_debug.toLowerCase() == "yes")
         cache_debug = true;
     else
         cache_debug = false;
-    cache_opt = { debug: cache_debug, defaultDuration: parseInt(config.cache_time)};
+    cache_opt = { debug: cache_debug, defaultDuration: parseInt(config.cache_time) };
 }
 else
     cache_opt = { enabled: false };
@@ -36,10 +36,10 @@ else
 apicache.options(cache_opt);
 
 // Content-type
-router.post("*", function(req, res, next) {
+router.post("*", function (req, res, next) {
     var content_type = req.get('Content-Type');
 
-    if (!content_type || !(content_type == 'application/json' || content_type == 'application/x-www-form-urlencoded' || content_type == 'application/zip')){
+    if (!content_type || !(content_type == 'application/json' || content_type == 'application/x-www-form-urlencoded' || content_type == 'application/zip')) {
         logger.debug(req.connection.remoteAddress + " POST " + req.path);
         res_h.bad_request(req, res, "607");
     }
@@ -48,12 +48,12 @@ router.post("*", function(req, res, next) {
 });
 
 // All requests
-router.all("*", function(req, res, next) {
+router.all("*", function (req, res, next) {
     var go_next = true;
 
-    if (req.query){
+    if (req.query) {
         // Pretty
-        if ("pretty" in req.query){
+        if ("pretty" in req.query) {
             req['pretty'] = true;
             delete req.query["pretty"];
         } else {
@@ -61,18 +61,27 @@ router.all("*", function(req, res, next) {
         }
     }
 
-    if (!req.user){
+    var user = basic_auth(req);
+    if (!user) {
         var token = req.headers['x-access-token'];
-        if (!auth.verify_token(token)) {
-            res_h.bad_request(req, res, "101");
-            go_next = false;
-        }
+        auth.decode_token(token, function (error, token_decoded) {
+            if (error) {
+                res_h.bad_request(req, res, "101");
+            } else {
+                auth.current_user_name = token_decoded.username;
+                next();
+            }
+        });
     } else {
-        // check user
+        auth.verify_user(user, function (result) {
+            if (!result) {
+                res_h.bad_request(req, res, "102");
+            } else {
+                auth.current_user_name = user.name;
+                next();
+            }
+        });
     }
-
-    if (go_next)
-        next();
 });
 
 // Controllers
@@ -87,43 +96,43 @@ router.use('/cache', require('./cache'));
 router.use('/cluster', require('./cluster'));
 router.use('/syscollector', require('./syscollector'));
 
-if (config.experimental_features){
+if (config.experimental_features) {
     router.use('/experimental', require('./experimental'));
 }
 
 // Index
-router.get('/',function(req, res) {
+router.get('/', function (req, res) {
     logger.debug(req.connection.remoteAddress + " GET /");
-    data = { 'msg': "Welcome to Wazuh HIDS API", 'api_version': "v" + info_package.version, 'hostname': os.hostname(), 'timestamp': new Date().toString()}
-    json_res = {'error': 0, 'data': data};
+    data = { 'msg': "Welcome to Wazuh HIDS API", 'api_version': "v" + info_package.version, 'hostname': os.hostname(), 'timestamp': new Date().toString() }
+    json_res = { 'error': 0, 'data': data };
     res_h.send(req, res, json_res);
 });
 
 // Version
-router.get('/version',function(req, res) {
+router.get('/version', function (req, res) {
     logger.debug(req.connection.remoteAddress + " GET /version");
 
-    json_res = {'error': 0, 'data': "v" + info_package.version};
+    json_res = { 'error': 0, 'data': "v" + info_package.version };
 
     res_h.send(req, res, json_res);
 });
 
 // ALWAYS Keep this as the last route
-router.all('*',function(req, res) {
+router.all('*', function (req, res) {
     logger.debug(req.connection.remoteAddress + " " + req.method + " " + req.path);
-    json_res = { 'error': 603, 'message': errors.description(603)};
+    json_res = { 'error': 603, 'message': errors.description(603) };
     res_h.send(req, res, json_res, 404);
 });
 
 
 // Router Errors
-router.use(function(err, req, res, next){
+router.use(function (err, req, res, next) {
     logger.log("Internal Error");
-    if(err.stack)
+    if (err.stack)
         logger.log(err.stack);
     logger.log("Exiting...");
 
-    setTimeout(function(){ process.exit(1); }, 500);
+    setTimeout(function () { process.exit(1); }, 500);
 });
 
 

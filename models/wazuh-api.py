@@ -168,20 +168,18 @@ if __name__ == "__main__":
         print_json("Wazuh-Python Internal Error: 'JSON input' must have the 'ossec_path' key", 1000)
         exit(1)
 
-    if 'user' not in request:
-        print_json("Wazuh-Python Internal Error: 'JSON input' must have the 'user' key", 1000)
-        exit(1)
-
-    if request['user']:
+    user = None
+    if request.get('user'):
         try:
             user = rbac.User(user_name=request['user'], ossec_path=request['ossec_path'])
+            if not user.has_permission_to_exec(request):
+                print_json(
+                    "Unauthorized request. User '{}' does not have permission to execute the operation.".format(user),
+                    101)
+                exit(0)
         except Exception as e:
             print_json("Wazuh-Python Internal Error: {} (RBAC).".format(e), 1000)
             exit(1)
-
-        if not user.has_permission_to_exec(request):
-            print_json("Unauthorized request. User '{}' does not have permission to execute the operation.".format(user), 101)
-            exit(0)
 
     # Main
     try:
@@ -274,7 +272,15 @@ if __name__ == "__main__":
             '/experimental/syscollector/hardware': syscollector.get_hardware,
             '/experimental/syscollector/packages': syscollector.get_packages
 
+
         }
+
+        # RBAC
+        if user:
+            functions.update({
+                '/api/user/authenticate': user.get_user_roles_json
+            })
+
 
         if list_f:
             print_json(sorted(functions.keys()))
