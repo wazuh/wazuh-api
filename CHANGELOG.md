@@ -1,12 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
-## [TBD]
-### Added
-- New API request: `GET/agents/stats/distinct`. ([#115](https://github.com/wazuh/wazuh-api/pull/115))
 
 ## [v3.4.0]
 ### Added
 - Improved agent registration/removal bash script ([#71](https://github.com/wazuh/wazuh-api/pull/71)).
+- New API request: `GET/agents/stats/distinct`. ([#115](https://github.com/wazuh/wazuh-api/pull/115))
 
 ### Changed
 - Move "Multiple DB requests" to `/experimental`. ([#124](https://github.com/wazuh/wazuh-api/pull/124))
