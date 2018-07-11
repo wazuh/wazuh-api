@@ -13,12 +13,12 @@ var jwt = require('jsonwebtoken');
 var db_helper = require('../helpers/db');
 
 var secret = "f64f8bf42178a241ced799765949e00c"
-var expire_time = 86400 // expires in 24 hours
+
 exports.current_user_name = null
 
 exports.get_token = function (user_name){
     return token = jwt.sign({ username: user_name }, secret, {
-        expiresIn: expire_time
+        expiresIn: config.token_expiration_time
     });
 }
 

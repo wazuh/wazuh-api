@@ -25,7 +25,7 @@ class User():
 
         self.roles = [Role(role_name, ossec_path, realm) for role_name in roles_user]
 
-    def _check_permissions_in_roles(self, request_method, request_resource):
+    def _check_privileges_in_roles(self, request_method, request_resource):
         has_permission = False
         for role in self.roles:
             has_permission = role.can_exec(request_method, request_resource)
@@ -39,10 +39,10 @@ class User():
         request_method = request.get_method()
         request_url= request.get_url()
 
-        has_permission = self._check_permissions_in_roles(request_method, request_url) \
+        has_permission = self._check_privileges_in_roles(request_method, request_url) \
             if request_method and request_url else False
 
         return has_permission
 
     def get_user_roles_json(self):
-        return {"roles":[str(role) for role in self.roles]}
+        return {"roles":[str(role) for role in self.roles], "totalRoles":len(self.roles)}

@@ -10,12 +10,12 @@ class Role():
 
     def __init__(self, role, ossec_path, realm):
         self.role = role
-        self._load_role_permissions_from_file(ossec_path, realm)
+        self._load_role_privileges_from_file(ossec_path, realm)
 
     def __str__(self):
         return self.role
 
-    def _load_role_permissions_from_file(self, ossec_path, realm):
+    def _load_role_privileges_from_file(self, ossec_path, realm):
         roles_mapping = read_json_from_file(ossec_path + "/api/models/rbac/roles_mapping.json")
 
         realms_mapping = roles_mapping.get('realms')
@@ -26,8 +26,8 @@ class Role():
         if not current_realm_roles:
             raise Exception("No mapping found for realm `{}`".format(realm))
 
-        self.permissions = current_realm_roles.get(self.role)
-        if not self.permissions:
+        self.privileges = current_realm_roles.get(self.role)
+        if not self.privileges:
             raise Exception("No mapping found for role `{}`".format(self.role))
 
     def _parse_role_url(self, url, ignore_pretty=True):
@@ -44,7 +44,7 @@ class Role():
 
     def can_exec(self, request_method, request_url):
         can_exec_request = False
-        for role_url, permissions_for_resource in self.permissions.items():
+        for role_url, privileges_for_resource in self.privileges.items():
 
             # Check url
             role_url = self._parse_role_url(role_url)
@@ -53,10 +53,12 @@ class Role():
                 continue
 
             # Check method
-            can_exec_request = True if permissions_for_resource['methods'] == "*" \
-                else request_method in permissions_for_resource['methods']
+            can_exec_request = True if privileges_for_resource['methods'] == "*" \
+                else request_method in privileges_for_resource['methods']
             if can_exec_request:
                 break
 
         return can_exec_request
 
+    def get_privileges_json(self):
+        return {"privileges":self.privileges}
