@@ -45,4 +45,21 @@ class User():
         return has_permission
 
     def get_user_roles_json(self):
-        return {"roles":[str(role) for role in self.roles], "totalRoles":len(self.roles)}
+        return {"items":[str(role) for role in self.roles], "totalItems":len(self.roles)}
+
+    def get_json_user_privileges(self):
+        list_user_privileges = []
+        privileges_added = []
+
+        for role in self.roles:
+            for privilege_key, privilege_value in role.get_privileges_json()['privileges'].items():
+                if privilege_key in privileges_added:
+                    for privilege in list_user_privileges:
+                        if privilege["name"] == privilege_key:
+                            privilege["methods"] = privilege_value['methods'] + \
+                            (list(set(privilege['methods']) - set(privilege_value['methods'])) )
+                else:
+                    privileges_added.append(privilege_key)
+                    list_user_privileges.append({"name":privilege_key,"methods":privilege_value["methods"]})
+
+        return {'items':list_user_privileges, 'totalItems':len(list_user_privileges)}

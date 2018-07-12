@@ -85,7 +85,6 @@ router.all("*", function (req, res, next) {
 });
 
 // Controllers
-router.use('/api', require('./api'));
 router.use('/agents', require('./agents'));
 router.use('/manager', require('./manager'));
 router.use('/syscheck', require('./syscheck'));
@@ -95,6 +94,10 @@ router.use('/decoders', require('./decoders'));
 router.use('/cache', require('./cache'));
 router.use('/cluster', require('./cluster'));
 router.use('/syscollector', require('./syscollector'));
+
+if (config.basic_auth) {
+    router.use('/api', require('./api'));
+}
 
 if (config.experimental_features) {
     router.use('/experimental', require('./experimental'));

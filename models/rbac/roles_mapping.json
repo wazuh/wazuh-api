@@ -4,7 +4,6 @@
             "admin": {
                 "/agents": {
                     "methods": [
-                        "GET",
                         "POST",
                         "PUT",
                         "DELETE"
