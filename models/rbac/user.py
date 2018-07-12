@@ -44,7 +44,7 @@ class User():
 
         return has_permission
 
-    def get_user_roles_json(self):
+    def get_json_user_roles(self):
         return {"items":[str(role) for role in self.roles], "totalItems":len(self.roles)}
 
     def get_json_user_privileges(self):

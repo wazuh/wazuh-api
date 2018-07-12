@@ -110,6 +110,15 @@ def usage():
     print(help_msg)
     exit(1)
 
+def _rbac_verify_privileges(user, request):
+    if not user.has_permission_to_exec(request):
+        print_json("Unauthorized request. User '{}' does not have permission to execute the operation.".format(user), 101)
+        exit(0)
+    if 'arguments' in request and request['arguments'].get('only_verify_privileges'):
+        print_json({"privileges": True})
+        exit(0)
+
+
 if __name__ == "__main__":
     request = {}
     pretty = False
@@ -169,16 +178,13 @@ if __name__ == "__main__":
         print_json("Wazuh-Python Internal Error: 'JSON input' must have the 'ossec_path' key", 1000)
         exit(1)
 
-    rbac = Rbac(ossec_path=request['ossec_path'])
-    user = None
+    rbac = None
+    user =  None
     if request.get('user'):
         try:
+            rbac = Rbac(ossec_path=request['ossec_path'])
             user = rbac_user.User(user_name=request['user'], ossec_path=request['ossec_path'])
-            if not user.has_permission_to_exec(request):
-                print_json(
-                    "Unauthorized request. User '{}' does not have permission to execute the operation.".format(user),
-                    101)
-                exit(0)
+            _rbac_verify_privileges(user, request)
         except Exception as e:
             print_json("Wazuh-Python Internal Error: {} (RBAC).".format(e), 1000)
             exit(1)
@@ -278,12 +284,15 @@ if __name__ == "__main__":
         }
 
         # RBAC
-        if user:
+        if rbac:
             functions.update({
-                '/api/user/authenticate': user.get_user_roles_json,
                 '/api/roles': rbac.get_json_all_roles_from_file,
                 '/api/user/:user_name/privileges': rbac.get_json_user_privileges,
-                '/api/user/:user_name/roles': rbac.get_json_user_roles
+                '/api/user/:user_name/roles': rbac.get_json_user_roles,
+                '/api/user/authenticate': user.get_json_user_roles,
+                '/api/user/privileges': user.get_json_user_privileges,
+                '/api/user/roles': user.get_json_user_roles,
+                'check_privileges': user.get_json_user_roles
             })
 
 

@@ -13,8 +13,8 @@ config.port = "55000";
 config.https = "no";
 // Use HTTP authentication. Values: yes, no.
 config.basic_auth = "yes";
-// Expiration time of generated tokens in seconds.
-config.token_expiration_time = "3600";
+// Expiration time of generated tokens.
+config.token_expiration_time = "1h";
 //In case the API run behind a proxy server, turn to "yes" this feature. Values: yes, no.
 config.BehindProxyServer = "no";
 

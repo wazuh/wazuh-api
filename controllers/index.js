@@ -64,20 +64,18 @@ router.all("*", function (req, res, next) {
     var user = basic_auth(req);
     if (!user) {
         var token = req.headers['x-access-token'];
-        auth.decode_token(token, function (error, token_decoded) {
-            if (error) {
+        auth.authenticate_user_from_token(token, function (result) {
+            if (!result) {
                 res_h.bad_request(req, res, "101");
             } else {
-                auth.current_user_name = token_decoded.username;
                 next();
             }
         });
     } else {
-        auth.verify_user(user, function (result) {
+        auth.authenticate_user(user, function (result) {
             if (!result) {
                 res_h.bad_request(req, res, "102");
             } else {
-                auth.current_user_name = user.name;
                 next();
             }
         });
