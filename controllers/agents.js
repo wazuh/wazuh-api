@@ -12,35 +12,12 @@
 
 var router = require('express').Router();
 
-/**
- * @api {get} /agents Get all agents
- * @apiName GetAgents
- * @apiGroup Info
- *
- * @apiParam {Number} [offset] First element to return in the collection.
- * @apiParam {Number} [limit=500] Maximum number of elements to return.
- * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
- * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
- * @apiParam {String} [older_than] Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date.
- * @apiParam {String} [os.platform] Filters by OS platform.
- * @apiParam {String} [os.version] Filters by OS version.
- * @apiParam {String} [manager] Filters by manager hostname to which agents are connected.
- * @apiParam {String} [version] Filters by agents version.
- * @apiParam {String} [group] Filters by group of agents.
- *
- * @apiDescription Returns a list with the available agents.
- *
- * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents?pretty&offset=0&limit=5&sort=-ip,name"
- *
- */
-router.get('/', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /agents");
+function list_of_agents(entrypoint_name, req, res, extra_arguments={}) {
+    logger.debug(req.connection.remoteAddress + " GET " + entrypoint_name);
 
     req.apicacheGroup = "agents";
 
-    var data_request = {'function': '/agents', 'arguments': {}};
+    var data_request = {'function': entrypoint_name, 'arguments': extra_arguments};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
                    'select':'select_param', 'search':'search_param',
                     'status':'alphanumeric_param', 'os.platform':'alphanumeric_param',
@@ -81,6 +58,35 @@ router.get('/', cache(), function(req, res) {
         data_request['arguments']['filters']['group'] = req.query['group'];
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+}
+
+
+/**
+ * @api {get} /agents Get all agents
+ * @apiName GetAgents
+ * @apiGroup Info
+ *
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [select] Select which fields to return (separated by comma).
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
+ * @apiParam {String} [older_than] Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date.
+ * @apiParam {String} [os.platform] Filters by OS platform.
+ * @apiParam {String} [os.version] Filters by OS version.
+ * @apiParam {String} [manager] Filters by manager hostname to which agents are connected.
+ * @apiParam {String} [version] Filters by agents version.
+ * @apiParam {String} [group] Filters by group of agents.
+ *
+ * @apiDescription Returns a list with the available agents.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents?pretty&offset=0&limit=5&sort=-ip,name"
+ *
+ */
+router.get('/', cache(), function(req, res) {
+    list_of_agents("/agents", req, res);
 })
 
 /**
@@ -150,9 +156,15 @@ router.get('/summary/os', cache(), function(req, res) {
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [select] Select which fields to return (separated by comma).
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
+ * @apiParam {String} [older_than] Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date.
+ * @apiParam {String} [os.platform] Filters by OS platform.
+ * @apiParam {String} [os.version] Filters by OS version.
+ * @apiParam {String} [manager] Filters by manager hostname to which agents are connected.
+ * @apiParam {String} [version] Filters by agents version.
  *
  * @apiDescription Returns a list with the available agents without group.
  *
@@ -161,34 +173,7 @@ router.get('/summary/os', cache(), function(req, res) {
  *
  */
 router.get('/no_group', cache(), function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /agents");
-
-    req.apicacheGroup = "agents";
-
-    var data_request = { 'function': '/agents/no_group', 'arguments': {} };
-    var filters = { 'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
-                    'select': 'select_param', 'search': 'search_param',
-                    'status': 'alphanumeric_param'};
-
-    if (!filter.check(req.query, filters, req, res))  // Filter with error
-        return;
-
-    data_request['arguments']['filters'] = {}
-
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select);
-    if ('status' in req.query)
-        data_request['arguments']['filters']['status'] = req.query.status;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    list_of_agents('/agents/no_group', req, res);
 })
 
 /**
@@ -241,8 +226,15 @@ router.get('/groups', cache(), function(req, res) {
  * @apiParam {String} group_id Group ID.
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [select] Select which fields to return (separated by comma).
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
+ * @apiParam {String} [older_than] Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date.
+ * @apiParam {String} [os.platform] Filters by OS platform.
+ * @apiParam {String} [os.version] Filters by OS version.
+ * @apiParam {String} [manager] Filters by manager hostname to which agents are connected.
+ * @apiParam {String} [version] Filters by agents version.
  *
  * @apiDescription Returns the list of agents in a group.
  *
@@ -251,41 +243,13 @@ router.get('/groups', cache(), function(req, res) {
  *
  */
 router.get('/groups/:group_id', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /agents/groups/:group_id");
-
-    req.apicacheGroup = "agents";
-
-    var data_request = {'function': '/agents/groups/:group_id', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
-                   'search':'search_param', 'select':'select_param',
-                   'status': 'alphanumeric_param'};
-
     if (!filter.check(req.params, {'group_id':'names'}, req, res))  // Filter with error
         return;
 
-    data_request['arguments']['group_id'] = req.params.group_id;
+    req_arguments = {'group_id': req.params.group_id};
 
-
-    if (!filter.check(req.query, filters, req, res))  // Filter with error
-        return;
-
-    data_request['arguments']['filters'] = {}
-
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select);
-    if ('status' in req.query)
-        data_request['arguments']['filters']['status'] = req.query.status;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
-})
+    list_of_agents('/agents/groups/:group_id', req, res, req_arguments);
+});
 
 
 /**
