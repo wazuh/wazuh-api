@@ -18,7 +18,7 @@ cache = apicache.middleware;
 wazuh_control = api_path + "/models/wazuh-api.py";
 
 var router = require('express').Router();
-var auth = require('../helpers/auth');
+var users = require('../helpers/users');
 var os = require("os");
 var basic_auth = require('basic-auth');
 
@@ -64,16 +64,18 @@ router.all("*", function (req, res, next) {
     var user = basic_auth(req);
     if (!user) {
         var token = req.headers['x-access-token'];
-        auth.authenticate_user_from_token(token, function (result) {
+        users.authenticate_user_from_token(token, function (result) {
             if (!result) {
+                logger.debug("Wrong token: " + token + ".");
                 res_h.bad_request(req, res, "101");
             } else {
                 next();
             }
         });
     } else {
-        auth.authenticate_user(user, function (result) {
+        users.authenticate_user(user, function (result) {
             if (!result) {
+                logger.debug("Wrong user: " + user.name + ".");
                 res_h.bad_request(req, res, "102");
             } else {
                 next();

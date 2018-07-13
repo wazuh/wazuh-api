@@ -29,41 +29,37 @@ function db_get(sql, inputData, callback) {
             else if (!row)
                 reason = "Reason: No result.";
             logger.debug("Error in DB query. " + reason);
-            callback(err);
+            callback(true, err);
         } else {
-            callback(row);
+            callback(false, row);
         }
     });
 }
 
 function db_run(sql, inputData, callback) {
     db.run(sql, inputData, function (err) {
-        if (!err)
-            callback(true);
-        else
-            callback(err);
+        if (err) {
+            var reason = "";
+            if (err)
+                reason = "Reason: " + err;
+            logger.debug("Error in DB query. " + reason);
+            callback(true, err);
+        } else {
+            callback(false);
+        }
+    });
+}
+
+//TODO
+function db_all(sql, inputData, callback) {
+    db.all(sql, inputData, function (err, row) {
+
+        rows.forEach(function (row) {
+
+        });
     });
 }
 
 
-exports.get_user_id = function (user_name, callback) {
-    var inputData = [user_name];
-    var sql = "SELECT id FROM users WHERE name = ?";
-    db_get(sql, inputData, callback);
-}
-
-
-exports.update_user = function (user_data, callback) {
-    var inputData = [user_data.enabled, user_data.name];
-    var sql = "UPDATE users SET enabled = ? WHERE name = ?";
-    db_run(sql, inputData, callback);
-}
-
-
-exports.get_user = function (user_name, callback) {
-    var inputData = [user_name];
-    var sql = "SELECT * FROM users WHERE name = ?";
-    db_get(sql, inputData, callback);
-}
-
 exports.db_get = db_get;
+exports.db_run = db_run;

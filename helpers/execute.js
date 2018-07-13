@@ -11,7 +11,7 @@
 
 var logger = require('../helpers/logger');
 var errors = require('../helpers/errors');
-var auth = require('../helpers/auth');
+var users = require('../helpers/users');
 var timeout = 240; // seconds
 
 if (config.ld_library_path.length > 0) {
@@ -36,11 +36,11 @@ exports.exec = function (cmd, args, stdin, callback) {
 
     if (stdin != null){
         stdin['ossec_path'] = config.ossec_path;
-        stdin['user'] = auth.current_user_name;
+        stdin['user'] = users.current_user_name;
     }
 
     // log
-    var full_cmd = "CMD - Command: " + cmd + " user:" + auth.current_user_name + " args:" + args.join(' ') + " stdin:" + JSON.stringify(stdin);
+    var full_cmd = "CMD - Command: " + cmd + " user:" + users.current_user_name + " args:" + args.join(' ') + " stdin:" + JSON.stringify(stdin);
     logger.debug(full_cmd);
 
     const child = child_process.spawn(cmd, args);

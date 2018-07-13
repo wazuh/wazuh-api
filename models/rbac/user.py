@@ -55,11 +55,11 @@ class User():
             for privilege_key, privilege_value in role.get_privileges_json()['privileges'].items():
                 if privilege_key in privileges_added:
                     for privilege in list_user_privileges:
-                        if privilege["name"] == privilege_key:
+                        if privilege["resource"] == privilege_key:
                             privilege["methods"] = privilege_value['methods'] + \
                             (list(set(privilege['methods']) - set(privilege_value['methods'])) )
                 else:
                     privileges_added.append(privilege_key)
-                    list_user_privileges.append({"name":privilege_key,"methods":privilege_value["methods"]})
+                    list_user_privileges.append({"resource":privilege_key,"methods":privilege_value["methods"]})
 
         return {'items':list_user_privileges, 'totalItems':len(list_user_privileges)}

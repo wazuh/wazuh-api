@@ -56,6 +56,7 @@ errors['boolean'] = 618;
 errors['618'] = "Param not valid. Valid characters: true or false";
 errors['619'] = "Param not valid. Valid characters: a-z A-Z 0-9 space . , _";  // select
 errors['select_param'] = 619;
+errors['620'] = "User does not exist.";
 
 errors['700'] = "File not found"
 

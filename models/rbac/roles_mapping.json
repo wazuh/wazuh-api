@@ -29,7 +29,9 @@
                 "/api*": {
                     "methods": [
                         "GET",
-                        "PUT"
+                        "PUT",
+                        "DELETE",
+                        "POST"
                     ]
                 }
             },
