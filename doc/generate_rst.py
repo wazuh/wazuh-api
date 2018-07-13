@@ -28,9 +28,6 @@ str_example_req = '**Example Request:**'
 str_example_res = '**Example Response:**'
 
 hardcoded_items = {
-        # GET - /manager/logs
-        'GetManagerLogs': {"error":0,"data":{"totalItems":16480,"items":["2016/07/15 09:33:49 ossec-syscheckd: INFO: Syscheck scan frequency: 3600 seconds","2016/07/15 09:33:49 ossec-syscheckd: INFO: Starting syscheck scan (forwarding database).","2016/07/15 09:33:49 ossec-syscheckd: INFO: Starting syscheck database (pre-scan).","2016/07/15 09:33:42 ossec-logcollector: INFO: Started (pid: 2832).","2016/07/15 09:33:42 ossec-logcollector: INFO: Monitoring output of command(360): df -P"]}},
-
         # GET - /manager/stats
         'GetManagerStats': {"error":0,"data":[{"hour":5,"firewall":0,"alerts":[{"times":4,"sigid":5715,"level":3},{"times":2,"sigid":1002,"level":2},{"...":"..."}],"totalAlerts":107,"syscheck":1257,"events":1483},{"...":"..."}]},
 
