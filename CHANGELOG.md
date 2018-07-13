@@ -2,8 +2,13 @@
 All notable changes to this project will be documented in this file.
 
 ## [v3.5.0]
+
+### Added
+- Show authenticated user in API logs ([#67](https://github.com/wazuh/wazuh-api/pull/67)).
+
 ### Changed
 - GET/agents/groups: Rename `merged_sum` and `conf_sum` fields to `mergedSum` and `configSum` ([wazuh/wazuh#761](https://github.com/wazuh/wazuh/pull/761)).
+
 
 ## [v3.4.0]
 ### Added

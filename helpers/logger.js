@@ -20,6 +20,7 @@ var LEVEL_INFO = 1;
 var LEVEL_WARNING = 2;
 var LEVEL_ERROR = 3;
 var LEVEL_DEBUG = 4;
+var user = "";
 
 var logger_level = LEVEL_INFO;
 switch(config.logs) {
@@ -42,12 +43,16 @@ switch(config.logs) {
         logger_level = LEVEL_INFO;
 }
 
+exports.set_user = function(req_user) {
+    user = req_user;
+}
+
 exports.set_foreground = function() {
     foreground = true;
 }
 
 function header(){
-    return tag + " " + moment().format('YYYY-MM-DD HH:mm:ss') + ": ";
+    return tag + " " + moment().format('YYYY-MM-DD HH:mm:ss') + " " + user + ": ";
 }
 
 function write_log(msg){
