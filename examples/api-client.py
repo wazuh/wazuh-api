@@ -12,7 +12,7 @@
 
 # How to use OSSEC Wazuh RESTful API from Python
 # Requests module: http://docs.python-requests.org/
-# Documentation: http://wazuh-documentation.readthedocs.org/en/latest/ossec_api.html
+# Documentation: https://documentation.wazuh.com/current/user-manual/api/index.html
 
 import json
 import sys

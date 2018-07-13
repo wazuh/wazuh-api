@@ -21,11 +21,13 @@ var router = require('express').Router();
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String="active","pending","never connected", "disconnected"} [status] Filters by agent status.
+ * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
+ * @apiParam {String} [older_than] Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date.
  * @apiParam {String} [os.platform] Filters by OS platform.
  * @apiParam {String} [os.version] Filters by OS version.
  * @apiParam {String} [manager] Filters by manager hostname to which agents are connected.
  * @apiParam {String} [version] Filters by agents version.
+ * @apiParam {String} [group] Filters by group of agents.
  *
  * @apiDescription Returns a list with the available agents.
  *
@@ -39,15 +41,22 @@ router.get('/', cache(), function(req, res) {
     req.apicacheGroup = "agents";
 
     var data_request = {'function': '/agents', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'select':'select_param', 'search':'search_param', 'status':'alphanumeric_param', 'os.platform':'alphanumeric_param', 'os.version':'alphanumeric_param', 'manager':'alphanumeric_param', 'version':'alphanumeric_param'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
+                   'select':'select_param', 'search':'search_param',
+                    'status':'alphanumeric_param', 'os.platform':'alphanumeric_param',
+                   'os.version':'alphanumeric_param', 'manager':'alphanumeric_param',
+                   'version':'alphanumeric_param', 'node': 'alphanumeric_param',
+                    'older_than':'timeframe_type', 'group':'alphanumeric_param'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
 
+    data_request['arguments']['filters'] = {}
+
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
@@ -55,15 +64,21 @@ router.get('/', cache(), function(req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select);
     if ('status' in req.query)
-        data_request['arguments']['status'] = req.query.status;
+        data_request['arguments']['filters']['status'] = req.query.status;
     if ('os.platform' in req.query)
-        data_request['arguments']['os_platform'] = req.query['os.platform'];
+        data_request['arguments']['filters']['os_platform'] = req.query['os.platform'];
     if ('os.version' in req.query)
-        data_request['arguments']['os_version'] = req.query['os.version'];
+        data_request['arguments']['filters']['os_version'] = req.query['os.version'];
     if ('manager' in req.query)
-        data_request['arguments']['manager_host'] = req.query['manager'];
+        data_request['arguments']['filters']['manager_host'] = req.query['manager'];
+    if ('node' in req.query)
+        data_request['arguments']['filters']['node_name'] = req.query['node'];
     if ('version' in req.query)
-        data_request['arguments']['version'] = req.query['version'];
+        data_request['arguments']['filters']['version'] = req.query['version'];
+    if ('older_than' in req.query)
+        data_request['arguments']['filters']['older_than'] = req.query['older_than'];
+    if ('group' in req.query)
+        data_request['arguments']['filters']['group'] = req.query['group'];
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -117,13 +132,61 @@ router.get('/summary/os', cache(), function(req, res) {
         return;
 
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {get} /agents/no_group Get agents without group
+ * @apiName GetAgentsWithoutGroup
+ * @apiGroup Groups
+ *
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String} [select] List of selected fields.
+ *
+ * @apiDescription Returns a list with the available agents without group.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/no_group?pretty"
+ *
+ */
+router.get('/no_group', cache(), function (req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /agents");
+
+    req.apicacheGroup = "agents";
+
+    var data_request = { 'function': '/agents/no_group', 'arguments': {} };
+    var filters = { 'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
+                    'select': 'select_param', 'search': 'search_param',
+                    'status': 'alphanumeric_param'};
+
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['filters'] = {}
+
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = Number(req.query.offset);
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = Number(req.query.limit);
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+    if ('select' in req.query)
+        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select);
+    if ('status' in req.query)
+        data_request['arguments']['filters']['status'] = req.query.status;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -157,9 +220,9 @@ router.get('/groups', cache(), function(req, res) {
         return;
 
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
@@ -193,7 +256,9 @@ router.get('/groups/:group_id', cache(), function(req, res) {
     req.apicacheGroup = "agents";
 
     var data_request = {'function': '/agents/groups/:group_id', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'select':'select_param'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
+                   'search':'search_param', 'select':'select_param',
+                   'status': 'alphanumeric_param'};
 
     if (!filter.check(req.params, {'group_id':'names'}, req, res))  // Filter with error
         return;
@@ -204,16 +269,20 @@ router.get('/groups/:group_id', cache(), function(req, res) {
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
 
+    data_request['arguments']['filters'] = {}
+
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select);
+    if ('status' in req.query)
+        data_request['arguments']['filters']['status'] = req.query.status;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -252,9 +321,9 @@ router.get('/groups/:group_id/configuration', cache(), function(req, res) {
         return;
 
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -326,9 +395,9 @@ router.get('/groups/:group_id/files', cache(), function(req, res) {
         return;
 
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
@@ -369,53 +438,15 @@ router.get('/outdated', cache(), function(req, res) {
         return;
 
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
-/**
- * @api {get} /purgeable/:timeframe Get list of purgeable agents
- * @apiName GetAgentsPurgeable
- * @apiGroup Info
- *
- * @apiParam {String} timeframe Time from last connection in seconds or [n_days]d[n_hours]h[n_minutes]m[n_seconds]s.
- * @apiParam {Number} [offset] First element to return in the collection.
- * @apiParam {Number} [limit=500] Maximum number of elements to return.
- *
- * @apiDescription Returns a list of agents that can be purged.
- *
- * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/purgeable/1d5h?pretty"
- *
- */
-router.get('/purgeable/:timeframe', cache(), function(req, res) {
-
-    logger.debug(req.connection.remoteAddress + " GET /agents/purgeable/:timeframe");
-
-    var data_request = {'function': '/agents/purgeable/:timeframe', 'arguments': {}};
-    var filters = {'timeframe':'timeframe_type', 'offset': 'numbers', 'limit': 'numbers'};
-
-    if (!filter.check(req.params, filters, req, res))  // Filter with error
-        return;
-
-    if ('timeframe' in req.params)
-        data_request['arguments']['timeframe'] = req.params.timeframe;
-    else
-        res_h.bad_request(req, res, 604, "Missing field: 'timeframe'");
-
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
-
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
-})
 
 /**
  * @api {get} /agents/name/:agent_name Get an agent by its name
@@ -894,34 +925,56 @@ router.delete('/groups/:group_id', function(req, res) {
 })
 
 /**
- * @api {delete} /agents Delete a list of agents
+ * @api {delete} /agents Delete agents
  * @apiName DeleteAgents
  * @apiGroup Delete
  *
  * @apiParam {String[]} ids Array of agent ID's.
  * @apiParam {Boolean} purge Delete an agent from the key store.
+ * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
+ * @apiParam {String} older_than Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date.
  *
- * @apiDescription Removes a list of agents. The Wazuh API must be restarted after removing an agent.
+ * @apiDescription Removes agents, using a list of them or a criterion based on the status or time of the last connection. The Wazuh API must be restarted after removing an agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE -H "Content-Type:application/json" -d '{"ids":["003","005"]}' "https://127.0.0.1:55000/agents?pretty"
+ *     curl -u foo:bar -k -X DELETE -H "Content-Type:application/json" -d '{"ids":["003","005"]}' "https://127.0.0.1:55000/agents?pretty&older_than=10s"
  *
  */
 router.delete('/', function(req, res) {
     logger.debug(req.connection.remoteAddress + " DELETE /agents");
 
-    var data_request = {'function': 'DELETE/agents/', 'arguments': {}};
+    var data_request = { 'function': 'DELETE/agents/', 'arguments': {}};
+    var filter_body = { 'ids': 'array_numbers', 'purge': 'boolean'};
+    var filter_query = { 'older_than': 'timeframe_type', 'status': 'alphanumeric_param', 'purge': 'empty_boolean' };
 
-    if (!filter.check(req.body, {'ids':'array_numbers', 'purge':'boolean'}, req, res))  // Filter with error
+    if (!filter.check(req.body, filter_body, req, res))  // Filter with error
         return;
 
-    data_request['arguments']['purge'] = 'purge' in req.body && (req.body['purge'] == true || req.body['purge'] == 'true');
+    if (!filter.check(req.query, filter_query, req, res))  // Filter with error
+        return;
 
-    if ('ids' in req.body){
-        data_request['arguments']['agent_id'] = req.body.ids;
-        execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
-    }else
-        res_h.bad_request(req, res, 604, "Missing field: 'ids'");
+    if (!('ids' in req.body) && !('status' in req.query)){
+        res_h.bad_request(req, res, 604, "Missing field: You have to specified 'ids' or status.");
+        return;
+    }
+
+    if ('purge' in req.body && 'purge' in req.query) // the most restrictive wins
+        data_request['arguments']['purge'] = (req.query.purge == 'true' || req.query.purge == '') && (req.body.purge == 'true' || req.body.purge == true);
+    else if ('purge' in req.body)
+        data_request['arguments']['purge'] = (req.body.purge == 'true' || req.body.purge == true);
+    else if ('purge' in req.query)
+        data_request['arguments']['purge'] = (req.query.purge == 'true' || req.query.purge == '');
+
+    if ('ids' in req.body)
+        data_request['arguments']['list_agent_ids'] = req.body.ids;
+
+    if ('older_than' in req.query)
+        data_request['arguments']['older_than'] = req.query.older_than;
+
+    if ('status' in req.query)
+        data_request['arguments']['status'] = req.query.status;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 
@@ -1050,37 +1103,51 @@ router.post('/insert', function(req, res) {
         res_h.bad_request(req, res, 604, "Missing fields. Mandatory fields: id, name, ip, key");
 })
 
+
+
 /**
- * @api {post} /agents/purge Purge old agents from manager
- * @apiName PostAgentsPurge
- * @apiGroup Purge
+ * @api {get} /agents/stats/distinct Get distinct fields in agents
+ * @apiName GetdistinctAgents
+ * @apiGroup Stats
  *
- * @apiParam {String} timeframe Time from last connection in seconds or [n_days]d[n_hours]h[n_minutes]m[n_seconds]s.
- * @apiParam {Boolean} verbose Return information about agents purged.
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String} [fields] List of fields affecting the operation.
+ * @apiParam {String} [select] List of selected fields.
+ * 
+ * @apiDescription Returns all the different combinations that agents have for the selected fields. It also indicates the total number of agents that have each combination.
  *
- * @apiDescription Deletes all agents that did not connect in the last timeframe seconds.
- *
- * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X POST -H "Content-Type:application/json" -d '{"timeframe":"1d5h","verbose":true}' "https://127.0.0.1:55000/agents/purge?pretty"
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/stats/distinct?pretty"
  *
  */
-router.post('/purge', function(req, res) {
-    logger.debug(req.connection.remoteAddress + " POST /agents/purge");
+router.get('/stats/distinct', cache(), function (req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /agents/stats/distinct");
 
-    var data_request = {'function': 'POST/agents/purge', 'arguments': {}};
-    var filters = {'timeframe':'timeframe_type', 'verbose':'boolean'};
+    req.apicacheGroup = "manager";
 
-    if (!filter.check(req.body, filters, req, res))  // Filter with error
-        return;
+    var data_request = { 'function': '/agents/stats/distinct', 'arguments': {} };
+    var filters = {
+        'offset': 'numbers', 'limit': 'numbers', 'select': 'select_param', 'sort': 'sort_param',
+        'search': 'search_param', 'fields': 'select_param'
+    };
 
-    if ('verbose' in req.body)
-        data_request['arguments']['verbose'] = req.body.verbose;
+    if ('fields' in req.query)
+        data_request['arguments']['db_select'] = filter.select_param_to_json(req.query.fields);
+    if ('select' in req.query)
+        data_request['arguments']['filter_fields'] = filter.select_param_to_json(req.query.select);
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = Number(req.query.offset);
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = Number(req.query.limit);
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
 
-    if ('timeframe' in req.body){
-        data_request['arguments']['timeframe'] = req.body.timeframe;
-        execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
-    }else
-        res_h.bad_request(req, res, 604, "Missing field: 'timeframe'");
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 module.exports = router;

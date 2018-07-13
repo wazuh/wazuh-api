@@ -58,6 +58,12 @@ config.ld_library_path = config.ossec_path + "/framework/lib"
 // Option to force the use of authd to remove and add agents
 config.use_only_authd = false;
 
+// Option to drop privileges (run as ossec)
+config.drop_privileges = true;
+
+// Activate features still under development
+config.experimental_features  = false;
+
 /************************* SSL OPTIONS ****************************************/
 // SSL protocol
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (C) 2015-2016 Wazuh, Inc.All rights reserved.
+# Copyright (C) 2015-2018 Wazuh, Inc.All rights reserved.
 # Wazuh.com
 # This program is a free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public

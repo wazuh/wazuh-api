@@ -72,7 +72,7 @@ exports.ips = function(ip) {
 
 exports.alphanumeric_param = function(param) {
     if (typeof param != 'undefined'){
-        var regex = /^[a-zA-Z0-9_\-\.\+\s]+$/;
+        var regex = /^[a-zA-Z0-9_,\-\.\+\s]+$/;
         return regex.test(param);
     }
     else
@@ -90,7 +90,7 @@ exports.sort_param = function(param) {
 
 exports.search_param = function(param) {
     if (typeof param != 'undefined'){
-        var regex = /^[a-zA-Z0-9\s_\-/\\:\.\"\'@~\+]+$/;
+        var regex = /^[^;\|&\^*>]+$/;
         return regex.test(param);
     }
     else
@@ -99,7 +99,7 @@ exports.search_param = function(param) {
 
 exports.select_param = function(param) {
     if (typeof param != 'undefined'){
-        var regex = /^[a-zA-Z0-9_\,]+$/;
+        var regex = /^[a-zA-Z0-9_\,\.]+$/;
         return regex.test(param);
     }
     else
@@ -136,8 +136,17 @@ exports.ossec_key = function(param) {
 // [n_days]d[n_hours]h[n_minutes]m[n_seconds]s
 exports.timeframe_type = function(param) {
     if (typeof param != 'undefined'){
-        var regex = /^((\d{1,}[d]){0,1}(\d{1,}[h]){0,1}(\d{1,}[m]){0,1}(\d{1,}[s]){0,1}){1}$|^\d{1,}$/;
+        var regex = /^(\d{1,}[d|h|m|s]?){1}$/;
         return regex.test(param);
+    }
+    else
+        return false;
+}
+
+exports.empty_boolean = function(n) {
+    if (typeof n != 'undefined'){
+        var regex = /^$|(^true|false$)/;
+        return regex.test(n);
     }
     else
         return false;
@@ -151,4 +160,3 @@ exports.boolean = function(n) {
     else
         return false;
 }
-
