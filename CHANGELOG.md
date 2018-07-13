@@ -1,7 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [TDB]
+## [v3.5.0]
+
+### Added
+- Show authenticated user in API logs ([#67](https://github.com/wazuh/wazuh-api/pull/67)).
 ### Added
 - New API requests for syscollector ([#89](https://github.com/wazuh/wazuh-api/pull/89)).:
     * `GET/syscollector/processes`.
@@ -15,10 +18,14 @@ All notable changes to this project will be documented in this file.
     * `GET/syscollector/netiface`.
     * `GET/syscollector/:agent_id/netiface`.
 
+### Changed
+- GET/agents/groups: Rename `merged_sum` and `conf_sum` fields to `mergedSum` and `configSum` ([wazuh/wazuh#761](https://github.com/wazuh/wazuh/pull/761)).
 
 ## [v3.4.0]
 ### Added
 - Improved agent registration/removal bash script ([#71](https://github.com/wazuh/wazuh-api/pull/71)).
+- New API request: `GET/agents/stats/distinct`. ([#115](https://github.com/wazuh/wazuh-api/pull/115))
+- Installer option for disabling API service setup. ([#129](https://github.com/wazuh/wazuh-api/pull/129))
 
 
 ### Changed
