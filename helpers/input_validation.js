@@ -90,7 +90,7 @@ exports.sort_param = function(param) {
 
 exports.search_param = function(param) {
     if (typeof param != 'undefined'){
-        var regex = /^[a-zA-Z0-9\s_\-/\\:\.\"\'\(\)$%@~\+]+$/;
+        var regex = /^[^;\|&\^*>]+$/;
         return regex.test(param);
     }
     else
@@ -138,6 +138,15 @@ exports.timeframe_type = function(param) {
     if (typeof param != 'undefined'){
         var regex = /^(\d{1,}[d|h|m|s]?){1}$/;
         return regex.test(param);
+    }
+    else
+        return false;
+}
+
+exports.empty_boolean = function(n) {
+    if (typeof n != 'undefined'){
+        var regex = /^$|(^true|false$)/;
+        return regex.test(n);
     }
     else
         return false;

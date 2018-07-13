@@ -38,7 +38,7 @@ apicache.options(cache_opt);
 router.post("*", function(req, res, next) {
     var content_type = req.get('Content-Type');
 
-    if (!content_type || !(content_type == 'application/json' || content_type == 'application/x-www-form-urlencoded' || content_type == 'application/zip')){
+    if (!content_type || !(content_type == 'application/json' || content_type == 'application/x-www-form-urlencoded')){
         logger.debug(req.connection.remoteAddress + " POST " + req.path);
         res_h.bad_request(req, res, "607");
     }
@@ -49,6 +49,7 @@ router.post("*", function(req, res, next) {
 // All requests
 router.all("*", function(req, res, next) {
     var go_next = true;
+    logger.set_user(req.user);
 
     if (req.query){
         // Pretty
@@ -74,6 +75,10 @@ router.use('/decoders', require('./decoders'));
 router.use('/cache', require('./cache'));
 router.use('/cluster', require('./cluster'));
 router.use('/syscollector', require('./syscollector'));
+
+if (config.experimental_features){
+    router.use('/experimental', require('./experimental'));
+}
 
 // Index
 router.get('/',function(req, res) {
