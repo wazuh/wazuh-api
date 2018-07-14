@@ -8,6 +8,11 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - GET/agents/groups: Rename `merged_sum` and `conf_sum` fields to `mergedSum` and `configSum` ([wazuh/wazuh#761](https://github.com/wazuh/wazuh/pull/761)).
+- GET/manager/logs/summary: Added more log levels to the output: error, info, critical, warning and debug ([wazuh/wazuh#856](https://github.com/wazuh/wazuh/pull/856)).
+
+### Fixed
+- GET/manager/logs: Fixed bug when reading logs with non-ascii characters ([wazuh/wazuh#856](https://github.com/wazuh/wazuh/pull/856)).
+- Fix error sorting fields that have both uppercase and lowercase characters ([wazuh/wazuh#814](https://github.com/wazuh/wazuh/pull/814)).
 
 
 ## [v3.4.0]
