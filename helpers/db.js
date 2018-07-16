@@ -16,7 +16,7 @@ const dbPath = path.resolve(config.ossec_path + '/api', 'api.db')
 var db = new sqlite3.Database('api.db', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE);
 
 exports.db = db.serialize(function () {
-    db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, password TEXT NOT NULL, enabled INTEGER NOT NULL)");
+    db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL UNIQUE, password TEXT NOT NULL, enabled INTEGER NOT NULL)");
     db.run("INSERT INTO users (name, password, enabled) VALUES('foo', 'bar', 1)");
 });
 
@@ -50,16 +50,23 @@ function db_run(sql, inputData, callback) {
     });
 }
 
-//TODO
 function db_all(sql, inputData, callback) {
-    db.all(sql, inputData, function (err, row) {
-
-        rows.forEach(function (row) {
-
-        });
+    db.all(sql, inputData, function (err, rows) {
+        if (!rows || err) {
+            var reason = "";
+            if (err)
+                reason = "Reason: " + err;
+            else if (!rows)
+                reason = "Reason: No result.";
+            logger.debug("Error in DB query. " + reason);
+            callback(true, err);
+        } else {
+            callback(false, rows);
+        }
     });
 }
 
 
 exports.db_get = db_get;
 exports.db_run = db_run;
+exports.db_all = db_all;

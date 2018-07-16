@@ -277,7 +277,6 @@ router.get('/user', function (req, res) {
  *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/api/users?pretty"
  *
  */
-/*
 router.get('/users', function (req, res) {
     logger.debug(req.connection.remoteAddress + " GET /users");
 
@@ -287,18 +286,23 @@ router.get('/users', function (req, res) {
     execute.exec(python_bin, [wazuh_control], data_request, function (python_response) {
         if (python_response.error == 0 && python_response.data) {
             users.get_all_users(function (err, result) {
-                var response = {
-                    data: result
-                    , error: 0
-                };
-                res_h.send(req, res, response);
+                if (!err){
+                    var response = {
+                        data: {
+                            items: result, totalItems: result.length}
+                        , error: 0
+                    };
+                    res_h.send(req, res, response);
+                } else {
+                    res_h.bad_request(req, res, "621");
+                }
             });
         } else {
             res_h.send(req, res, python_response);
         }
     });
 })
-*/
+
 
 
 /**
