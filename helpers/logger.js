@@ -108,5 +108,15 @@ function generator(time, index) {
 var stream = rfs(generator, {
     interval: '1d',
     compress: true,
-    rotationTime: true
+    rotationTime: true,
+    mode: 0o640,
+});
+
+stream.on('rotated', function(filename) {
+    // rotation job completed with success producing given filename
+    // setting correct permissions for generated files
+    logger.log("Rotated: " + filename);
+    fs.chmod(filename, 0o640);
+    fs.chmod(path.dirname(filename), 0o750);
+    fs.chmod(path.dirname(path.dirname(filename)), 0o750);
 });
