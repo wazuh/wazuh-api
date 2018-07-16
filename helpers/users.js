@@ -159,6 +159,13 @@ exports.get_all_users = function (callback) {
     db_helper.db_all(sql, inputData, callback);
 }
 
+exports.set_run_as_user = function (run_as_user) {
+    if (run_as_user) {
+        exports.current_user_name = run_as_user;
+    }
+
+}
+
 exports.current_user_name = null; 
 exports.authenticate_user = authenticate_user;
 exports.get_token = get_token;

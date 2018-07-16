@@ -33,11 +33,24 @@
                         "DELETE",
                         "POST"
                     ]
+                },
+                "/manager/logs?pretty&limit=1&offset=1": {
+                    "methods": [
+                        "GET",
+                        "PUT",
+                        "DELETE",
+                        "POST"
+                    ]
                 }
             },
             "viewer": {
                 "/manager*": {
                     "methods": "*"
+                },
+                "/api*": {
+                    "methods": [
+                        "GET"
+                    ]
                 }
             }
         },

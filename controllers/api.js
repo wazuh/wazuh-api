@@ -12,7 +12,6 @@
 
 var router = require('express').Router();
 var users = require('../helpers/users');
-var basic_auth = require('basic-auth');
 
 
 
@@ -29,7 +28,7 @@ var basic_auth = require('basic-auth');
  */
 router.get('/user/authenticate', function (req, res) {
     logger.debug(req.connection.remoteAddress + " GET/user/authenticate");
-    var user_name = basic_auth(req).name
+    var user_name = users.current_user_name;
 
     var token = users.get_token(user_name);
     var data_request = { 'function': '/api/user/authenticate', 'arguments': {} };
@@ -67,7 +66,7 @@ router.get('/user/authenticate', function (req, res) {
  */
 router.put('/user', function (req, res) {
     logger.debug(req.connection.remoteAddress + " PUT/user");
-    var user_name = basic_auth(req).name
+    var user_name = users.current_user_name;
     var data_request = { 'function': 'PUT/api/user', 'arguments': { 'only_verify_privileges': true } };
     data_request['url'] = req.originalUrl;
 
@@ -205,6 +204,8 @@ router.get('/users/:user_name', function (req, res) {
     var user_name = req.params.user_name
     data_request['arguments']['user_name'] = user_name;
 
+    logger.debug("User: " + user_name)
+
     execute.exec(python_bin, [wazuh_control], data_request, function (python_response) {
         if (python_response.error == 0 && python_response.data) {
             users.get_user(user_name, function (err, result) {
@@ -229,6 +230,7 @@ router.get('/users/:user_name', function (req, res) {
 });
 
 
+
 /**
  * @api {get} /api/user Returns information about current user.
  * @apiName GetCurrentUser
@@ -242,21 +244,27 @@ router.get('/users/:user_name', function (req, res) {
  */
 router.get('/user', function (req, res) {
     logger.debug(req.connection.remoteAddress + " GET/users");
-    var user_name = basic_auth(req).name
+    var user_name = users.current_user_name;
     var data_request = { 'function': '/api/user', 'arguments': {} };
     data_request['url'] = req.originalUrl;
 
+    logger.debug("");
+
     execute.exec(python_bin, [wazuh_control], data_request, function (python_response) {
         if (python_response.error == 0 && python_response.data) {
-            users.get_user(user_name, function (result) {
-                var response = {
-                    data: {
-                        user_name: result.name, 
-                        enabled: !!parseInt(result.enabled),
-                        roles: python_response.data.items
-                    }, error: 0
-                };
-                res_h.send(req, res, response);
+            users.get_user(user_name, function (err, result) {
+                if (!err){
+                    var response = {
+                        data: {
+                            user_name: user_name, 
+                            enabled: !!parseInt(result.enabled),
+                            roles: python_response.data.items
+                        }, error: 0
+                    };
+                    res_h.send(req, res, response);
+                } else {
+                    res_h.bad_request(req, res, "620");
+                }
             });
         } else {
             res_h.send(req, res, python_response);
@@ -294,7 +302,7 @@ router.get('/users', function (req, res) {
                     };
                     res_h.send(req, res, response);
                 } else {
-                    res_h.bad_request(req, res, "621");
+                    res_h.bad_request(req, res, "4");
                 }
             });
         } else {

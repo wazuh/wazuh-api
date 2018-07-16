@@ -61,6 +61,8 @@ router.all("*", function (req, res, next) {
         }
     }
 
+    var run_as_user = req.headers['es-security-runas-user'];
+
     var user = basic_auth(req);
     if (!user) {
         var token = req.headers['x-access-token'];
@@ -69,6 +71,7 @@ router.all("*", function (req, res, next) {
                 logger.debug("Wrong token: " + token + ".");
                 res_h.bad_request(req, res, "101");
             } else {
+                users.set_run_as_user(run_as_user);
                 next();
             }
         });
@@ -78,6 +81,7 @@ router.all("*", function (req, res, next) {
                 logger.debug("Wrong user: " + user.name + ".");
                 res_h.bad_request(req, res, "102");
             } else {
+                users.set_run_as_user(run_as_user);
                 next();
             }
         });

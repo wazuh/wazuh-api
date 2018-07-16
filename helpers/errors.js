@@ -15,6 +15,8 @@ var errors = {};
 errors['1'] = "Error executing internal command";
 errors['2'] = "Command output not in JSON";
 errors['3'] = "Internal error";
+errors['4'] = "Database error.";
+
 
 // Auth
 errors['100'] = "Unauthorized request. Cluster privileges required";
@@ -57,7 +59,6 @@ errors['618'] = "Param not valid. Valid characters: true or false";
 errors['619'] = "Param not valid. Valid characters: a-z A-Z 0-9 space . , _";  // select
 errors['select_param'] = 619;
 errors['620'] = "User does not exist.";
-errors['621'] = "Database error.";
 
 errors['700'] = "File not found"
 
