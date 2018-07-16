@@ -16,8 +16,8 @@ const dbPath = path.resolve(config.ossec_path + '/api', 'api.db')
 var db = new sqlite3.Database('api.db', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE);
 
 exports.db = db.serialize(function () {
-    db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL UNIQUE, password TEXT NOT NULL, enabled INTEGER NOT NULL)");
-    db.run("INSERT INTO users (name, password, enabled) VALUES('foo', 'bar', 1)");
+    db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, password TEXT NOT NULL, enabled INTEGER NOT NULL)");
+    db.run("INSERT INTO users (name, password, enabled) VALUES('foo', '$2b$10$v4O9dHg1ONatWvYCBlszLO0oHdjVoXGgqMX2GFR7RGdvPoVCHRYTS', 1)");
 });
 
 function db_get(sql, inputData, callback) {

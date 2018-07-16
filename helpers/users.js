@@ -11,9 +11,14 @@
 
 var jwt = require('jsonwebtoken');
 var db_helper = require('../helpers/db');
+var bcrypt = require('bcrypt');
 
 var secret = "f64f8bf42178a241ced799765949e00c"
 
+
+function encrypt(password){
+    return bcrypt.hashSync(password, 10);
+}
 
 get_token = function (user_name){
     return token = jwt.sign({ username: user_name }, secret, {
@@ -38,9 +43,17 @@ decode_token = function (token, callback) {
 }
 
 verify_user = function (user, callback) {
-    var inputData = [user.name, user.pass];
-    var sql = "SELECT name FROM users WHERE name = ? AND password = ?";
-    db_helper.db_get(sql, inputData, callback);
+    var inputData = [user.name];
+
+    var sql = "SELECT name,password FROM users WHERE name = ?";
+    db_helper.db_get(sql, inputData, function (err, result) {
+        if (!err && bcrypt.compareSync(user.pass, result.password)) {
+            exports.current_user_name = user.name;
+            callback(false);
+        } else {
+            callback(true);
+        }
+    });
 }
 
 verify_user_enabled = function (username, callback) {
@@ -89,7 +102,7 @@ authenticate_user_from_token = function (token, callback) {
 exports.register_user = function (user_data, result) {
     exists_user(user_data.name, function (not_exists, data) {
         if (not_exists) {
-            var inputData = [user_data.name, user_data.password];
+            var inputData = [user_data.name, encrypt(user_data.password)];
             var sql = "INSERT INTO users (name, password, enabled) VALUES(?, ?, 1)";
             db_helper.db_run(sql, inputData, result);
         } else {
