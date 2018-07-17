@@ -259,16 +259,16 @@ if __name__ == "__main__":
             '/syscollector/:agent_id/netaddr': syscollector.get_netaddr_agent,
             '/syscollector/:agent_id/netproto': syscollector.get_netproto_agent,
             '/syscollector/:agent_id/netiface': syscollector.get_netiface_agent,
-            '/syscollector/processes': syscollector.get_processes,
-            '/syscollector/ports': syscollector.get_ports,
-            '/syscollector/netaddr': syscollector.get_netaddr,
-            '/syscollector/netproto': syscollector.get_netproto,
-            '/syscollector/netiface': syscollector.get_netiface,
 
             # Experimental
             '/experimental/syscollector/os': syscollector.get_os,
             '/experimental/syscollector/hardware': syscollector.get_hardware,
             '/experimental/syscollector/packages': syscollector.get_packages,
+            '/experimental/syscollector/processes': syscollector.get_processes,
+            '/experimental/syscollector/ports': syscollector.get_ports,
+            '/experimental/syscollector/netaddr': syscollector.get_netaddr,
+            '/experimental/syscollector/netproto': syscollector.get_netproto,
+            '/experimental/syscollector/netiface': syscollector.get_netiface,
         }
 
         if list_f:
