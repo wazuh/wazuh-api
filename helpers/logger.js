@@ -19,6 +19,14 @@ var absolute_path_log = config.log_path;
 var file_log = path.basename(config.log_path);
 var path_log = path.dirname(config.log_path);
 var foreground = false;
+var ossec_uid = 0;
+var ossec_gid = 0;
+
+// get ossec uid and gid
+fs.stat(path_log + '/api', function(err, stats) {
+    ossec_uid = stats['uid'];
+    ossec_gid = stats['gid'];
+});
 
 var LEVEL_DISABLED = 0;
 var LEVEL_INFO = 1;
@@ -119,4 +127,12 @@ stream.on('rotated', function(filename) {
     fs.chmod(filename, 0o640);
     fs.chmod(path.dirname(filename), 0o750);
     fs.chmod(path.dirname(path.dirname(filename)), 0o750);
+
+    // if the API is running as root, set the user of the created files to ossec
+    if (!config.drop_privileges) {
+        fs.chown(filename, ossec_uid, ossec_gid);
+        fs.chown(path.dirname(filename), ossec_uid, ossec_gid);
+        fs.chown(path.dirname(path.dirname(filename)), ossec_uid, ossec_gid);
+        fs.chown(absolute_path_log, ossec_uid, ossec_gid);
+    }
 });
