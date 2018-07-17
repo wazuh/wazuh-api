@@ -19,6 +19,7 @@ var router = require('express').Router();
  * @apiGroup OS
  *
  * @apiParam {Number} agent_id Agent ID.
+ * @apiParam {String} [select] List of selected fields.
  *
  * @apiDescription Returns the agent's OS info
  *
@@ -52,6 +53,7 @@ router.get('/:agent_id/os', function(req, res) {
  * @apiGroup Hardware
  *
  * @apiParam {Number} agent_id Agent ID.
+ * @apiParam {String} [select] List of selected fields.
  *
  * @apiDescription Returns the agent's hardware info
  *
@@ -93,6 +95,12 @@ router.get('/:agent_id/hardware', function(req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [vendor] Filters by vendor.
+ * @apiParam {String} [name] Filters by name.
+ * @apiParam {String} [architecture] Filters by architecture.
+ * @apiParam {String} [format] Filters by format.
+ * @apiParam {String} [version] Filters by version.
  *
  * @apiDescription Returns the agent's packages info
  *
