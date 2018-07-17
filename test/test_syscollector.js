@@ -20,13 +20,14 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 describe('Syscollector', function () {
 
 
+    agent_id = "000"
+    os_fields = ["sysname","version","architecture","scan","release","hostname","os"]
     describe('GET/syscollector/:agent_id/os', function () {
-
         var expected_hostname = "";
         var expected_architecture = "";
         before(function (done) {
             request(common.url)
-                .get("/agents/001")
+                .get("/agents/" + agent_id)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -44,7 +45,7 @@ describe('Syscollector', function () {
 
         it('Request', function (done) {
             request(common.url)
-                .get("/syscollector/001/os")
+                .get("/syscollector/" + agent_id + "/os")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -55,7 +56,7 @@ describe('Syscollector', function () {
 
                     res.body.error.should.equal(0);
                     res.body.data.should.be.an.array;
-                    res.body.data.should.have.properties(['sysname', 'os', 'scan', 'hostname', 'version', 'architecture', 'release']);
+                    res.body.data.should.have.properties(os_fields);
                     res.body.data.os.should.have.properties(['name', 'version']);
                     res.body.data.scan.should.have.properties(['id', 'time']);
                     res.body.data.hostname.should.be.equal(expected_hostname);
@@ -66,7 +67,7 @@ describe('Syscollector', function () {
 
         it('Selector', function (done) {
             request(common.url)
-                .get("/syscollector/001/os?select=os_version,sysname,release")
+                .get("/syscollector/" + agent_id + "/os?select=os_version,sysname,release")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -83,7 +84,7 @@ describe('Syscollector', function () {
 
         it('Not allowed selector', function (done) {
             request(common.url)
-                .get("/syscollector/001/os?select=wrongParam")
+                .get("/syscollector/" + agent_id + "/os?select=wrongParam")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -97,12 +98,12 @@ describe('Syscollector', function () {
 
     });  // GET/syscollector/:agent_id/os
 
-
+    hardware_fields = ['ram', 'scan', 'board_serial', 'cpu']
     describe('GET/syscollector/:agent_id/hardware', function () {
 
         it('Request', function (done) {
             request(common.url)
-                .get("/syscollector/001/hardware")
+                .get("/syscollector/" + agent_id + "/hardware")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -113,7 +114,7 @@ describe('Syscollector', function () {
 
                     res.body.error.should.equal(0);
                     res.body.data.should.be.an.array;
-                    res.body.data.should.have.properties(['ram', 'scan', 'board_serial', 'cpu']);
+                    res.body.data.should.have.properties(hardware_fields);
                     res.body.data.ram.should.have.properties(['free', 'total']);
                     res.body.data.scan.should.have.properties(['id', 'time']);
                     res.body.data.cpu.should.have.properties(['name', 'cores', 'mhz']);
@@ -123,7 +124,7 @@ describe('Syscollector', function () {
 
         it('Selector', function (done) {
             request(common.url)
-                .get("/syscollector/001/hardware?select=ram_free,board_serial,cpu_name,ram_total")
+                .get("/syscollector/" + agent_id + "/hardware?select=ram_free,board_serial,cpu_name,ram_total")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -141,7 +142,7 @@ describe('Syscollector', function () {
 
         it('Not allowed selector', function (done) {
             request(common.url)
-                .get("/syscollector/001/hardware?select=wrongParam")
+                .get("/syscollector/" + agent_id + "/hardware?select=wrongParam")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -155,12 +156,12 @@ describe('Syscollector', function () {
 
     });  // GET/syscollector/:agent_id/os
 
-
+    packages_fields = ['vendor', 'description', 'format', 'version', 'architecture', 'name', 'scan']
     describe('GET/syscollector/:agent_id/packages', function () {
 
         it('Request', function (done) {
             request(common.url)
-                .get("/syscollector/001/packages")
+                .get("/syscollector/" + agent_id + "/packages")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -172,14 +173,14 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['vendor', 'description', 'format', 'version', 'architecture', 'name', 'scan_id']);
+                    res.body.data.items[0].should.have.properties(packages_fields);
                     done();
                 });
         });
 
         it('Selector', function (done) {
             request(common.url)
-                .get("/syscollector/001/packages?select=scan_id,description,architecture")
+                .get("/syscollector/" + agent_id + "/packages?select=scan_id,description,architecture")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -198,7 +199,7 @@ describe('Syscollector', function () {
 
         it('Not allowed selector', function (done) {
             request(common.url)
-                .get("/syscollector/001/packages?select=wrongParam")
+                .get("/syscollector/" + agent_id + "/packages?select=wrongParam")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -212,7 +213,7 @@ describe('Syscollector', function () {
 
         it('Pagination', function (done) {
             request(common.url)
-                .get("/syscollector/001/packages?offset=0&limit=1")
+                .get("/syscollector/" + agent_id + "/packages?offset=0&limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -223,14 +224,14 @@ describe('Syscollector', function () {
 
                     res.body.error.should.equal(0);
                     res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                    res.body.data.items[0].should.have.properties(['vendor', 'description', 'format', 'version', 'architecture', 'name', 'scan_id']);
+                    res.body.data.items[0].should.have.properties(packages_fields);
                     done();
                 });
         });
 
         it('Wrong limit', function (done) {
             request(common.url)
-                .get("/syscollector/001/packages?offset=0&limit=1a")
+                .get("/syscollector/" + agent_id + "/packages?offset=0&limit=1a")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -246,7 +247,7 @@ describe('Syscollector', function () {
 
         it('Sort -', function (done) {
             request(common.url)
-                .get("/syscollector/001/packages?sort=-name&limit=2")
+                .get("/syscollector/" + agent_id + "/packages?sort=-name&limit=2")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -267,7 +268,7 @@ describe('Syscollector', function () {
 
         it('Sort +', function (done) {
             request(common.url)
-                .get("/syscollector/001/packages?sort=+name&limit=2")
+                .get("/syscollector/" + agent_id + "/packages?sort=+name&limit=2")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -288,7 +289,7 @@ describe('Syscollector', function () {
 
         it('Wrong Sort', function (done) {
             request(common.url)
-                .get("/syscollector/001/packages?sort=-wrongParameter")
+                .get("/syscollector/" + agent_id + "/packages?sort=-wrongParameter")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -303,7 +304,7 @@ describe('Syscollector', function () {
         var expected_name = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/001/packages?limit=1")
+                .get("/syscollector/" + agent_id + "/packages?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -320,7 +321,7 @@ describe('Syscollector', function () {
 
         it('Search', function (done) {
             request(common.url)
-                .get("/syscollector/001/packages?search=" + expected_name)
+                .get("/syscollector/" + agent_id + "/packages?search=" + expected_name)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -332,7 +333,7 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['scan_id', 'vendor', 'description', 'format', 'scan_time', 'version', 'architecture', 'name']);
+                    res.body.data.items[0].should.have.properties(packages_fields);
                     res.body.data.items[0].name.should.be.equal(expected_name);
                     done();
                 });
@@ -341,7 +342,7 @@ describe('Syscollector', function () {
         var expected_vendor = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/001/packages?limit=1")
+                .get("/syscollector/" + agent_id + "/packages?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -359,7 +360,7 @@ describe('Syscollector', function () {
 
         it('Filter vendor', function (done) {
             request(common.url)
-                .get("/syscollector/001/packages?vendor=" + expected_vendor)
+                .get("/syscollector/" + agent_id + "/packages?vendor=" + expected_vendor)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -378,7 +379,7 @@ describe('Syscollector', function () {
         var expected_filter_name = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/001/packages?limit=1")
+                .get("/syscollector/" + agent_id + "/packages?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -396,7 +397,7 @@ describe('Syscollector', function () {
 
         it('Filter name', function (done) {
             request(common.url)
-                .get("/syscollector/001/packages?name=" + expected_filter_name)
+                .get("/syscollector/" + agent_id + "/packages?name=" + expected_filter_name)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -415,7 +416,7 @@ describe('Syscollector', function () {
         var expected_architecture = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/001/packages?limit=1")
+                .get("/syscollector/" + agent_id + "/packages?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -433,7 +434,7 @@ describe('Syscollector', function () {
 
         it('Filter architecture', function (done) {
             request(common.url)
-                .get("/syscollector/001/packages?architecture=" + expected_architecture)
+                .get("/syscollector/" + agent_id + "/packages?architecture=" + expected_architecture)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -452,7 +453,7 @@ describe('Syscollector', function () {
         var expected_format = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/001/packages?limit=1")
+                .get("/syscollector/" + agent_id + "/packages?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -470,7 +471,7 @@ describe('Syscollector', function () {
 
         it('Filter format', function (done) {
             request(common.url)
-                .get("/syscollector/001/packages?format=" + expected_format)
+                .get("/syscollector/" + agent_id + "/packages?format=" + expected_format)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -488,7 +489,7 @@ describe('Syscollector', function () {
 
         it('Wrong filter', function (done) {
             request(common.url)
-                .get("/syscollector/001/packages?wrongFilter=value")
+                .get("/syscollector/" + agent_id + "/packages?wrongFilter=value")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -507,7 +508,7 @@ describe('Syscollector', function () {
 
         it('Request', function (done) {
             request(common.url)
-                .get("/syscollector/packages")
+                .get("/experimental/syscollector/packages")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -519,14 +520,14 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['scan_id', 'agent_id', 'vendor', 'description', 'format', 'scan_time', 'version', 'architecture', 'name']);
+                    res.body.data.items[0].should.have.properties(packages_fields);
                     done();
                 });
         });
 
         it('Selector', function (done) {
             request(common.url)
-                .get("/syscollector/packages?select=scan_id,description,scan_time,architecture")
+                .get("/experimental/syscollector/packages?select=scan_id,description,scan_time,architecture")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -538,14 +539,14 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['scan_id', 'description', 'scan_time', 'architecture']);
+                    res.body.data.items[0].should.have.properties(['scan', 'description', 'architecture']);
                     done();
                 });
         });
 
         it('Not allowed selector', function (done) {
             request(common.url)
-                .get("/syscollector/packages?select=wrongParam")
+                .get("/experimental/syscollector/packages?select=wrongParam")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -559,7 +560,7 @@ describe('Syscollector', function () {
 
         it('Pagination', function (done) {
             request(common.url)
-                .get("/syscollector/packages?offset=0&limit=1")
+                .get("/experimental/syscollector/packages?offset=0&limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -570,14 +571,14 @@ describe('Syscollector', function () {
 
                     res.body.error.should.equal(0);
                     res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                    res.body.data.items[0].should.have.properties(['scan_id', 'agent_id', 'vendor', 'description', 'format', 'scan_time', 'version', 'architecture', 'name']);
+                    res.body.data.items[0].should.have.properties(packages_fields);
                     done();
                 });
         });
 
         it('Wrong limit', function (done) {
             request(common.url)
-                .get("/syscollector/packages?offset=0&limit=1a")
+                .get("/experimental/syscollector/packages?offset=0&limit=1a")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -593,7 +594,7 @@ describe('Syscollector', function () {
 
         it('Sort -', function (done) {
             request(common.url)
-                .get("/syscollector/packages?sort=-name&limit=2")
+                .get("/experimental/syscollector/packages?sort=-name&limit=2")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -614,7 +615,7 @@ describe('Syscollector', function () {
 
         it('Sort +', function (done) {
             request(common.url)
-                .get("/syscollector/packages?sort=+name&limit=2")
+                .get("/experimental/syscollector/packages?sort=+name&limit=2")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -635,7 +636,7 @@ describe('Syscollector', function () {
 
         it('Wrong Sort', function (done) {
             request(common.url)
-                .get("/syscollector/packages?sort=-wrongParameter")
+                .get("/experimental/syscollector/packages?sort=-wrongParameter")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -650,7 +651,7 @@ describe('Syscollector', function () {
         var expected_name = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/packages?limit=1")
+                .get("/experimental/syscollector/packages?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -667,7 +668,7 @@ describe('Syscollector', function () {
 
         it('Search', function (done) {
             request(common.url)
-                .get("/syscollector/packages?search=" + expected_name)
+                .get("/experimental/syscollector/packages?search=" + expected_name)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -679,7 +680,7 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['scan_id', 'vendor', 'description', 'format', 'scan_time', 'version', 'architecture', 'name']);
+                    res.body.data.items[0].should.have.properties(packages_fields);
                     res.body.data.items[0].name.should.be.equal(expected_name);
                     done();
                 });
@@ -688,7 +689,7 @@ describe('Syscollector', function () {
         var expected_vendor = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/packages?limit=1")
+                .get("/experimental/syscollector/packages?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -706,7 +707,7 @@ describe('Syscollector', function () {
 
         it('Filter vendor', function (done) {
             request(common.url)
-                .get("/syscollector/packages?vendor=" + expected_vendor)
+                .get("/experimental/syscollector/packages?vendor=" + expected_vendor)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -725,7 +726,7 @@ describe('Syscollector', function () {
         var expected_filter_name = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/packages?limit=1")
+                .get("/experimental/syscollector/packages?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -743,7 +744,7 @@ describe('Syscollector', function () {
 
         it('Filter name', function (done) {
             request(common.url)
-                .get("/syscollector/packages?name=" + expected_filter_name)
+                .get("/experimental/syscollector/packages?name=" + expected_filter_name)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -762,7 +763,7 @@ describe('Syscollector', function () {
         var expected_architecture = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/packages?limit=1")
+                .get("/experimental/syscollector/packages?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -780,7 +781,7 @@ describe('Syscollector', function () {
 
         it('Filter architecture', function (done) {
             request(common.url)
-                .get("/syscollector/packages?architecture=" + expected_architecture)
+                .get("/experimental/syscollector/packages?architecture=" + expected_architecture)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -799,7 +800,7 @@ describe('Syscollector', function () {
         var expected_format = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/packages?limit=1")
+                .get("/experimental/syscollector/packages?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -817,7 +818,7 @@ describe('Syscollector', function () {
 
         it('Filter format', function (done) {
             request(common.url)
-                .get("/syscollector/packages?format=" + expected_format)
+                .get("/experimental/syscollector/packages?format=" + expected_format)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -835,7 +836,7 @@ describe('Syscollector', function () {
 
         it('Wrong filter', function (done) {
             request(common.url)
-                .get("/syscollector/packages?wrongFilter=value")
+                .get("/experimental/syscollector/packages?wrongFilter=value")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -855,7 +856,7 @@ describe('Syscollector', function () {
 
         it('Request', function (done) {
             request(common.url)
-                .get("/syscollector/os")
+                .get("/experimental/syscollector/os")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -867,14 +868,14 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['sysname', 'hostname', 'version', 'architecture', 'release', 'os_name', 'os_version', 'scan_id', 'scan_time']);
+                    res.body.data.items[0].should.have.properties(os_fields);
                     done();
                 });
         });
 
         it('Selector', function (done) {
             request(common.url)
-                .get("/syscollector/os?select=sysname,version,release,os_version")
+                .get("/experimental/syscollector/os?select=sysname,version,release,os_version")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -893,7 +894,7 @@ describe('Syscollector', function () {
 
         it('Not allowed selector', function (done) {
             request(common.url)
-                .get("/syscollector/os?select=wrongParam")
+                .get("/experimental/syscollector/os?select=wrongParam")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -907,7 +908,7 @@ describe('Syscollector', function () {
 
         it('Pagination', function (done) {
             request(common.url)
-                .get("/syscollector/os?offset=0&limit=1")
+                .get("/experimental/syscollector/os?offset=0&limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -918,14 +919,14 @@ describe('Syscollector', function () {
 
                     res.body.error.should.equal(0);
                     res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                    res.body.data.items[0].should.have.properties(['sysname', 'hostname', 'version', 'architecture', 'release', 'os_name', 'os_version', 'scan_id', 'scan_time']);
+                    res.body.data.items[0].should.have.properties(os_fields);
                     done();
                 });
         });
 
         it('Wrong limit', function (done) {
             request(common.url)
-                .get("/syscollector/os?offset=0&limit=1a")
+                .get("/experimental/syscollector/os?offset=0&limit=1a")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -942,7 +943,7 @@ describe('Syscollector', function () {
         var expected_name = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/os?limit=1")
+                .get("/experimental/syscollector/os?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -959,7 +960,7 @@ describe('Syscollector', function () {
 
         it('Search', function (done) {
             request(common.url)
-                .get("/syscollector/os?search=" + expected_name)
+                .get("/experimental/syscollector/os?search=" + expected_name)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -971,7 +972,7 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['sysname', 'hostname', 'version', 'architecture', 'release', 'os_name', 'os_version', 'scan_id', 'scan_time']);
+                    res.body.data.items[0].should.have.properties(os_fields);
                     res.body.data.items[0].sysname.should.be.equal(expected_name);
                     done();
                 });
@@ -979,7 +980,7 @@ describe('Syscollector', function () {
 
         it('Wrong filter', function (done) {
             request(common.url)
-                .get("/syscollector/os?wrongFilter=value")
+                .get("/experimental/syscollector/os?wrongFilter=value")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -994,7 +995,7 @@ describe('Syscollector', function () {
         var expected_architecture = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/os?limit=1")
+                .get("/experimental/syscollector/os?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1012,7 +1013,7 @@ describe('Syscollector', function () {
 
         it('Filter architecture', function (done) {
             request(common.url)
-                .get("/syscollector/os?architecture=" + expected_architecture)
+                .get("/experimental/syscollector/os?architecture=" + expected_architecture)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1031,7 +1032,7 @@ describe('Syscollector', function () {
         var expected_os_name = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/001/os")
+                .get("/syscollector/" + agent_id + "/os")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1048,7 +1049,7 @@ describe('Syscollector', function () {
 
         it('Filter os_name', function (done) {
             request(common.url)
-                .get("/syscollector/os?os_name=" + expected_os_name)
+                .get("/experimental/syscollector/os?os_name=" + expected_os_name)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1058,8 +1059,8 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['os_name']);
-                    res.body.data.items[0].os_name.should.be.equal(expected_os_name);
+                    res.body.data.items[0].should.have.properties(['os']);
+                    res.body.data.items[0].os.name.should.be.equal(expected_os_name);
                     done();
                 });
         });
@@ -1067,7 +1068,7 @@ describe('Syscollector', function () {
         var expected_os_version = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/os?limit=1")
+                .get("/experimental/syscollector/os?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1077,7 +1078,7 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                    res.body.data.items[0].should.have.properties(['os_version']);
+                    res.body.data.items[0].should.have.properties(['os']);
                     expected_os_version = res.body.data.items[0].os_version;
                     done();
                 });
@@ -1086,7 +1087,7 @@ describe('Syscollector', function () {
         var expected_release = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/os?limit=1")
+                .get("/experimental/syscollector/os?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1104,7 +1105,7 @@ describe('Syscollector', function () {
 
         it('Filter release', function (done) {
             request(common.url)
-                .get("/syscollector/os?release=" + expected_release)
+                .get("/experimental/syscollector/os?release=" + expected_release)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1126,7 +1127,7 @@ describe('Syscollector', function () {
 
         it('Request', function (done) {
             request(common.url)
-                .get("/syscollector/hardware")
+                .get("/experimental/syscollector/hardware")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1138,14 +1139,14 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['ram_free', 'scan_id', 'board_serial', 'scan_time', 'cpu_name', 'cpu_cores', 'agent_id', 'ram_total', 'cpu_mhz']);
+                    res.body.data.items[0].should.have.properties(hardware_fields);
                     done();
                 });
         });
 
         it('Selector', function (done) {
             request(common.url)
-                .get("/syscollector/hardware?select=ram_free,board_serial,cpu_name,agent_id,cpu_mhz")
+                .get("/experimental/syscollector/hardware?select=ram_free,board_serial,cpu_name,agent_id,cpu_mhz")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1157,14 +1158,15 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['ram_free', 'board_serial', 'cpu_name', 'agent_id', 'cpu_mhz']);
+                    res.body.data.items[0].should.have.properties(['ram_free', 'board_serial', 'cpu', 'agent_id', 'cpu']);
+                    res.body.data.items[0].cpu.should.have.properties(['mhz','name']);
                     done();
                 });
         });
 
         it('Not allowed selector', function (done) {
             request(common.url)
-                .get("/syscollector/hardware?select=wrongParam")
+                .get("/experimental/syscollector/hardware?select=wrongParam")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1178,7 +1180,7 @@ describe('Syscollector', function () {
 
         it('Pagination', function (done) {
             request(common.url)
-                .get("/syscollector/hardware?offset=0&limit=1")
+                .get("/experimental/syscollector/hardware?offset=0&limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1189,14 +1191,14 @@ describe('Syscollector', function () {
 
                     res.body.error.should.equal(0);
                     res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                    res.body.data.items[0].should.have.properties(['ram_free', 'scan_id', 'board_serial', 'scan_time', 'cpu_name', 'cpu_cores', 'agent_id', 'ram_total', 'cpu_mhz']);
+                    res.body.data.items[0].should.have.properties(hardware_fields);
                     done();
                 });
         });
 
         it('Wrong limit', function (done) {
             request(common.url)
-                .get("/syscollector/hardware?offset=0&limit=1a")
+                .get("/experimental/syscollector/hardware?offset=0&limit=1a")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -1213,7 +1215,7 @@ describe('Syscollector', function () {
         var expected_ram_free = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/hardware?limit=1")
+                .get("/experimental/syscollector/hardware?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1222,15 +1224,15 @@ describe('Syscollector', function () {
                     res.body.should.have.properties(['error', 'data']);
                     res.body.error.should.equal(0);
                     res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                    res.body.data.items[0].should.have.properties(['ram_free']);
-                    expected_ram_free = res.body.data.items[0].ram_free;
+                    res.body.data.items[0].should.have.properties(['ram']);
+                    expected_ram_free = res.body.data.items[0].ram.free;
                     done();
                 });
         });
 
         it('Search', function (done) {
             request(common.url)
-                .get("/syscollector/hardware?search=" + expected_ram_free)
+                .get("/experimental/syscollector/hardware?search=" + expected_ram_free)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1242,15 +1244,15 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['ram_free', 'scan_id', 'board_serial', 'scan_time', 'cpu_name', 'cpu_cores', 'agent_id', 'ram_total', 'cpu_mhz']);
-                    res.body.data.items[0].ram_free.should.be.equal(expected_ram_free);
+                    res.body.data.items[0].should.have.properties(hardware_fields);
+                    res.body.data.items[0].ram.free.should.be.equal(expected_ram_free);
                     done();
                 });
         });
 
         it('Wrong filter', function (done) {
             request(common.url)
-                .get("/syscollector/hardware?wrongFilter=value")
+                .get("/experimental/syscollector/hardware?wrongFilter=value")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -1264,7 +1266,7 @@ describe('Syscollector', function () {
 
         it('Wrong Sort', function (done) {
             request(common.url)
-                .get("/syscollector/hardware?sort=-wrongParameter")
+                .get("/experimental/syscollector/hardware?sort=-wrongParameter")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1278,7 +1280,7 @@ describe('Syscollector', function () {
 
         it('Filter ram_free', function (done) {
             request(common.url)
-                .get("/syscollector/hardware?ram_free=" + expected_ram_free)
+                .get("/experimental/syscollector/hardware?ram_free=" + expected_ram_free)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1288,8 +1290,8 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['ram_free']);
-                    res.body.data.items[0].ram_free.should.be.equal(expected_ram_free);
+                    res.body.data.items[0].should.have.properties(['ram']);
+                    res.body.data.items[0].ram.free.should.be.equal(expected_ram_free);
                     done();
                 });
         });
@@ -1297,7 +1299,7 @@ describe('Syscollector', function () {
         var expected_ram_total = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/001/hardware")
+                .get("/syscollector/" + agent_id + "/hardware")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1314,7 +1316,7 @@ describe('Syscollector', function () {
 
         it('Filter ram_total', function (done) {
             request(common.url)
-                .get("/syscollector/hardware?ram_total=" + expected_ram_total)
+                .get("/experimental/syscollector/hardware?ram_total=" + expected_ram_total)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1324,8 +1326,8 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['ram_total']);
-                    res.body.data.items[0].ram_total.should.be.equal(expected_ram_total);
+                    res.body.data.items[0].should.have.properties(['ram']);
+                    res.body.data.items[0].ram.total.should.be.equal(expected_ram_total);
                     done();
                 });
         });
@@ -1333,7 +1335,7 @@ describe('Syscollector', function () {
         var expected_cpu_cores = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/001/hardware")
+                .get("/syscollector/" + agent_id + "/hardware")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1350,7 +1352,7 @@ describe('Syscollector', function () {
 
         it('Filter cpu_cores', function (done) {
             request(common.url)
-                .get("/syscollector/hardware?cpu_cores=" + expected_cpu_cores)
+                .get("/experimental/syscollector/hardware?cpu_cores=" + expected_cpu_cores)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1360,8 +1362,8 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['cpu_cores']);
-                    res.body.data.items[0].cpu_cores.should.be.equal(expected_cpu_cores);
+                    res.body.data.items[0].should.have.properties(['cpu']);
+                    res.body.data.items[0].cpu.cores.should.be.equal(expected_cpu_cores);
                     done();
                 });
         });
@@ -1369,7 +1371,7 @@ describe('Syscollector', function () {
         var expected_cpu_mhz = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/001/hardware")
+                .get("/syscollector/" + agent_id + "/hardware")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1386,7 +1388,7 @@ describe('Syscollector', function () {
 
         it('Filter cpu_mhz', function (done) {
             request(common.url)
-                .get("/syscollector/hardware?cpu_mhz=" + expected_cpu_mhz)
+                .get("/experimental/syscollector/hardware?cpu_mhz=" + expected_cpu_mhz)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1396,8 +1398,8 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['cpu_mhz']);
-                    res.body.data.items[0].cpu_mhz.should.be.equal(expected_cpu_mhz);
+                    res.body.data.items[0].should.have.properties(['cpu']);
+                    res.body.data.items[0].cpu.mhz.should.be.equal(expected_cpu_mhz);
                     done();
                 });
         });
@@ -1405,7 +1407,7 @@ describe('Syscollector', function () {
         var expected_board_serial = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/001/hardware")
+                .get("/syscollector/" + agent_id + "/hardware")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1421,7 +1423,7 @@ describe('Syscollector', function () {
 
         it('Filter board_serial', function (done) {
             request(common.url)
-                .get("/syscollector/hardware?board_serial=" + expected_board_serial)
+                .get("/experimental/syscollector/hardware?board_serial=" + expected_board_serial)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1442,11 +1444,15 @@ describe('Syscollector', function () {
 
 
     describe('GET/syscollector/processes', function () {
-        processes_properties = ['tty', 'rgroup', 'sgroup', 'resident', 'share', 'session', 'scan_time', 'size', 'scan_id', 'egroup', 'tgid', 'priority', 'fgroup', 'state', 'nlwp', 'nice', 'euser', 'euser', 'start_time', 'stime', 'vm_size', 'utime', 'ppid', 'name', 'pgrp', 'ruser', 'suser', 'processor', 'agent_id']
+        processes_properties = ['tty', 'rgroup', 'sgroup', 'resident', 'share',
+        'session', 'scan_time', 'size', 'scan_id', 'egroup', 'tgid', 'priority',
+        'fgroup', 'state', 'nlwp', 'nice', 'euser', 'start_time', 'stime',
+        'vm_size', 'utime', 'ppid', 'name', 'pgrp', 'ruser', 'suser', 'processor',
+        'agent_id']
 
         it('Request', function (done) {
             request(common.url)
-                .get("/syscollector/processes")
+                .get("/experimental/syscollector/processes")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1465,7 +1471,7 @@ describe('Syscollector', function () {
 
         it('Selector', function (done) {
             request(common.url)
-                .get("/syscollector/processes?select=tty,sgroup,share,session,scan_id")
+                .get("/experimental/syscollector/processes?select=tty,sgroup,share,session,scan_id")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1484,7 +1490,7 @@ describe('Syscollector', function () {
 
         it('Not allowed selector', function (done) {
             request(common.url)
-                .get("/syscollector/processes?select=wrongParam")
+                .get("/experimental/syscollector/processes?select=wrongParam")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1498,7 +1504,7 @@ describe('Syscollector', function () {
 
         it('Pagination', function (done) {
             request(common.url)
-                .get("/syscollector/processes?offset=0&limit=1")
+                .get("/experimental/syscollector/processes?offset=0&limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1516,7 +1522,7 @@ describe('Syscollector', function () {
 
         it('Wrong limit', function (done) {
             request(common.url)
-                .get("/syscollector/processes?offset=0&limit=1a")
+                .get("/experimental/syscollector/processes?offset=0&limit=1a")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -1545,7 +1551,7 @@ describe('Syscollector', function () {
         expected_suser = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/processes?limit=1")
+                .get("/experimental/syscollector/processes?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1573,7 +1579,7 @@ describe('Syscollector', function () {
 
         it('Search', function (done) {
             request(common.url)
-                .get("/syscollector/processes?search=" + expected_name)
+                .get("/experimental/syscollector/processes?search=" + expected_name)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1593,7 +1599,7 @@ describe('Syscollector', function () {
 
         it('Wrong filter', function (done) {
             request(common.url)
-                .get("/syscollector/processes?wrongFilter=value")
+                .get("/experimental/syscollector/processes?wrongFilter=value")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -1607,7 +1613,7 @@ describe('Syscollector', function () {
 
         it('Wrong Sort', function (done) {
             request(common.url)
-                .get("/syscollector/processes?sort=-wrongParameter")
+                .get("/experimental/syscollector/processes?sort=-wrongParameter")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1621,7 +1627,7 @@ describe('Syscollector', function () {
 
         it('Filter: state', function (done) {
             request(common.url)
-                .get("/syscollector/processes?limit=2&offset=1&state=" + expected_state)
+                .get("/experimental/syscollector/processes?limit=2&offset=1&state=" + expected_state)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1636,7 +1642,7 @@ describe('Syscollector', function () {
 
         it('Filter: ppid', function (done) {
             request(common.url)
-                .get("/syscollector/processes?limit=2&offset=1&ppid=" + expected_ppid)
+                .get("/experimental/syscollector/processes?limit=2&offset=1&ppid=" + expected_ppid)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1651,7 +1657,7 @@ describe('Syscollector', function () {
 
         it('Filter: egroup', function (done) {
             request(common.url)
-                .get("/syscollector/processes?limit=2&offset=1&egroup=" + expected_egroup)
+                .get("/experimental/syscollector/processes?limit=2&offset=1&egroup=" + expected_egroup)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1666,7 +1672,7 @@ describe('Syscollector', function () {
 
         it('Filter: euser', function (done) {
             request(common.url)
-                .get("/syscollector/processes?limit=2&offset=1&euser=" + expected_euser)
+                .get("/experimental/syscollector/processes?limit=2&offset=1&euser=" + expected_euser)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1681,7 +1687,7 @@ describe('Syscollector', function () {
 
         it('Filter: fgroup', function (done) {
             request(common.url)
-                .get("/syscollector/processes?limit=2&offset=1&fgroup=" + expected_fgroup)
+                .get("/experimental/syscollector/processes?limit=2&offset=1&fgroup=" + expected_fgroup)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1696,7 +1702,7 @@ describe('Syscollector', function () {
 
         it('Filter: name', function (done) {
             request(common.url)
-                .get("/syscollector/processes?name=" + expected_name)
+                .get("/experimental/syscollector/processes?name=" + expected_name)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1711,7 +1717,7 @@ describe('Syscollector', function () {
 
         it('Filter: nlwp', function (done) {
             request(common.url)
-                .get("/syscollector/processes?limit=2&offset=1&nlwp=" + expected_nlwp)
+                .get("/experimental/syscollector/processes?limit=2&offset=1&nlwp=" + expected_nlwp)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1726,7 +1732,7 @@ describe('Syscollector', function () {
 
         it('Filter: pgrp', function (done) {
             request(common.url)
-                .get("/syscollector/processes?pgrp=" + expected_pgrp)
+                .get("/experimental/syscollector/processes?pgrp=" + expected_pgrp)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1741,7 +1747,7 @@ describe('Syscollector', function () {
 
         it('Filter: priority', function (done) {
             request(common.url)
-                .get("/syscollector/processes?limit=2&offset=1&priority=" + expected_priority)
+                .get("/experimental/syscollector/processes?limit=2&offset=1&priority=" + expected_priority)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1756,7 +1762,7 @@ describe('Syscollector', function () {
 
         it('Filter: rgroup', function (done) {
             request(common.url)
-                .get("/syscollector/processes?limit=2&offset=1&rgroup=" + expected_rgroup)
+                .get("/experimental/syscollector/processes?limit=2&offset=1&rgroup=" + expected_rgroup)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1771,7 +1777,7 @@ describe('Syscollector', function () {
 
         it('Filter: ruser', function (done) {
             request(common.url)
-                .get("/syscollector/processes?limit=2&offset=1&ruser=" + expected_ruser)
+                .get("/experimental/syscollector/processes?limit=2&offset=1&ruser=" + expected_ruser)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1786,7 +1792,7 @@ describe('Syscollector', function () {
 
         it('Filter: sgroup', function (done) {
             request(common.url)
-                .get("/syscollector/processes?limit=2&offset=1&sgroup=" + expected_sgroup)
+                .get("/experimental/syscollector/processes?limit=2&offset=1&sgroup=" + expected_sgroup)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1801,7 +1807,7 @@ describe('Syscollector', function () {
 
         it('Filter: suser', function (done) {
             request(common.url)
-                .get("/syscollector/processes?limit=2&offset=1&suser=" + expected_suser)
+                .get("/experimental/syscollector/processes?limit=2&offset=1&suser=" + expected_suser)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1819,14 +1825,13 @@ describe('Syscollector', function () {
 
 
 
+    ports_properties = ['scan', 'protocol', 'local', 'remote', 'tx_queue',
+                        'rx_queue', 'inode', 'state']
     describe('GET/syscollector/ports', function () {
-        ports_properties = ['scan_id', 'scan_time', 'protocol', 'local_ip',
-            'local_port', 'remote_ip', 'remote_port', 'tx_queue', 'rx_queue', 'inode',
-            'state']
 
         it('Request', function (done) {
             request(common.url)
-                .get("/syscollector/ports")
+                .get("/experimental/syscollector/ports")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1845,7 +1850,7 @@ describe('Syscollector', function () {
 
         it('Selector', function (done) {
             request(common.url)
-                .get("/syscollector/ports?select=protocol,remote_ip,tx_queue,state")
+                .get("/experimental/syscollector/ports?select=protocol,remote_ip,tx_queue,state")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1864,7 +1869,7 @@ describe('Syscollector', function () {
 
         it('Not allowed selector', function (done) {
             request(common.url)
-                .get("/syscollector/ports?select=wrongParam")
+                .get("/experimental/syscollector/ports?select=wrongParam")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1878,7 +1883,7 @@ describe('Syscollector', function () {
 
         it('Pagination', function (done) {
             request(common.url)
-                .get("/syscollector/ports?offset=0&limit=1")
+                .get("/experimental/syscollector/ports?offset=0&limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1896,7 +1901,7 @@ describe('Syscollector', function () {
 
         it('Wrong limit', function (done) {
             request(common.url)
-                .get("/syscollector/ports?offset=0&limit=1a")
+                .get("/experimental/syscollector/ports?offset=0&limit=1a")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -1918,7 +1923,7 @@ describe('Syscollector', function () {
         expected_state = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/ports?limit=1")
+                .get("/experimental/syscollector/ports?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1928,9 +1933,9 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
                     expected_protocol = res.body.data.items[0].protocol;
-                    expected_local_ip = res.body.data.items[0].local_ip;
-                    expected_local_port = res.body.data.items[0].local_port;
-                    expected_remote_ip = res.body.data.items[0].remote_ip;
+                    expected_local_ip = res.body.data.items[0].local.ip;
+                    expected_local_port = res.body.data.items[0].local.port;
+                    expected_remote_ip = res.body.data.items[0].remote.ip;
                     expected_tx_queue = res.body.data.items[0].tx_queue;
                     expected_state = res.body.data.items[0].state;
                     done();
@@ -1939,7 +1944,7 @@ describe('Syscollector', function () {
 
         it('Search', function (done) {
             request(common.url)
-                .get("/syscollector/ports?search=" + expected_remote_ip)
+                .get("/experimental/syscollector/ports?search=" + expected_remote_ip)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1952,14 +1957,14 @@ describe('Syscollector', function () {
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
                     res.body.data.items[0].should.have.properties(ports_properties);
-                    res.body.data.items[0].remote_ip.should.be.equal(expected_remote_ip);
+                    res.body.data.items[0].remote.ip.should.be.equal(expected_remote_ip);
                     done();
                 });
         });
 
         it('Wrong filter', function (done) {
             request(common.url)
-                .get("/syscollector/ports?wrongFilter=value")
+                .get("/experimental/syscollector/ports?wrongFilter=value")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -1973,7 +1978,7 @@ describe('Syscollector', function () {
 
         it('Wrong Sort', function (done) {
             request(common.url)
-                .get("/syscollector/ports?sort=-wrongParameter")
+                .get("/experimental/syscollector/ports?sort=-wrongParameter")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1987,7 +1992,7 @@ describe('Syscollector', function () {
 
         it('Filter: protocol', function (done) {
             request(common.url)
-                .get("/syscollector/ports?protocol=" + expected_protocol)
+                .get("/experimental/syscollector/ports?protocol=" + expected_protocol)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2002,7 +2007,7 @@ describe('Syscollector', function () {
 
         it('Filter: local_ip', function (done) {
             request(common.url)
-                .get("/syscollector/ports?local_ip=" + expected_local_ip)
+                .get("/experimental/syscollector/ports?local_ip=" + expected_local_ip)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2010,14 +2015,14 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.items[0].should.have.properties(ports_properties);
-                    res.body.data.items[0].local_ip.should.be.equal(expected_local_ip);
+                    res.body.data.items[0].local.ip.should.be.equal(expected_local_ip);
                     done();
                 });
         });
 
         it('Filter: local_port', function (done) {
             request(common.url)
-                .get("/syscollector/ports?local_port=" + expected_local_port)
+                .get("/experimental/syscollector/ports?local_port=" + expected_local_port)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2025,14 +2030,14 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.items[0].should.have.properties(ports_properties);
-                    res.body.data.items[0].local_port.should.be.equal(expected_local_port);
+                    res.body.data.items[0].local.port.should.be.equal(expected_local_port);
                     done();
                 });
         });
 
         it('Filter: remote_ip', function (done) {
             request(common.url)
-                .get("/syscollector/ports?remote_ip=" + expected_remote_ip)
+                .get("/experimental/syscollector/ports?remote_ip=" + expected_remote_ip)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2040,14 +2045,14 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.items[0].should.have.properties(ports_properties);
-                    res.body.data.items[0].remote_ip.should.be.equal(expected_remote_ip);
+                    res.body.data.items[0].remote.ip.should.be.equal(expected_remote_ip);
                     done();
                 });
         });
 
         it('Filter: tx_queue', function (done) {
             request(common.url)
-                .get("/syscollector/ports?tx_queue=" + expected_tx_queue)
+                .get("/experimental/syscollector/ports?tx_queue=" + expected_tx_queue)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2062,7 +2067,7 @@ describe('Syscollector', function () {
 
         it('Filter: state', function (done) {
             request(common.url)
-                .get("/syscollector/ports?state=" + expected_state)
+                .get("/experimental/syscollector/ports?state=" + expected_state)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2082,11 +2087,11 @@ describe('Syscollector', function () {
 
     describe('GET/syscollector/netaddr', function () {
         netaddr_properties = ['id', 'scan_id', 'proto', 'address',
-            'netmask', 'broadcast']
+            'netmask', 'broadcast', 'agent_id']
 
         it('Request', function (done) {
             request(common.url)
-                .get("/syscollector/netaddr")
+                .get("/experimental/syscollector/netaddr")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2105,7 +2110,7 @@ describe('Syscollector', function () {
 
         it('Selector', function (done) {
             request(common.url)
-                .get("/syscollector/netaddr?select=proto,netmask,broadcast")
+                .get("/experimental/syscollector/netaddr?select=proto,netmask,broadcast")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2124,7 +2129,7 @@ describe('Syscollector', function () {
 
         it('Not allowed selector', function (done) {
             request(common.url)
-                .get("/syscollector/netaddr?select=wrongParam")
+                .get("/experimental/syscollector/netaddr?select=wrongParam")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2138,7 +2143,7 @@ describe('Syscollector', function () {
 
         it('Pagination', function (done) {
             request(common.url)
-                .get("/syscollector/netaddr?offset=0&limit=1")
+                .get("/experimental/syscollector/netaddr?offset=0&limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2156,7 +2161,7 @@ describe('Syscollector', function () {
 
         it('Wrong limit', function (done) {
             request(common.url)
-                .get("/syscollector/netaddr?offset=0&limit=1a")
+                .get("/experimental/syscollector/netaddr?offset=0&limit=1a")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -2177,7 +2182,7 @@ describe('Syscollector', function () {
         expected_id = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/netaddr?limit=1")
+                .get("/experimental/syscollector/netaddr?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2197,7 +2202,7 @@ describe('Syscollector', function () {
 
         it('Search', function (done) {
             request(common.url)
-                .get("/syscollector/netaddr?search=" + expected_broadcast)
+                .get("/experimental/syscollector/netaddr?search=" + expected_broadcast)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2217,7 +2222,7 @@ describe('Syscollector', function () {
 
         it('Wrong filter', function (done) {
             request(common.url)
-                .get("/syscollector/netaddr?wrongFilter=value")
+                .get("/experimental/syscollector/netaddr?wrongFilter=value")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -2231,7 +2236,7 @@ describe('Syscollector', function () {
 
         it('Wrong Sort', function (done) {
             request(common.url)
-                .get("/syscollector/netaddr?sort=-wrongParameter")
+                .get("/experimental/syscollector/netaddr?sort=-wrongParameter")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2245,7 +2250,7 @@ describe('Syscollector', function () {
 
         it('Filter: proto', function (done) {
             request(common.url)
-                .get("/syscollector/netaddr?proto=" + expected_proto)
+                .get("/experimental/syscollector/netaddr?proto=" + expected_proto)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2260,7 +2265,7 @@ describe('Syscollector', function () {
 
         it('Filter: address', function (done) {
             request(common.url)
-                .get("/syscollector/netaddr?address=" + expected_address)
+                .get("/experimental/syscollector/netaddr?address=" + expected_address)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2275,7 +2280,7 @@ describe('Syscollector', function () {
 
         it('Filter: broadcast', function (done) {
             request(common.url)
-                .get("/syscollector/netaddr?broadcast=" + expected_broadcast)
+                .get("/experimental/syscollector/netaddr?broadcast=" + expected_broadcast)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2290,7 +2295,7 @@ describe('Syscollector', function () {
 
         it('Filter: netmask', function (done) {
             request(common.url)
-                .get("/syscollector/netaddr?netmask=" + expected_netmask)
+                .get("/experimental/syscollector/netaddr?netmask=" + expected_netmask)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2305,7 +2310,7 @@ describe('Syscollector', function () {
 
         it('Filter: id', function (done) {
             request(common.url)
-                .get("/syscollector/netaddr?id=" + expected_id)
+                .get("/experimental/syscollector/netaddr?id=" + expected_id)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2326,7 +2331,7 @@ describe('Syscollector', function () {
 
         it('Request', function (done) {
             request(common.url)
-                .get("/syscollector/netproto")
+                .get("/experimental/syscollector/netproto")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2345,7 +2350,7 @@ describe('Syscollector', function () {
 
         it('Selector', function (done) {
             request(common.url)
-                .get("/syscollector/netproto?select=iface,gateway,dhcp")
+                .get("/experimental/syscollector/netproto?select=iface,gateway,dhcp")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2364,7 +2369,7 @@ describe('Syscollector', function () {
 
         it('Not allowed selector', function (done) {
             request(common.url)
-                .get("/syscollector/netproto?select=wrongParam")
+                .get("/experimental/syscollector/netproto?select=wrongParam")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2378,7 +2383,7 @@ describe('Syscollector', function () {
 
         it('Pagination', function (done) {
             request(common.url)
-                .get("/syscollector/netproto?offset=0&limit=1")
+                .get("/experimental/syscollector/netproto?offset=0&limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2396,7 +2401,7 @@ describe('Syscollector', function () {
 
         it('Wrong limit', function (done) {
             request(common.url)
-                .get("/syscollector/netproto?offset=0&limit=1a")
+                .get("/experimental/syscollector/netproto?offset=0&limit=1a")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -2417,7 +2422,7 @@ describe('Syscollector', function () {
         expected_id = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/netproto?limit=1")
+                .get("/experimental/syscollector/netproto?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2437,7 +2442,7 @@ describe('Syscollector', function () {
 
         it('Search', function (done) {
             request(common.url)
-                .get("/syscollector/netproto?search=" + expected_dhcp)
+                .get("/experimental/syscollector/netproto?search=" + expected_dhcp)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2457,7 +2462,7 @@ describe('Syscollector', function () {
 
         it('Wrong filter', function (done) {
             request(common.url)
-                .get("/syscollector/netproto?wrongFilter=value")
+                .get("/experimental/syscollector/netproto?wrongFilter=value")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -2471,7 +2476,7 @@ describe('Syscollector', function () {
 
         it('Wrong Sort', function (done) {
             request(common.url)
-                .get("/syscollector/netproto?sort=-wrongParameter")
+                .get("/experimental/syscollector/netproto?sort=-wrongParameter")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2485,7 +2490,7 @@ describe('Syscollector', function () {
 
         it('Filter: iface', function (done) {
             request(common.url)
-                .get("/syscollector/netproto?=" + expected_proto)
+                .get("/experimental/syscollector/netproto?=" + expected_proto)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2500,7 +2505,7 @@ describe('Syscollector', function () {
 
         it('Filter: type', function (done) {
             request(common.url)
-                .get("/syscollector/netproto?=" + expected_proto)
+                .get("/experimental/syscollector/netproto?=" + expected_proto)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2515,7 +2520,7 @@ describe('Syscollector', function () {
 
         it('Filter: gateway', function (done) {
             request(common.url)
-                .get("/syscollector/netproto?=" + expected_proto)
+                .get("/experimental/syscollector/netproto?=" + expected_proto)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2530,7 +2535,7 @@ describe('Syscollector', function () {
 
         it('Filter: dhcp', function (done) {
             request(common.url)
-                .get("/syscollector/netproto?=" + expected_proto)
+                .get("/experimental/syscollector/netproto?=" + expected_proto)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2545,7 +2550,7 @@ describe('Syscollector', function () {
 
         it('Filter: id', function (done) {
             request(common.url)
-                .get("/syscollector/netproto?=" + expected_proto)
+                .get("/experimental/syscollector/netproto?=" + expected_proto)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2562,15 +2567,12 @@ describe('Syscollector', function () {
     });  // GET/syscollector/netproto
 
 
+    netiface_properties = ['id', 'scan', 'name', 'type', 'state', 'mtu', 'mac', 'tx', 'rx', 'agent_id']
     describe('GET/syscollector/netiface', function () {
-        netiface_properties = ['id', 'scan_id', 'scan_time', 'name',
-            'type', 'state', 'mtu', 'mac', 'tx_packets',
-            'rx_packets', 'tx_bytes', 'rx_bytes', 'tx_errors', 'rx_errors',
-            'tx_dropped', 'rx_dropped', 'agent_id']
 
         it('Request', function (done) {
             request(common.url)
-                .get("/syscollector/netiface")
+                .get("/experimental/syscollector/netiface")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2589,7 +2591,7 @@ describe('Syscollector', function () {
 
         it('Selector', function (done) {
             request(common.url)
-                .get("/syscollector/netiface?select=type,rx_bytes,tx_errors,tx_dropped,mac")
+                .get("/experimental/syscollector/netiface?select=type,rx_bytes,tx_errors,tx_dropped,mac")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2601,14 +2603,14 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array);
-                    res.body.data.items[0].should.have.properties(['type', 'rx_bytes', 'tx_errors', 'tx_dropped', 'mac']);
+                    res.body.data.items[0].should.have.properties(['type', 'rx_bytes', 'tx', 'mac']);
                     done();
                 });
         });
 
         it('Not allowed selector', function (done) {
             request(common.url)
-                .get("/syscollector/netiface?select=wrongParam")
+                .get("/experimental/syscollector/netiface?select=wrongParam")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2622,7 +2624,7 @@ describe('Syscollector', function () {
 
         it('Pagination', function (done) {
             request(common.url)
-                .get("/syscollector/netiface?offset=0&limit=1")
+                .get("/experimental/syscollector/netiface?offset=0&limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2640,7 +2642,7 @@ describe('Syscollector', function () {
 
         it('Wrong limit', function (done) {
             request(common.url)
-                .get("/syscollector/netiface?offset=0&limit=1a")
+                .get("/experimental/syscollector/netiface?offset=0&limit=1a")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -2671,7 +2673,7 @@ describe('Syscollector', function () {
         expected_mac = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/netiface?limit=1")
+                .get("/experimental/syscollector/netiface?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2686,14 +2688,14 @@ describe('Syscollector', function () {
                     expected_type = res.body.data.items[0].type;
                     expected_state = res.body.data.items[0].state;
                     expected_mtu = res.body.data.items[0].mtu;
-                    expected_tx_packets = res.body.data.items[0].tx_packets;
-                    expected_rx_packets = res.body.data.items[0].rx_packets;
-                    expected_tx_bytes = res.body.data.items[0].tx_bytes;
-                    expected_rx_bytes = res.body.data.items[0].rx_bytes;
-                    expected_tx_errors = res.body.data.items[0].tx_errors;
-                    expected_rx_errors = res.body.data.items[0].rx_errors;
-                    expected_tx_dropped = res.body.data.items[0].tx_dropped;
-                    expected_rx_dropped = res.body.data.items[0].rx_dropped;
+                    expected_tx_packets = res.body.data.items[0].tx.packets;
+                    expected_rx_packets = res.body.data.items[0].rx.packets;
+                    expected_tx_bytes = res.body.data.items[0].tx.bytes;
+                    expected_rx_bytes = res.body.data.items[0].rx.bytes;
+                    expected_tx_errors = res.body.data.items[0].tx.errors;
+                    expected_rx_errors = res.body.data.items[0].rx.errors;
+                    expected_tx_dropped = res.body.data.items[0].tx.dropped;
+                    expected_rx_dropped = res.body.data.items[0].rx.dropped;
                     expected_mac = res.body.data.items[0].mac;
                     done();
                 });
@@ -2701,7 +2703,7 @@ describe('Syscollector', function () {
 
         it('Search', function (done) {
             request(common.url)
-                .get("/syscollector/netiface?search=" + expected_mac)
+                .get("/experimental/syscollector/netiface?search=" + expected_mac)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2721,7 +2723,7 @@ describe('Syscollector', function () {
 
         it('Wrong filter', function (done) {
             request(common.url)
-                .get("/syscollector/netiface?wrongFilter=value")
+                .get("/experimental/syscollector/netiface?wrongFilter=value")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -2735,7 +2737,7 @@ describe('Syscollector', function () {
 
         it('Wrong Sort', function (done) {
             request(common.url)
-                .get("/syscollector/netiface?sort=-wrongParameter")
+                .get("/experimental/syscollector/netiface?sort=-wrongParameter")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2749,7 +2751,7 @@ describe('Syscollector', function () {
 
         it('Filter: id', function (done) {
             request(common.url)
-                .get("/syscollector/netiface?id=" + expected_id)
+                .get("/experimental/syscollector/netiface?id=" + expected_id)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2764,7 +2766,7 @@ describe('Syscollector', function () {
 
         it('Filter: name', function (done) {
             request(common.url)
-                .get("/syscollector/netiface?name=" + expected_name)
+                .get("/experimental/syscollector/netiface?name=" + expected_name)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2779,7 +2781,7 @@ describe('Syscollector', function () {
 
         it('Filter: type', function (done) {
             request(common.url)
-                .get("/syscollector/netiface?type=" + expected_type)
+                .get("/experimental/syscollector/netiface?type=" + expected_type)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2794,7 +2796,7 @@ describe('Syscollector', function () {
 
         it('Filter: state', function (done) {
             request(common.url)
-                .get("/syscollector/netiface?state=" + expected_state)
+                .get("/experimental/syscollector/netiface?state=" + expected_state)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2809,7 +2811,7 @@ describe('Syscollector', function () {
 
         it('Filter: mtu', function (done) {
             request(common.url)
-                .get("/syscollector/netiface?mtu=" + expected_mtu)
+                .get("/experimental/syscollector/netiface?mtu=" + expected_mtu)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2824,7 +2826,7 @@ describe('Syscollector', function () {
 
         it('Filter: tx_packets', function (done) {
             request(common.url)
-                .get("/syscollector/netiface?tx_packets=" + expected_tx_packets)
+                .get("/experimental/syscollector/netiface?tx_packets=" + expected_tx_packets)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2832,14 +2834,14 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.items[0].should.have.properties(netiface_properties);
-                    res.body.data.items[0].tx_packets.should.be.equal(expected_tx_packets);
+                    res.body.data.items[0].tx.packets.should.be.equal(expected_tx_packets);
                     done();
                 });
         });
 
         it('Filter: rx_packets', function (done) {
             request(common.url)
-                .get("/syscollector/netiface?rx_packets=" + expected_rx_packets)
+                .get("/experimental/syscollector/netiface?rx_packets=" + expected_rx_packets)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2847,14 +2849,14 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.items[0].should.have.properties(netiface_properties);
-                    res.body.data.items[0].rx_packets.should.be.equal(expected_rx_packets);
+                    res.body.data.items[0].rx.packets.should.be.equal(expected_rx_packets);
                     done();
                 });
         });
 
         it('Filter: tx_bytes', function (done) {
             request(common.url)
-                .get("/syscollector/netiface?tx_bytes=" + expected_tx_bytes)
+                .get("/experimental/syscollector/netiface?tx_bytes=" + expected_tx_bytes)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2862,14 +2864,14 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.items[0].should.have.properties(netiface_properties);
-                    res.body.data.items[0].tx_bytes.should.be.equal(expected_tx_bytes);
+                    res.body.data.items[0].tx.bytes.should.be.equal(expected_tx_bytes);
                     done();
                 });
         });
 
         it('Filter: rx_bytes', function (done) {
             request(common.url)
-                .get("/syscollector/netiface?rx_bytes=" + expected_rx_bytes)
+                .get("/experimental/syscollector/netiface?rx_bytes=" + expected_rx_bytes)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2877,14 +2879,14 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.items[0].should.have.properties(netiface_properties);
-                    res.body.data.items[0].rx_bytes.should.be.equal(expected_rx_bytes);
+                    res.body.data.items[0].rx.bytes.should.be.equal(expected_rx_bytes);
                     done();
                 });
         });
 
         it('Filter: tx_errors', function (done) {
             request(common.url)
-                .get("/syscollector/netiface?tx_errors=" + expected_tx_errors)
+                .get("/experimental/syscollector/netiface?tx_errors=" + expected_tx_errors)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2892,14 +2894,14 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.items[0].should.have.properties(netiface_properties);
-                    res.body.data.items[0].tx_errors.should.be.equal(expected_tx_errors);
+                    res.body.data.items[0].tx.errors.should.be.equal(expected_tx_errors);
                     done();
                 });
         });
 
         it('Filter: rx_errors', function (done) {
             request(common.url)
-                .get("/syscollector/netiface?rx_errors=" + expected_rx_errors)
+                .get("/experimental/syscollector/netiface?rx_errors=" + expected_rx_errors)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2907,14 +2909,14 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.items[0].should.have.properties(netiface_properties);
-                    res.body.data.items[0].rx_errors.should.be.equal(expected_rx_errors);
+                    res.body.data.items[0].rx.errors.should.be.equal(expected_rx_errors);
                     done();
                 });
         });
 
         it('Filter: tx_dropped', function (done) {
             request(common.url)
-                .get("/syscollector/netiface?tx_dropped=" + expected_tx_dropped)
+                .get("/experimental/syscollector/netiface?tx_dropped=" + expected_tx_dropped)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2922,14 +2924,14 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.items[0].should.have.properties(netiface_properties);
-                    res.body.data.items[0].tx_dropped.should.be.equal(expected_tx_dropped);
+                    res.body.data.items[0].tx.dropped.should.be.equal(expected_tx_dropped);
                     done();
                 });
         });
 
         it('Filter: rx_dropped', function (done) {
             request(common.url)
-                .get("/syscollector/netiface?rx_dropped=" + expected_rx_dropped)
+                .get("/experimental/syscollector/netiface?rx_dropped=" + expected_rx_dropped)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2937,7 +2939,7 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.items[0].should.have.properties(netiface_properties);
-                    res.body.data.items[0].rx_dropped.should.be.equal(expected_rx_dropped);
+                    res.body.data.items[0].rx.dropped.should.be.equal(expected_rx_dropped);
                     done();
                 });
         });
@@ -2946,16 +2948,16 @@ describe('Syscollector', function () {
     });  // GET/syscollector/netiface
 
 
-    describe('GET/syscollector/000/processes', function () {
+    describe('GET/syscollector/' + agent_id + '/processes', function () {
         processes_properties = ['tty', 'rgroup', 'sgroup', 'resident',
-            'share', 'session', 'scan_time', 'size', 'scan_id', 'egroup',
-            'tgid', 'priority', 'fgroup', 'state', 'nlwp', 'nice', 'euser',
-            'euser', 'start_time', 'stime', 'vm_size', 'utime', 'ppid', 'name',
-            'pgrp', 'ruser', 'suser', 'processor']
+            'share', 'session', 'scan', 'size', 'egroup', 'tgid', 'priority',
+            'fgroup', 'state', 'nlwp', 'nice', 'euser', 'start_time',
+            'stime', 'vm_size', 'utime', 'ppid', 'name', 'pgrp', 'ruser', 'suser',
+            'processor']
 
         it('Request', function (done) {
             request(common.url)
-                .get("/syscollector/000/processes")
+                .get("/syscollector/" + agent_id + "/processes")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2974,7 +2976,7 @@ describe('Syscollector', function () {
 
         it('Selector', function (done) {
             request(common.url)
-                .get("/syscollector/000/processes?select=tty,sgroup,share,session,scan_id")
+                .get("/syscollector/" + agent_id + "/processes?select=tty,sgroup,share,session,scan_id")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2993,7 +2995,7 @@ describe('Syscollector', function () {
 
         it('Not allowed selector', function (done) {
             request(common.url)
-                .get("/syscollector/000/processes?select=wrongParam")
+                .get("/syscollector/" + agent_id + "/processes?select=wrongParam")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3007,7 +3009,7 @@ describe('Syscollector', function () {
 
         it('Pagination', function (done) {
             request(common.url)
-                .get("/syscollector/000/processes?offset=0&limit=1")
+                .get("/syscollector/" + agent_id + "/processes?offset=0&limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3025,7 +3027,7 @@ describe('Syscollector', function () {
 
         it('Wrong limit', function (done) {
             request(common.url)
-                .get("/syscollector/000/processes?offset=0&limit=1a")
+                .get("/syscollector/" + agent_id + "/processes?offset=0&limit=1a")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -3054,7 +3056,7 @@ describe('Syscollector', function () {
         expected_suser = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/000/processes?limit=1")
+                .get("/syscollector/" + agent_id + "/processes?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3082,7 +3084,7 @@ describe('Syscollector', function () {
 
         it('Search', function (done) {
             request(common.url)
-                .get("/syscollector/000/processes?search=" + expected_name)
+                .get("/syscollector/" + agent_id + "/processes?search=" + expected_name)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3102,7 +3104,7 @@ describe('Syscollector', function () {
 
         it('Wrong filter', function (done) {
             request(common.url)
-                .get("/syscollector/000/processes?wrongFilter=value")
+                .get("/syscollector/" + agent_id + "/processes?wrongFilter=value")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -3116,7 +3118,7 @@ describe('Syscollector', function () {
 
         it('Wrong Sort', function (done) {
             request(common.url)
-                .get("/syscollector/000/processes?sort=-wrongParameter")
+                .get("/syscollector/" + agent_id + "/processes?sort=-wrongParameter")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3130,7 +3132,7 @@ describe('Syscollector', function () {
 
         it('Filter: state', function (done) {
             request(common.url)
-                .get("/syscollector/000/processes?limit=2&offset=1&state=" + expected_state)
+                .get("/syscollector/" + agent_id + "/processes?limit=2&offset=1&state=" + expected_state)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3145,7 +3147,7 @@ describe('Syscollector', function () {
 
         it('Filter: ppid', function (done) {
             request(common.url)
-                .get("/syscollector/000/processes?limit=2&offset=1&ppid=" + expected_ppid)
+                .get("/syscollector/" + agent_id + "/processes?limit=2&offset=1&ppid=" + expected_ppid)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3160,7 +3162,7 @@ describe('Syscollector', function () {
 
         it('Filter: egroup', function (done) {
             request(common.url)
-                .get("/syscollector/000/processes?limit=2&offset=1&egroup=" + expected_egroup)
+                .get("/syscollector/" + agent_id + "/processes?limit=2&offset=1&egroup=" + expected_egroup)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3175,7 +3177,7 @@ describe('Syscollector', function () {
 
         it('Filter: euser', function (done) {
             request(common.url)
-                .get("/syscollector/000/processes?limit=2&offset=1&euser=" + expected_euser)
+                .get("/syscollector/" + agent_id + "/processes?limit=2&offset=1&euser=" + expected_euser)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3190,7 +3192,7 @@ describe('Syscollector', function () {
 
         it('Filter: fgroup', function (done) {
             request(common.url)
-                .get("/syscollector/000/processes?limit=2&offset=1&fgroup=" + expected_fgroup)
+                .get("/syscollector/" + agent_id + "/processes?limit=2&offset=1&fgroup=" + expected_fgroup)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3205,7 +3207,7 @@ describe('Syscollector', function () {
 
         it('Filter: name', function (done) {
             request(common.url)
-                .get("/syscollector/000/processes?name=" + expected_name)
+                .get("/syscollector/" + agent_id + "/processes?name=" + expected_name)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3220,7 +3222,7 @@ describe('Syscollector', function () {
 
         it('Filter: nlwp', function (done) {
             request(common.url)
-                .get("/syscollector/000/processes?limit=2&offset=1&nlwp=" + expected_nlwp)
+                .get("/syscollector/" + agent_id + "/processes?limit=2&offset=1&nlwp=" + expected_nlwp)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3235,7 +3237,7 @@ describe('Syscollector', function () {
 
         it('Filter: pgrp', function (done) {
             request(common.url)
-                .get("/syscollector/000/processes?pgrp=" + expected_pgrp)
+                .get("/syscollector/" + agent_id + "/processes?pgrp=" + expected_pgrp)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3250,7 +3252,7 @@ describe('Syscollector', function () {
 
         it('Filter: priority', function (done) {
             request(common.url)
-                .get("/syscollector/000/processes?limit=2&offset=1&priority=" + expected_priority)
+                .get("/syscollector/" + agent_id + "/processes?limit=2&offset=1&priority=" + expected_priority)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3265,7 +3267,7 @@ describe('Syscollector', function () {
 
         it('Filter: rgroup', function (done) {
             request(common.url)
-                .get("/syscollector/000/processes?limit=2&offset=1&rgroup=" + expected_rgroup)
+                .get("/syscollector/" + agent_id + "/processes?limit=2&offset=1&rgroup=" + expected_rgroup)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3280,7 +3282,7 @@ describe('Syscollector', function () {
 
         it('Filter: ruser', function (done) {
             request(common.url)
-                .get("/syscollector/000/processes?limit=2&offset=1&ruser=" + expected_ruser)
+                .get("/syscollector/" + agent_id + "/processes?limit=2&offset=1&ruser=" + expected_ruser)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3295,7 +3297,7 @@ describe('Syscollector', function () {
 
         it('Filter: sgroup', function (done) {
             request(common.url)
-                .get("/syscollector/000/processes?limit=2&offset=1&sgroup=" + expected_sgroup)
+                .get("/syscollector/" + agent_id + "/processes?limit=2&offset=1&sgroup=" + expected_sgroup)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3310,7 +3312,7 @@ describe('Syscollector', function () {
 
         it('Filter: suser', function (done) {
             request(common.url)
-                .get("/syscollector/000/processes?limit=2&offset=1&suser=" + expected_suser)
+                .get("/syscollector/" + agent_id + "/processes?limit=2&offset=1&suser=" + expected_suser)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3324,17 +3326,13 @@ describe('Syscollector', function () {
         });
 
 
-    });  // GET/syscollector/000/processes
+    });  // GET/syscollector/:agent_id/processes
 
 
-    describe('GET/syscollector/000/ports', function () {
-        ports_properties = ['scan_id', 'scan_time', 'protocol', 'local_ip',
-            'local_port', 'remote_ip', 'remote_port', 'tx_queue', 'rx_queue', 'inode',
-            'state']
-
+    describe('GET/syscollector/' + agent_id + '/ports', function () {
         it('Request', function (done) {
             request(common.url)
-                .get("/syscollector/000/ports")
+                .get("/syscollector/" + agent_id + "/ports")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3353,7 +3351,7 @@ describe('Syscollector', function () {
 
         it('Selector', function (done) {
             request(common.url)
-                .get("/syscollector/000/ports?select=protocol,remote_ip,tx_queue,state")
+                .get("/syscollector/" + agent_id + "/ports?select=protocol,remote_ip,tx_queue,state")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3372,7 +3370,7 @@ describe('Syscollector', function () {
 
         it('Not allowed selector', function (done) {
             request(common.url)
-                .get("/syscollector/000/ports?select=wrongParam")
+                .get("/syscollector/" + agent_id + "/ports?select=wrongParam")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3386,7 +3384,7 @@ describe('Syscollector', function () {
 
         it('Pagination', function (done) {
             request(common.url)
-                .get("/syscollector/000/ports?offset=0&limit=1")
+                .get("/syscollector/" + agent_id + "/ports?offset=0&limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3404,7 +3402,7 @@ describe('Syscollector', function () {
 
         it('Wrong limit', function (done) {
             request(common.url)
-                .get("/syscollector/000/ports?offset=0&limit=1a")
+                .get("/syscollector/" + agent_id + "/ports?offset=0&limit=1a")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -3426,7 +3424,7 @@ describe('Syscollector', function () {
         expected_state = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/000/ports?limit=1")
+                .get("/syscollector/" + agent_id + "/ports?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3436,9 +3434,9 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
                     expected_protocol = res.body.data.items[0].protocol;
-                    expected_local_ip = res.body.data.items[0].local_ip;
-                    expected_local_port = res.body.data.items[0].local_port;
-                    expected_remote_ip = res.body.data.items[0].remote_ip;
+                    expected_local_ip = res.body.data.items[0].local.ip;
+                    expected_local_port = res.body.data.items[0].local.port;
+                    expected_remote_ip = res.body.data.items[0].remote.ip;
                     expected_tx_queue = res.body.data.items[0].tx_queue;
                     expected_state = res.body.data.items[0].state;
                     done();
@@ -3447,7 +3445,7 @@ describe('Syscollector', function () {
 
         it('Search', function (done) {
             request(common.url)
-                .get("/syscollector/000/ports?search=" + expected_remote_ip)
+                .get("/syscollector/" + agent_id + "/ports?search=" + expected_remote_ip)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3460,14 +3458,14 @@ describe('Syscollector', function () {
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
                     res.body.data.items[0].should.have.properties(ports_properties);
-                    res.body.data.items[0].remote_ip.should.be.equal(expected_remote_ip);
+                    res.body.data.items[0].remote.ip.should.be.equal(expected_remote_ip);
                     done();
                 });
         });
 
         it('Wrong filter', function (done) {
             request(common.url)
-                .get("/syscollector/000/ports?wrongFilter=value")
+                .get("/syscollector/" + agent_id + "/ports?wrongFilter=value")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -3481,7 +3479,7 @@ describe('Syscollector', function () {
 
         it('Wrong Sort', function (done) {
             request(common.url)
-                .get("/syscollector/000/ports?sort=-wrongParameter")
+                .get("/syscollector/" + agent_id + "/ports?sort=-wrongParameter")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3495,7 +3493,7 @@ describe('Syscollector', function () {
 
         it('Filter: protocol', function (done) {
             request(common.url)
-                .get("/syscollector/000/ports?protocol=" + expected_protocol)
+                .get("/syscollector/" + agent_id + "/ports?protocol=" + expected_protocol)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3510,7 +3508,7 @@ describe('Syscollector', function () {
 
         it('Filter: local_ip', function (done) {
             request(common.url)
-                .get("/syscollector/000/ports?local_ip=" + expected_local_ip)
+                .get("/syscollector/" + agent_id + "/ports?local_ip=" + expected_local_ip)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3518,14 +3516,14 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.items[0].should.have.properties(ports_properties);
-                    res.body.data.items[0].local_ip.should.be.equal(expected_local_ip);
+                    res.body.data.items[0].local.ip.should.be.equal(expected_local_ip);
                     done();
                 });
         });
 
         it('Filter: local_port', function (done) {
             request(common.url)
-                .get("/syscollector/000/ports?local_port=" + expected_local_port)
+                .get("/syscollector/" + agent_id + "/ports?local_port=" + expected_local_port)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3533,14 +3531,14 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.items[0].should.have.properties(ports_properties);
-                    res.body.data.items[0].local_port.should.be.equal(expected_local_port);
+                    res.body.data.items[0].local.port.should.be.equal(expected_local_port);
                     done();
                 });
         });
 
         it('Filter: remote_ip', function (done) {
             request(common.url)
-                .get("/syscollector/000/ports?remote_ip=" + expected_remote_ip)
+                .get("/syscollector/" + agent_id + "/ports?remote_ip=" + expected_remote_ip)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3548,14 +3546,14 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.items[0].should.have.properties(ports_properties);
-                    res.body.data.items[0].remote_ip.should.be.equal(expected_remote_ip);
+                    res.body.data.items[0].remote.ip.should.be.equal(expected_remote_ip);
                     done();
                 });
         });
 
         it('Filter: tx_queue', function (done) {
             request(common.url)
-                .get("/syscollector/000/ports?tx_queue=" + expected_tx_queue)
+                .get("/syscollector/" + agent_id + "/ports?tx_queue=" + expected_tx_queue)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3570,7 +3568,7 @@ describe('Syscollector', function () {
 
         it('Filter: state', function (done) {
             request(common.url)
-                .get("/syscollector/000/ports?state=" + expected_state)
+                .get("/syscollector/" + agent_id + "/ports?state=" + expected_state)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3585,16 +3583,15 @@ describe('Syscollector', function () {
 
 
 
-    });  // GET/syscollector/000/ports
+    });  // GET/syscollector/:agent_id/ports
 
 
-    describe('GET/syscollector/000/netaddr', function () {
-        netaddr_properties = ['id', 'scan_id', 'proto', 'address',
-            'netmask', 'broadcast']
+    describe('GET/syscollector/' + agent_id + '/netaddr', function () {
+        netaddr_properties.splice(netaddr_properties.indexOf('agent_id'), 1)
 
         it('Request', function (done) {
             request(common.url)
-                .get("/syscollector/000/netaddr")
+                .get("/syscollector/" + agent_id + "/netaddr")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3613,7 +3610,7 @@ describe('Syscollector', function () {
 
         it('Selector', function (done) {
             request(common.url)
-                .get("/syscollector/000/netaddr?select=proto,netmask,broadcast")
+                .get("/syscollector/" + agent_id + "/netaddr?select=proto,netmask,broadcast")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3632,7 +3629,7 @@ describe('Syscollector', function () {
 
         it('Not allowed selector', function (done) {
             request(common.url)
-                .get("/syscollector/000/netaddr?select=wrongParam")
+                .get("/syscollector/" + agent_id + "/netaddr?select=wrongParam")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3646,7 +3643,7 @@ describe('Syscollector', function () {
 
         it('Pagination', function (done) {
             request(common.url)
-                .get("/syscollector/000/netaddr?offset=0&limit=1")
+                .get("/syscollector/" + agent_id + "/netaddr?offset=0&limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3664,7 +3661,7 @@ describe('Syscollector', function () {
 
         it('Wrong limit', function (done) {
             request(common.url)
-                .get("/syscollector/000/netaddr?offset=0&limit=1a")
+                .get("/syscollector/" + agent_id + "/netaddr?offset=0&limit=1a")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -3685,7 +3682,7 @@ describe('Syscollector', function () {
         expected_id = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/000/netaddr?limit=1")
+                .get("/syscollector/" + agent_id + "/netaddr?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3705,7 +3702,7 @@ describe('Syscollector', function () {
 
         it('Search', function (done) {
             request(common.url)
-                .get("/syscollector/000/netaddr?search=" + expected_broadcast)
+                .get("/syscollector/" + agent_id + "/netaddr?search=" + expected_broadcast)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3725,7 +3722,7 @@ describe('Syscollector', function () {
 
         it('Wrong filter', function (done) {
             request(common.url)
-                .get("/syscollector/000/netaddr?wrongFilter=value")
+                .get("/syscollector/" + agent_id + "/netaddr?wrongFilter=value")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -3739,7 +3736,7 @@ describe('Syscollector', function () {
 
         it('Wrong Sort', function (done) {
             request(common.url)
-                .get("/syscollector/000/netaddr?sort=-wrongParameter")
+                .get("/syscollector/" + agent_id + "/netaddr?sort=-wrongParameter")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3753,7 +3750,7 @@ describe('Syscollector', function () {
 
         it('Filter: proto', function (done) {
             request(common.url)
-                .get("/syscollector/000/netaddr?proto=" + expected_proto)
+                .get("/syscollector/" + agent_id + "/netaddr?proto=" + expected_proto)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3768,7 +3765,7 @@ describe('Syscollector', function () {
 
         it('Filter: address', function (done) {
             request(common.url)
-                .get("/syscollector/000/netaddr?address=" + expected_address)
+                .get("/syscollector/" + agent_id + "/netaddr?address=" + expected_address)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3783,7 +3780,7 @@ describe('Syscollector', function () {
 
         it('Filter: broadcast', function (done) {
             request(common.url)
-                .get("/syscollector/000/netaddr?broadcast=" + expected_broadcast)
+                .get("/syscollector/" + agent_id + "/netaddr?broadcast=" + expected_broadcast)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3798,7 +3795,7 @@ describe('Syscollector', function () {
 
         it('Filter: netmask', function (done) {
             request(common.url)
-                .get("/syscollector/000/netaddr?netmask=" + expected_netmask)
+                .get("/syscollector/" + agent_id + "/netaddr?netmask=" + expected_netmask)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3813,7 +3810,7 @@ describe('Syscollector', function () {
 
         it('Filter: id', function (done) {
             request(common.url)
-                .get("/syscollector/000/netaddr?id=" + expected_id)
+                .get("/syscollector/" + agent_id + "/netaddr?id=" + expected_id)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3826,52 +3823,15 @@ describe('Syscollector', function () {
                 });
         });
 
-    });  // GET/syscollector/000/netaddr
+    });  // GET/syscollector/:agent_id/netaddr
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    describe('GET/syscollector/000/netproto', function () {
+    describe('GET/syscollector/' + agent_id + '/netproto', function () {
         netproto_properties = ['id', 'scan_id', 'iface', 'type',
             'gateway', 'dhcp']
 
         it('Request', function (done) {
             request(common.url)
-                .get("/syscollector/000/netproto")
+                .get("/syscollector/" + agent_id + "/netproto")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3890,7 +3850,7 @@ describe('Syscollector', function () {
 
         it('Selector', function (done) {
             request(common.url)
-                .get("/syscollector/000/netproto?select=iface,gateway,dhcp")
+                .get("/syscollector/" + agent_id + "/netproto?select=iface,gateway,dhcp")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3909,7 +3869,7 @@ describe('Syscollector', function () {
 
         it('Not allowed selector', function (done) {
             request(common.url)
-                .get("/syscollector/000/netproto?select=wrongParam")
+                .get("/syscollector/" + agent_id + "/netproto?select=wrongParam")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3923,7 +3883,7 @@ describe('Syscollector', function () {
 
         it('Pagination', function (done) {
             request(common.url)
-                .get("/syscollector/000/netproto?offset=0&limit=1")
+                .get("/syscollector/" + agent_id + "/netproto?offset=0&limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3941,7 +3901,7 @@ describe('Syscollector', function () {
 
         it('Wrong limit', function (done) {
             request(common.url)
-                .get("/syscollector/000/netproto?offset=0&limit=1a")
+                .get("/syscollector/" + agent_id + "/netproto?offset=0&limit=1a")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -3962,7 +3922,7 @@ describe('Syscollector', function () {
         expected_id = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/000/netproto?limit=1")
+                .get("/syscollector/" + agent_id + "/netproto?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3982,7 +3942,7 @@ describe('Syscollector', function () {
 
         it('Search', function (done) {
             request(common.url)
-                .get("/syscollector/000/netproto?search=" + expected_dhcp)
+                .get("/syscollector/" + agent_id + "/netproto?search=" + expected_dhcp)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4002,7 +3962,7 @@ describe('Syscollector', function () {
 
         it('Wrong filter', function (done) {
             request(common.url)
-                .get("/syscollector/000/netproto?wrongFilter=value")
+                .get("/syscollector/" + agent_id + "/netproto?wrongFilter=value")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -4016,7 +3976,7 @@ describe('Syscollector', function () {
 
         it('Wrong Sort', function (done) {
             request(common.url)
-                .get("/syscollector/000/netproto?sort=-wrongParameter")
+                .get("/syscollector/" + agent_id + "/netproto?sort=-wrongParameter")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4030,7 +3990,7 @@ describe('Syscollector', function () {
 
         it('Filter: iface', function (done) {
             request(common.url)
-                .get("/syscollector/000/netproto?=" + expected_proto)
+                .get("/syscollector/" + agent_id + "/netproto?=" + expected_proto)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4045,7 +4005,7 @@ describe('Syscollector', function () {
 
         it('Filter: type', function (done) {
             request(common.url)
-                .get("/syscollector/000/netproto?=" + expected_proto)
+                .get("/syscollector/" + agent_id + "/netproto?=" + expected_proto)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4060,7 +4020,7 @@ describe('Syscollector', function () {
 
         it('Filter: gateway', function (done) {
             request(common.url)
-                .get("/syscollector/000/netproto?=" + expected_proto)
+                .get("/syscollector/" + agent_id + "/netproto?=" + expected_proto)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4075,7 +4035,7 @@ describe('Syscollector', function () {
 
         it('Filter: dhcp', function (done) {
             request(common.url)
-                .get("/syscollector/000/netproto?=" + expected_proto)
+                .get("/syscollector/" + agent_id + "/netproto?=" + expected_proto)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4090,7 +4050,7 @@ describe('Syscollector', function () {
 
         it('Filter: id', function (done) {
             request(common.url)
-                .get("/syscollector/000/netproto?=" + expected_proto)
+                .get("/syscollector/" + agent_id + "/netproto?=" + expected_proto)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4104,18 +4064,14 @@ describe('Syscollector', function () {
         });
 
 
-    });  // GET/syscollector/000/netproto
+    });  // GET/syscollector/:agent_id/netproto
 
-
-    describe('GET/syscollector/000/netiface', function () {
-        netiface_properties = ['id', 'scan_id', 'scan_time', 'name',
-            'type', 'state', 'mtu', 'mac', 'tx_packets',
-            'rx_packets', 'tx_bytes', 'rx_bytes', 'tx_errors', 'rx_errors',
-            'tx_dropped', 'rx_dropped']
+    describe('GET/syscollector/' + agent_id + '/netiface', function () {
+        netiface_properties.splice(netiface_properties.indexOf('agent_id'), 1);
 
         it('Request', function (done) {
             request(common.url)
-                .get("/syscollector/000/netiface")
+                .get("/syscollector/" + agent_id + "/netiface")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4134,7 +4090,7 @@ describe('Syscollector', function () {
 
         it('Selector', function (done) {
             request(common.url)
-                .get("/syscollector/000/netiface?select=type,rx_bytes,tx_errors,tx_dropped,mac")
+                .get("/syscollector/" + agent_id + "/netiface?select=type,rx_bytes,tx_errors,tx_dropped,mac")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4146,14 +4102,14 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array);
-                    res.body.data.items[0].should.have.properties(['type', 'rx_bytes', 'tx_errors', 'tx_dropped', 'mac']);
+                    res.body.data.items[0].should.have.properties(['type', 'rx_bytes', 'tx', 'mac']);
                     done();
                 });
         });
 
         it('Not allowed selector', function (done) {
             request(common.url)
-                .get("/syscollector/000/netiface?select=wrongParam")
+                .get("/syscollector/" + agent_id + "/netiface?select=wrongParam")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4167,7 +4123,7 @@ describe('Syscollector', function () {
 
         it('Pagination', function (done) {
             request(common.url)
-                .get("/syscollector/000/netiface?offset=0&limit=1")
+                .get("/syscollector/" + agent_id + "/netiface?offset=0&limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4185,7 +4141,7 @@ describe('Syscollector', function () {
 
         it('Wrong limit', function (done) {
             request(common.url)
-                .get("/syscollector/000/netiface?offset=0&limit=1a")
+                .get("/syscollector/" + agent_id + "/netiface?offset=0&limit=1a")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -4216,7 +4172,7 @@ describe('Syscollector', function () {
         expected_mac = "";
         before(function (done) {
             request(common.url)
-                .get("/syscollector/000/netiface?limit=1")
+                .get("/syscollector/" + agent_id + "/netiface?limit=1")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4231,14 +4187,14 @@ describe('Syscollector', function () {
                     expected_type = res.body.data.items[0].type;
                     expected_state = res.body.data.items[0].state;
                     expected_mtu = res.body.data.items[0].mtu;
-                    expected_tx_packets = res.body.data.items[0].tx_packets;
-                    expected_rx_packets = res.body.data.items[0].rx_packets;
-                    expected_tx_bytes = res.body.data.items[0].tx_bytes;
-                    expected_rx_bytes = res.body.data.items[0].rx_bytes;
-                    expected_tx_errors = res.body.data.items[0].tx_errors;
-                    expected_rx_errors = res.body.data.items[0].rx_errors;
-                    expected_tx_dropped = res.body.data.items[0].tx_dropped;
-                    expected_rx_dropped = res.body.data.items[0].rx_dropped;
+                    expected_tx_packets = res.body.data.items[0].tx.packets;
+                    expected_rx_packets = res.body.data.items[0].rx.packets;
+                    expected_tx_bytes = res.body.data.items[0].tx.bytes;
+                    expected_rx_bytes = res.body.data.items[0].rx.bytes;
+                    expected_tx_errors = res.body.data.items[0].tx.errors;
+                    expected_rx_errors = res.body.data.items[0].rx.errors;
+                    expected_tx_dropped = res.body.data.items[0].tx.dropped;
+                    expected_rx_dropped = res.body.data.items[0].rx.dropped;
                     expected_mac = res.body.data.items[0].mac;
                     done();
                 });
@@ -4246,7 +4202,7 @@ describe('Syscollector', function () {
 
         it('Search', function (done) {
             request(common.url)
-                .get("/syscollector/000/netiface?search=" + expected_mac)
+                .get("/syscollector/" + agent_id + "/netiface?search=" + expected_mac)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4266,7 +4222,7 @@ describe('Syscollector', function () {
 
         it('Wrong filter', function (done) {
             request(common.url)
-                .get("/syscollector/000/netiface?wrongFilter=value")
+                .get("/syscollector/" + agent_id + "/netiface?wrongFilter=value")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(400)
@@ -4280,7 +4236,7 @@ describe('Syscollector', function () {
 
         it('Wrong Sort', function (done) {
             request(common.url)
-                .get("/syscollector/000/netiface?sort=-wrongParameter")
+                .get("/syscollector/" + agent_id + "/netiface?sort=-wrongParameter")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4294,7 +4250,7 @@ describe('Syscollector', function () {
 
         it('Filter: id', function (done) {
             request(common.url)
-                .get("/syscollector/000/netiface?id=" + expected_id)
+                .get("/syscollector/" + agent_id + "/netiface?id=" + expected_id)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4309,7 +4265,7 @@ describe('Syscollector', function () {
 
         it('Filter: name', function (done) {
             request(common.url)
-                .get("/syscollector/000/netiface?name=" + expected_name)
+                .get("/syscollector/" + agent_id + "/netiface?name=" + expected_name)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4324,7 +4280,7 @@ describe('Syscollector', function () {
 
         it('Filter: type', function (done) {
             request(common.url)
-                .get("/syscollector/000/netiface?type=" + expected_type)
+                .get("/syscollector/" + agent_id + "/netiface?type=" + expected_type)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4339,7 +4295,7 @@ describe('Syscollector', function () {
 
         it('Filter: state', function (done) {
             request(common.url)
-                .get("/syscollector/000/netiface?state=" + expected_state)
+                .get("/syscollector/" + agent_id + "/netiface?state=" + expected_state)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4354,7 +4310,7 @@ describe('Syscollector', function () {
 
         it('Filter: mtu', function (done) {
             request(common.url)
-                .get("/syscollector/000/netiface?mtu=" + expected_mtu)
+                .get("/syscollector/" + agent_id + "/netiface?mtu=" + expected_mtu)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4369,7 +4325,7 @@ describe('Syscollector', function () {
 
         it('Filter: tx_packets', function (done) {
             request(common.url)
-                .get("/syscollector/000/netiface?tx_packets=" + expected_tx_packets)
+                .get("/syscollector/" + agent_id + "/netiface?tx_packets=" + expected_tx_packets)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4377,14 +4333,14 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.items[0].should.have.properties(netiface_properties);
-                    res.body.data.items[0].tx_packets.should.be.equal(expected_tx_packets);
+                    res.body.data.items[0].tx.packets.should.be.equal(expected_tx_packets);
                     done();
                 });
         });
 
         it('Filter: rx_packets', function (done) {
             request(common.url)
-                .get("/syscollector/000/netiface?rx_packets=" + expected_rx_packets)
+                .get("/syscollector/" + agent_id + "/netiface?rx_packets=" + expected_rx_packets)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4392,14 +4348,14 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.items[0].should.have.properties(netiface_properties);
-                    res.body.data.items[0].rx_packets.should.be.equal(expected_rx_packets);
+                    res.body.data.items[0].rx.packets.should.be.equal(expected_rx_packets);
                     done();
                 });
         });
 
         it('Filter: tx_bytes', function (done) {
             request(common.url)
-                .get("/syscollector/000/netiface?tx_bytes=" + expected_tx_bytes)
+                .get("/syscollector/" + agent_id + "/netiface?tx_bytes=" + expected_tx_bytes)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4407,14 +4363,14 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.items[0].should.have.properties(netiface_properties);
-                    res.body.data.items[0].tx_bytes.should.be.equal(expected_tx_bytes);
+                    res.body.data.items[0].tx.bytes.should.be.equal(expected_tx_bytes);
                     done();
                 });
         });
 
         it('Filter: rx_bytes', function (done) {
             request(common.url)
-                .get("/syscollector/000/netiface?rx_bytes=" + expected_rx_bytes)
+                .get("/syscollector/" + agent_id + "/netiface?rx_bytes=" + expected_rx_bytes)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4422,14 +4378,14 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.items[0].should.have.properties(netiface_properties);
-                    res.body.data.items[0].rx_bytes.should.be.equal(expected_rx_bytes);
+                    res.body.data.items[0].rx.bytes.should.be.equal(expected_rx_bytes);
                     done();
                 });
         });
 
         it('Filter: tx_errors', function (done) {
             request(common.url)
-                .get("/syscollector/000/netiface?tx_errors=" + expected_tx_errors)
+                .get("/syscollector/" + agent_id + "/netiface?tx_errors=" + expected_tx_errors)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4437,14 +4393,14 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.items[0].should.have.properties(netiface_properties);
-                    res.body.data.items[0].tx_errors.should.be.equal(expected_tx_errors);
+                    res.body.data.items[0].tx.errors.should.be.equal(expected_tx_errors);
                     done();
                 });
         });
 
         it('Filter: rx_errors', function (done) {
             request(common.url)
-                .get("/syscollector/000/netiface?rx_errors=" + expected_rx_errors)
+                .get("/syscollector/" + agent_id + "/netiface?rx_errors=" + expected_rx_errors)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4452,14 +4408,14 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.items[0].should.have.properties(netiface_properties);
-                    res.body.data.items[0].rx_errors.should.be.equal(expected_rx_errors);
+                    res.body.data.items[0].rx.errors.should.be.equal(expected_rx_errors);
                     done();
                 });
         });
 
         it('Filter: tx_dropped', function (done) {
             request(common.url)
-                .get("/syscollector/000/netiface?tx_dropped=" + expected_tx_dropped)
+                .get("/syscollector/" + agent_id + "/netiface?tx_dropped=" + expected_tx_dropped)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4467,14 +4423,14 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.items[0].should.have.properties(netiface_properties);
-                    res.body.data.items[0].tx_dropped.should.be.equal(expected_tx_dropped);
+                    res.body.data.items[0].tx.dropped.should.be.equal(expected_tx_dropped);
                     done();
                 });
         });
 
         it('Filter: rx_dropped', function (done) {
             request(common.url)
-                .get("/syscollector/000/netiface?rx_dropped=" + expected_rx_dropped)
+                .get("/syscollector/" + agent_id + "/netiface?rx_dropped=" + expected_rx_dropped)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -4482,15 +4438,12 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.items[0].should.have.properties(netiface_properties);
-                    res.body.data.items[0].rx_dropped.should.be.equal(expected_rx_dropped);
+                    res.body.data.items[0].rx.dropped.should.be.equal(expected_rx_dropped);
                     done();
                 });
         });
 
 
-    });  // GET/syscollector/000/netiface
-
-
-
+    });  // GET/syscollector/:agent_id/netiface
 
 });  // Syscollector
