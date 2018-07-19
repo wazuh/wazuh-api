@@ -126,8 +126,13 @@ exports.get_user_id = function (user_name, callback) {
 exports.update_user = function (user_data, callback) {
     exists_user(user_data.name, function (err, result) {
         if (!err) {
-            var inputData = [user_data.enabled, user_data.name];
-            var sql = "UPDATE users SET enabled = ? WHERE name = ?";
+            if (user_data.password) {
+                var inputData = [user_data.enabled, encrypt(user_data.password), user_data.name];
+                var sql = "UPDATE users SET enabled = ?, password = ? WHERE name = ?";
+            } else {
+                var inputData = [user_data.enabled, user_data.name];
+                var sql = "UPDATE users SET enabled = ? WHERE name = ?";
+            }
             db_helper.db_run(sql, inputData, callback);
         } else {
             callback(true);

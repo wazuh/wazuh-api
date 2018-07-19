@@ -59,7 +59,7 @@ router.get('/user/authenticate', function (req, res) {
  *
  * @apiParam {Boolean} enabled To enable or disable the user.
  * 
- * @apiDescription Updates the current user information. Fields that can be updated: enabled.
+ * @apiDescription Updates the current user information. Fields that can be updated: enabled, password.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X PUT -H "Content-Type:application/json" -d '{"enabled":true}' "https://127.0.0.1:55000/api/user?pretty"
@@ -70,19 +70,23 @@ router.put('/user', function (req, res) {
     var user_name = users.current_user_name;
     var data_request = { 'function': 'PUT/api/user', 'arguments': { 'only_verify_privileges': true } };
     data_request['url'] = req.originalUrl;
+    var filters = { 'enabled': 'boolean', 'password': 'names' };
 
-    if (!filter.check(req.body, { 'enabled': 'boolean' }, req, res))  // Filter with error
+    if (!filter.check(req.body, filters, req, res))  // Filter with error
         return;
 
-    var user_data = { enabled: req.body.enabled, name: user_name };
+    var user_data = { enabled: req.body.enabled, name: user_name, password: req.body.password };
 
     execute.exec(python_bin, [wazuh_control], data_request, function (python_response) {
         if (python_response.error == 0 && python_response.data) {
-            users.update_user(user_data, function (result) {
+            users.update_user(user_data, function (err) {
                 var response = {
                     data: {
-                        user: user_data,
-                        updated: result
+                        user: {
+                            name: user_data.name,
+                            enabled: user_data.enabled,
+                        },
+                        updated: !err
                     }, error: 0
                 };
                 res_h.send(req, res, response);
@@ -103,7 +107,7 @@ router.put('/user', function (req, res) {
  * @apiParam {String} user_name Name of the selected user.
  * @apiParam {Boolean} enabled To enable or disable the user.
  * 
- * @apiDescription Updates user information for a specific user. Fields that can be updated: enabled.
+ * @apiDescription Updates user information for a specific user. Fields that can be updated: enabled, password.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X PUT -H "Content-Type:application/json" -d '{"enabled":true}' "https://127.0.0.1:55000/api/user/foo?pretty"
@@ -113,12 +117,15 @@ router.put('/users/:user_name', function (req, res) {
     logger.debug(req.connection.remoteAddress + " PUT/user/:user_name");
     var data_request = { 'function': 'PUT/api/users/:user_name', 'arguments': { 'only_verify_privileges': true } };
     data_request['url'] = req.originalUrl;
+    var filters = { 'enabled': 'boolean', 'password': 'names'};
 
-    if (!filter.check(req.body, { 'enabled': 'boolean' }, req, res))  // Filter with error
+    if (!filter.check(req.body, filters, req, res))  // Filter with error
         return;
+
     if (!filter.check(req.params, { 'user_name': 'names' }, req, res))  // Filter with error
         return;
-    var user_data = { enabled: req.body.enabled, name: req.params.user_name };
+        
+    var user_data = { enabled: req.body.enabled, name: req.params.user_name, password: req.body.password};
 
     execute.exec(python_bin, [wazuh_control], data_request, function (python_response) {
         if (python_response.error == 0 && python_response.data) {
@@ -126,7 +133,10 @@ router.put('/users/:user_name', function (req, res) {
                 if (!err){
                     var response = {
                         data: {
-                            user: user_data,
+                            user: {
+                                name: user_data.name,
+                                enabled: user_data.enabled,
+                            },
                             updated: !err
                         }, error: 0
                     };
