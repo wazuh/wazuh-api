@@ -293,7 +293,9 @@ if __name__ == "__main__":
                 '/api/user/privileges': user.get_json_user_privileges,
                 '/api/user/roles': user.get_json_user_roles,
                 '/api/users/:user_name': rbac.get_json_user_roles,
-                '/api/user': user.get_json_user_roles
+                '/api/user': user.get_json_user_roles,
+                '/api/users/:user_name/groups': rbac.get_json_user_groups,
+                '/api/user/groups': user.get_json_user_groups
             })
 
 

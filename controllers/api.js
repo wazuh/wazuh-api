@@ -343,7 +343,42 @@ router.get('/users/:user_name/privileges', function (req, res) {
             res_h.bad_request(req, res, "620");
         }
     });
-    
+
+});
+
+
+
+/**
+ * @api {get} /api/user/:user_name/groups Returns the groups of a specific user
+ * @apiName GetUserGroups
+ * @apiGroup Groups
+ *
+ * @apiParam {String} user_name Name of the selected user.
+ * 
+ * @apiDescription Returns the groups of a specific user.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/api/user/foo/groups?pretty"
+ *
+ */
+router.get('/users/:user_name/groups', function (req, res) {
+    logger.debug(req.connection.remoteAddress + " GET/users/:user_name/groups");
+    var data_request = { 'function': '/api/users/:user_name/groups', 'arguments': {} };
+    data_request['url'] = req.originalUrl;
+
+    if (!filter.check(req.params, { 'user_name': 'names' }, req, res))  // Filter with error
+        return;
+    user_name = req.params.user_name;
+    data_request['arguments']['user_name'] = user_name;
+
+    users.exists_user(user_name, function (err, result) {
+        if (!err) {
+            execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+        } else {
+            res_h.bad_request(req, res, "620");
+        }
+    });
+
 });
 
 
@@ -414,6 +449,26 @@ router.get('/user/roles', function (req, res) {
 router.get('/user/privileges', function (req, res) {
     logger.debug(req.connection.remoteAddress + " GET/user/privileges");
     var data_request = { 'function': '/api/user/privileges', 'arguments': {} };
+    data_request['url'] = req.originalUrl;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+});
+
+
+/**
+ * @api {get} /api/user/groups Returns the privileges of the current user
+ * @apiName GetCurrentUserGroups
+ * @apiGroup Groups
+ *
+ * @apiDescription Returns the groups of the current user.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/api/user/groups?pretty"
+ *
+ */
+router.get('/user/groups', function (req, res) {
+    logger.debug(req.connection.remoteAddress + " GET/user/groups");
+    var data_request = { 'function': '/api/user/groups', 'arguments': {} };
     data_request['url'] = req.originalUrl;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });

@@ -70,6 +70,9 @@ class User():
     def get_json_user_roles(self):
         return {"items":[str(role) for role in self.roles], "totalItems":len(self.roles)}
 
+    def get_json_user_groups(self):
+        return {"items":[str(group) for group in self.groups], "totalItems":len(self.groups)}
+
     def get_json_user_privileges(self):
         list_user_privileges = []
         privileges_added = []

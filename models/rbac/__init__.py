@@ -21,3 +21,6 @@ class Rbac():
 
     def get_json_user_roles(self, user_name):
         return User(user_name=user_name, ossec_path=self.ossec_path).get_json_user_roles()
+
+    def get_json_user_groups(self, user_name):
+        return User(user_name=user_name, ossec_path=self.ossec_path).get_json_user_groups()
