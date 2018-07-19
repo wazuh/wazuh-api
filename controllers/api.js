@@ -204,8 +204,6 @@ router.get('/users/:user_name', function (req, res) {
     var user_name = req.params.user_name
     data_request['arguments']['user_name'] = user_name;
 
-    logger.debug("User: " + user_name)
-
     execute.exec(python_bin, [wazuh_control], data_request, function (python_response) {
         if (python_response.error == 0 && python_response.data) {
             users.get_user(user_name, function (err, result) {
@@ -214,7 +212,8 @@ router.get('/users/:user_name', function (req, res) {
                         data: {
                             user_name: result.name,
                             enabled: !!parseInt(result.enabled),
-                            roles: python_response.data.items
+                            roles: python_response.data.roles,
+                            groups: python_response.data.groups
                         }, error: 0
                     };
                     res_h.send(req, res, response);
@@ -247,8 +246,7 @@ router.get('/user', function (req, res) {
     var user_name = users.current_user_name;
     var data_request = { 'function': '/api/user', 'arguments': {} };
     data_request['url'] = req.originalUrl;
-
-    logger.debug("");
+    data_request['arguments']['user_name'] = user_name;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (python_response) {
         if (python_response.error == 0 && python_response.data) {
@@ -258,7 +256,8 @@ router.get('/user', function (req, res) {
                         data: {
                             user_name: user_name, 
                             enabled: !!parseInt(result.enabled),
-                            roles: python_response.data.items
+                            roles: python_response.data.roles,
+                            groups: python_response.data.groups
                         }, error: 0
                     };
                     res_h.send(req, res, response);

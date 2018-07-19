@@ -76,8 +76,9 @@ class User():
     def get_json_user_privileges(self):
         list_user_privileges = []
         privileges_added = []
+        roles = self.roles + self.groups
 
-        for role in self.roles:
+        for role in roles:
             for privilege_key, privilege_value in role.get_privileges_json()['privileges'].items():
                 if privilege_key in privileges_added:
                     for privilege in list_user_privileges:

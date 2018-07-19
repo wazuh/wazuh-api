@@ -287,15 +287,15 @@ if __name__ == "__main__":
         if rbac:
             functions.update({
                 '/api/roles': rbac.get_json_all_roles_from_file,
-                '/api/users/:user_name/privileges': rbac.get_json_user_privileges,
-                '/api/users/:user_name/roles': rbac.get_json_user_roles,
+                '/api/user': rbac.get_json_user_info,
                 '/api/user/authenticate': user.get_json_user_roles,
                 '/api/user/privileges': user.get_json_user_privileges,
+                '/api/user/groups': user.get_json_user_groups,
                 '/api/user/roles': user.get_json_user_roles,
-                '/api/users/:user_name': rbac.get_json_user_roles,
-                '/api/user': user.get_json_user_roles,
+                '/api/users/:user_name': rbac.get_json_user_info,
                 '/api/users/:user_name/groups': rbac.get_json_user_groups,
-                '/api/user/groups': user.get_json_user_groups
+                '/api/users/:user_name/privileges': rbac.get_json_user_privileges,
+                '/api/users/:user_name/roles': rbac.get_json_user_roles
             })
 
 
