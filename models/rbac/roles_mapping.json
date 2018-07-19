@@ -10,7 +10,7 @@
                     ]
                 }
             },
-            "user": {
+            "group1": {
                 "/agents": {
                     "methods": [
                         "GET"
@@ -51,6 +51,11 @@
                     "methods": [
                         "GET"
                     ]
+                }
+            },
+            "user": {
+                "/manager*": {
+                    "methods": "*"
                 }
             }
         },

@@ -30,15 +30,10 @@ class Role():
         if not self.privileges:
             raise Exception("No mapping found for role `{}`".format(self.role))
 
-    def _parse_role_url(self, url, ignore_pretty=True):
+    def _parse_role_url(self, url):
         url_parsed = url
         if "*" in url:
             url_parsed = url.replace('*', ".*")
-
-        if ignore_pretty and "?pretty" in url:
-            url_parsed = url.replace("?pretty", "")
-        elif ignore_pretty and "&pretty" in url:
-            url_parsed = url.replace("&pretty", "")
 
         return url_parsed
 
