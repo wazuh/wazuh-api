@@ -62,6 +62,7 @@ router.all("*", function (req, res, next) {
     }
 
     var run_as_user = req.headers['es-security-runas-user'];
+    var run_as_group = req.headers['es-security-runas-group'];
 
     var user = basic_auth(req);
     if (!user) {
@@ -72,6 +73,7 @@ router.all("*", function (req, res, next) {
                 res_h.bad_request(req, res, "101");
             } else {
                 users.set_run_as_user(run_as_user);
+                users.set_run_as_group(run_as_group);
                 next();
             }
         });
@@ -82,6 +84,7 @@ router.all("*", function (req, res, next) {
                 res_h.bad_request(req, res, "102");
             } else {
                 users.set_run_as_user(run_as_user);
+                users.set_run_as_group(run_as_group);
                 next();
             }
         });

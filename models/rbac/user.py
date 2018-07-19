@@ -4,7 +4,6 @@
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 from rbac.role import Role
-from rbac.request import Request
 from utils import read_json_from_file
 
 class User():
@@ -34,37 +33,27 @@ class User():
         roles_config = read_json_from_file(ossec_path + "/api/models/rbac/roles_config.json")
         return [role for role, users in roles_config.items() if self.user_name in users]
 
-    def _check_privileges_in_roles(self, request_method, request_resource):
+    def _check_privileges_in_roles(self, request):
         has_permission = False
         for role in self.roles:
-            has_permission = role.can_exec(request_method, request_resource)
+            has_permission = role.can_exec(request)
             if has_permission:
                 break
 
         return has_permission
 
-    def _check_privileges_in_groups(self, request_method, request_resource):
+    def _check_privileges_in_groups(self, request):
         has_permission = False
         for group in self.groups:
-            has_permission = group.can_exec(request_method, request_resource)
+            has_permission = group.can_exec(request)
             if has_permission:
                 break
 
         return has_permission
 
-    def _check_privileges(self, request_method, request_resource):
-        has_permission = self._check_privileges_in_roles(request_method, request_resource) \
-                            or self._check_privileges_in_groups(request_method, request_resource)
-        return has_permission
-
-    def has_permission_to_exec(self, request_param):
-        request = Request(request_param)
-        request_method = request.get_method()
-        request_url= request._ignore_pretty(request.get_url())
-
-        has_permission = self._check_privileges(request_method, request_url) \
-            if request_method and request_url else False
-        
+    def has_permission_to_exec(self, request):
+        has_permission = self._check_privileges_in_roles(request) \
+                            or self._check_privileges_in_groups(request)
         return has_permission
 
     def get_json_user_roles(self):

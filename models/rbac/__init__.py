@@ -16,6 +16,11 @@ class Rbac():
         roles = [role for role in roles_config.keys()]
         return {"items": roles, "totalItems":len(roles)}
 
+    def get_json_all_groups_from_file(self):
+        groups_config = read_json_from_file(self.ossec_path + "/api/models/rbac/group_mapping.json")
+        groups = [group for group in groups_config.keys()]
+        return {"items": groups, "totalItems":len(groups)}
+
     def get_json_user_privileges(self, user_name):
         return User(user_name=user_name, ossec_path=self.ossec_path).get_json_user_privileges()
 

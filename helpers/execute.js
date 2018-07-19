@@ -37,6 +37,7 @@ exports.exec = function (cmd, args, stdin, callback) {
     if (stdin != null){
         stdin['ossec_path'] = config.ossec_path;
         stdin['user'] = users.current_user_name;
+        stdin['run_as_group'] = users.run_as_group; 
     }
 
     // log

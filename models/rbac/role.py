@@ -4,18 +4,19 @@
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 from utils import read_json_from_file
+from rbac.request import Request
 import re
 
 class Role():
 
-    def __init__(self, role, ossec_path, realm):
+    def __init__(self, role, ossec_path, realm="native"):
         self.role = role
         self._load_role_privileges_from_file(ossec_path, realm)
 
     def __str__(self):
         return self.role
 
-    def _load_role_privileges_from_file(self, ossec_path, realm):
+    def _load_role_privileges_from_file(self, ossec_path, realm="native"):
         roles_mapping = read_json_from_file(ossec_path + "/api/models/rbac/roles_mapping.json")
 
         realms_mapping = roles_mapping.get('realms')
@@ -30,6 +31,9 @@ class Role():
         if not self.privileges:
             raise Exception("No mapping found for role `{}`".format(self.role))
 
+    def _parse_request(self, request):
+        return Request(request)
+
     def _parse_role_url(self, url):
         url_parsed = url
         if "*" in url:
@@ -37,7 +41,11 @@ class Role():
 
         return url_parsed
 
-    def can_exec(self, request_method, request_url):
+    def can_exec(self, request):
+        request = Request(request)
+        request_method = request.get_method()
+        request_url= request.get_url()
+
         can_exec_request = False
         for role_url, privileges_for_resource in self.privileges.items():
 

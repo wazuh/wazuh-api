@@ -14,6 +14,7 @@ error_wazuh_package = 0
 exception_error = None
 try:
     import rbac.user as rbac_user
+    import rbac.role as rbac_role
     from rbac import Rbac
     new_path = '/var/ossec/framework'
     if not os_path.exists(new_path):
@@ -110,10 +111,14 @@ def usage():
     print(help_msg)
     exit(1)
 
-def _rbac_verify_privileges(user, request):
-    if not user.has_permission_to_exec(request):
-        print_json("Unauthorized request. User '{}' does not have permission to execute the operation.".format(user), 101)
+def _rbac_verify_privileges(request, user=None, run_as_group=None):
+    if run_as_group and not run_as_group.can_exec(request):
+        print_json("Unauthorized request. Group '{}' does not have privileges to execute the operation.".format(run_as_group), 101)
         exit(0)
+    elif not user.has_permission_to_exec(request):
+        print_json("Unauthorized request. User '{}' does not have privileges to execute the operation.".format(user), 101)
+        exit(0)
+
     if 'arguments' in request and request['arguments'].get('only_verify_privileges'):
         print_json({"privileges": True})
         exit(0)
@@ -179,12 +184,14 @@ if __name__ == "__main__":
         exit(1)
 
     rbac = None
-    user =  None
+    group =  None
     if request.get('user'):
         try:
             rbac = Rbac(ossec_path=request['ossec_path'])
             user = rbac_user.User(user_name=request['user'], ossec_path=request['ossec_path'])
-            _rbac_verify_privileges(user, request)
+            if request.get('run_as_group'):
+                group = rbac_role.Role(role=request.get('run_as_group'),ossec_path=request['ossec_path'])
+            _rbac_verify_privileges(request, user=user, run_as_group=group)
         except Exception as e:
             print_json("Wazuh-Python Internal Error: {} (RBAC).".format(e), 1000)
             exit(1)
@@ -288,14 +295,15 @@ if __name__ == "__main__":
             functions.update({
                 '/api/roles': rbac.get_json_all_roles_from_file,
                 '/api/user': rbac.get_json_user_info,
-                '/api/user/authenticate': user.get_json_user_roles,
-                '/api/user/privileges': user.get_json_user_privileges,
-                '/api/user/groups': user.get_json_user_groups,
-                '/api/user/roles': user.get_json_user_roles,
+                '/api/groups': rbac.get_json_all_groups_from_file,
                 '/api/users/:user_name': rbac.get_json_user_info,
                 '/api/users/:user_name/groups': rbac.get_json_user_groups,
                 '/api/users/:user_name/privileges': rbac.get_json_user_privileges,
-                '/api/users/:user_name/roles': rbac.get_json_user_roles
+                '/api/users/:user_name/roles': rbac.get_json_user_roles,
+                '/api/user/authenticate': rbac.get_json_user_roles,
+                '/api/user/privileges': rbac.get_json_user_privileges,
+                '/api/user/groups': rbac.get_json_user_groups,
+                '/api/user/roles': rbac.get_json_user_roles
             })
 
 

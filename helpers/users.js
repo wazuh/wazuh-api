@@ -163,7 +163,12 @@ exports.set_run_as_user = function (run_as_user) {
     if (run_as_user) {
         exports.current_user_name = run_as_user;
     }
+}
 
+exports.set_run_as_group = function (run_as_group) {
+    if (run_as_group) {
+        exports.run_as_group = run_as_group;
+    }
 }
 
 exports.current_user_name = null; 

@@ -33,6 +33,7 @@ router.get('/user/authenticate', function (req, res) {
     var token = users.get_token(user_name);
     var data_request = { 'function': '/api/user/authenticate', 'arguments': {} };
     data_request['url'] = req.originalUrl;
+    data_request['arguments']['user_name'] = user_name;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (python_response) {
         if (python_response.error == 0 && python_response.data) {
@@ -429,6 +430,7 @@ router.get('/user/roles', function (req, res) {
     logger.debug(req.connection.remoteAddress + " GET/user/roles");
     var data_request = { 'function': '/api/user/roles', 'arguments': {} };
     data_request['url'] = req.originalUrl;
+    data_request['arguments']['user_name'] = users.current_user_name;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 });
@@ -449,6 +451,7 @@ router.get('/user/privileges', function (req, res) {
     logger.debug(req.connection.remoteAddress + " GET/user/privileges");
     var data_request = { 'function': '/api/user/privileges', 'arguments': {} };
     data_request['url'] = req.originalUrl;
+    data_request['arguments']['user_name'] = users.current_user_name;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 });
@@ -469,6 +472,7 @@ router.get('/user/groups', function (req, res) {
     logger.debug(req.connection.remoteAddress + " GET/user/groups");
     var data_request = { 'function': '/api/user/groups', 'arguments': {} };
     data_request['url'] = req.originalUrl;
+    data_request['arguments']['user_name'] = users.current_user_name;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 });
@@ -490,6 +494,25 @@ router.get('/roles', function (req, res) {
     var data_request = { 'function': '/api/roles', 'arguments': {} };
     data_request['url'] = req.originalUrl;
     execute.exec(python_bin, [wazuh_control], data_request, function (python_response) {res_h.send(req, res, python_response)});
+});
+
+
+/**
+ * @api {get} /api/groups Returns all groups
+ * @apiName GetAllGroups
+ * @apiGroup Groups
+ *
+ * @apiDescription Returns all existing groups in the API.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/api/groups?pretty"
+ *
+ */
+router.get('/groups', function (req, res) {
+    logger.debug(req.connection.remoteAddress + " GET/groups");
+    var data_request = { 'function': '/api/groups', 'arguments': {} };
+    data_request['url'] = req.originalUrl;
+    execute.exec(python_bin, [wazuh_control], data_request, function (python_response) { res_h.send(req, res, python_response) });
 });
 
 
