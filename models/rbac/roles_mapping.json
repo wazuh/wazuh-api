@@ -2,7 +2,7 @@
     "realms": {
         "native": {
             "admin": {
-                "/agents": {
+                "/agentss": {
                     "methods": [
                         "POST",
                         "PUT",
@@ -34,6 +34,11 @@
                         "POST"
                     ]
                 },
+                "/api/users/foo": {
+                    "methods": [
+                        "GET"
+                    ]
+                },
                 "/manager/logs?pretty&limit=1&offset=1": {
                     "methods": [
                         "GET",
@@ -53,9 +58,16 @@
                     ]
                 }
             },
+
+
             "user": {
-                "/manager*": {
-                    "methods": "*"
+                "/api/users/*": {
+                    "methods": [
+                        "GET"
+                    ],
+                    "exceptions": [
+                        "/api/users/foo"
+                    ]
                 }
             }
         },

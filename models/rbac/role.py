@@ -31,15 +31,25 @@ class Role():
         if not self.privileges:
             raise Exception("No mapping found for role `{}`".format(self.role))
 
-    def _parse_request(self, request):
-        return Request(request)
-
     def _parse_role_url(self, url):
         url_parsed = url
         if "*" in url:
             url_parsed = url.replace('*', ".*")
 
         return url_parsed
+
+    def _match_url_requests(self, resource_url, request_url):
+        return re.compile(r'^' + self._parse_role_url(resource_url) + '$').match(request_url)
+
+    def _check_role_exception(self, request_url, exception_list):
+        is_exception = False
+        for current_exception in exception_list:
+            if self._match_url_requests(current_exception, request_url):
+                is_exception = True
+                break
+        return is_exception
+
+
 
     def can_exec(self, request):
         request = Request(request)
@@ -50,14 +60,18 @@ class Role():
         for role_url, privileges_for_resource in self.privileges.items():
 
             # Check url
-            role_url = self._parse_role_url(role_url)
-            regex = re.compile(r'^' + role_url + '$')
-            if not regex.match(request_url):
+            if not self._match_url_requests(role_url, request_url):
+                continue
+
+            # Check exceptions
+            if 'exceptions' in privileges_for_resource and \
+                    self._check_role_exception(request_url, privileges_for_resource['exceptions']):
                 continue
 
             # Check method
             can_exec_request = True if privileges_for_resource['methods'] == "*" \
                 else request_method in privileges_for_resource['methods']
+
             if can_exec_request:
                 break
 

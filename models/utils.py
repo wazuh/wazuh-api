@@ -7,9 +7,6 @@ import json as json
 
 def read_json_from_file(path):
     with open(path) as f:
-        try:
-            json_loaded = json.loads(f.read())
-        except Exception as e:
-            json_loaded = {}
+        json_loaded = json.loads(f.read())
 
     return json_loaded

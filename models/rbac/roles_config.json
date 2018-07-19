@@ -1,7 +1,6 @@
 {
     "admin": [
-        "jane",
-        "foo"
+        "jane"
     ],
     "user": [
         "foo"
