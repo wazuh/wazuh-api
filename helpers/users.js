@@ -47,7 +47,7 @@ verify_user = function (user, callback) {
 
     var sql = "SELECT name,password FROM users WHERE name = ?";
     db_helper.db_get(sql, inputData, function (err, result) {
-        if (!err && bcrypt.compareSync(user.pass, result.password)) {
+        if (!err && result.password != '' && bcrypt.compareSync(user.pass, result.password)) {
             callback(false);
         } else {
             callback(true);
@@ -115,6 +115,22 @@ exports.register_user = function (user_data, result) {
     });
 }
 
+exports.is_password_setted = function (user_name, callback) {
+    var inputData = [user_name];
+    var sql = "SELECT password FROM users WHERE name = ?";
+    db_helper.db_get(sql, inputData, function (err, result) {
+        if (!err) {
+            if (result.password == '') {
+                callback(false);
+            } else {
+                callback(true);
+            }
+        } else {
+            callback(false);
+        }
+    });
+}
+
 exists_user = function (user_name, callback) {
     var inputData = [user_name];
     var sql = "SELECT * FROM users WHERE name = ?";
@@ -130,9 +146,12 @@ exports.get_user_id = function (user_name, callback) {
 exports.update_user = function (user_data, callback) {
     exists_user(user_data.name, function (err, result) {
         if (!err) {
-            if (user_data.password) {
+            if (user_data.password && user_data.enabled) {
                 var inputData = [user_data.enabled, encrypt(user_data.password), user_data.name];
                 var sql = "UPDATE users SET enabled = ?, password = ? WHERE name = ?";
+            } else if (user_data.password && !user_data.enabled) {
+                var inputData = [encrypt(user_data.password), user_data.name];
+                var sql = "UPDATE users SET password = ? WHERE name = ?";
             } else {
                 var inputData = [user_data.enabled, user_data.name];
                 var sql = "UPDATE users SET enabled = ? WHERE name = ?";
@@ -170,7 +189,7 @@ exports.get_all_users = function (callback) {
 
 exports.set_run_as_user = function (run_as_user) {
     if (run_as_user) {
-        set_user(user.name);
+        set_user(run_as_user);
     }
 }
 

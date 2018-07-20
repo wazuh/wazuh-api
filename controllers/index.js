@@ -66,26 +66,39 @@ router.all("*", function (req, res, next) {
     var run_as_group = req.headers['es-security-runas-group'];
 
     var user = basic_auth(req);
-    if (!user) {
+    if (!user) { // token auth
         var token = req.headers['x-access-token'];
         users.authenticate_user_from_token(token, function (result) {
-            if (!result) {
-                res_h.bad_request(req, res, "101");
-                var log_msg = "[" + req.connection.remoteAddress + "] " + "Token: \"" + token + "\" - Authentication failed.";
-                logger.log(log_msg);
-            } else {
+            if (!result) { // wrong token
+                    res_h.bad_request(req, res, "101");
+                    var log_msg = "[" + req.connection.remoteAddress + "] " + "Token: \"" + token + "\" - Authentication failed.";
+                    logger.log(log_msg);
+            } else { // OK
                 users.set_run_as_user(run_as_user);
                 users.set_run_as_group(run_as_group);
                 next();
             }
         });
-    } else {
+    } else { // user auth
         users.authenticate_user(user, function (result) {
-            if (!result) {
-                res_h.bad_request(req, res, "102");
-                var log_msg = "[" + req.connection.remoteAddress + "] " + "User: \"" + user.name + "\" - Authentication failed.";
-                logger.log(log_msg);
-            } else {
+            if (!result) { // wong user or pass
+                users.is_password_setted(user.name, function (result) { // first login?
+                    if (result) { 
+                        res_h.bad_request(req, res, "102");
+                        var log_msg = "[" + req.connection.remoteAddress + "] " + "User: \"" + user.name + "\" - Authentication failed.";
+                        logger.log(log_msg);
+                    } else {
+                        if (req.originalUrl.indexOf('/api/user') >= 0 && req.method == "PUT" && "password" in req.body) { // PUT/api/user
+                            users.set_run_as_user(user.name);
+                            next();
+                        } else { 
+                            res_h.bad_request(req, res, "103");
+                            var log_msg = "[" + req.connection.remoteAddress + "] " + "User: \"" + user.name + "\" - Authentication failed: Password not configured.";
+                            logger.log(log_msg);
+                        }
+                    }
+                });
+            } else { // OK
                 users.set_run_as_user(run_as_user);
                 users.set_run_as_group(run_as_group);
                 next();
