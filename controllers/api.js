@@ -223,6 +223,7 @@ router.get('/users/:user_name', function (req, res) {
                         data: {
                             user_name: result.name,
                             enabled: !!parseInt(result.enabled),
+                            reserved: !!parseInt(result.reserved),
                             roles: python_response.data.roles,
                             groups: python_response.data.groups
                         }, error: 0
@@ -267,6 +268,7 @@ router.get('/user', function (req, res) {
                         data: {
                             user_name: user_name, 
                             enabled: !!parseInt(result.enabled),
+                            reserved: !!parseInt(result.reserved),
                             roles: python_response.data.roles,
                             groups: python_response.data.groups
                         }, error: 0

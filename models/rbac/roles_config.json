@@ -1,6 +1,10 @@
 {
-    "superuser": [
-        "admin"
+    "admin": [
+        "wazuh"
+    ],
+
+    "app": [
+        "wazuh-app"
     ],
 
     "user": [

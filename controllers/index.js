@@ -70,9 +70,9 @@ router.all("*", function (req, res, next) {
         var token = req.headers['x-access-token'];
         users.authenticate_user_from_token(token, function (result) {
             if (!result) { // wrong token
-                    res_h.bad_request(req, res, "101");
-                    var log_msg = "[" + req.connection.remoteAddress + "] " + "Token: \"" + token + "\" - Authentication failed.";
-                    logger.log(log_msg);
+                res_h.bad_request(req, res, "101");
+                var log_msg = "[" + req.connection.remoteAddress + "] " + "Token: \"" + token + "\" - Authentication failed.";
+                logger.log(log_msg);
             } else { // OK
                 users.set_run_as_user(run_as_user);
                 users.set_run_as_group(run_as_group);
@@ -81,7 +81,7 @@ router.all("*", function (req, res, next) {
         });
     } else { // user auth
         users.authenticate_user(user, function (result) {
-            if (!result) { // wong user or pass
+            if (!result) { // wrong user or pass
                 users.is_password_setted(user.name, function (result) { // first login?
                     if (result) { 
                         res_h.bad_request(req, res, "102");

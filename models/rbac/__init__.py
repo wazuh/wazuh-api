@@ -4,16 +4,21 @@
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 from utils import read_json_from_file
+from rbac.role import _load_roles
 from rbac.user import User
 
 class Rbac():
 
-    def __init__(self, ossec_path):
+    def __init__(self, ossec_path, realm='native'):
         self.ossec_path = ossec_path
+        self.reserved_roles = {
+            "superuser": {"/*": {"methods": ["GET", "POST", "PUT", "DELETE"]}},
+            "app": {"/*": {"methods": ["GET", "POST", "PUT", "DELETE"]}}
+        }
 
-    def get_json_all_roles_from_file(self):
-        roles_config = read_json_from_file(self.ossec_path + "/api/models/rbac/roles_config.json")
-        roles = [role for role in roles_config.keys()]
+
+    def get_json_all_roles(self, realm='native'):
+        roles =  _load_roles(self.ossec_path, realm, True)
         return {"items": roles, "totalItems":len(roles)}
 
     def get_json_all_groups_from_file(self):

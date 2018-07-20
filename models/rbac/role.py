@@ -7,27 +7,45 @@ from utils import read_json_from_file
 from rbac.request import Request
 import re
 
+reserved_roles = {
+    "superuser": {"/*": {"methods": ["GET", "POST", "PUT", "DELETE"]}},
+    "app": {"/*": {"methods": ["GET", "POST", "PUT", "DELETE"]}}
+}
+
+def _load_roles(ossec_path, realm='native', reserved_info=False):
+    roles_mapping = read_json_from_file(ossec_path + "/api/models/rbac/roles_mapping.json")
+
+    realms_mapping = roles_mapping.get('realms')
+    if not realms_mapping:
+        raise Exception("No mapping found for realms")
+
+    current_realm_roles = realms_mapping.get(realm)
+    if not current_realm_roles:
+        raise Exception("No mapping found for realm `{}`".format(realm))
+
+    if reserved_info:
+        for role, data in reserved_roles.items():
+            data.update({'reserved': True})
+
+        for role, data in current_realm_roles.items():
+            data.update({'reserved': False})
+
+    roles = current_realm_roles
+    roles.update(reserved_roles)
+    return roles
+
+
 class Role():
 
     def __init__(self, role, ossec_path, realm="native"):
         self.role = role
-        self._load_role_privileges_from_file(ossec_path, realm)
+        self._load_role_privileges_from_file(ossec_path=ossec_path, realm=realm)
 
     def __str__(self):
         return self.role
 
     def _load_role_privileges_from_file(self, ossec_path, realm="native"):
-        roles_mapping = read_json_from_file(ossec_path + "/api/models/rbac/roles_mapping.json")
-
-        realms_mapping = roles_mapping.get('realms')
-        if not realms_mapping:
-            raise Exception("No mapping found for realms")
-
-        current_realm_roles = realms_mapping.get(realm)
-        if not current_realm_roles:
-            raise Exception("No mapping found for realm `{}`".format(realm))
-
-        self.privileges = current_realm_roles.get(self.role)
+        self.privileges = _load_roles(ossec_path=ossec_path, realm=realm).get(self.role)
         if not self.privileges:
             raise Exception("No mapping found for role `{}`".format(self.role))
 

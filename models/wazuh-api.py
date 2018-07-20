@@ -303,7 +303,7 @@ if __name__ == "__main__":
         # RBAC
         if rbac:
             functions.update({
-                '/api/roles': rbac.get_json_all_roles_from_file,
+                '/api/roles': rbac.get_json_all_roles,
                 '/api/user': rbac.get_json_user_info,
                 '/api/groups': rbac.get_json_all_groups_from_file,
                 '/api/users/:user_name': rbac.get_json_user_info,

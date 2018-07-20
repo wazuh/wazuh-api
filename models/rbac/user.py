@@ -3,24 +3,24 @@
 # Created by Wazuh, Inc. <info@wazuh.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
-from rbac.role import Role
 from utils import read_json_from_file
+from rbac.role import Role
 
 class User():
 
     def __init__(self, user_name, ossec_path, realm='native'):
         self.user_name = user_name
-        self._load_roles(ossec_path, realm)
+        self._load_roles(ossec_path=ossec_path, realm=realm)
 
     def _load_roles(self, ossec_path, realm):
-        roles_user = self._get_user_roles_from_file(ossec_path)
-        groups_user = self._get_user_groups_from_file(ossec_path)
+        roles_user = self._get_user_roles_from_file(ossec_path=ossec_path)
+        groups_user = self._get_user_groups_from_file(ossec_path=ossec_path)
 
         if not roles_user:
             raise Exception("No roles found for user `{}`".format(self.user_name))
 
-        self.groups = [Role(group_name, ossec_path, realm) for group_name in groups_user]
-        self.roles = [Role(role_name, ossec_path, realm) for role_name in roles_user]
+        self.groups = [Role(role=group_name, ossec_path=ossec_path, realm=realm) for group_name in groups_user]
+        self.roles = [Role(role=role_name, ossec_path=ossec_path, realm=realm) for role_name in roles_user]
 
     def __str__(self):
         return self.user_name
