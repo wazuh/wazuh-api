@@ -61,9 +61,9 @@
 
 
             "user": {
-                "/api/users/*": {
+                "/api/*": {
                     "methods": [
-                        "GET"
+                        "GET", "POST", "PUT"
                     ],
                     "exceptions": [
                         "/api/users/foo"

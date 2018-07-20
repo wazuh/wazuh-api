@@ -48,12 +48,16 @@ verify_user = function (user, callback) {
     var sql = "SELECT name,password FROM users WHERE name = ?";
     db_helper.db_get(sql, inputData, function (err, result) {
         if (!err && bcrypt.compareSync(user.pass, result.password)) {
-            exports.current_user_name = user.name;
             callback(false);
         } else {
             callback(true);
         }
     });
+}
+
+set_user = function (name) {
+    exports.current_user_name = name;
+    logger.set_user(name);
 }
 
 verify_user_enabled = function (username, callback) {
@@ -69,7 +73,7 @@ authenticate_user = function (user, callback) {
         } else {
             verify_user_enabled(user.name, function (err, result) {
                 if (!err && result.enabled) {
-                    exports.current_user_name = user.name;
+                    set_user(user.name);
                     callback(true);
                 } else {
                     callback(false);
@@ -88,7 +92,7 @@ authenticate_user_from_token = function (token, callback) {
         } else {
             verify_user_enabled(token_decoded.username, function (err, result) {
                 if (!err && result.enabled) {
-                    exports.current_user_name = token_decoded.username;
+                    set_user(user.name);
                     callback(true);
                 } else {
                     callback(false);
@@ -166,7 +170,7 @@ exports.get_all_users = function (callback) {
 
 exports.set_run_as_user = function (run_as_user) {
     if (run_as_user) {
-        exports.current_user_name = run_as_user;
+        set_user(user.name);
     }
 }
 
@@ -178,6 +182,7 @@ exports.set_run_as_group = function (run_as_group) {
 
 exports.current_user_name = null; 
 exports.authenticate_user = authenticate_user;
+exports.set_user = set_user;
 exports.get_token = get_token;
 exports.authenticate_user_from_token = authenticate_user_from_token;
 exports.exists_user = exists_user;

@@ -11,16 +11,12 @@
 var sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const dbPath = path.resolve(__dirname, '../api.db')
-var dbExists = require('fs').existsSync(dbPath);
 var db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE);
 
-if (!dbExists){
-    db.serialize(function () {
+exports.db = db.serialize(function () {
         db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, password TEXT NOT NULL, enabled INTEGER NOT NULL)");
         db.run("INSERT INTO users (name, password, enabled) VALUES('foo', '$2b$10$v4O9dHg1ONatWvYCBlszLO0oHdjVoXGgqMX2GFR7RGdvPoVCHRYTS', 1)");
     });
-} 
-exports.db = db;
 
 
 function db_get(sql, inputData, callback) {

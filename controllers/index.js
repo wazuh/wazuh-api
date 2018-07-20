@@ -39,7 +39,7 @@ apicache.options(cache_opt);
 router.post("*", function (req, res, next) {
     var content_type = req.get('Content-Type');
 
-    if (!content_type || !(content_type == 'application/json' || content_type == 'application/x-www-form-urlencoded' || content_type == 'application/zip')) {
+    if (!content_type || !(content_type == 'application/json' || content_type == 'application/x-www-form-urlencoded')){
         logger.debug(req.connection.remoteAddress + " POST " + req.path);
         res_h.bad_request(req, res, "607");
     }
@@ -49,6 +49,7 @@ router.post("*", function (req, res, next) {
 
 // All requests
 router.all("*", function (req, res, next) {
+    users.set_user("");
     var go_next = true;
 
     if (req.query) {
@@ -69,8 +70,9 @@ router.all("*", function (req, res, next) {
         var token = req.headers['x-access-token'];
         users.authenticate_user_from_token(token, function (result) {
             if (!result) {
-                logger.debug("Wrong token: " + token + ".");
                 res_h.bad_request(req, res, "101");
+                var log_msg = "[" + req.connection.remoteAddress + "] " + "Token: \"" + token + "\" - Authentication failed.";
+                logger.log(log_msg);
             } else {
                 users.set_run_as_user(run_as_user);
                 users.set_run_as_group(run_as_group);
@@ -80,8 +82,9 @@ router.all("*", function (req, res, next) {
     } else {
         users.authenticate_user(user, function (result) {
             if (!result) {
-                logger.debug("Wrong user: " + user.name + ".");
                 res_h.bad_request(req, res, "102");
+                var log_msg = "[" + req.connection.remoteAddress + "] " + "User: \"" + user.name + "\" - Authentication failed.";
+                logger.log(log_msg);
             } else {
                 users.set_run_as_user(run_as_user);
                 users.set_run_as_group(run_as_group);
