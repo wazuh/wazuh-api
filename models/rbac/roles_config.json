@@ -1,12 +1,13 @@
 {
-    "admin": [
-        "jane"
+    "superuser": [
+        "admin"
     ],
+
     "user": [
-        "foo"
+
     ],
+
     "viewer": [
-        "test2",
-        "test"
+        "foo"
     ]
 }

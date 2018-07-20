@@ -1,75 +1,52 @@
 {
     "realms": {
         "native": {
-            "admin": {
-                "/agentss": {
+
+            "superuser": {
+                "/*": {
                     "methods": [
-                        "POST",
-                        "PUT",
-                        "DELETE"
+                        "GET", "POST", "PUT", "DELETE"
                     ]
                 }
             },
-            "group1": {
-                "/agents": {
+
+            "user": {
+                "/*": {
+                    "methods": [
+                        "GET", "PUT", "POST"
+                    ],
+                    "exceptions": [
+                        "/api/users/*"
+                    ]
+                }
+            },
+
+            "viewer": {
+                "/*": {
+                    "methods": [
+                        "GET"
+                    ],
+                    "exceptions": [
+                        "/api/users/*",
+                        "/agents/*/key"
+                    ]
+                }
+            },
+
+
+            "sample-group": {
+                "/agents?status=active*": {
                     "methods": [
                         "GET"
                     ]
                 },
                 "/manager": {
                     "methods": [
-                        "PUT"
-                    ]
-                },
-                "/syscollector*": {
-                    "methods": [
                         "GET"
-                    ]
-                },
-                "/api*": {
-                    "methods": [
-                        "GET",
-                        "PUT",
-                        "DELETE",
-                        "POST"
-                    ]
-                },
-                "/api/users/foo": {
-                    "methods": [
-                        "GET"
-                    ]
-                },
-                "/manager/logs?pretty&limit=1&offset=1": {
-                    "methods": [
-                        "GET",
-                        "PUT",
-                        "DELETE",
-                        "POST"
-                    ]
-                }
-            },
-            "viewer": {
-                "/manager*": {
-                    "methods": "*"
-                },
-                "/api*": {
-                    "methods": [
-                        "GET"
-                    ]
-                }
-            },
-
-
-            "user": {
-                "/api/*": {
-                    "methods": [
-                        "GET", "POST", "PUT"
-                    ],
-                    "exceptions": [
-                        "/api/users/foo"
                     ]
                 }
             }
+
         },
         "active_directory": {}
     }
