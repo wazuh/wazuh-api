@@ -83,3 +83,7 @@ exports.empty_boolean = function(b) {
 exports.boolean = function(b) {
     return input_val(b, /^true|false$/);
 }
+
+exports.query_param = function(q) {
+    return input_val(q, /[\w \d]+/);
+}

@@ -13,6 +13,7 @@
 errors = require('../helpers/errors');
 filter = require('../helpers/filters');
 execute = require('../helpers/execute');
+templates = require('../helpers/request_templates');
 apicache  = require('apicache');
 cache     = apicache.middleware;
 wazuh_control = api_path + "/models/wazuh-api.py";
