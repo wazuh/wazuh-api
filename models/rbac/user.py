@@ -6,6 +6,27 @@
 from utils import read_json_from_file
 from rbac.role import Role
 
+reserved_users = {
+    "admin": {"users": ["wazuh"]},
+    "app": {"users": ["wazuh-app"]}
+}
+
+def _load_users_mapping_from_file(ossec_path, reserved_info=False):
+    users_mapping = read_json_from_file(ossec_path + "/api/models/rbac/roles_config.json")
+
+    if reserved_users:
+        for user, data in reserved_users.items():
+            data.update({'reserved': True})
+
+        for user, data in users_mapping.items():
+            data.update({'reserved': False})
+
+    users = users_mapping
+    users.update(reserved_users)
+    return users
+
+
+
 class User():
 
     def __init__(self, user_name, ossec_path, realm='native'):
@@ -30,8 +51,8 @@ class User():
         return [group for group, users in group_mapping.items() if self.user_name in users]
 
     def _get_user_roles_from_file(self, ossec_path):
-        roles_config = read_json_from_file(ossec_path + "/api/models/rbac/roles_config.json")
-        return [role for role, users in roles_config.items() if self.user_name in users]
+        roles_config = _load_users_mapping_from_file(ossec_path)
+        return [role for role, role_data in roles_config.items() if self.user_name in role_data.get("users")]
 
     def _check_privileges_in_roles(self, request):
         has_permission = False

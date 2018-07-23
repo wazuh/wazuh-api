@@ -2,14 +2,6 @@
     "realms": {
         "native": {
 
-            "superuser": {
-                "/*": {
-                    "methods": [
-                        "GET", "POST", "PUT", "DELETE"
-                    ]
-                }
-            },
-
             "user": {
                 "/*": {
                     "methods": [
@@ -29,6 +21,11 @@
                     "exceptions": [
                         "/api/users/*",
                         "/agents/*/key"
+                    ]
+                },
+                "/api/user": {
+                    "methods": [
+                        "PUT"
                     ]
                 }
             },

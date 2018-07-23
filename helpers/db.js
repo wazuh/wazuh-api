@@ -10,14 +10,14 @@
  */
 var sqlite3 = require('sqlite3').verbose();
 const path = require('path');
-const dbPath = path.resolve(__dirname, '../api.db')
+const dbPath = path.resolve(__dirname, '../api.db');
 var db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE);
 
 exports.db = db.serialize(function () {
     db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, password TEXT NOT NULL, enabled INTEGER DEFAULT 1, reserved INTEGER DEFAULT 0)");
-    db.run("INSERT INTO users (name, password, enabled) VALUES('foo', '', 1, 1)");
-    db.run("INSERT INTO users (name, password, enabled) VALUES('wazuh-app', '', 1, 1)");
-    db.run("INSERT INTO users (name, password, enabled) VALUES('wazuh', '', 1, 1)");
+    db.run("INSERT INTO users (name, password, enabled, reserved) VALUES('wazuh-app', '', 1, 1)");
+    db.run("INSERT INTO users (name, password, enabled, reserved) VALUES('wazuh', '', 1, 1)");
+    db.run("INSERT INTO users (name, password, enabled, reserved) VALUES('foo', '', 1, 0)");
 });
 
 

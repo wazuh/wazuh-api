@@ -169,12 +169,35 @@ exports.get_user = function (user_name, callback) {
     db_helper.db_get(sql, inputData, callback);
 }
 
+function is_user_reserved(user_name, callback) {
+    var inputData = [user_name];
+    var sql = "SELECT reserved FROM users WHERE name=?";
+    db_helper.db_get(sql, inputData, function (err, result) {
+        if (!err) {
+            if (result.reserved == 1) {
+                callback(true);
+            } else {
+                callback(false);
+            }
+        } else {
+            callback(false);
+        }
+    });
+}
+
 exports.delete_user = function (user_name, callback) {
     exists_user(user_name, function (err, result) {
+
         if (!err) {
-            var inputData = [user_name];
-            var sql = "DELETE FROM users WHERE name=?";
-            db_helper.db_run(sql, inputData, callback);
+            is_user_reserved(user_name, function (err, reserved) {
+                if (!err && !reserved) {
+                    var inputData = [user_name];
+                    var sql = "DELETE FROM users WHERE name=?";
+                    db_helper.db_run(sql, inputData, callback);
+                } else {
+                    callback(true);
+                }
+            });
         } else {
             callback(true);
         }
@@ -183,7 +206,7 @@ exports.delete_user = function (user_name, callback) {
 
 exports.get_all_users = function (callback) {
     var inputData = [];
-    var sql = "SELECT name, enabled FROM users";
+    var sql = "SELECT name, enabled, reserved FROM users";
     db_helper.db_all(sql, inputData, callback);
 }
 

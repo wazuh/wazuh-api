@@ -4,7 +4,7 @@
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 from utils import read_json_from_file
-from rbac.role import _load_roles
+from rbac.role import _load_roles_mapping_from_file
 from rbac.user import User
 
 class Rbac():
@@ -18,7 +18,7 @@ class Rbac():
 
 
     def get_json_all_roles(self, realm='native'):
-        roles =  _load_roles(self.ossec_path, realm, True)
+        roles =  _load_roles_mapping_from_file(self.ossec_path, realm, True)
         return {"items": roles, "totalItems":len(roles)}
 
     def get_json_all_groups_from_file(self):

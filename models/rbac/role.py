@@ -12,7 +12,7 @@ reserved_roles = {
     "app": {"/*": {"methods": ["GET", "POST", "PUT", "DELETE"]}}
 }
 
-def _load_roles(ossec_path, realm='native', reserved_info=False):
+def _load_roles_mapping_from_file(ossec_path, realm='native', reserved_info=False):
     roles_mapping = read_json_from_file(ossec_path + "/api/models/rbac/roles_mapping.json")
 
     realms_mapping = roles_mapping.get('realms')
@@ -39,13 +39,13 @@ class Role():
 
     def __init__(self, role, ossec_path, realm="native"):
         self.role = role
-        self._load_role_privileges_from_file(ossec_path=ossec_path, realm=realm)
+        self._load_role_privileges(ossec_path=ossec_path, realm=realm)
 
     def __str__(self):
         return self.role
 
-    def _load_role_privileges_from_file(self, ossec_path, realm="native"):
-        self.privileges = _load_roles(ossec_path=ossec_path, realm=realm).get(self.role)
+    def _load_role_privileges(self, ossec_path, realm="native"):
+        self.privileges = _load_roles_mapping_from_file(ossec_path=ossec_path, realm=realm).get(self.role)
         if not self.privileges:
             raise Exception("No mapping found for role `{}`".format(self.role))
 
@@ -66,8 +66,6 @@ class Role():
                 is_exception = True
                 break
         return is_exception
-
-
 
     def can_exec(self, request):
         request = Request(request)

@@ -307,6 +307,10 @@ router.get('/users', function (req, res) {
         if (python_response.error == 0 && python_response.data) {
             users.get_all_users(function (err, result) {
                 if (!err){
+                    result.forEach(function (user) {
+                        user.enabled = !!parseInt(user.enabled);
+                        user.reserved = !!parseInt(user.reserved);
+                    });
                     var response = {
                         data: {
                             items: result, totalItems: result.length}
@@ -538,7 +542,7 @@ router.get('/groups', function (req, res) {
  * @apiDescription Removes a specific API user.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/api/users/foo2/roles?pretty"
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/api/users/foo2?pretty"
  *
  */
 router.delete('/users/:user_name', function (req, res) {

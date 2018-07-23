@@ -1,17 +1,10 @@
 {
-    "admin": [
-        "wazuh"
-    ],
-
-    "app": [
-        "wazuh-app"
-    ],
-
-    "user": [
-
-    ],
-
-    "viewer": [
-        "foo"
-    ]
+    "user": {
+        "users": []
+    },
+    "viewer": {
+        "users": [
+            "foo"
+        ]
+    }
 }
