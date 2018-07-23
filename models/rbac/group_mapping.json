@@ -1,5 +1,7 @@
 {
-    "sample-group": [
-        "foo"
-    ]
+    "sample-group": {
+        "users": [
+            "foo"
+        ]
+    }
 }

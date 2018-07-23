@@ -49,7 +49,7 @@ router.post("*", function (req, res, next) {
 
 // All requests
 router.all("*", function (req, res, next) {
-    users.set_user("");
+    users.reset();
     var go_next = true;
 
     if (req.query) {

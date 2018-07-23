@@ -92,7 +92,7 @@ authenticate_user_from_token = function (token, callback) {
         } else {
             verify_user_enabled(token_decoded.username, function (err, result) {
                 if (!err && result.enabled) {
-                    set_user(user.name);
+                    set_user(token_decoded.username);
                     callback(true);
                 } else {
                     callback(false);
@@ -220,6 +220,11 @@ exports.set_run_as_group = function (run_as_group) {
     if (run_as_group) {
         exports.run_as_group = run_as_group;
     }
+}
+
+exports.reset = function () {
+    exports.run_as_group = "";
+    set_user("");
 }
 
 exports.current_user_name = null; 

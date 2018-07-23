@@ -19,7 +19,7 @@
                         "GET"
                     ],
                     "exceptions": [
-                        "/api/users/*",
+                        "/api/users*",
                         "/agents/*/key"
                     ]
                 },
@@ -37,7 +37,7 @@
                         "GET"
                     ]
                 },
-                "/manager": {
+                "/manager/*": {
                     "methods": [
                         "GET"
                     ]

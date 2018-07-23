@@ -16,14 +16,14 @@ var users = require('../helpers/users');
 
 
 /**
- * @api {get} /api/user/usersenticate usersenticate user
- * @apiName usersenticateUser
+ * @api {get} /api/user/authenticate Authenticate user
+ * @apiName AuthenticateUser
  * @apiGroup usersentication
  *
  * @apiDescription Assigns and returns a token for the specified user. Also, returns information about user roles, and token.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/api/user/usersenticate?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/api/user/authenticate?pretty"
  *
  */
 router.get('/user/authenticate', function (req, res) {
@@ -266,7 +266,7 @@ router.get('/user', function (req, res) {
                 if (!err){
                     var response = {
                         data: {
-                            user_name: user_name, 
+                            name: user_name, 
                             enabled: !!parseInt(result.enabled),
                             reserved: !!parseInt(result.reserved),
                             roles: python_response.data.roles,
@@ -495,17 +495,17 @@ router.get('/user/groups', function (req, res) {
 
 
 /**
- * @api {get} /api/roles Returns all roles
+ * @api {get} /api/roles_mapping Returns all roles
  * @apiName GetAllRoles
  * @apiGroup Roles
  *
- * @apiDescription Returns all existing roles in the API.
+ * @apiDescription Returns roles mapping. Resources, methods, and exceptions for all roles.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/api/roles?pretty"
  *
  */
-router.get('/roles', function (req, res) {
+router.get('/roles_mapping', function (req, res) {
     logger.debug(req.connection.remoteAddress + " GET/roles");
     var data_request = { 'function': '/api/roles', 'arguments': {} };
     data_request['url'] = req.originalUrl;

@@ -26,10 +26,10 @@ function db_get(sql, inputData, callback) {
         if (!row || err) {
             var reason = "";
             if (err)
-                reason = "Reason: " + err;
+                msg = "Error in DB query. Reason: " + err + ". Query: " + sql + " (" + inputData + ").";
             else if (!row)
-                reason = "Reason: No result.";
-            logger.debug("Error in DB query. " + reason);
+                msg = "No result in DB query. Query: " + sql + " (" + inputData + ").";
+            logger.debug(msg);
             callback(true, err);
         } else {
             callback(false, row);

@@ -4,7 +4,7 @@
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
 from utils import read_json_from_file
-from rbac.role import _load_roles_mapping_from_file
+from rbac.role import _load_roles_mapping_from_file, _load_groups_mapping_from_file
 from rbac.user import User
 
 class Rbac():
@@ -22,9 +22,8 @@ class Rbac():
         return {"items": roles, "totalItems":len(roles)}
 
     def get_json_all_groups_from_file(self):
-        groups_config = read_json_from_file(self.ossec_path + "/api/models/rbac/group_mapping.json")
-        groups = [group for group in groups_config.keys()]
-        return {"items": groups, "totalItems":len(groups)}
+        groups_config = _load_groups_mapping_from_file(self.ossec_path)
+        return {"items": groups_config, "totalItems":len(groups_config)}
 
     def get_json_user_privileges(self, user_name):
         return User(user_name=user_name, ossec_path=self.ossec_path).get_json_user_privileges()

@@ -48,7 +48,7 @@ class User():
 
     def _get_user_groups_from_file(self, ossec_path):
         group_mapping = read_json_from_file(ossec_path + "/api/models/rbac/group_mapping.json")
-        return [group for group, users in group_mapping.items() if self.user_name in users]
+        return [group for group, group_data in group_mapping.items() if self.user_name in group_data.get("users")]
 
     def _get_user_roles_from_file(self, ossec_path):
         roles_config = _load_users_mapping_from_file(ossec_path)
@@ -97,6 +97,10 @@ class User():
                             (list(set(privilege['methods']) - set(privilege_value['methods'])) )
                 else:
                     privileges_added.append(privilege_key)
-                    list_user_privileges.append({"resource":privilege_key,"methods":privilege_value["methods"]})
+                    user_privilege = {"resource":privilege_key,"methods":privilege_value["methods"]}
+                    if 'exceptions' in privilege_value:
+                        user_privilege['exceptions'] = privilege_value["exceptions"]
+                    
+                    list_user_privileges.append(user_privilege)
 
         return {'items':list_user_privileges, 'totalItems':len(list_user_privileges)}

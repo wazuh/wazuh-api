@@ -34,6 +34,10 @@ def _load_roles_mapping_from_file(ossec_path, realm='native', reserved_info=Fals
     roles.update(reserved_roles)
     return roles
 
+def _load_groups_mapping_from_file(ossec_path):
+    group_mapping = read_json_from_file(ossec_path + "/api/models/rbac/group_mapping.json")
+    return group_mapping
+
 
 class Role():
 
