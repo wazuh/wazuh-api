@@ -435,11 +435,6 @@ setup_api() {
     fi
     exec_cmd "chown root:ossec $APILOG_PATH"
     exec_cmd "chmod 660 $APILOG_PATH"
-    
-    DB_PATH="${DIRECTORY}/api/api.db"
-    touch "$DB_PATH"
-    exec_cmd "chown ossec:ossec $DB_PATH"
-    exec_cmd "chmod 660 $DB_PATH"
 
 
     if [ -z "$NO_SERVICE" ]

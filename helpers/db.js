@@ -10,16 +10,20 @@
  */
 var sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+var fs = require('fs');
 const dbPath = path.resolve(__dirname, '../api.db');
+var first_time = !(fs.existsSync(dbPath));
+
 var db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE);
 
-exports.db = db.serialize(function () {
-    db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, password TEXT NOT NULL, enabled INTEGER DEFAULT 1, reserved INTEGER DEFAULT 0)");
-    db.run("INSERT INTO users (name, password, enabled, reserved) VALUES('wazuh-app', '', 1, 1)");
-    db.run("INSERT INTO users (name, password, enabled, reserved) VALUES('wazuh', '', 1, 1)");
-    db.run("INSERT INTO users (name, password, enabled, reserved) VALUES('foo', '', 1, 0)");
-});
-
+if (first_time){
+    exports.db = db.serialize(function () {
+        db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE NOT NULL, password TEXT NOT NULL, enabled INTEGER DEFAULT 1, reserved INTEGER DEFAULT 0)");
+        db.run("INSERT INTO users (name, password, enabled, reserved) VALUES('wazuh-app', '', 1, 1)");
+        db.run("INSERT INTO users (name, password, enabled, reserved) VALUES('wazuh', '', 1, 1)");
+        db.run("INSERT INTO users (name, password, enabled, reserved) VALUES('foo', '', 1, 0)");
+    });
+}
 
 function db_get(sql, inputData, callback) {
     db.get(sql, inputData, function (err, row) {
