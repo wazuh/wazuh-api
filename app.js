@@ -88,6 +88,7 @@ try {
     var moment = require('moment');
     res_h = require('./helpers/response_handler');
     logger = require('./helpers/logger');
+    var db = require('./helpers/db');
 } catch (e) {
     console.log("Dependencies not found. Try 'npm install' in /var/ossec/api. Exiting...");
     process.exit(1);
@@ -214,17 +215,19 @@ process.on('uncaughtException', function(err) {
       if(err.stack)
           logger.log(err.stack);
     }
-
+    db.close();
     logger.log("Exiting...");
     setTimeout(function(){ process.exit(1); }, 500);
 });
 
-process.on('SIGTERM', function() {
+process.on('SIGTERM', function () {
+    db.close();
     logger.log("Exiting... (SIGTERM)");
     setTimeout(function(){ process.exit(1); }, 500);
 });
 
-process.on('SIGINT', function() {
+process.on('SIGINT', function () {
+    db.close();
     logger.log("Exiting... (SIGINT)");
     setTimeout(function(){ process.exit(1); }, 500);
 });

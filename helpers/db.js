@@ -71,6 +71,12 @@ function db_all(sql, inputData, callback) {
     });
 }
 
+exports.close = function () {
+    db.close(function(err){
+        if (err)
+            logger.debug(err.message);
+    });
+}
 
 exports.db_get = db_get;
 exports.db_run = db_run;
