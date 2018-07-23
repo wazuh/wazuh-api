@@ -320,7 +320,7 @@ setup_api_permissions () {
     exec_cmd "chown -R root:ossec $API_PATH"
     exec_cmd "chown -R root:root $API_PATH/scripts"
     exec_cmd "chown -R root:root $API_PATH/configuration"
-    exec_cmd "chmod -R 750 $API_PATH"
+    exec_cmd "chmod -R 770 $API_PATH"
 
     # Remove execution permissions
     exec_cmd "chmod ugo-x $API_PATH/package.json"
@@ -439,7 +439,7 @@ setup_api() {
     DB_PATH="${DIRECTORY}/api/api.db"
     touch "$DB_PATH"
     exec_cmd "chown ossec:ossec $DB_PATH"
-    exec_cmd "chmod 750 $DB_PATH"
+    exec_cmd "chmod 660 $DB_PATH"
 
 
     if [ -z "$NO_SERVICE" ]
