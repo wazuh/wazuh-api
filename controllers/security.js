@@ -16,22 +16,22 @@ var users = require('../helpers/users');
 
 
 /**
- * @api {get} /api/user/authenticate Authenticate user
+ * @api {get} /security/user/authenticate Authenticate user
  * @apiName AuthenticateUser
  * @apiGroup usersentication
  *
  * @apiDescription Assigns and returns a token for the specified user. Also, returns information about user roles, and token.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/api/user/authenticate?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/security/user/authenticate?pretty"
  *
  */
 router.get('/user/authenticate', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET/user/authenticate");
+    logger.debug(req.connection.remoteAddress + " GET/security/user/authenticate");
     var user_name = users.current_user_name;
 
     var token = users.get_token(user_name);
-    var data_request = { 'function': '/api/user/authenticate', 'arguments': {} };
+    var data_request = { 'function': '/security/user/authenticate', 'arguments': {} };
     data_request['url'] = req.originalUrl;
     data_request['arguments']['user_name'] = user_name;
 
@@ -53,7 +53,7 @@ router.get('/user/authenticate', function (req, res) {
 
 
 /**
- * @api {put} /api/user Update current user
+ * @api {put} /security/user Update current user
  * @apiName UpdateCurrentUser
  * @apiGroup UpdateUser
  *
@@ -62,13 +62,13 @@ router.get('/user/authenticate', function (req, res) {
  * @apiDescription Updates the current user information. Fields that can be updated: enabled, password.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X PUT -H "Content-Type:application/json" -d '{"enabled":true}' "https://127.0.0.1:55000/api/user?pretty"
+ *     curl -u foo:bar -k -X PUT -H "Content-Type:application/json" -d '{"enabled":true}' "https://127.0.0.1:55000/security/user?pretty"
  *
  */
 router.put('/user', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " PUT/user");
+    logger.debug(req.connection.remoteAddress + " PUT/security/user");
     var user_name = users.current_user_name;
-    var data_request = { 'function': 'PUT/api/user', 'arguments': { 'only_verify_privileges': true } };
+    var data_request = { 'function': 'PUT/security/user', 'arguments': { 'only_verify_privileges': true } };
     data_request['url'] = req.originalUrl;
     var filters = { 'enabled': 'boolean', 'password': 'names' };
 
@@ -100,7 +100,7 @@ router.put('/user', function (req, res) {
 
 
 /**
- * @api {put} /api/users/:user_name Update selected user
+ * @api {put} /security/users/:user_name Update selected user
  * @apiName UpdateUser
  * @apiGroup UpdateUser
  *
@@ -110,12 +110,12 @@ router.put('/user', function (req, res) {
  * @apiDescription Updates user information for a specific user. Fields that can be updated: enabled, password.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X PUT -H "Content-Type:application/json" -d '{"enabled":true}' "https://127.0.0.1:55000/api/user/foo?pretty"
+ *     curl -u foo:bar -k -X PUT -H "Content-Type:application/json" -d '{"enabled":true}' "https://127.0.0.1:55000/security/user/foo?pretty"
  *
  */
 router.put('/users/:user_name', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " PUT/user/:user_name");
-    var data_request = { 'function': 'PUT/api/users/:user_name', 'arguments': { 'only_verify_privileges': true } };
+    logger.debug(req.connection.remoteAddress + " PUT/security/users/:user_name");
+    var data_request = { 'function': 'PUT/security/users/:user_name', 'arguments': { 'only_verify_privileges': true } };
     data_request['url'] = req.originalUrl;
     var filters = { 'enabled': 'boolean', 'password': 'names'};
 
@@ -154,7 +154,7 @@ router.put('/users/:user_name', function (req, res) {
 
 
 /**
- * @api {post} /api/user/register Register new API user
+ * @api {post} /security/user/register Register new API user
  * @apiName Resgistration
  * @apiGroup Registration
  *
@@ -164,12 +164,12 @@ router.put('/users/:user_name', function (req, res) {
  * @apiDescription Register a new API user. 
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X POST -H "Content-Type:application/json" -d '{"username":"foo2", "password":"bar2"}' "https://127.0.0.1:55000/api/user/register?pretty"
+ *     curl -u foo:bar -k -X POST -H "Content-Type:application/json" -d '{"username":"foo2", "password":"bar2"}' "https://127.0.0.1:55000/security/user/register?pretty"
  *
  */
 router.post('/users/register', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " POST/user/users/register");
-    var data_request = { 'function': 'POST/api/users/register', 'arguments': { 'only_verify_privileges': true } };
+    logger.debug(req.connection.remoteAddress + " POST/security/users/register");
+    var data_request = { 'function': 'POST/security/users/register', 'arguments': { 'only_verify_privileges': true } };
     data_request['url'] = req.originalUrl;
     var user_data = { name: req.body.name, password: req.body.password };
 
@@ -193,7 +193,7 @@ router.post('/users/register', function (req, res) {
 
 
 /**
- * @api {get} /api/users/:user_name Returns information about specific user.
+ * @api {get} /security/users/:user_name Returns information about specific user.
  * @apiName GetCurrentUser
  * @apiGroup GetUser
  *
@@ -202,12 +202,12 @@ router.post('/users/register', function (req, res) {
  * @apiDescription Returns information about specific user. Fields that returns: enabled, user_name, roles.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/api/user?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/security/user?pretty"
  *
  */
 router.get('/users/:user_name', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET/users/:user_name");
-    var data_request = { 'function': '/api/users/:user_name', 'arguments': {} };
+    logger.debug(req.connection.remoteAddress + " GET/security/users/:user_name");
+    var data_request = { 'function': '/security/users/:user_name', 'arguments': {} };
     data_request['url'] = req.originalUrl;
 
     if (!filter.check(req.params, { 'user_name': 'names' }, req, res))  // Filter with error
@@ -243,24 +243,25 @@ router.get('/users/:user_name', function (req, res) {
 
 
 /**
- * @api {get} /api/user Returns information about current user.
+ * @api {get} /security/user Returns information about current user.
  * @apiName GetCurrentUser
  * @apiGroup GetUser
  *
  * @apiDescription Returns information about current user. Fields that returns: enabled, user_name, roles.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/api/user?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/security/user?pretty"
  *
  */
 router.get('/user', function (req, res) {
     logger.debug(req.connection.remoteAddress + " GET/users");
     var user_name = users.current_user_name;
-    var data_request = { 'function': '/api/user', 'arguments': {} };
+    var data_request = { 'function': '/security/user', 'arguments': {} };
     data_request['url'] = req.originalUrl;
     data_request['arguments']['user_name'] = user_name;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (python_response) {
+
         if (python_response.error == 0 && python_response.data) {
             users.get_user(user_name, function (err, result) {
                 if (!err){
@@ -287,20 +288,20 @@ router.get('/user', function (req, res) {
 
 
 /**
- * @api {delete} /api/users Get all API users
+ * @api {delete} /security/users Get all API users
  * @apiName GetUsers
  * @apiGroup GetUsers
  *
  * @apiDescription Returns all API users.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/api/users?pretty"
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/security/users?pretty"
  *
  */
 router.get('/users', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /users");
+    logger.debug(req.connection.remoteAddress + " GET /security/users");
 
-    var data_request = { 'function': '/api/users', 'arguments': { 'only_verify_privileges': true } };
+    var data_request = { 'function': '/security/users', 'arguments': { 'only_verify_privileges': true } };
     data_request['url'] = req.originalUrl
 
     execute.exec(python_bin, [wazuh_control], data_request, function (python_response) {
@@ -330,7 +331,7 @@ router.get('/users', function (req, res) {
 
 
 /**
- * @api {get} /api/user/:user_name/privileges Returns the privileges of a specific user
+ * @api {get} /security/user/:user_name/privileges Returns the privileges of a specific user
  * @apiName GetUserPrivileges
  * @apiGroup Privileges
  *
@@ -339,12 +340,12 @@ router.get('/users', function (req, res) {
  * @apiDescription Returns the privileges of a specific user.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/api/user/foo/privileges?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/security/user/foo/privileges?pretty"
  *
  */
 router.get('/users/:user_name/privileges', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET/users/:user_name/privileges");
-    var data_request = { 'function': '/api/users/:user_name/privileges', 'arguments': {} };
+    logger.debug(req.connection.remoteAddress + " GET/security/users/:user_name/privileges");
+    var data_request = { 'function': '/security/users/:user_name/privileges', 'arguments': {} };
     data_request['url'] = req.originalUrl;
 
     if (!filter.check(req.params, { 'user_name': 'names' }, req, res))  // Filter with error
@@ -365,7 +366,7 @@ router.get('/users/:user_name/privileges', function (req, res) {
 
 
 /**
- * @api {get} /api/user/:user_name/groups Returns the groups of a specific user
+ * @api {get} /security/user/:user_name/groups Returns the groups of a specific user
  * @apiName GetUserGroups
  * @apiGroup Groups
  *
@@ -374,12 +375,12 @@ router.get('/users/:user_name/privileges', function (req, res) {
  * @apiDescription Returns the groups of a specific user.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/api/user/foo/groups?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/security/user/foo/groups?pretty"
  *
  */
 router.get('/users/:user_name/groups', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET/users/:user_name/groups");
-    var data_request = { 'function': '/api/users/:user_name/groups', 'arguments': {} };
+    logger.debug(req.connection.remoteAddress + " GET/security/users/:user_name/groups");
+    var data_request = { 'function': '/security/users/:user_name/groups', 'arguments': {} };
     data_request['url'] = req.originalUrl;
 
     if (!filter.check(req.params, { 'user_name': 'names' }, req, res))  // Filter with error
@@ -399,7 +400,7 @@ router.get('/users/:user_name/groups', function (req, res) {
 
 
 /**
- * @api {get} /api/user/:user_name/roles Returns the roles of a specific user
+ * @api {get} /security/user/:user_name/roles Returns the roles of a specific user
  * @apiName GetUserRoles
  * @apiGroup Roles
  *
@@ -408,12 +409,12 @@ router.get('/users/:user_name/groups', function (req, res) {
  * @apiDescription Returns the roles of a specific user.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/api/user/foo/roles?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/security/user/foo/roles?pretty"
  *
  */
 router.get('/users/:user_name/roles', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET/users/:user_name/roles");
-    var data_request = { 'function': '/api/users/:user_name/roles', 'arguments': {} };
+    logger.debug(req.connection.remoteAddress + " GET/security/users/:user_name/roles");
+    var data_request = { 'function': '/security/users/:user_name/roles', 'arguments': {} };
     data_request['url'] = req.originalUrl;
 
     if (!filter.check(req.params, { 'user_name': 'names' }, req, res))  // Filter with error
@@ -432,19 +433,19 @@ router.get('/users/:user_name/roles', function (req, res) {
 
 
 /**
- * @api {get} /api/user/roles Returns the roles of the current user
+ * @api {get} /security/user/roles Returns the roles of the current user
  * @apiName GetCurrentUserRoles
  * @apiGroup Roles
  *
  * @apiDescription Returns the roles of the current user.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/api/user/roles?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/security/user/roles?pretty"
  *
  */
 router.get('/user/roles', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET/user/roles");
-    var data_request = { 'function': '/api/user/roles', 'arguments': {} };
+    logger.debug(req.connection.remoteAddress + " GET/security/user/roles");
+    var data_request = { 'function': '/security/user/roles', 'arguments': {} };
     data_request['url'] = req.originalUrl;
     data_request['arguments']['user_name'] = users.current_user_name;
 
@@ -453,19 +454,19 @@ router.get('/user/roles', function (req, res) {
 
 
 /**
- * @api {get} /api/user/privileges Returns the privileges of the current user
+ * @api {get} /security/user/privileges Returns the privileges of the current user
  * @apiName GetCurrentUserPrivileges
  * @apiGroup Privileges
  *
  * @apiDescription Returns the privileges of the current user.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/api/user/privileges?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/security/user/privileges?pretty"
  *
  */
 router.get('/user/privileges', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET/user/privileges");
-    var data_request = { 'function': '/api/user/privileges', 'arguments': {} };
+    logger.debug(req.connection.remoteAddress + " GET/security/user/privileges");
+    var data_request = { 'function': '/security/user/privileges', 'arguments': {} };
     data_request['url'] = req.originalUrl;
     data_request['arguments']['user_name'] = users.current_user_name;
 
@@ -474,19 +475,19 @@ router.get('/user/privileges', function (req, res) {
 
 
 /**
- * @api {get} /api/user/groups Returns the privileges of the current user
+ * @api {get} /security/user/groups Returns the privileges of the current user
  * @apiName GetCurrentUserGroups
  * @apiGroup Groups
  *
  * @apiDescription Returns the groups of the current user.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/api/user/groups?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/security/user/groups?pretty"
  *
  */
 router.get('/user/groups', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET/user/groups");
-    var data_request = { 'function': '/api/user/groups', 'arguments': {} };
+    logger.debug(req.connection.remoteAddress + " GET/security/user/groups");
+    var data_request = { 'function': '/security/user/groups', 'arguments': {} };
     data_request['url'] = req.originalUrl;
     data_request['arguments']['user_name'] = users.current_user_name;
 
@@ -495,45 +496,45 @@ router.get('/user/groups', function (req, res) {
 
 
 /**
- * @api {get} /api/roles_mapping Returns all roles
+ * @api {get} /security/roles_mapping Returns all roles
  * @apiName GetAllRoles
  * @apiGroup Roles
  *
  * @apiDescription Returns roles mapping. Resources, methods, and exceptions for all roles.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/api/roles?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/security/roles?pretty"
  *
  */
 router.get('/roles_mapping', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET/roles");
-    var data_request = { 'function': '/api/roles', 'arguments': {} };
+    logger.debug(req.connection.remoteAddress + " GET/security/roles");
+    var data_request = { 'function': '/security/roles', 'arguments': {} };
     data_request['url'] = req.originalUrl;
     execute.exec(python_bin, [wazuh_control], data_request, function (python_response) {res_h.send(req, res, python_response)});
 });
 
 
 /**
- * @api {get} /api/groups Returns all groups
+ * @api {get} /security/groups Returns all groups
  * @apiName GetAllGroups
  * @apiGroup Groups
  *
  * @apiDescription Returns all existing groups in the API.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/api/groups?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/security/groups?pretty"
  *
  */
 router.get('/groups', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET/groups");
-    var data_request = { 'function': '/api/groups', 'arguments': {} };
+    logger.debug(req.connection.remoteAddress + " GET/security/groups");
+    var data_request = { 'function': '/security/groups', 'arguments': {} };
     data_request['url'] = req.originalUrl;
     execute.exec(python_bin, [wazuh_control], data_request, function (python_response) { res_h.send(req, res, python_response) });
 });
 
 
 /**
- * @api {delete} /api/users/:user_name Delete an API user
+ * @api {delete} /security/users/:user_name Delete an API user
  * @apiName DeleteUser
  * @apiGroup Delete
  *
@@ -542,13 +543,13 @@ router.get('/groups', function (req, res) {
  * @apiDescription Removes a specific API user.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/api/users/foo2?pretty"
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/security/users/foo2?pretty"
  *
  */
 router.delete('/users/:user_name', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " DELETE /users/:user_name");
+    logger.debug(req.connection.remoteAddress + " DELETE/security/users/:user_name");
 
-    var data_request = { 'function': 'DELETE/api/users/:user_name', 'arguments': { 'only_verify_privileges': true } };
+    var data_request = { 'function': 'DELETE/security/users/:user_name', 'arguments': { 'only_verify_privileges': true } };
 
     if (!filter.check(req.body, { 'user_name': 'names' }, req, res))  // Filter with error
         return;

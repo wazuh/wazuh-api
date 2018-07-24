@@ -303,17 +303,17 @@ if __name__ == "__main__":
         # RBAC
         if rbac:
             functions.update({
-                '/api/roles': rbac.get_json_all_roles,
-                '/api/user': rbac.get_json_user_info,
-                '/api/groups': rbac.get_json_all_groups_from_file,
-                '/api/users/:user_name': rbac.get_json_user_info,
-                '/api/users/:user_name/groups': rbac.get_json_user_groups,
-                '/api/users/:user_name/privileges': rbac.get_json_user_privileges,
-                '/api/users/:user_name/roles': rbac.get_json_user_roles,
-                '/api/user/authenticate': rbac.get_json_user_roles,
-                '/api/user/privileges': rbac.get_json_user_privileges,
-                '/api/user/groups': rbac.get_json_user_groups,
-                '/api/user/roles': rbac.get_json_user_roles
+                '/security/roles': rbac.get_json_all_roles,
+                '/security/user': rbac.get_json_user_info,
+                '/security/groups': rbac.get_json_all_groups_from_file,
+                '/security/users/:user_name': rbac.get_json_user_info,
+                '/security/users/:user_name/groups': rbac.get_json_user_groups,
+                '/security/users/:user_name/privileges': rbac.get_json_user_privileges,
+                '/security/users/:user_name/roles': rbac.get_json_user_roles,
+                '/security/user/authenticate': rbac.get_json_user_roles,
+                '/security/user/privileges': rbac.get_json_user_privileges,
+                '/security/user/groups': rbac.get_json_user_groups,
+                '/security/user/roles': rbac.get_json_user_roles
             })
 
 

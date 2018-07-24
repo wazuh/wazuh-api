@@ -100,7 +100,7 @@ router.all("*", function (req, res, next) {
                         var log_msg = "[" + req.connection.remoteAddress + "] " + "User: \"" + user.name + "\" - Authentication failed.";
                         logger.log(log_msg);
                     } else {
-                        if ((req.originalUrl == '/api/user' || req.originalUrl == '/api/user?pretty') && req.method == "PUT" && "password" in req.body) { // PUT/api/user
+                        if ((req.originalUrl == '/security/user' || req.originalUrl == '/security/user?pretty') && req.method == "PUT" && "password" in req.body) { // PUT/api/user
                             users.set_run_as_user(user.name);
                             next();
                         } else { 
@@ -143,7 +143,7 @@ router.use('/cluster', require('./cluster'));
 router.use('/syscollector', require('./syscollector'));
 
 if (config.basic_auth) {
-    router.use('/api', require('./api'));
+    router.use('/security', require('./security'));
 }
 
 if (config.experimental_features) {
