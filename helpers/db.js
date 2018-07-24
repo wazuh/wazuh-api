@@ -18,10 +18,11 @@ var db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREA
 
 if (first_time){
     exports.db = db.serialize(function () {
-        db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE NOT NULL, password TEXT NOT NULL, enabled INTEGER DEFAULT 1, reserved INTEGER DEFAULT 0)");
-        db.run("INSERT INTO users (name, password, enabled, reserved) VALUES('wazuh-app', '', 1, 1)");
-        db.run("INSERT INTO users (name, password, enabled, reserved) VALUES('wazuh', '', 1, 1)");
-        db.run("INSERT INTO users (name, password, enabled, reserved) VALUES('foo', '', 1, 0)");
+        db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE NOT NULL, \
+            password TEXT NOT NULL, enabled INTEGER DEFAULT 1, reserved INTEGER DEFAULT 0, run_as_privileges INTEGER DEFAULT 0)");
+        db.run("INSERT INTO users (name, password, enabled, reserved, run_as_privileges) VALUES('wazuh-app', '', 1, 1, 1)");
+        db.run("INSERT INTO users (name, password, enabled, reserved, run_as_privileges) VALUES('wazuh', '', 1, 1, 1)");
+        db.run("INSERT INTO users (name, password, enabled, reserved, run_as_privileges) VALUES('foo', '', 1, 0, 0)");
     });
 }
 
@@ -74,7 +75,7 @@ function db_all(sql, inputData, callback) {
 exports.close = function () {
     db.close(function(err){
         if (err)
-            logger.debug(err.message);
+            logger.log(err.message);
     });
 }
 

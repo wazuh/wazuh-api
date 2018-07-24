@@ -64,7 +64,7 @@ router.all("*", function (req, res, next) {
 
     var run_as_user = req.headers['es-security-runas-user'];
     var run_as_group = req.headers['es-security-runas-group'];
-
+    logger.log(req.originalUrl);
     var user = basic_auth(req);
     if (!user) { // token auth
         var token = req.headers['x-access-token'];
@@ -100,7 +100,7 @@ router.all("*", function (req, res, next) {
                         var log_msg = "[" + req.connection.remoteAddress + "] " + "User: \"" + user.name + "\" - Authentication failed.";
                         logger.log(log_msg);
                     } else {
-                        if (req.originalUrl.indexOf('/api/user') >= 0 && req.method == "PUT" && "password" in req.body) { // PUT/api/user
+                        if ((req.originalUrl == '/api/user' || req.originalUrl == '/api/user?pretty') && req.method == "PUT" && "password" in req.body) { // PUT/api/user
                             users.set_run_as_user(user.name);
                             next();
                         } else { 
