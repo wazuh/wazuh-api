@@ -81,7 +81,7 @@ router.all("*", function (req, res, next) {
                             users.set_run_as_group(run_as_group);
                             next();
                         } else {
-                            res_h.bad_request(req, res, "104");
+                            res_h.bad_request(req, res, "401");
                             var log_msg = "[" + req.connection.remoteAddress + "] " + "User: \"" + user_name + "\" - Authentication failed: Unauthorized request. User has no privileges to use 'run as'.";
                             logger.log(log_msg);
                         }
@@ -96,7 +96,7 @@ router.all("*", function (req, res, next) {
             if (!result) { // wrong user or pass
                 users.is_password_setted(user.name, function (result) { // first login?
                     if (result) { 
-                        res_h.bad_request(req, res, "102");
+                        res_h.bad_request(req, res, "401");
                         var log_msg = "[" + req.connection.remoteAddress + "] " + "User: \"" + user.name + "\" - Authentication failed.";
                         logger.log(log_msg);
                     } else {
@@ -118,7 +118,7 @@ router.all("*", function (req, res, next) {
                             users.set_run_as_group(run_as_group);
                             next();
                         } else {
-                            res_h.bad_request(req, res, "104");
+                            res_h.bad_request(req, res, "401", "User has no privileges to use 'run as'.");
                             var log_msg = "[" + req.connection.remoteAddress + "] " + "User: \"" + user.name + "\" - Authentication failed: Unauthorized request. User has no privileges to use 'run as'.";
                             logger.log(log_msg);
                         }
