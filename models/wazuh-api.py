@@ -313,7 +313,8 @@ if __name__ == "__main__":
                 '/security/user/authenticate': rbac.get_json_user_roles,
                 '/security/user/privileges': rbac.get_json_user_privileges,
                 '/security/user/groups': rbac.get_json_user_groups,
-                '/security/user/roles': rbac.get_json_user_roles
+                '/security/user/roles': rbac.get_json_user_roles,
+                '/security/users': rbac.get_json_all_user_info
             })
 
 

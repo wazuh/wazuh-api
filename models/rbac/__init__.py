@@ -5,7 +5,7 @@
 
 from utils import read_json_from_file
 from rbac.role import _load_roles_mapping_from_file, _load_groups_mapping_from_file
-from rbac.user import User
+from rbac.user import User, _load_users_mapping_from_file
 
 class Rbac():
 
@@ -41,3 +41,8 @@ class Rbac():
         groups_config = _load_groups_mapping_from_file(self.ossec_path)
         groups_list = [{"group":group,"users":group_data.get("users")} for group, group_data in groups_config.items()]
         return {"items": groups_list, "totalItems":len(groups_list)}
+
+    def get_json_all_user_info(self):
+        roles_users = _load_users_mapping_from_file(self.ossec_path)
+        users_info = {user:self.get_json_user_info(user) for users in roles_users.values() for user in users.get("users") }
+        return users_info

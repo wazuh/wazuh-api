@@ -271,7 +271,8 @@ router.get('/user', function (req, res) {
                             enabled: !!parseInt(result.enabled),
                             reserved: !!parseInt(result.reserved),
                             roles: python_response.data.roles,
-                            groups: python_response.data.groups
+                            groups: python_response.data.groups,
+                            privileges: python_response.data.privileges
                         }, error: 0
                     };
                     res_h.send(req, res, response);
@@ -301,7 +302,7 @@ router.get('/user', function (req, res) {
 router.get('/users', function (req, res) {
     logger.debug(req.connection.remoteAddress + " GET /security/users");
 
-    var data_request = { 'function': '/security/users', 'arguments': { 'only_verify_privileges': true } };
+    var data_request = { 'function': '/security/users', 'arguments': {} };
     data_request['url'] = req.originalUrl
 
     execute.exec(python_bin, [wazuh_control], data_request, function (python_response) {
@@ -311,6 +312,9 @@ router.get('/users', function (req, res) {
                     result.forEach(function (user) {
                         user.enabled = !!parseInt(user.enabled);
                         user.reserved = !!parseInt(user.reserved);
+                        user.roles = python_response.data[user.name].roles,
+                        user.groups = python_response.data[user.name].groups,
+                        user.privileges = python_response.data[user.name].privileges
                     });
                     var response = {
                         data: {
