@@ -52,7 +52,7 @@ exports.sort_param = function(param) {
 }
 
 exports.search_param = function(param) {
-    return input_val(param, /^[a-zA-Z0-9\s_\-/\\:\.\"\'\(\)$%@~\+]+$/);
+    return input_val(param, /^[^;\|&\^*>]+$/);
 }
 
 exports.select_param = function(param) {
