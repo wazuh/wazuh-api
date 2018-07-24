@@ -64,7 +64,7 @@ router.all("*", function (req, res, next) {
 
     var run_as_user = req.headers['es-security-runas-user'];
     var run_as_group = req.headers['es-security-runas-group'];
-    logger.log(req.originalUrl);
+
     var user = basic_auth(req);
     if (!user) { // token auth
         var token = req.headers['x-access-token'];

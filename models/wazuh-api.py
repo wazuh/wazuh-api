@@ -195,7 +195,7 @@ if __name__ == "__main__":
             _rbac_verify_privileges(request, user=user, run_as_group=group)
         except Exception as e:
             print_json("Wazuh-Python Internal Error: {} (RBAC).".format(e), 1000)
-            exit(1)
+            exit(0)
 
     # Main
     try:
