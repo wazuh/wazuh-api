@@ -40,7 +40,7 @@ exports.single_field_array_request = function(entrypoint_name, req, res, apicach
             if (extra == 'select')
                 data_request['arguments'][extra] = filter.select_param_to_json(req.query[extra]);
             else
-                data_request['arguments'][extra] = req.query.extra;
+                data_request['arguments'][extra] = req.query[extra];
         }
     }
 
