@@ -23,6 +23,7 @@ errors['100'] = "Unauthorized request. Cluster privileges required";
 errors['101'] = "Failed to authenticate token.";
 errors['102'] = "Wrong user.";
 errors['103'] = "User not configured. Please, use request 'PUT/api/user' to set the password for this user.";
+errors['104'] = "Unauthorized request. User has no privileges to use 'run as'.";
 
 // 600 - 699 Requests
 errors['600'] = "Param not valid. Integer expected";  // Integer

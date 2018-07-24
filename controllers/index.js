@@ -68,15 +68,27 @@ router.all("*", function (req, res, next) {
     var user = basic_auth(req);
     if (!user) { // token auth
         var token = req.headers['x-access-token'];
-        users.authenticate_user_from_token(token, function (result) {
+        users.authenticate_user_from_token(token, function (result, user_name) {
             if (!result) { // wrong token
                 res_h.bad_request(req, res, "101");
                 var log_msg = "[" + req.connection.remoteAddress + "] " + "Token: \"" + token + "\" - Authentication failed.";
                 logger.log(log_msg);
             } else { // OK
-                users.set_run_as_user(run_as_user);
-                users.set_run_as_group(run_as_group);
-                next();
+                if (run_as_user || run_as_group) { // run_as? check run as privileges
+                    users.has_user_run_as_privileges(user_name, function (err, privileges) {
+                        if (!err && privileges) {
+                            users.set_run_as_user(run_as_user);
+                            users.set_run_as_group(run_as_group);
+                            next();
+                        } else {
+                            res_h.bad_request(req, res, "104");
+                            var log_msg = "[" + req.connection.remoteAddress + "] " + "User: \"" + user_name + "\" - Authentication failed: Unauthorized request. User has no privileges to use 'run as'.";
+                            logger.log(log_msg);
+                        }
+                    });
+                } else {
+                    next();
+                }
             }
         });
     } else { // user auth
@@ -99,9 +111,21 @@ router.all("*", function (req, res, next) {
                     }
                 });
             } else { // OK
-                users.set_run_as_user(run_as_user);
-                users.set_run_as_group(run_as_group);
-                next();
+                if (run_as_user || run_as_group) { // run_as? check run as privileges
+                    users.has_user_run_as_privileges(user.name, function (err, privileges) {
+                        if (!err && privileges) {
+                            users.set_run_as_user(run_as_user);
+                            users.set_run_as_group(run_as_group);
+                            next();
+                        } else {
+                            res_h.bad_request(req, res, "104");
+                            var log_msg = "[" + req.connection.remoteAddress + "] " + "User: \"" + user.name + "\" - Authentication failed: Unauthorized request. User has no privileges to use 'run as'.";
+                            logger.log(log_msg);
+                        }
+                    });
+                } else {
+                    next();
+                }
             }
         });
     }

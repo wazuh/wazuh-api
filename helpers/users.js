@@ -93,7 +93,7 @@ authenticate_user_from_token = function (token, callback) {
             verify_user_enabled(token_decoded.username, function (err, result) {
                 if (!err && result.enabled) {
                     set_user(token_decoded.username);
-                    callback(true);
+                    callback(true, token_decoded.username);
                 } else {
                     callback(false);
                 }
@@ -181,6 +181,22 @@ function is_user_reserved(user_name, callback) {
             }
         } else {
             callback(false);
+        }
+    });
+}
+
+exports.has_user_run_as_privileges = function(user_name, callback) {
+    var inputData = [user_name];
+    var sql = "SELECT run_as_privileges FROM users WHERE name=?";
+    db_helper.db_get(sql, inputData, function (err, result) {
+        if (!err) {
+            if (result.run_as_privileges == 1) {
+                callback(false, true);
+            } else {
+                callback(false, false);
+            }
+        } else {
+            callback(true, false);
         }
     });
 }
