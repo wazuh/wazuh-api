@@ -186,7 +186,7 @@ router.get('/stats/weekly', cache(), function(req, res) {
  *
  * @apiDescription Returns the three last months of ossec.log.
  *
- * @apiExample {curl} Example usage*:
+ * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/logs?offset=0&limit=5&pretty"
  *
  */
@@ -217,6 +217,7 @@ router.get('/logs', cache(), function(req, res) {
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
+
 /**
  * @api {get} /manager/logs/summary Get summary of ossec.log
  * @apiName GetManagerLogsSummary
@@ -237,6 +238,5 @@ router.get('/logs/summary', cache(), function(req, res) {
     var data_request = {'function': '/manager/logs/summary', 'arguments': {}};
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
-
 
 module.exports = router;

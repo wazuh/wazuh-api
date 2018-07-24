@@ -21,12 +21,15 @@ var router = require('express').Router();
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String} [select] List of selected fields.
  * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
- * @apiParam {String} older_than Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date.
+ * @apiParam {String} [older_than] Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date.
  * @apiParam {String} [os.platform] Filters by OS platform.
  * @apiParam {String} [os.version] Filters by OS version.
  * @apiParam {String} [manager] Filters by manager hostname to which agents are connected.
  * @apiParam {String} [version] Filters by agents version.
+ * @apiParam {String} [group] Filters by group of agents.
+ * @apiParam {String} [node] Filters by node name.
  *
  * @apiDescription Returns a list with the available agents.
  *
@@ -199,6 +202,7 @@ router.get('/no_group', cache(), function (req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String} [hash] Select algorithm to generate the sum.
  *
  * @apiDescription Returns the list of existing agent groups.
  *
@@ -242,6 +246,8 @@ router.get('/groups', cache(), function(req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status.
  *
  * @apiDescription Returns the list of agents in a group.
  *
@@ -453,6 +459,7 @@ router.get('/outdated', cache(), function(req, res) {
  * @apiGroup Info
  *
  * @apiParam {String} agent_name Agent name.
+ * @apiParam {String} [select] List of selected fields.
  *
  * @apiDescription Returns various information from an agent called :agent_name.
  *
@@ -490,6 +497,7 @@ router.get('/name/:agent_name', cache(), function(req, res) {
  * @apiGroup Info
  *
  * @apiParam {Number} agent_id Agent ID.
+ * @apiParam {String} [select] List of selected fields.
  *
  * @apiDescription Returns various information from an agent.
  *
@@ -942,9 +950,9 @@ router.delete('/groups/:group_id', function(req, res) {
 router.delete('/', function(req, res) {
     logger.debug(req.connection.remoteAddress + " DELETE /agents");
 
-    var data_request = { 'function': 'DELETE/agents/', 'arguments': {} };
-    var filter_body = { 'ids': 'array_numbers', 'purge': 'boolean' };
-    var filter_query = { 'older_than': 'timeframe_type', 'status': 'alphanumeric_param'};
+    var data_request = { 'function': 'DELETE/agents/', 'arguments': {}};
+    var filter_body = { 'ids': 'array_numbers', 'purge': 'boolean'};
+    var filter_query = { 'older_than': 'timeframe_type', 'status': 'alphanumeric_param', 'purge': 'empty_boolean' };
 
     if (!filter.check(req.body, filter_body, req, res))  // Filter with error
         return;
@@ -957,7 +965,12 @@ router.delete('/', function(req, res) {
         return;
     }
 
-    data_request['arguments']['purge'] = 'purge' in req.body && (req.body['purge'] == true || req.body['purge'] == 'true');
+    if ('purge' in req.body && 'purge' in req.query) // the most restrictive wins
+        data_request['arguments']['purge'] = (req.query.purge == 'true' || req.query.purge == '') && (req.body.purge == 'true' || req.body.purge == true);
+    else if ('purge' in req.body)
+        data_request['arguments']['purge'] = (req.body.purge == 'true' || req.body.purge == true);
+    else if ('purge' in req.query)
+        data_request['arguments']['purge'] = (req.query.purge == 'true' || req.query.purge == '');
 
     if ('ids' in req.body)
         data_request['arguments']['list_agent_ids'] = req.body.ids;
@@ -1095,6 +1108,53 @@ router.post('/insert', function(req, res) {
         execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
     }else
         res_h.bad_request(req, res, 604, "Missing fields. Mandatory fields: id, name, ip, key");
+})
+
+
+
+/**
+ * @api {get} /agents/stats/distinct Get distinct fields in agents
+ * @apiName GetdistinctAgents
+ * @apiGroup Stats
+ *
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String} [fields] List of fields affecting the operation.
+ * @apiParam {String} [select] List of selected fields.
+ * 
+ * @apiDescription Returns all the different combinations that agents have for the selected fields. It also indicates the total number of agents that have each combination.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/stats/distinct?pretty"
+ *
+ */
+router.get('/stats/distinct', cache(), function (req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /agents/stats/distinct");
+
+    req.apicacheGroup = "manager";
+
+    var data_request = { 'function': '/agents/stats/distinct', 'arguments': {} };
+    var filters = {
+        'offset': 'numbers', 'limit': 'numbers', 'select': 'select_param', 'sort': 'sort_param',
+        'search': 'search_param', 'fields': 'select_param'
+    };
+
+    if ('fields' in req.query)
+        data_request['arguments']['db_select'] = filter.select_param_to_json(req.query.fields);
+    if ('select' in req.query)
+        data_request['arguments']['filter_fields'] = filter.select_param_to_json(req.query.select);
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = Number(req.query.offset);
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = Number(req.query.limit);
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 module.exports = router;
