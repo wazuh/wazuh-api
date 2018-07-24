@@ -507,8 +507,8 @@ router.get('/user/groups', function (req, res) {
  *
  */
 router.get('/roles_mapping', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET/security/roles");
-    var data_request = { 'function': '/security/roles', 'arguments': {} };
+    logger.debug(req.connection.remoteAddress + " GET/security/roles_mapping");
+    var data_request = { 'function': '/security/roles_mapping', 'arguments': {} };
     data_request['url'] = req.originalUrl;
     execute.exec(python_bin, [wazuh_control], data_request, function (python_response) {res_h.send(req, res, python_response)});
 });

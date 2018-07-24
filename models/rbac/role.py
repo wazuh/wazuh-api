@@ -8,7 +8,7 @@ from rbac.request import Request
 import re
 
 reserved_roles = {
-    "superuser": {"/*": {"methods": ["GET", "POST", "PUT", "DELETE"]}},
+    "admin": {"/*": {"methods": ["GET", "POST", "PUT", "DELETE"]}},
     "app": {"/*": {"methods": ["GET", "POST", "PUT", "DELETE"]}}
 }
 
