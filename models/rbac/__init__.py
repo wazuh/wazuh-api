@@ -23,7 +23,7 @@ class Rbac():
     def __init__(self, ossec_path, realm='native'):
         self.ossec_path = ossec_path
         self.reserved_roles = {
-            "superuser": {"/*": {"methods": ["GET", "POST", "PUT ", "DELETE"]}},
+            "superuser": {"/*": {"methods": ["GET", "POST", "PUT", "DELETE"]}},
             "app": {"/*": {"methods": ["GET", "POST", "PUT", "DELETE"]}}
         }
 

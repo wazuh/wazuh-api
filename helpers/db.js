@@ -34,7 +34,8 @@ function db_get(sql, inputData, callback) {
                 msg = "Error in DB query. Reason: " + err + ". Query: " + sql + " (" + inputData + ").";
             else if (!row)
                 msg = "No result in DB query. Query: " + sql + " (" + inputData + ").";
-            logger.debug(msg);
+            if (typeof logger !== 'undefined')
+                logger.error(msg);
             callback(true, err);
         } else {
             callback(false, row);
@@ -48,7 +49,8 @@ function db_run(sql, inputData, callback) {
             var reason = "";
             if (err)
                 reason = "Reason: " + err;
-            logger.debug("Error in DB query. " + reason);
+            if (typeof logger !== 'undefined')
+                logger.error("Error in DB query. " + reason);
             callback(true, err);
         } else {
             callback(false);
@@ -64,7 +66,8 @@ function db_all(sql, inputData, callback) {
                 reason = "Reason: " + err;
             else if (!rows)
                 reason = "Reason: No result.";
-            logger.debug("Error in DB query. " + reason);
+            if (typeof logger !== 'undefined')
+                logger.error("Error in DB query. " + reason);
             callback(true, err);
         } else {
             callback(false, rows);
@@ -75,7 +78,8 @@ function db_all(sql, inputData, callback) {
 exports.close = function () {
     db.close(function(err){
         if (err)
-            logger.log(err.message);
+            if (typeof logger !== 'undefined')
+                logger.error(err.message);
     });
 }
 

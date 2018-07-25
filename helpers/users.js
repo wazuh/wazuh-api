@@ -226,6 +226,12 @@ exports.get_all_users = function (callback) {
     db_helper.db_all(sql, inputData, callback);
 }
 
+exports.get_all_users_without_password = function (callback) {
+    var inputData = [];
+    var sql = "SELECT name FROM users WHERE password=''";
+    db_helper.db_all(sql, inputData, callback);
+}
+
 exports.set_run_as_user = function (run_as_user) {
     if (run_as_user) {
         set_user(run_as_user);
