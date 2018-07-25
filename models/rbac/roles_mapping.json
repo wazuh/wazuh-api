@@ -8,7 +8,7 @@
                         "GET", "PUT", "POST"
                     ],
                     "exceptions": [
-                        "/api/users/*"
+                        "/security/users/*"
                     ]
                 }
             },
@@ -19,7 +19,7 @@
                         "GET"
                     ],
                     "exceptions": [
-                        "/api/users*",
+                        "/security/users*",
                         "/agents/*/key"
                     ]
                 },

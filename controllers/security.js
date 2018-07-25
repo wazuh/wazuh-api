@@ -504,6 +504,12 @@ router.get('/user/groups', function (req, res) {
  * @apiName GetAllRoles
  * @apiGroup Roles
  *
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String} [select] List of selected fields.
+ * 
  * @apiDescription Returns roles mapping. Resources, methods, and exceptions for all roles.
  *
  * @apiExample {curl} Example usage:
@@ -513,6 +519,26 @@ router.get('/user/groups', function (req, res) {
 router.get('/roles_mapping', function (req, res) {
     logger.debug(req.connection.remoteAddress + " GET/security/roles_mapping");
     var data_request = { 'function': '/security/roles_mapping', 'arguments': {} };
+
+    var filters = {
+        'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
+        'select': 'select_param', 'search': 'search_param'
+    };
+
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
+
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = Number(req.query.offset);
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = Number(req.query.limit);
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+    if ('select' in req.query)
+        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select);
+
     data_request['url'] = req.originalUrl;
     execute.exec(python_bin, [wazuh_control], data_request, function (python_response) {res_h.send(req, res, python_response)});
 });
@@ -523,6 +549,12 @@ router.get('/roles_mapping', function (req, res) {
  * @apiName GetAllGroups
  * @apiGroup Groups
  *
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String} [select] List of selected fields.
+ *
  * @apiDescription Returns all existing groups in the API.
  *
  * @apiExample {curl} Example usage:
@@ -532,6 +564,26 @@ router.get('/roles_mapping', function (req, res) {
 router.get('/groups', function (req, res) {
     logger.debug(req.connection.remoteAddress + " GET/security/groups");
     var data_request = { 'function': '/security/groups', 'arguments': {} };
+
+    var filters = {
+        'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
+        'select': 'select_param', 'search': 'search_param'
+    };
+
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
+
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = Number(req.query.offset);
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = Number(req.query.limit);
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+    if ('select' in req.query)
+        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select);
+
     data_request['url'] = req.originalUrl;
     execute.exec(python_bin, [wazuh_control], data_request, function (python_response) { res_h.send(req, res, python_response) });
 });
