@@ -29,6 +29,13 @@ All notable changes to this project will be documented in this file.
 - GET/manager/logs: Fixed bug when reading logs with non-ascii characters ([wazuh/wazuh#856](https://github.com/wazuh/wazuh/pull/856)).
 - Fix error sorting fields that have both uppercase and lowercase characters ([wazuh/wazuh#814](https://github.com/wazuh/wazuh/pull/814)).
 
+## [TBD]
+
+### Added
+
+- Option to download the wpk using http in API request `UPDATE/agents/:agent_id/upgrade`. ([#109](https://github.com/wazuh/wazuh-api/pull/109))
+
+
 ## [v3.4.0]
 ### Added
 - Improved agent registration/removal bash script ([#71](https://github.com/wazuh/wazuh-api/pull/71)).
@@ -42,6 +49,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Fixed `purge` filter in `DELETE/agents` ([#122](https://github.com/wazuh/wazuh-api/pull/122))
 
+
 ## [v3.3.1]
 ### Changed
 - Output of `DELETE/agents`: Added attributes `total_affected_agents` and `total_failed_ids`. ([Wazuh #795](https://github.com/wazuh/wazuh/pull/795))
@@ -49,6 +57,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Fixed `configure_api` tries to remove `preloaded_vars` even if it doesn't exist. ([#106](https://github.com/wazuh/wazuh-api/pull/106))
 - Fixed crash for requests with wrong headers. ([#107](https://github.com/wazuh/wazuh-api/pull/107))
+
 
 ## [v3.3.0]
 ### Added
