@@ -147,7 +147,9 @@ show_info () {
 
 help() {
     echo "./install_api.sh [dependencies|download|dev]"
-    echo "./install_api.sh                Install API from current path"
+    echo "./install_api.sh <options>      Install API from current path"
+    echo "  Options:"
+    echo "  --no-service                  Do not install API service"
     echo "./install_api.sh dependencies   List dependencies"
     echo "./install_api.sh download       Download and install latest release (stable branch)"
     echo "./install_api.sh dev            Install API from current path in development mode"
@@ -180,6 +182,10 @@ previous_checks() {
         DOWNLOAD_PATH=$(url_latest_release "wazuh" "wazuh-api")
     else
         API_SOURCES="."  # empty argument
+    fi
+
+    if [ "X${arg}" == "X--no-service" ]; then   # do not install api service
+        NO_SERVICE="1"
     fi
 
     # Test root permissions
@@ -422,7 +428,7 @@ setup_api() {
 
     fi
 
-    # Create/check api.log
+    # Create/check api.log and /logs/api directory
     APILOG_PATH="${DIRECTORY}/logs/api.log"
     if [ ! -f $APILOG_PATH ]; then
         touch $APILOG_PATH
@@ -430,10 +436,23 @@ setup_api() {
     exec_cmd "chown root:ossec $APILOG_PATH"
     exec_cmd "chmod 660 $APILOG_PATH"
 
-    print "\nInstalling service."
-    echo "----------------------------------------------------------------"
-    exec_cmd_bash "$API_PATH/scripts/install_daemon.sh"
-    echo "----------------------------------------------------------------"
+    APILOG_DIR="${DIRECTORY}/logs/api"
+    if [ ! -d $APILOG_DIR ]; then
+        mkdir $APILOG_DIR
+    fi
+    exec_cmd "chown ossec:ossec $APILOG_DIR"
+    exec_cmd "chmod 750 $APILOG_DIR"
+
+
+    if [ -z "$NO_SERVICE" ]
+    then
+        print "\nInstalling service."
+        echo "----------------------------------------------------------------"
+        exec_cmd_bash "$API_PATH/scripts/install_daemon.sh"
+        echo "----------------------------------------------------------------"
+    else
+        print "\nSkipping service installation."
+    fi
 }
 
 main() {

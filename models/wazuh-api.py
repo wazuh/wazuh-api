@@ -31,6 +31,7 @@ try:
     import wazuh.rootcheck as rootcheck
     import wazuh.syscheck as syscheck
     import wazuh.syscollector as syscollector
+    import wazuh.distinct as distinct
 except (ImportError, SyntaxError) as e:
     error = str(e)
     error_wazuh_package = -1
@@ -194,6 +195,8 @@ if __name__ == "__main__":
             'PUT/agents/:agent_id/upgrade_custom': Agent.upgrade_agent_custom,
             '/agents/:agent_id/upgrade_result': Agent.get_upgrade_result,
 
+            '/agents/stats/distinct': distinct.get_distinct_agents,
+
             # Groups
             '/agents/groups': Agent.get_all_groups,
             '/agents/no_group': Agent.get_agents_without_group,
@@ -254,12 +257,21 @@ if __name__ == "__main__":
             '/syscollector/:agent_id/os': syscollector.get_os_agent,
             '/syscollector/:agent_id/hardware': syscollector.get_hardware_agent,
             '/syscollector/:agent_id/packages': syscollector.get_packages_agent,
+            '/syscollector/:agent_id/processes': syscollector.get_processes_agent,
+            '/syscollector/:agent_id/ports': syscollector.get_ports_agent,
+            '/syscollector/:agent_id/netaddr': syscollector.get_netaddr_agent,
+            '/syscollector/:agent_id/netproto': syscollector.get_netproto_agent,
+            '/syscollector/:agent_id/netiface': syscollector.get_netiface_agent,
 
-            # Experimental 
+            # Experimental
             '/experimental/syscollector/os': syscollector.get_os,
             '/experimental/syscollector/hardware': syscollector.get_hardware,
-            '/experimental/syscollector/packages': syscollector.get_packages
-
+            '/experimental/syscollector/packages': syscollector.get_packages,
+            '/experimental/syscollector/processes': syscollector.get_processes,
+            '/experimental/syscollector/ports': syscollector.get_ports,
+            '/experimental/syscollector/netaddr': syscollector.get_netaddr,
+            '/experimental/syscollector/netproto': syscollector.get_netproto,
+            '/experimental/syscollector/netiface': syscollector.get_netiface,
         }
 
         if list_f:

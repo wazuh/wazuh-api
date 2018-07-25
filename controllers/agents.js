@@ -1106,4 +1106,51 @@ router.post('/insert', function(req, res) {
         res_h.bad_request(req, res, 604, "Missing fields. Mandatory fields: id, name, ip, key");
 })
 
+
+
+/**
+ * @api {get} /agents/stats/distinct Get distinct fields in agents
+ * @apiName GetdistinctAgents
+ * @apiGroup Stats
+ *
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String} [fields] List of fields affecting the operation.
+ * @apiParam {String} [select] List of selected fields.
+ * 
+ * @apiDescription Returns all the different combinations that agents have for the selected fields. It also indicates the total number of agents that have each combination.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/stats/distinct?pretty"
+ *
+ */
+router.get('/stats/distinct', cache(), function (req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /agents/stats/distinct");
+
+    req.apicacheGroup = "manager";
+
+    var data_request = { 'function': '/agents/stats/distinct', 'arguments': {} };
+    var filters = {
+        'offset': 'numbers', 'limit': 'numbers', 'select': 'select_param', 'sort': 'sort_param',
+        'search': 'search_param', 'fields': 'select_param'
+    };
+
+    if ('fields' in req.query)
+        data_request['arguments']['db_select'] = filter.select_param_to_json(req.query.fields);
+    if ('select' in req.query)
+        data_request['arguments']['filter_fields'] = filter.select_param_to_json(req.query.select);
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = Number(req.query.offset);
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = Number(req.query.limit);
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
 module.exports = router;

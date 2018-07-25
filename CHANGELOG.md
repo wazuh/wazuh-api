@@ -1,5 +1,33 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+## [TBD]
+- API logs rotation. ([#117](https://github.com/wazuh/wazuh-api/pull/117))
+
+
+## [v3.5.0]
+
+### Added
+- Show authenticated user in API logs ([#67](https://github.com/wazuh/wazuh-api/pull/67)).
+### Added
+- New API requests for syscollector ([#89](https://github.com/wazuh/wazuh-api/pull/89)).:
+    * `GET/syscollector/processes`.
+    * `GET/syscollector/:agent_id/processes`.
+    * `GET/syscollector/ports`.
+    * `GET/syscollector/:agent_id/ports`.
+    * `GET/syscollector/netaddr`.
+    * `GET/syscollector/:agent_id/netaddr`.
+    * `GET/syscollector/netproto`.
+    * `GET/syscollector/:agent_id/netproto`.
+    * `GET/syscollector/netiface`.
+    * `GET/syscollector/:agent_id/netiface`.
+
+### Changed
+- GET/agents/groups: Rename `merged_sum` and `conf_sum` fields to `mergedSum` and `configSum` ([wazuh/wazuh#761](https://github.com/wazuh/wazuh/pull/761)).
+- GET/manager/logs/summary: Added more log levels to the output: error, info, critical, warning and debug ([wazuh/wazuh#856](https://github.com/wazuh/wazuh/pull/856)).
+
+### Fixed
+- GET/manager/logs: Fixed bug when reading logs with non-ascii characters ([wazuh/wazuh#856](https://github.com/wazuh/wazuh/pull/856)).
+- Fix error sorting fields that have both uppercase and lowercase characters ([wazuh/wazuh#814](https://github.com/wazuh/wazuh/pull/814)).
 
 ## [TBD]
 
@@ -11,6 +39,9 @@ All notable changes to this project will be documented in this file.
 ## [v3.4.0]
 ### Added
 - Improved agent registration/removal bash script ([#71](https://github.com/wazuh/wazuh-api/pull/71)).
+- New API request: `GET/agents/stats/distinct`. ([#115](https://github.com/wazuh/wazuh-api/pull/115))
+- Installer option for disabling API service setup. ([#129](https://github.com/wazuh/wazuh-api/pull/129))
+
 
 ### Changed
 - Move "Multiple DB requests" to `/experimental`. ([#124](https://github.com/wazuh/wazuh-api/pull/124))
@@ -42,15 +73,14 @@ All notable changes to this project will be documented in this file.
 - Fixed error message when an invalid character was used with `select` parameter ([#98](https://github.com/wazuh/wazuh-api/pull/98)).
 
 
-
 ## [v3.2.4]
 
 There are no changes for Wazuh API in this version.
 
 
-
 ## [v3.2.3]
 ### Added
+
 - New API requests:
     * `GET/rules/gdpr` ([#78](https://github.com/wazuh/wazuh-api/pull/78)).
     * `GET/agents/no_group`.
