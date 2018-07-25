@@ -1,5 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file.
+## [TBD]
+- API logs rotation. ([#117](https://github.com/wazuh/wazuh-api/pull/117))
+
 
 ## [v3.5.0]
 
