@@ -19,6 +19,7 @@ var router = require('express').Router();
  * @apiGroup OS
  *
  * @apiParam {Number} agent_id Agent ID.
+ * @apiParam {String} [select] List of selected fields.
  *
  * @apiDescription Returns the agent's OS info
  *
@@ -52,6 +53,7 @@ router.get('/:agent_id/os', function(req, res) {
  * @apiGroup Hardware
  *
  * @apiParam {Number} agent_id Agent ID.
+ * @apiParam {String} [select] List of selected fields.
  *
  * @apiDescription Returns the agent's hardware info
  *

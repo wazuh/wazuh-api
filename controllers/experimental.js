@@ -22,6 +22,11 @@ var router = require('express').Router();
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String} [vendor] Filters by vendor.
+ * @apiParam {String} [name] Filters by name.
+ * @apiParam {String} [architecture] Filters by architecture.
+ * @apiParam {String} [format] Filters by format.
+ * @apiParam {String} [select] List of selected fields.
  *
  * @apiDescription Returns the agent's packages info
  *
@@ -82,6 +87,12 @@ router.get('/syscollector/packages', function (req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [os_name] Filters by os_name.
+ * @apiParam {String} [architecture] Filters by architecture.
+ * @apiParam {String} [os_version] Filters by os_version.
+ * @apiParam {String} [version] Filters by version.
+ * @apiParam {String} [release] Filters by release.
  *
  * @apiDescription Returns the agent's os info
  *
@@ -146,6 +157,13 @@ router.get('/syscollector/os', function (req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [ram_free] Filters by ram_free.
+ * @apiParam {String} [ram_total] Filters by ram_total.
+ * @apiParam {String} [cpu_cores] Filters by cpu_cores.
+ * @apiParam {String} [cpu_mhz] Filters by cpu_mhz.
+ * @apiParam {String} [cpu_name] Filters by cpu_name.
+ * @apiParam {String} [board_serial] Filters by board_serial.
  *
  * @apiDescription Returns the agent's hardware info
  *
