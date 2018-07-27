@@ -1193,6 +1193,7 @@ describe('Agents', function() {
                     res.body.error.should.equal(1406);
                     done();
                 });
+        });
 
         it('Select', function(done) {
             request(common.url)
@@ -1343,7 +1344,7 @@ describe('Agents', function() {
                     if (err) return done(err);
 
                     res.body.should.have.properties(['error', 'message']);
-                    res.body.error.should.equal(1406);
+                    res.body.error.should.equal(1727);
                     done();
                 });
         });
@@ -1558,35 +1559,27 @@ describe('Agents', function() {
 
 
     describe('DELETE/agents', function () {
-
-        var agent_name1 = "agentToDelete"
-        var agent_name2 = "agentToDelete2"
-        var agent_id1 = 0
-        var agent_id2 = 0
         before(function (done) {
             request(common.url)
-                .put("/agents/" + agent_name1)
+                .put("/agents/agentToDelete")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
                 .end(function (err, res) {
                     if (err) throw err;
-                    agent_id1 = res.body.data.id;
                     done();
                 });
-            });
         });
 
         before(function (done) {
 
             request(common.url)
-                .put("/agents/" + agent_name2)
+                .put("/agents/agentToDelete2")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
                 .end(function (err, res) {
                     if (err) throw err;
-                    agent_id2 = res.body.data.id;
                     done();
                 });
         });
@@ -1607,8 +1600,8 @@ describe('Agents', function() {
 
         it('Filter: older_than, status and ids', function (done) {
             request(common.url)
-                .delete("/agents?status=neverconnected&older_than=1s&purge")
-                .send({ 'ids': [agent_id1]})
+                .delete("/agents?purge&older_than=1s&status=neverconnected")
+                .send({ 'ids': ['002']})
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1617,8 +1610,8 @@ describe('Agents', function() {
 
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.should.have.properties(['affected_agents', 'msg', 'older_than']);
-
-                    res.body.data.affected_agents[0].should.equal(agent_id1);
+                    res.body.data.msg.should.equal("All selected agents were removed");
+                    res.body.data.affected_agents[0].should.equal('002');
 
                     res.body.error.should.equal(0);
                     done();
@@ -1627,7 +1620,7 @@ describe('Agents', function() {
 
         it('Errors: Get deleted agent', function (done) {
             request(common.url)
-                .get("/agents/" + agent_id1)
+                .get("/agents/002")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1642,7 +1635,7 @@ describe('Agents', function() {
 
         it('Filter: older_than', function (done) {
             request(common.url)
-                .delete("/agents?older_than=1s&purge")
+                .delete("/agents?older_than=1s&purge&status=neverconnected")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1651,7 +1644,8 @@ describe('Agents', function() {
 
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.should.have.properties(['affected_agents', 'msg', 'older_than']);
-
+                    res.body.data.msg.should.equal("All selected agents were removed");
+                    res.body.data.affected_agents[0].should.equal('003');
                     res.body.error.should.equal(0);
                     done();
                 });
