@@ -1094,7 +1094,7 @@ describe('Agents', function() {
 
         after(function (done) {
             request(common.url)
-                .delete("/agents/" + agent_id)
+                .delete("/agents/" + agent_id + '?purge')
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1607,7 +1607,7 @@ describe('Agents', function() {
 
         it('Filter: older_than, status and ids', function (done) {
             request(common.url)
-                .delete("/agents?status=neverconnected&older_than=1s")
+                .delete("/agents?status=neverconnected&older_than=1s&purge")
                 .send({ 'ids': [agent_id1]})
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
@@ -1642,7 +1642,7 @@ describe('Agents', function() {
 
         it('Filter: older_than', function (done) {
             request(common.url)
-                .delete("/agents?older_than=1s")
+                .delete("/agents?older_than=1s&purge")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
