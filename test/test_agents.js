@@ -1662,9 +1662,7 @@ describe('Agents', function() {
 
     describe('GET/agents/stats/distinct', function () {
 
-        var fields = ['group', 'node_name', 'version', 'manager_host', 'os.codename', 'os.major',
-            'os.minor', 'os.uname', 'os.arch', 'os.build', 'os.name', 'os.arch', 'os.build', 'os.name',
-            'os.version', 'os.platform']
+        var fields = ['group', 'node_name', 'version', 'manager_host', 'os'];
 
         it('Request', function (done) {
             request(common.url)
@@ -1681,6 +1679,7 @@ describe('Agents', function() {
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
                     res.body.data.items[0].should.have.properties(fields);
+                    res.body.data.items[0].os.should.have.properties(agent_os_properties);
                     done();
                 });
         });
@@ -1699,6 +1698,7 @@ describe('Agents', function() {
                     res.body.error.should.equal(0);
                     res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
                     res.body.data.items[0].should.have.properties(fields);
+                    res.body.data.items[0].os.should.have.properties(agent_os_properties);
                     done();
                 });
         });
@@ -1733,6 +1733,7 @@ describe('Agents', function() {
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
                     res.body.data.items[0].should.have.properties(fields);
+                    res.body.data.items[0].os.should.have.properties(agent_os_properties);
                     done();
                 });
         });
@@ -1752,6 +1753,7 @@ describe('Agents', function() {
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
                     res.body.data.items[0].should.have.properties(fields);
+                    res.body.data.items[0].os.should.have.properties(agent_os_properties);
                     done();
                 });
         });
@@ -1770,7 +1772,8 @@ describe('Agents', function() {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['os.platform']);
+                    res.body.data.items[0].should.have.properties(['os']);
+                    res.body.data.items[0].os.should.have.properties(['platform']);
                     done();
                 });
         });
