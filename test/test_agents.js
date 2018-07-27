@@ -14,8 +14,6 @@ var assert  = require('assert');
 var request = require('supertest');
 var fs      = require('fs');
 var common  = require('./common.js');
-var sleep = require('sleep');
-
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
@@ -1619,11 +1617,6 @@ describe('Agents', function() {
                     agent_id2 = res.body.data.id;
                     done();
                 });
-        });
-
-        before(function (done) {
-            sleep.sleep(1)
-            done();
         });
 
         it('Request', function (done) {
