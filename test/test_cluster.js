@@ -317,7 +317,7 @@ describe('Cluster', function () {
     describe('GET/cluster/healthcheck', function () {
 
         var expected_name_master = "";
-        var expected_name_client = "";
+        var expected_name_worker = "";
         before(function (done) {
             request(common.url)
                 .get("/cluster/nodes/")
@@ -327,7 +327,7 @@ describe('Cluster', function () {
                 .end(function (err, res) {
                     if (err) return done(err);
                     expected_name_master = res.body.data.items[1].name;
-                    expected_name_client = res.body.data.items[0].name;
+                    expected_name_worker = res.body.data.items[0].name;
                     done();
                 });
         });
@@ -348,7 +348,7 @@ describe('Cluster', function () {
 
                     res.body.data.n_connected_nodes.should.be.above(1)
 
-                    res.body.data.nodes.should.have.properties([expected_name_client, expected_name_master]);
+                    res.body.data.nodes.should.have.properties([expected_name_worker, expected_name_master]);
 
                     // master
                     res.body.data.nodes[expected_name_master].should.have.properties(['info']);
@@ -358,33 +358,33 @@ describe('Cluster', function () {
                     res.body.data.nodes[expected_name_master].info.type.should.be.equal('master');
 
 
-                    // client
-                    res.body.data.nodes[expected_name_client].should.have.properties(['info', 'status']);
+                    // worker
+                    res.body.data.nodes[expected_name_worker].should.have.properties(['info', 'status']);
 
-                    res.body.data.nodes[expected_name_client].info.should.have.properties(['ip', 'version', 'type', 'name', 'n_active_agents']);
-                    res.body.data.nodes[expected_name_client].info.n_active_agents.should.be.instanceof(Number)
-                    res.body.data.nodes[expected_name_client].info.name.should.be.equal(expected_name_client);
-                    res.body.data.nodes[expected_name_client].info.type.should.be.equal('client');
+                    res.body.data.nodes[expected_name_worker].info.should.have.properties(['ip', 'version', 'type', 'name', 'n_active_agents']);
+                    res.body.data.nodes[expected_name_worker].info.n_active_agents.should.be.instanceof(Number)
+                    res.body.data.nodes[expected_name_worker].info.name.should.be.equal(expected_name_worker);
+                    res.body.data.nodes[expected_name_worker].info.type.should.be.equal('worker');
 
-                    res.body.data.nodes[expected_name_client].status.should.have.properties(['last_sync_agentinfo', 'sync_integrity_free', 'last_sync_agentgroups', 'last_sync_integrity', 'sync_agentinfo_free', 'sync_extravalid_free']);
+                    res.body.data.nodes[expected_name_worker].status.should.have.properties(['last_sync_agentinfo', 'sync_integrity_free', 'last_sync_agentgroups', 'last_sync_integrity', 'sync_agentinfo_free', 'sync_extravalid_free']);
 
-                    res.body.data.nodes[expected_name_client].status.last_sync_agentinfo.should.have.properties(['date_start_master', 'date_end_master', 'total_agentinfo']);
-                    res.body.data.nodes[expected_name_client].status.last_sync_agentinfo.total_agentinfo.should.be.instanceof(Number);
+                    res.body.data.nodes[expected_name_worker].status.last_sync_agentinfo.should.have.properties(['date_start_master', 'date_end_master', 'total_agentinfo']);
+                    res.body.data.nodes[expected_name_worker].status.last_sync_agentinfo.total_agentinfo.should.be.instanceof(Number);
 
-                    res.body.data.nodes[expected_name_client].status.sync_integrity_free.should.be.instanceof(Boolean);
+                    res.body.data.nodes[expected_name_worker].status.sync_integrity_free.should.be.instanceof(Boolean);
 
-                    res.body.data.nodes[expected_name_client].status.last_sync_agentgroups.should.have.properties(['date_end_master', 'date_start_master', 'total_agentgroups']);
-                    res.body.data.nodes[expected_name_client].status.last_sync_agentgroups.total_agentgroups.should.be.instanceof(Number);
+                    res.body.data.nodes[expected_name_worker].status.last_sync_agentgroups.should.have.properties(['date_end_master', 'date_start_master', 'total_agentgroups']);
+                    res.body.data.nodes[expected_name_worker].status.last_sync_agentgroups.total_agentgroups.should.be.instanceof(Number);
 
-                    res.body.data.nodes[expected_name_client].status.sync_agentinfo_free.should.be.instanceof(Boolean);
-                    res.body.data.nodes[expected_name_client].status.sync_extravalid_free.should.be.instanceof(Boolean);
+                    res.body.data.nodes[expected_name_worker].status.sync_agentinfo_free.should.be.instanceof(Boolean);
+                    res.body.data.nodes[expected_name_worker].status.sync_extravalid_free.should.be.instanceof(Boolean);
 
-                    res.body.data.nodes[expected_name_client].status.last_sync_integrity.should.have.properties(['total_files', 'date_end_master', 'date_start_master']);
-                    res.body.data.nodes[expected_name_client].status.last_sync_integrity.total_files.should.have.properties(['shared', 'missing', 'extra_valid', 'extra']);
-                    res.body.data.nodes[expected_name_client].status.last_sync_integrity.total_files.shared.should.be.instanceof(Number);
-                    res.body.data.nodes[expected_name_client].status.last_sync_integrity.total_files.missing.should.be.instanceof(Number);
-                    res.body.data.nodes[expected_name_client].status.last_sync_integrity.total_files.extra_valid.should.be.instanceof(Number);
-                    res.body.data.nodes[expected_name_client].status.last_sync_integrity.total_files.extra.should.be.instanceof(Number);
+                    res.body.data.nodes[expected_name_worker].status.last_sync_integrity.should.have.properties(['total_files', 'date_end_master', 'date_start_master']);
+                    res.body.data.nodes[expected_name_worker].status.last_sync_integrity.total_files.should.have.properties(['shared', 'missing', 'extra_valid', 'extra']);
+                    res.body.data.nodes[expected_name_worker].status.last_sync_integrity.total_files.shared.should.be.instanceof(Number);
+                    res.body.data.nodes[expected_name_worker].status.last_sync_integrity.total_files.missing.should.be.instanceof(Number);
+                    res.body.data.nodes[expected_name_worker].status.last_sync_integrity.total_files.extra_valid.should.be.instanceof(Number);
+                    res.body.data.nodes[expected_name_worker].status.last_sync_integrity.total_files.extra.should.be.instanceof(Number);
 
                     done();
                 });
@@ -393,7 +393,7 @@ describe('Cluster', function () {
 
         it('Filter: node name', function (done) {
             request(common.url)
-                .get("/cluster/healthcheck?node=" + expected_name_client)
+                .get("/cluster/healthcheck?node=" + expected_name_worker)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -407,36 +407,36 @@ describe('Cluster', function () {
 
                     res.body.data.n_connected_nodes.should.be.above(1)
 
-                    res.body.data.nodes.should.have.properties([expected_name_client]);
+                    res.body.data.nodes.should.have.properties([expected_name_worker]);
 
 
-                    // client
-                    res.body.data.nodes[expected_name_client].should.have.properties(['info', 'status']);
+                    // worker
+                    res.body.data.nodes[expected_name_worker].should.have.properties(['info', 'status']);
 
-                    res.body.data.nodes[expected_name_client].info.should.have.properties(['ip', 'version', 'type', 'name', 'n_active_agents']);
-                    res.body.data.nodes[expected_name_client].info.n_active_agents.should.be.instanceof(Number)
-                    res.body.data.nodes[expected_name_client].info.name.should.be.equal(expected_name_client);
-                    res.body.data.nodes[expected_name_client].info.type.should.be.equal('client');
+                    res.body.data.nodes[expected_name_worker].info.should.have.properties(['ip', 'version', 'type', 'name', 'n_active_agents']);
+                    res.body.data.nodes[expected_name_worker].info.n_active_agents.should.be.instanceof(Number)
+                    res.body.data.nodes[expected_name_worker].info.name.should.be.equal(expected_name_worker);
+                    res.body.data.nodes[expected_name_worker].info.type.should.be.equal('worker');
 
-                    res.body.data.nodes[expected_name_client].status.should.have.properties(['last_sync_agentinfo', 'sync_integrity_free', 'last_sync_agentgroups', 'last_sync_integrity', 'sync_agentinfo_free', 'sync_extravalid_free']);
+                    res.body.data.nodes[expected_name_worker].status.should.have.properties(['last_sync_agentinfo', 'sync_integrity_free', 'last_sync_agentgroups', 'last_sync_integrity', 'sync_agentinfo_free', 'sync_extravalid_free']);
 
-                    res.body.data.nodes[expected_name_client].status.last_sync_agentinfo.should.have.properties(['date_start_master', 'date_end_master', 'total_agentinfo']);
-                    res.body.data.nodes[expected_name_client].status.last_sync_agentinfo.total_agentinfo.should.be.instanceof(Number);
+                    res.body.data.nodes[expected_name_worker].status.last_sync_agentinfo.should.have.properties(['date_start_master', 'date_end_master', 'total_agentinfo']);
+                    res.body.data.nodes[expected_name_worker].status.last_sync_agentinfo.total_agentinfo.should.be.instanceof(Number);
 
-                    res.body.data.nodes[expected_name_client].status.sync_integrity_free.should.be.instanceof(Boolean);
+                    res.body.data.nodes[expected_name_worker].status.sync_integrity_free.should.be.instanceof(Boolean);
 
-                    res.body.data.nodes[expected_name_client].status.last_sync_agentgroups.should.have.properties(['date_end_master', 'date_start_master', 'total_agentgroups']);
-                    res.body.data.nodes[expected_name_client].status.last_sync_agentgroups.total_agentgroups.should.be.instanceof(Number);
+                    res.body.data.nodes[expected_name_worker].status.last_sync_agentgroups.should.have.properties(['date_end_master', 'date_start_master', 'total_agentgroups']);
+                    res.body.data.nodes[expected_name_worker].status.last_sync_agentgroups.total_agentgroups.should.be.instanceof(Number);
 
-                    res.body.data.nodes[expected_name_client].status.sync_agentinfo_free.should.be.instanceof(Boolean);
-                    res.body.data.nodes[expected_name_client].status.sync_extravalid_free.should.be.instanceof(Boolean);
+                    res.body.data.nodes[expected_name_worker].status.sync_agentinfo_free.should.be.instanceof(Boolean);
+                    res.body.data.nodes[expected_name_worker].status.sync_extravalid_free.should.be.instanceof(Boolean);
 
-                    res.body.data.nodes[expected_name_client].status.last_sync_integrity.should.have.properties(['total_files', 'date_end_master', 'date_start_master']);
-                    res.body.data.nodes[expected_name_client].status.last_sync_integrity.total_files.should.have.properties(['shared', 'missing', 'extra_valid', 'extra']);
-                    res.body.data.nodes[expected_name_client].status.last_sync_integrity.total_files.shared.should.be.instanceof(Number);
-                    res.body.data.nodes[expected_name_client].status.last_sync_integrity.total_files.missing.should.be.instanceof(Number);
-                    res.body.data.nodes[expected_name_client].status.last_sync_integrity.total_files.extra_valid.should.be.instanceof(Number);
-                    res.body.data.nodes[expected_name_client].status.last_sync_integrity.total_files.extra.should.be.instanceof(Number);
+                    res.body.data.nodes[expected_name_worker].status.last_sync_integrity.should.have.properties(['total_files', 'date_end_master', 'date_start_master']);
+                    res.body.data.nodes[expected_name_worker].status.last_sync_integrity.total_files.should.have.properties(['shared', 'missing', 'extra_valid', 'extra']);
+                    res.body.data.nodes[expected_name_worker].status.last_sync_integrity.total_files.shared.should.be.instanceof(Number);
+                    res.body.data.nodes[expected_name_worker].status.last_sync_integrity.total_files.missing.should.be.instanceof(Number);
+                    res.body.data.nodes[expected_name_worker].status.last_sync_integrity.total_files.extra_valid.should.be.instanceof(Number);
+                    res.body.data.nodes[expected_name_worker].status.last_sync_integrity.total_files.extra.should.be.instanceof(Number);
 
                     done();
                 });
