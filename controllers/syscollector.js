@@ -155,7 +155,7 @@ router.get('/:agent_id/packages', function(req, res) {
 /**
  * @api {get} /syscollector/:agent_id/processes Get processes info
  * @apiName GetProcesses_agent
- * @apiGroup Syscollector
+ * @apiGroup Processes
  *
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {Number} [offset] First element to return in the collection.
@@ -248,9 +248,9 @@ router.get('/:agent_id/processes', function (req, res) {
 
 
 /**
- * @api {get} /syscollector/:agent_id/ports Get ports info of all agents
- * @apiName GetPorts
- * @apiGroup Syscollector
+ * @api {get} /syscollector/:agent_id/ports Get ports info of an agent
+ * @apiName GetPorts_agent
+ * @apiGroup Ports
  *
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {Number} [offset] First element to return in the collection.
@@ -327,9 +327,9 @@ router.get('/:agent_id/ports', function (req, res) {
 
 
 /**
- * @api {get} /syscollector/:agent_id/netaddr Get network address info of all agents
- * @apiName GetNetaddr
- * @apiGroup Syscollector
+ * @api {get} /syscollector/:agent_id/netaddr Get network address info of an agent
+ * @apiName GetNetaddr_agent
+ * @apiGroup Netaddr
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
@@ -394,9 +394,9 @@ router.get('/:agent_id/netaddr', function (req, res) {
 
 
 /**
- * @api {get} /syscollector/:agent_id/netproto Get network protocol info of all agents
- * @apiName GetNetproto
- * @apiGroup Syscollector
+ * @api {get} /syscollector/:agent_id/netproto Get network protocol info of an agent
+ * @apiName GetNetproto_agent
+ * @apiGroup Netproto
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
@@ -461,9 +461,9 @@ router.get('/:agent_id/netproto', function (req, res) {
 
 
 /**
- * @api {get} /syscollector/:agent_id/netiface Get network interface info of all agents
- * @apiName GetNetiface
- * @apiGroup Syscollector
+ * @api {get} /syscollector/:agent_id/netiface Get network interface info of an agent
+ * @apiName GetNetiface_agent
+ * @apiGroup Netiface
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.

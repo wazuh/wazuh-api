@@ -31,7 +31,7 @@ var router = require('express').Router();
  * @apiDescription Returns the agent's packages info
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/packages?pretty&sort=-name&limit=2&offset=4"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/packages?pretty&sort=-name&limit=2&offset=4"
  *
  */
 router.get('/syscollector/packages', function (req, res) {
@@ -223,7 +223,7 @@ router.get('/syscollector/hardware', function (req, res) {
 /**
  * @api {get} /experimental/syscollector/processes Get processes info of all agents
  * @apiName GetProcesses
- * @apiGroup Syscollector
+ * @apiGroup Processes
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
@@ -313,7 +313,7 @@ router.get('/syscollector/processes', function (req, res) {
 /**
  * @api {get} /experimental/syscollector/ports Get ports info of all agents
  * @apiName GetPorts
- * @apiGroup Syscollector
+ * @apiGroup Ports
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
@@ -386,7 +386,7 @@ router.get('/syscollector/ports', function (req, res) {
 /**
  * @api {get} /experimental/syscollector/netaddr Get network address info of all agents
  * @apiName GetNetaddr
- * @apiGroup Syscollector
+ * @apiGroup Netaddr
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
@@ -448,7 +448,7 @@ router.get('/syscollector/netaddr', function (req, res) {
 /**
  * @api {get} /experimental/syscollector/netproto Get network protocol info of all agents
  * @apiName GetNetproto
- * @apiGroup Syscollector
+ * @apiGroup Netproto
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
@@ -510,7 +510,7 @@ router.get('/syscollector/netproto', function (req, res) {
 /**
  * @api {get} /experimental/syscollector/netiface Get network interface info of all agents
  * @apiName GetNetiface
- * @apiGroup Syscollector
+ * @apiGroup Netiface
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
