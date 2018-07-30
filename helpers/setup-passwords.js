@@ -13,7 +13,7 @@
 
 var users = require('./users');
 var crypto = require('crypto'); 
-var readline = require('readline');
+var read = require("read")
 
 function generate_rand_password() {
     var randomValueHex = function(len){
@@ -26,12 +26,16 @@ function generate_rand_password() {
     randomValueHex(10);
 }
 
-function update_user(name, password, cb){
+function update_user(name, password, show_pass, cb){
     var user_data = { name: name, password: password };
     users.update_user(user_data, function (err) {
-        if (!err)
-            console.log(user_data.name + " updated. Password: " + password + "");
-        else
+        if (!err){
+            if (show_pass)
+                msg = user_data.name + " updated. Password: " + password + "";
+            else
+                msg = user_data.name + " updated.";
+            console.log(msg);
+        } else
             console.error("Can't update " + user_data.name + " password.");
         return cb(err);
     });
@@ -42,7 +46,7 @@ function auto() {
     users.get_all_users_without_password(function (err, result) {
         if (!err && result) {
             result.forEach(function (user) {
-                update_user(user.name, generate_rand_password(), function(){});
+                update_user(user.name, generate_rand_password(), true, function(){});
             });
         } else {
             console.error("Can't setup passwords.");
@@ -53,41 +57,43 @@ function auto() {
 function parameters() {
     process.argv.slice(2).forEach(function (val, index, array) {
         user = val.split(":");
-        update_user(user[0], user[1], function () { });
+        update_user(user[0], user[1], false, function () { });
     });
 }
 
 function askCredentials(result, i) {
 
-    var rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-
     if(!i) i = 0;
-    
     if (i >= result.length) {
-        rl.close(); 
         return;
     }
     const user = result[i]
-    console.log("\nInsert password for " + user.name);
-    rl.question("Password: ", function (password) {
-        update_user(user.name, password, function(err) {
-            return askCredentials(result, i + 1);
-        });
-        rl.close();  
-    });
 
+    console.log("\nInsert password for " + user.name);
+    read({ prompt: "Password: ", default: "", silent: true }, function (er, pass) {
+        read({ prompt: "Password again: ", default: "", silent: true }, function (er, pass2) {
+            if (!er && pass && pass.length > 0 && pass === pass2) {
+                update_user(user.name, pass, false, function (err) {
+                    return askCredentials(result, i + 1);
+                });
+            } else {
+                console.error("Invalid password for " + user.name + ". Please, try again.")
+                return askCredentials(result, i);
+            }
+        })
+    })
 }
 
 function interactive() {
-
     users.get_all_users_without_password(function (err, result) {
-        if (!err && result) {
+        if (!err && result && result.length > 0) {
             askCredentials(result,0)
         } else {
-            console.error("Can't setup passwords.");
+            if (!result.length > 0)
+                msg = "All users are set up.";
+            else
+                msg = "Can't setup passwords.";
+            console.error(msg);
         }
     });
 }
