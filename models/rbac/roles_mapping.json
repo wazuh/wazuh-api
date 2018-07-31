@@ -28,19 +28,6 @@
                         "PUT"
                     ]
                 }
-            },
-
-            "sample-group": {
-                "/agents?status=active*": {
-                    "methods": [
-                        "GET"
-                    ]
-                },
-                "/manager/*": {
-                    "methods": [
-                        "GET"
-                    ]
-                }
             }
 
         },

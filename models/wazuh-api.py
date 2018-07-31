@@ -15,6 +15,7 @@ exception_error = None
 try:
     import rbac.user as rbac_user
     import rbac.role as rbac_role
+    import rbac.group as rbac_group
     from rbac import Rbac
     new_path = '/var/ossec/framework'
     if not os_path.exists(new_path):
@@ -114,10 +115,10 @@ def usage():
 
 def _rbac_verify_privileges(request, user=None, run_as_group=None):
     if run_as_group and not run_as_group.can_exec(request):
-        print_json("Unauthorized request. Group '{}' does not have privileges to execute the operation.".format(run_as_group), 101)
+        print_json("Unauthorized. Group '{}' does not have privileges to execute the operation.".format(run_as_group), 401)
         exit(0)
     elif not user.has_permission_to_exec(request):
-        print_json("Unauthorized request. User '{}' does not have privileges to execute the operation.".format(user), 101)
+        print_json("Unauthorized. User '{}' does not have privileges to execute the operation.".format(user), 401)
         exit(0)
 
     if 'arguments' in request and request['arguments'].get('only_verify_privileges'):
@@ -191,7 +192,7 @@ if __name__ == "__main__":
             rbac = Rbac(ossec_path=request['ossec_path'])
             user = rbac_user.User(user_name=request['user'], ossec_path=request['ossec_path'])
             if request.get('run_as_group'):
-                group = rbac_role.Role(role=request.get('run_as_group'),ossec_path=request['ossec_path'])
+                group = rbac_group.Group(group=request.get('run_as_group'),ossec_path=request['ossec_path'])
             _rbac_verify_privileges(request, user=user, run_as_group=group)
         except Exception as e:
             print_json("Wazuh-Python Internal Error: {} (RBAC).".format(e), 1000)

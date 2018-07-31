@@ -3,8 +3,9 @@
         "users": []
     },
     "viewer": {
-        "users": [
-
+        "users": [],
+        "groups": [
+            "sample-group"
         ]
     }
 }
