@@ -7,6 +7,28 @@
 # License (version 2) as published by the FSF - Free Software
 # Foundation.
 
+OSSEC_CONF="/etc/ossec-init.conf"
+
+# Wazuh
+if ! [ -f $OSSEC_CONF ]; then
+    echo "Can't find $OSSEC_CONF. Is Wazuh installed?"
+    exit 1
+fi
+
+. $OSSEC_CONF
+
+if [ -z "$DIRECTORY" ]; then
+    DIRECTORY=$DEF_OSSDIR
+fi
+
+SCRIPT_PATH="${DIRECTORY}/api/helpers/setup-passwords.js"
+
+if ! [ -f $SCRIPT_PATH ]; then
+    echo "Can't find $SCRIPT_PATH."
+    exit 1
+fi
+
+# Node
 BIN_DIR=$(which nodejs 2> /dev/null)
 
 if [ "X$BIN_DIR" = "X" ]; then
@@ -18,7 +40,7 @@ if [ "X$BIN_DIR" = "X" ]; then
     fi
 fi
 
-
+# Parameters
 while true; do
     read -p "Set passwords automatically or interactively? [AUTO/interactive]: " mode
     case $mode in
@@ -30,9 +52,9 @@ while true; do
     esac
 done
 
-
+# Execute
 if [ "X${auto}" == "Xno" ]; then
-    echo `$BIN_DIR helpers/setup-passwords.js interactive`; 
+    $BIN_DIR $SCRIPT_PATH interactive;
 else
-    echo `$BIN_DIR helpers/setup-passwords.js auto`; 
+    $BIN_DIR $SCRIPT_PATH auto;
 fi
