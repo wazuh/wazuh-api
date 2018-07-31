@@ -32,6 +32,7 @@ try:
     import wazuh.syscheck as syscheck
     import wazuh.syscollector as syscollector
     import wazuh.distinct as distinct
+    import wazuh.ciscat as ciscat
 except (ImportError, SyntaxError) as e:
     error = str(e)
     error_wazuh_package = -1
@@ -263,6 +264,9 @@ if __name__ == "__main__":
             '/syscollector/:agent_id/netproto': syscollector.get_netproto_agent,
             '/syscollector/:agent_id/netiface': syscollector.get_netiface_agent,
 
+            # CIS-CAT
+            '/ciscat/:agent_id/results': ciscat.get_results_agent,
+
             # Experimental
             '/experimental/syscollector/os': syscollector.get_os,
             '/experimental/syscollector/hardware': syscollector.get_hardware,
@@ -272,6 +276,7 @@ if __name__ == "__main__":
             '/experimental/syscollector/netaddr': syscollector.get_netaddr,
             '/experimental/syscollector/netproto': syscollector.get_netproto,
             '/experimental/syscollector/netiface': syscollector.get_netiface,
+            '/experimental/ciscat/results': ciscat.get_ciscat_results
         }
 
         if list_f:
