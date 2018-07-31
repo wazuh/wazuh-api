@@ -27,7 +27,7 @@ config.BehindProxyServer = "no";
 // Advanced configuration
 
 // Values for API log: disabled, info, warning, error, debug (each level includes the previous level).
-config.logs = "debug";
+config.logs = "info";
 // Cross-origin resource sharing. Values: yes, no.
 config.cors = "yes";
 // Cache (time in milliseconds)
