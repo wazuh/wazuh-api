@@ -21,6 +21,7 @@ var router = require('express').Router();
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String} [select] List of selected fields.
  * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
  * @apiParam {String} [older_than] Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date.
  * @apiParam {String} [os.platform] Filters by OS platform.
@@ -28,6 +29,7 @@ var router = require('express').Router();
  * @apiParam {String} [manager] Filters by manager hostname to which agents are connected.
  * @apiParam {String} [version] Filters by agents version.
  * @apiParam {String} [group] Filters by group of agents.
+ * @apiParam {String} [node] Filters by node name.
  *
  * @apiDescription Returns a list with the available agents.
  *
@@ -204,6 +206,7 @@ router.get('/no_group', cache(), function (req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String} [hash] Select algorithm to generate the sum.
  *
  * @apiDescription Returns the list of existing agent groups.
  *
@@ -248,6 +251,8 @@ router.get('/groups', cache(), function(req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status.
  *
  * @apiDescription Returns the list of agents in a group.
  *
@@ -464,6 +469,7 @@ router.get('/outdated', cache(), function(req, res) {
  * @apiGroup Info
  *
  * @apiParam {String} agent_name Agent name.
+ * @apiParam {String} [select] List of selected fields.
  *
  * @apiDescription Returns various information from an agent called :agent_name.
  *
@@ -502,6 +508,7 @@ router.get('/name/:agent_name', cache(), function(req, res) {
  * @apiGroup Info
  *
  * @apiParam {Number} agent_id Agent ID.
+ * @apiParam {String} [select] List of selected fields.
  *
  * @apiDescription Returns various information from an agent.
  *
@@ -683,6 +690,7 @@ router.put('/:agent_id/restart', function(req, res) {
  * @apiParam {Number} agent_id Agent unique ID.
  * @apiParam {String} [wpk_repo] WPK repository.
  * @apiParam {String} [version] Wazuh version.
+ * @apiParam {Boolean} [use_http] Use protocol http. If it's false use https. By default the value is set to false.
  * @apiParam {number="0","1"} [force] Force upgrade.
  *
  * @apiDescription Upgrade the agent using a WPK file from online repository.
@@ -695,7 +703,7 @@ router.put('/:agent_id/upgrade', function(req, res) {
     logger.debug(req.connection.remoteAddress + " PUT /agents/:agent_id/upgrade");
 
     var data_request = {'function': 'PUT/agents/:agent_id/upgrade', 'arguments': {}};
-    var filters = {'wpk_repo':'paths', 'version':'alphanumeric_param', 'force':'numbers'};
+    var filters = { 'wpk_repo': 'paths', 'version': 'alphanumeric_param', 'force': 'numbers', 'use_http': 'boolean'};
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))
         return;
@@ -710,6 +718,8 @@ router.put('/:agent_id/upgrade', function(req, res) {
         data_request['arguments']['version'] = req.query.version;
     if ('force' in req.query)
         data_request['arguments']['force'] = req.query.force;
+    if ('use_http' in req.query)
+        data_request['arguments']['use_http'] = (req.query.use_http == true || req.query.use_http == 'true');
 
     data_request['url'] = req.originalUrl
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });

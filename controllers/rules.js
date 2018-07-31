@@ -27,6 +27,7 @@ var router = require('express').Router();
  * @apiParam {String} [path] Filters the rules by path.
  * @apiParam {String} [file] Filters the rules by file name.
  * @apiParam {String} [pci] Filters the rules by pci requirement.
+ * @apiParam {String} [gdpr] Filters the rules by gdpr.
  *
  * @apiDescription Returns all rules.
  *

@@ -43,6 +43,7 @@ router.get('/node', cache(), function (req, res) {
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [type] Filters by node type.
  * *
  * @apiDescription Returns the nodes info
  *
