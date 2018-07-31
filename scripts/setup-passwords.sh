@@ -7,6 +7,17 @@
 # License (version 2) as published by the FSF - Free Software
 # Foundation.
 
+BIN_DIR=$(which nodejs 2> /dev/null)
+
+if [ "X$BIN_DIR" = "X" ]; then
+    BIN_DIR=$(which node 2> /dev/null)
+
+    if [ "X$BIN_DIR" = "X" ]; then
+        echo "NodeJS binaries not found. Is NodeJS installed?"
+        exit 1
+    fi
+fi
+
 
 while true; do
     read -p "Set passwords automatically or interactively? [AUTO/interactive]: " mode
@@ -21,7 +32,7 @@ done
 
 
 if [ "X${auto}" == "Xno" ]; then
-    echo `node helpers/setup-passwords.js interactive`; 
+    echo `$BIN_DIR helpers/setup-passwords.js interactive`; 
 else
-    echo `node helpers/setup-passwords.js auto`; 
+    echo `$BIN_DIR helpers/setup-passwords.js auto`; 
 fi

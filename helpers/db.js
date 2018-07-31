@@ -22,7 +22,6 @@ if (first_time){
             password TEXT NOT NULL, enabled INTEGER DEFAULT 1, reserved INTEGER DEFAULT 0, run_as_privileges INTEGER DEFAULT 0)");
         db.run("INSERT INTO users (name, password, enabled, reserved, run_as_privileges) VALUES('wazuh-app', '', 1, 1, 1)");
         db.run("INSERT INTO users (name, password, enabled, reserved, run_as_privileges) VALUES('wazuh', '', 1, 1, 1)");
-        db.run("INSERT INTO users (name, password, enabled, reserved, run_as_privileges) VALUES('foo', '', 1, 0, 0)");
     });
 }
 

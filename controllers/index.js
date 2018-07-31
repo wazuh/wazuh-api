@@ -70,7 +70,7 @@ router.all("*", function (req, res, next) {
         var token = req.headers['x-access-token'];
         users.authenticate_user_from_token(token, function (result, user_name) {
             if (!result) { // wrong token
-                res_h.bad_request(req, res, "101");
+                res_h.bad_request(req, res, "401");
                 var log_msg = "[" + req.connection.remoteAddress + "] " + "Token: \"" + token + "\" - Authentication failed.";
                 logger.log(log_msg);
             } else { // OK
@@ -94,20 +94,28 @@ router.all("*", function (req, res, next) {
     } else { // user auth
         users.authenticate_user(user, function (result) {
             if (!result) { // wrong user or pass
-                users.is_password_setted(user.name, function (result) { // first login?
-                    if (result) { 
+                users.exists_user(user.name, function (err) { 
+                    if (!err) { 
+                        users.is_password_setted(user.name, function (result) { // first login?
+                            if (result) {
+                                res_h.bad_request(req, res, "401");
+                                var log_msg = "[" + req.connection.remoteAddress + "] " + "User: \"" + user.name + "\" - Authentication failed.";
+                                logger.log(log_msg);
+                            } else {
+                                if ((req.originalUrl == '/security/user' || req.originalUrl == '/security/user?pretty') && req.method == "PUT" && "password" in req.body) { // PUT/api/user
+                                    users.set_run_as_user(user.name);
+                                    next();
+                                } else { 
+                                    res_h.bad_request(req, res, "103");
+                                    var log_msg = "[" + req.connection.remoteAddress + "] " + "User: \"" + user.name + "\" - Authentication failed: Password not configured.";
+                                    logger.log(log_msg);
+                                }
+                            }
+                        });
+                    } else {
                         res_h.bad_request(req, res, "401");
                         var log_msg = "[" + req.connection.remoteAddress + "] " + "User: \"" + user.name + "\" - Authentication failed.";
                         logger.log(log_msg);
-                    } else {
-                        if ((req.originalUrl == '/security/user' || req.originalUrl == '/security/user?pretty') && req.method == "PUT" && "password" in req.body) { // PUT/api/user
-                            users.set_run_as_user(user.name);
-                            next();
-                        } else { 
-                            res_h.bad_request(req, res, "103");
-                            var log_msg = "[" + req.connection.remoteAddress + "] " + "User: \"" + user.name + "\" - Authentication failed: Password not configured.";
-                            logger.log(log_msg);
-                        }
                     }
                 });
             } else { // OK

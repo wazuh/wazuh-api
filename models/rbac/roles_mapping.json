@@ -23,13 +23,12 @@
                         "/agents/*/key"
                     ]
                 },
-                "/api/user": {
+                "/security/user": {
                     "methods": [
                         "PUT"
                     ]
                 }
             },
-
 
             "sample-group": {
                 "/agents?status=active*": {

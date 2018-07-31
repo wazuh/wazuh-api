@@ -154,7 +154,7 @@ router.put('/users/:user_name', function (req, res) {
 
 
 /**
- * @api {post} /security/user/register Register new API user
+ * @api {post} /security/users/register Register new API user
  * @apiName Resgistration
  * @apiGroup Registration
  *
@@ -164,7 +164,7 @@ router.put('/users/:user_name', function (req, res) {
  * @apiDescription Register a new API user. 
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X POST -H "Content-Type:application/json" -d '{"username":"foo2", "password":"bar2"}' "https://127.0.0.1:55000/security/user/register?pretty"
+ *     curl -u foo:bar -k -X POST -H "Content-Type:application/json" -d '{"name":"foo2", "password":"bar2"}' "https://127.0.0.1:55000/security/users/register?pretty"
  *
  */
 router.post('/users/register', function (req, res) {
@@ -289,14 +289,14 @@ router.get('/user', function (req, res) {
 
 
 /**
- * @api {delete} /security/users Get all API users
+ * @api {get} /security/users Get all API users
  * @apiName GetUsers
  * @apiGroup GetUsers
  *
  * @apiDescription Returns all API users.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/security/users?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/security/users?pretty"
  *
  */
 router.get('/users', function (req, res) {

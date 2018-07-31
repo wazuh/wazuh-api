@@ -107,7 +107,7 @@ exports.register_user = function (user_data, result) {
     exists_user(user_data.name, function (not_exists, data) {
         if (not_exists) {
             var inputData = [user_data.name, encrypt(user_data.password)];
-            var sql = "INSERT INTO users (name, password, enabled) VALUES(?, ?, 1)";
+            var sql = "INSERT INTO users (name, password, enabled, reserved, run_as_privileges) VALUES(?, ?, 1, 0, 0)";
             db_helper.db_run(sql, inputData, result);
         } else {
             result(true);

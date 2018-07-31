@@ -20,7 +20,7 @@ errors['4'] = "Database error.";
 
 // Auth
 errors['100'] = "Unauthorized request. Cluster privileges required";
-errors['103'] = "User not configured. Please, use request 'PUT/api/user' to set the password for this user.";
+errors['103'] = "User not configured. Please, use request 'PUT/api/user' or 'api/scripts/setup-passwords.sh' to set the password for this user.";
 errors['401'] = "Unauthorized";
 
 // 600 - 699 Requests
