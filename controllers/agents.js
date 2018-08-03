@@ -48,7 +48,8 @@ router.get('/', cache(), function(req, res) {
                     'status':'alphanumeric_param', 'os.platform':'alphanumeric_param',
                    'os.version':'alphanumeric_param', 'manager':'alphanumeric_param',
                    'version':'alphanumeric_param', 'node': 'alphanumeric_param',
-                    'older_than':'timeframe_type', 'group':'alphanumeric_param'};
+                    'older_than':'timeframe_type', 'group':'alphanumeric_param',
+                    'name': 'alphanumeric_param', 'ip': 'ips'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -81,6 +82,10 @@ router.get('/', cache(), function(req, res) {
         data_request['arguments']['filters']['older_than'] = req.query['older_than'];
     if ('group' in req.query)
         data_request['arguments']['filters']['group'] = req.query['group'];
+    if ('ip' in req.query)
+        data_request['arguments']['filters']['ip'] = req.query.ip;
+    if ('name' in req.query)
+        data_request['arguments']['filters']['name'] = req.query.name;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
