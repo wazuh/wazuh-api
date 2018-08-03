@@ -30,7 +30,7 @@ var router = require('express').Router();
  *
  * @apiDescription Returns the agent's packages info
  *
- * @apiExample {curl} Example usage*:
+ * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/packages?pretty&sort=-name&limit=2&offset=4"
  *
  */
@@ -96,7 +96,7 @@ router.get('/syscollector/packages', function (req, res) {
  *
  * @apiDescription Returns the agent's os info
  *
- * @apiExample {curl} Example usage*:
+ * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/os?pretty&sort=-os_name"
  *
  */
@@ -167,7 +167,7 @@ router.get('/syscollector/os', function (req, res) {
  *
  * @apiDescription Returns the agent's hardware info
  *
- * @apiExample {curl} Example usage*:
+ * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/hardware?pretty&sort=-ram_free"
  *
  */
@@ -243,8 +243,8 @@ router.get('/syscollector/hardware', function (req, res) {
  *
  * @apiDescription Returns the agent's processes info
  *
- * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/processes?pretty"
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/processes?pretty&limit=2&sort=priority"
  *
  */
 router.get('/syscollector/processes', function (req, res) {
@@ -329,8 +329,8 @@ router.get('/syscollector/processes', function (req, res) {
  *
  * @apiDescription Returns the agent's ports info
  *
- * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/ports?pretty"
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/ports?pretty&limit=2&sort=protocol"
  *
  */
 router.get('/syscollector/ports', function (req, res) {
@@ -400,8 +400,8 @@ router.get('/syscollector/ports', function (req, res) {
  *
  * @apiDescription Returns the agent's network address info
  *
- * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/netaddr?pretty"
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/netaddr?pretty&limit=2&sort=proto"
  *
  */
 router.get('/syscollector/netaddr', function (req, res) {
@@ -462,8 +462,8 @@ router.get('/syscollector/netaddr', function (req, res) {
  *
  * @apiDescription Returns the agent's network protocol info
  *
- * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/netproto?pretty"
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/netproto?pretty&limit=2&sort=type"
  *
  */
 router.get('/syscollector/netproto', function (req, res) {
@@ -533,8 +533,8 @@ router.get('/syscollector/netproto', function (req, res) {
  *
  * @apiDescription Returns the agent's network interface info
  *
- * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/netiface?pretty"
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/netiface?pretty&limit=2&sort=rx_bytes"
  *
  */
 router.get('/syscollector/netiface', function (req, res) {
