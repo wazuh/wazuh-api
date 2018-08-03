@@ -65,29 +65,29 @@ router.get('/:agent_id/results', function (req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
     if ('benchmark' in req.query)
-        data_request['arguments']['benchmark'] = filter.search_param_to_json(req.query.benchmark);
+        data_request['arguments']['filters']['benchmark'] = req.query.benchmark;
     if ('profile' in req.query)
-        data_request['arguments']['profile'] = filter.search_param_to_json(req.query.profile);
+        data_request['arguments']['filters']['profile'] = req.query.profile;
     if ('pass' in req.query)
-        data_request['arguments']['pass'] = filter.search_param_to_json(req.query.pass);
+        data_request['arguments']['filters']['pass'] = req.query.pass;
     if ('fail' in req.query)
-        data_request['arguments']['fail'] = filter.search_param_to_json(req.query.fail);
+        data_request['arguments']['filters']['fail'] = req.query.fail;
     if ('error' in req.query)
-        data_request['arguments']['error'] = filter.search_param_to_json(req.query.error);
+        data_request['arguments']['filters']['error'] = req.query.error;
     if ('notchecked' in req.query)
-        data_request['arguments']['notchecked'] = filter.search_param_to_json(req.query.notchecked);
+        data_request['arguments']['filters']['notchecked'] = req.query.notchecked;
     if ('unknown' in req.query)
-        data_request['arguments']['unknown'] = filter.search_param_to_json(req.query.unknown);
+        data_request['arguments']['filters']['unknown'] = req.query.unknown;
     if ('score' in req.query)
-        data_request['arguments']['score'] = filter.search_param_to_json(req.query.score);
+        data_request['arguments']['filters']['score'] = req.query.score;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
