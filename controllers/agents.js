@@ -866,7 +866,7 @@ router.delete('/groups', function(req, res) {
  * @apiDescription Removes an agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/001?pretty"
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/008?pretty"
  *
  */
 router.delete('/:agent_id', function(req, res) {
@@ -1126,7 +1126,7 @@ router.post('/insert', function(req, res) {
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [fields] List of fields affecting the operation.
  * @apiParam {String} [select] List of selected fields.
- * 
+ *
  * @apiDescription Returns all the different combinations that agents have for the selected fields. It also indicates the total number of agents that have each combination.
  *
  * @apiExample {curl} Example usage:
