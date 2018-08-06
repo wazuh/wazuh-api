@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Show authenticated user in API logs ([#67](https://github.com/wazuh/wazuh-api/pull/67)).
-- New API requests for syscollector ([#89](https://github.com/wazuh/wazuh-api/pull/89)):
+- New API requests for Syscollector ([#89](https://github.com/wazuh/wazuh-api/pull/89)):
     * `GET/experimental/syscollector/processes`.
     * `GET/syscollector/:agent_id/processes`.
     * `GET/experimental/syscollector/ports`.
@@ -18,6 +18,9 @@ All notable changes to this project will be documented in this file.
     * `GET/syscollector/:agent_id/netiface`.
 - Option to download the wpk using HTTP in `UPDATE/agents/:agent_id/upgrade`. ([#109](https://github.com/wazuh/wazuh-api/pull/109))
 - Rotate log files at midnight. ([#117](https://github.com/wazuh/wazuh-api/pull/117))
+- New API requests for the CIS-CAT module ([#142](https://github.com/wazuh/wazuh-api/pull/142)):
+    * `GET/experimental/ciscat/results`.
+    * `GET/ciscat/:agent_id/results`.
 
 
 ### Changed
