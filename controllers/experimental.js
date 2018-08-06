@@ -610,19 +610,19 @@ router.get('/syscollector/netiface', function (req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [select] List of selected fields.
- * @apiParam {Number} [benchmark] Filters by process pid.
- * @apiParam {String} [profile] Filters by process egroup.
- * @apiParam {String} [pass] Filters by process euser.
- * @apiParam {String} [fail] Filters by process fgroup.
- * @apiParam {Number} [error] Filters by process nlwp.
- * @apiParam {Number} [notchecked] Filters by process pgrp.
- * @apiParam {Number} [unknown] Filters by process priority.
- * @apiParam {String} [score] Filters by process rgroup.
+ * @apiParam {String} [benchmark] Filters by benchmark.
+ * @apiParam {String} [profile] Filters by evaluated profile.
+ * @apiParam {Number} [pass] Filters by passed checks.
+ * @apiParam {Number} [fail] Filters by failed checks.
+ * @apiParam {Number} [error] Filters by encountered errors.
+ * @apiParam {Number} [notchecked] Filters by not checked.
+ * @apiParam {Number} [unknown] Filters by unknown results.
+ * @apiParam {Number} [score] Filters by final score.
  *
  * @apiDescription Returns the agent's ciscat results info
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/ciscat/processes?pretty&limit=2&offset=10&sort=-name"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/ciscat/results?pretty&limit=2&offset=10&sort=-score"
  *
  */
 router.get('/ciscat/results', function (req, res) {
