@@ -612,7 +612,7 @@ router.get('/:agent_id/upgrade_result', function(req, res) {
      logger.debug(req.connection.remoteAddress + " GET /agents/:agent_id/config/:component/:configuration");
 
      var data_request = {'function': '/agents/:agent_id/config/:component/:configuration', 'arguments': {}};
-     var filters = {'agent_id': 'names', 'component': 'names', 'configuration': 'names'};
+     var filters = {'agent_id': 'numbers', 'component': 'names', 'configuration': 'names'};
 
      if (!filter.check(req.params, filters, req, res))  // Filter with error
          return;
