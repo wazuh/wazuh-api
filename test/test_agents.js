@@ -14,8 +14,6 @@ var assert  = require('assert');
 var request = require('supertest');
 var fs      = require('fs');
 var common  = require('./common.js');
-var sleep = require('sleep');
-
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
@@ -80,11 +78,8 @@ describe('Agents', function() {
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.body.should.have.properties(['error', 'data']);
-                res.body.data.should.have.properties(['items', 'totalItems']);
-
-                res.body.error.should.equal(0);
-                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1406);
                 done();
             });
         });
@@ -996,13 +991,8 @@ describe('Agents', function() {
                 .end(function (err, res) {
                     if (err) return done(err);
 
-                    res.body.should.have.properties(['error', 'data']);
-
-                    res.body.error.should.equal(0);
-                    res.body.data.should.be.an.array;
-                    res.body.data.should.have.properties(['items', 'totalItems']);
-                    res.body.data.totalItems.should.above(0)
-                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                    res.body.should.have.properties(['error', 'message']);
+                    res.body.error.should.equal(1406);
                     done();
                 });
         });
@@ -1104,7 +1094,7 @@ describe('Agents', function() {
 
         after(function (done) {
             request(common.url)
-                .delete("/agents/" + agent_id)
+                .delete("/agents/" + agent_id + '?purge')
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1147,13 +1137,8 @@ describe('Agents', function() {
                 .end(function (err, res) {
                     if (err) return done(err);
 
-                    res.body.should.have.properties(['error', 'data']);
-
-                    res.body.error.should.equal(0);
-                    res.body.data.should.be.an.array;
-                    res.body.data.should.have.properties(['items', 'totalItems']);
-                    res.body.data.totalItems.should.above(0)
-                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                    res.body.should.have.properties(['error', 'message']);
+                    res.body.error.should.equal(1406);
                     done();
                 });
         });
@@ -1204,15 +1189,11 @@ describe('Agents', function() {
                 .end(function (err, res) {
                     if (err) return done(err);
 
-                    res.body.should.have.properties(['error', 'data']);
-
-                    res.body.error.should.equal(0);
-                    res.body.data.should.be.an.array;
-                    res.body.data.should.have.properties(['items', 'totalItems']);
-                    res.body.data.totalItems.should.above(0)
-                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                    res.body.should.have.properties(['error', 'message']);
+                    res.body.error.should.equal(1406);
                     done();
                 });
+        });
 
         it('Select', function(done) {
             request(common.url)
@@ -1312,13 +1293,8 @@ describe('Agents', function() {
                 .end(function (err, res) {
                     if (err) return done(err);
 
-                    res.body.should.have.properties(['error', 'data']);
-
-                    res.body.error.should.equal(0);
-                    res.body.data.should.be.an.array;
-                    res.body.data.should.have.properties(['items', 'totalItems']);
-                    res.body.data.totalItems.should.above(0)
-                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                    res.body.should.have.properties(['error', 'message']);
+                    res.body.error.should.equal(1406);
                     done();
                 });
         });
@@ -1367,13 +1343,8 @@ describe('Agents', function() {
                 .end(function (err, res) {
                     if (err) return done(err);
 
-                    res.body.should.have.properties(['error', 'data']);
-
-                    res.body.error.should.equal(0);
-                    res.body.data.should.be.an.array;
-                    res.body.data.should.have.properties(['items', 'totalItems']);
-                    res.body.data.totalItems.should.above(0)
-                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                    res.body.should.have.properties(['error', 'message']);
+                    res.body.error.should.equal(1727);
                     done();
                 });
         });
@@ -1588,42 +1559,29 @@ describe('Agents', function() {
 
 
     describe('DELETE/agents', function () {
-
-        var agent_name1 = "agentToDelete"
-        var agent_name2 = "agentToDelete2"
-        var agent_id1 = 0
-        var agent_id2 = 0
         before(function (done) {
             request(common.url)
-                .put("/agents/" + agent_name1)
+                .put("/agents/agentToDelete")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
                 .end(function (err, res) {
                     if (err) throw err;
-                    agent_id1 = res.body.data.id;
                     done();
                 });
-            });
         });
 
         before(function (done) {
 
             request(common.url)
-                .put("/agents/" + agent_name2)
+                .put("/agents/agentToDelete2")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
                 .end(function (err, res) {
                     if (err) throw err;
-                    agent_id2 = res.body.data.id;
                     done();
                 });
-        });
-
-        before(function (done) {
-            sleep.sleep(1)
-            done();
         });
 
         it('Request', function (done) {
@@ -1642,8 +1600,8 @@ describe('Agents', function() {
 
         it('Filter: older_than, status and ids', function (done) {
             request(common.url)
-                .delete("/agents?status=neverconnected&older_than=1s")
-                .send({ 'ids': [agent_id1]})
+                .delete("/agents?purge&older_than=1s&status=neverconnected")
+                .send({ 'ids': ['002']})
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1652,8 +1610,8 @@ describe('Agents', function() {
 
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.should.have.properties(['affected_agents', 'msg', 'older_than']);
-
-                    res.body.data.affected_agents[0].should.equal(agent_id1);
+                    res.body.data.msg.should.equal("All selected agents were removed");
+                    res.body.data.affected_agents[0].should.equal('002');
 
                     res.body.error.should.equal(0);
                     done();
@@ -1662,7 +1620,7 @@ describe('Agents', function() {
 
         it('Errors: Get deleted agent', function (done) {
             request(common.url)
-                .get("/agents/" + agent_id1)
+                .get("/agents/002")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1677,7 +1635,7 @@ describe('Agents', function() {
 
         it('Filter: older_than', function (done) {
             request(common.url)
-                .delete("/agents?older_than=1s")
+                .delete("/agents?older_than=1s&purge&status=neverconnected")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1686,7 +1644,8 @@ describe('Agents', function() {
 
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.should.have.properties(['affected_agents', 'msg', 'older_than']);
-
+                    res.body.data.msg.should.equal("All selected agents were removed");
+                    res.body.data.affected_agents[0].should.equal('003');
                     res.body.error.should.equal(0);
                     done();
                 });
@@ -1697,9 +1656,7 @@ describe('Agents', function() {
 
     describe('GET/agents/stats/distinct', function () {
 
-        var fields = ['group', 'node_name', 'version', 'manager_host', 'os.codename', 'os.major',
-            'os.minor', 'os.uname', 'os.arch', 'os.build', 'os.name', 'os.arch', 'os.build', 'os.name',
-            'os.version', 'os.platform']
+        var fields = ['group', 'node_name', 'version', 'manager_host', 'os'];
 
         it('Request', function (done) {
             request(common.url)
@@ -1716,6 +1673,7 @@ describe('Agents', function() {
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
                     res.body.data.items[0].should.have.properties(fields);
+                    res.body.data.items[0].os.should.have.properties(agent_os_properties);
                     done();
                 });
         });
@@ -1734,24 +1692,22 @@ describe('Agents', function() {
                     res.body.error.should.equal(0);
                     res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
                     res.body.data.items[0].should.have.properties(fields);
+                    res.body.data.items[0].os.should.have.properties(agent_os_properties);
                     done();
                 });
         });
 
         it('Retrieve all elements with limit=0', function (done) {
             request(common.url)
-                .get("/agents/stats/distinct?limit=1")
+                .get("/agents/stats/distinct?limit=0")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
                 .end(function (err, res) {
                     if (err) return done(err);
 
-                    res.body.should.have.properties(['error', 'data']);
-                    res.body.data.should.have.properties(['items', 'totalItems']);
-
-                    res.body.error.should.equal(0);
-                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
+                    res.body.should.have.properties(['error', 'message']);
+                    res.body.error.should.equal(1406);
                     done();
                 });
         });
@@ -1771,6 +1727,7 @@ describe('Agents', function() {
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
                     res.body.data.items[0].should.have.properties(fields);
+                    res.body.data.items[0].os.should.have.properties(agent_os_properties);
                     done();
                 });
         });
@@ -1790,6 +1747,7 @@ describe('Agents', function() {
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
                     res.body.data.items[0].should.have.properties(fields);
+                    res.body.data.items[0].os.should.have.properties(agent_os_properties);
                     done();
                 });
         });
@@ -1808,7 +1766,8 @@ describe('Agents', function() {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['os.platform']);
+                    res.body.data.items[0].should.have.properties(['os']);
+                    res.body.data.items[0].os.should.have.properties(['platform']);
                     done();
                 });
         });

@@ -32,6 +32,7 @@ try:
     import wazuh.syscheck as syscheck
     import wazuh.syscollector as syscollector
     import wazuh.distinct as distinct
+    import wazuh.ciscat as ciscat
 except (ImportError, SyntaxError) as e:
     error = str(e)
     error_wazuh_package = -1
@@ -181,18 +182,20 @@ if __name__ == "__main__":
             '/agents/summary': Agent.get_agents_summary,
             '/agents/summary/os': Agent.get_os_summary,
             '/agents/outdated': Agent.get_outdated_agents,
-            '/agents/:agent_id/upgrade_result': Agent.get_upgrade_result,
-            'PUT/agents/:agent_id/upgrade': Agent.upgrade_agent,
-            'PUT/agents/:agent_id/upgrade_custom': Agent.upgrade_agent_custom,
             'PUT/agents/:agent_id/restart': Agent.restart_agents,
             'PUT/agents/restart': Agent.restart_agents,
             'PUT/agents/:agent_name': Agent.add_agent,
             'POST/agents/restart': Agent.restart_agents,
             'POST/agents': Agent.add_agent,
             'POST/agents/insert': Agent.insert_agent,
-            'DELETE/agents/groups': Agent.remove_group,
             'DELETE/agents/:agent_id': Agent.remove_agent,
             'DELETE/agents/': Agent.remove_agents,
+            
+            # Upgrade agents
+            'PUT/agents/:agent_id/upgrade': Agent.upgrade_agent,
+            'PUT/agents/:agent_id/upgrade_custom': Agent.upgrade_agent_custom,
+            '/agents/:agent_id/upgrade_result': Agent.get_upgrade_result,
+
             '/agents/stats/distinct': distinct.get_distinct_agents,
 
             # Groups
@@ -206,6 +209,7 @@ if __name__ == "__main__":
             'PUT/agents/groups/:group_id': Agent.create_group,
             'DELETE/agents/groups/:group_id':Agent.remove_group,
             'DELETE/agents/:agent_id/group':Agent.unset_group,
+            'DELETE/agents/groups': Agent.remove_group,
 
             # Decoders
             '/decoders': Decoder.get_decoders,
@@ -254,12 +258,25 @@ if __name__ == "__main__":
             '/syscollector/:agent_id/os': syscollector.get_os_agent,
             '/syscollector/:agent_id/hardware': syscollector.get_hardware_agent,
             '/syscollector/:agent_id/packages': syscollector.get_packages_agent,
+            '/syscollector/:agent_id/processes': syscollector.get_processes_agent,
+            '/syscollector/:agent_id/ports': syscollector.get_ports_agent,
+            '/syscollector/:agent_id/netaddr': syscollector.get_netaddr_agent,
+            '/syscollector/:agent_id/netproto': syscollector.get_netproto_agent,
+            '/syscollector/:agent_id/netiface': syscollector.get_netiface_agent,
 
-            # Experimental 
+            # CIS-CAT
+            '/ciscat/:agent_id/results': ciscat.get_results_agent,
+
+            # Experimental
             '/experimental/syscollector/os': syscollector.get_os,
             '/experimental/syscollector/hardware': syscollector.get_hardware,
             '/experimental/syscollector/packages': syscollector.get_packages,
-
+            '/experimental/syscollector/processes': syscollector.get_processes,
+            '/experimental/syscollector/ports': syscollector.get_ports,
+            '/experimental/syscollector/netaddr': syscollector.get_netaddr,
+            '/experimental/syscollector/netproto': syscollector.get_netproto,
+            '/experimental/syscollector/netiface': syscollector.get_netiface,
+            '/experimental/ciscat/results': ciscat.get_ciscat_results
         }
 
         if list_f:

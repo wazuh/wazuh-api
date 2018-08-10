@@ -1,7 +1,7 @@
 {
   "name": "wazuh_api",
-  "version": "3.4.0",
-  "revision": "3403",
+  "version": "3.5.0",
+  "revision": "3500",
   "description": "Wazuh API.",
   "main": "app.js",
   "author": "Wazuh",
@@ -13,7 +13,8 @@
     "express": "^4.14.0",
     "htpasswd": "^2.3.4",
     "http-auth": "^3.0.1",
-    "moment": "^2.15.0"
+    "moment": "^2.15.0",
+    "rotating-file-stream": "^1.3.6"
   },
   "repository": {
     "type": "git",

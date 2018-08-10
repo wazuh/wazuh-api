@@ -36,7 +36,7 @@ describe('Agents', function() {
 
         after(function(done) {
             request(common.url)
-            .delete("/agents/" + agent_id)
+            .delete("/agents/" + agent_id + '?purge')
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -122,7 +122,7 @@ describe('Agents', function() {
         it('Request', function(done) {
 
             request(common.url)
-            .delete("/agents/" + agent_id)
+            .delete("/agents/" + agent_id + '?purge')
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -181,7 +181,7 @@ describe('Agents', function() {
 
             after(function(done) {
                 request(common.url)
-                .delete("/agents/" + agent_id)
+                .delete("/agents/" + agent_id + '?purge')
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type",/json/)
                 .expect(200)
@@ -294,7 +294,7 @@ describe('Agents', function() {
 
             after(function(done) {
                 request(common.url)
-                .delete("/agents/" + agent_id)
+                .delete("/agents/" + agent_id + '?purge')
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type",/json/)
                 .expect(200)
@@ -352,7 +352,7 @@ describe('Agents', function() {
             afterEach(function(done) {
                 if (agent_id != 0){
                     request(common.url)
-                    .delete("/agents/" + agent_id)
+                    .delete("/agents/" + agent_id + '?purge')
                     .auth(common.credentials.user, common.credentials.password)
                     .expect("Content-type",/json/)
                     .expect(200)
@@ -434,7 +434,7 @@ describe('Agents', function() {
 
             after(function(done) {
                 request(common.url)
-                .delete("/agents/" + agent_id)
+                .delete("/agents/" + agent_id + '?purge')
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type",/json/)
                 .expect(200)
@@ -565,7 +565,7 @@ describe('Agents', function() {
 
             after(function(done) {
                 request(common.url)
-                .delete("/agents/" + agent_id)
+                .delete("/agents/" + agent_id + '?purge')
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type",/json/)
                 .expect(200)
@@ -622,7 +622,7 @@ describe('Agents', function() {
             afterEach(function(done) {
                 if (agent_id != 0){
                     request(common.url)
-                    .delete("/agents/" + agent_id)
+                    .delete("/agents/" + agent_id + '?purge')
                     .auth(common.credentials.user, common.credentials.password)
                     .expect("Content-type",/json/)
                     .expect(200)

@@ -79,32 +79,11 @@ hardcoded_items = {
         # POST /agents/restart
         'PostAgentListRestart' : {"error": 0,"data": "All selected agents were restarted"},
 
-        # GET /syscheck/:agent_id
-        'GetSyscheckAgent' : {"error":0,"data":{"totalItems":2762,"items":[{"sha1":"4fed08ccbd0168593a6fffcd925adad65e5ae6d9","group":"root","uid":0,"scanDate":"2017-03-02 23:43:28","gid":0,"user":"root","file":"!1488498208 /boot/config-3.16.0-4-amd64","modificationDate":"2016-10-19 06:45:50","octalMode":"100644","permissions":"-rw-r--r--","md5":"46d43391ae54c1084a2d40e8d1b4873c","inode":5217,"event":"added","size":157721},{"sha1":"d48151a3d3638b723f5d7bc1e9c71d478fcde4e6","group":"root","uid":0,"scanDate":"2017-03-02 23:43:26","gid":0,"user":"root","file":"!1488498206 /boot/System.map-3.16.0-4-amd64","modificationDate":"2016-10-19 06:45:50","octalMode":"100644","permissions":"-rw-r--r--","md5":"29cc12246faecd4a14d212b4d9bac0fe","inode":5216,"event":"added","size":2679264}]}},
-
         # GET /agents/purgeable/:timeframe
         'GetAgentsPurgeable' : {"error":0,"data":{"items":[{"id":"001","name":"test1"},{"id":"002","name":"test2"}],"timeframe":104400}},
 
         # POST /agents/purge
         'PostAgentsPurge' : {"error":0,"data":{"totalItems":2,"items":[{"id":"001","name":"test1"},{"id":"002","name":"test2"}],"timeframe":104400}},
-
-        # GET /syscollector/:agent_id/hardware
-        'GetHardware_agent' : {"error":0,"data":{"board_serial":"0","ram":{"total":1883804,"free":1114784},"cpu":{"cores":1,"mhz":1795.917,"name":"Intel(R) Core(TM) i5-3337U CPU @ 1.80GHz"},"scan":{"id":826635219,"time":"2018/02/12 23:21:10"}}},
-
-        # GET /syscollector/:agent_id/os
-        'GetOs_agent' : {"error":0,"data":{"sysname":"centos","version":"3.10.0-514.el7.x86_64","architecture":"x86_64","scan":{"id":1363438688,"time":"2018/02/12 23:21:10"},"release":"Linux","hostname":"node01","os":{"version":"7 (Core)","name":"CentOS Linux"}}},
-
-        # GET /syscollector/:agent_id/programs
-        'GetPackages_agent' : {"error":0,"data":{"totalItems":372,"items":[{"scan_id":1516906568,"vendor":"CentOS","description":"ALSA tools for uploading firmware to some soundcards","format":"rpm","scan_time":"2018/02/12 23:21:10","version":"1.1.0-1.el7","architecture":"x86_64","name":"alsa-tools-firmware"},{"scan_id":1516906568,"vendor":"CentOS","description":"User space tools for 2.6 kernel auditing","format":"rpm","scan_time":"2018/02/12 23:21:10","version":"2.6.5-3.el7","architecture":"x86_64","name":"audit"}]}},
-
-        # GET /syscollector/packages
-        'GetPackages' : {"error":0,"data":{"totalItems":2,"items":[{"scan_id":373751880,"vendor":"CentOS","description":"Wifi plugin for NetworkManager","format":"rpm","scan_time":"2018/02/13 00:24:30","agent_id":"000","version":"1:1.4.0-12.el7","architecture":"x86_64","name":"NetworkManager-wifi"},{"scan_id":373751880,"vendor":"CentOS","description":"NetworkManager curses-based UI","format":"rpm","scan_time":"2018/02/13 00:24:30","agent_id":"000","version":"1:1.4.0-12.el7","architecture":"x86_64","name":"NetworkManager-tui"}]}},
-
-        # GET /syscollector/hardware
-        'GetHardware' : {"error":0,"data":{"totalItems":3,"items":[{"ram_free":5351420,"scan_id":565830616,"board_serial":"0","scan_time":"2018/02/12 16:09:45","cpu_name":"Intel(R) Core(TM) i5-3337U CPU @ 1.80GHz","cpu_cores":1,"agent_id":"002","ram_total":6291000,"cpu_mhz":1796},{"ram_free":2374568,"scan_id":263523550,"board_serial":"0","scan_time":"2018/02/12 16:47:29","cpu_name":" Intel(R) Core(TM) i5-3337U CPU @ 1.80GHz","cpu_cores":1,"agent_id":"001","ram_total":2988700,"cpu_mhz":1795.917},{"ram_free":950384,"scan_id":22856332,"board_serial":"0","scan_time":"2018/02/13 00:24:30","cpu_name":"Intel(R) Core(TM) i5-3337U CPU @ 1.80GHz","cpu_cores":1,"agent_id":"000","ram_total":1883804,"cpu_mhz":1795.917}]}},
-
-        # GET /syscollector/os
-        'GetOS' : {"error":0,"data":{"totalItems":3,"items":[{"scan_id":1857569867,"os_name":"Microsoft Windows 7 Home Premium","scan_time":"2018/02/12 16:09:44","hostname":"WAZUH-PC","os_version":"6.1.7601","architecture":"i686","agent_id":"002"},{"sysname":"centos","scan_id":686817457,"os_name":"CentOS Linux","scan_time":"2018/02/13 00:24:30","hostname":"node01","os_version":"7 (Core)","version":"3.10.0-514.el7.x86_64","architecture":"x86_64","release":"Linux","agent_id":"000"},{"sysname":"centos","scan_id":1004984843,"os_name":"CentOS Linux","scan_time":"2018/02/12 16:47:29","hostname":"manager","os_version":"7 (Core)","version":"3.10.0-514.el7.x86_64","architecture":"x86_64","release":"Linux","agent_id":"001"}]}}
     }
 ### ### ###
 
