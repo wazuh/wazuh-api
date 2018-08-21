@@ -142,7 +142,7 @@ def restart_ossec():
         exit("ERROR - RESTARTING OSSEC:{0}".format(std_err))
 
 
-def process(wazuh_url, agent_name, username, password, group=None, force=False): 
+def process(api_url, agent_name, username, password, group=None, force=False): 
     auth = HTTPBasicAuth(username, password)
     print("Adding agent.")
 
@@ -158,7 +158,7 @@ def process(wazuh_url, agent_name, username, password, group=None, force=False):
     import_key(agent_key)
     
     print("Changing ossec.conf manager IP settings")
-    parsed_uri = urlparse.urlparse(base_url)
+    parsed_uri = urlparse.urlparse(api_url)
     manager_host =  parsed_uri.netloc.split(':')[0]
     update_manager_host(manager_host)
 
@@ -217,7 +217,7 @@ def main():
         force = args.force
         verify = args.verify_cert
 
-    process(wazuh_url=wazuh_url, agent_name=agent_name, username=username, password=password, group=group, force=force)
+    process(api_url=base_url, agent_name=agent_name, username=username, password=password, group=group, force=force)
 
 if __name__ == "__main__":
     main()
