@@ -32,7 +32,7 @@ auth=None
 
 def req(method, resource, data=None):
     url = '{0}/{1}'.format(base_url, resource)
-
+    print url
     try:
         requests.packages.urllib3.disable_warnings()
 
