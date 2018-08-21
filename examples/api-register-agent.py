@@ -196,18 +196,23 @@ def main():
         agent_name = raw_input("Please enter an agent Name. Default:[{}]: ".format(get_hostname())) or get_hostname()
         group = raw_input("Enter the Wazuh Agent group you would like to put this Agent in. Default:[default]: ") or None
         base_url = raw_input("Enter the base Wazuh API Url (E.g. https://200.10.10.10:55000, or https://wzh.myserver.com:55000): ")
-        verify = False
         if base_url.lower().startswith("https"):
             verify = raw_input("Verify SSL certificate of API endpoint? (y/n) Default:[n]: ") or False
-            if verify in ('y', 'Y', 'yes', 'Yes', 'YES'): verify = True
+            if verify in ('y', 'Y', 'yes', 'Yes', 'YES'): 
+                verify = True
+            else:
+                verify = False
+
         if "55000" not in base_url: print ("*Warning*: Your URL does not seem to include the default port 55000. This is fine if your wazuh API is listening on a different port.")
         if "http" not in base_url: print ("*Warning*: Your URL does not include a protocol (http:// or https://)")
         username = raw_input ("Enter the Wazuh API username. Default:[wazuh]: ") or "wazuh"
         password = getpass.getpass("Enter the Wazuh API Password and press ENTER: ")
-        force = False
         force = raw_input("Force REPLACING of Agent if IP already exists? (y/n) Default:[n] ") or False
         if force in ('y', 'Y', 'yes', 'Yes', 'YES'):
             force = True
+        else 
+            force = False
+
     else: #get the details from the cmd args. 
 	agent_name = args.agent_name
         group = args.group
