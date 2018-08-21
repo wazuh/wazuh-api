@@ -182,7 +182,7 @@ def main():
     interactive = True
     global base_url, verify, auth
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter, description="Run this script in interactive mode without providing any parameters: #python api-register-agent.py. You can also provide all configuration paramters via cmd parameters as follows. ")
-    parser.add_argument('-w', '--wazuh-url', help='The Wazuh API url. Required.')
+    parser.add_argument('-w', '--wazuh-url', help='The Wazuh API url. Also specify port. Required.')
     parser.add_argument('-n', '--agent-name', help='The new agent name, typically the hostname. Required.')
     parser.add_argument('-u', '--username', help='The Wazuh API username. Required.')
     parser.add_argument('-p', '--password', help='The Wazuh API password. Required.')
