@@ -26,6 +26,7 @@ except Exception as e:
 
 OSSEC_CONF_PATH = '/var/ossec/etc/ossec.conf'
 verify = False
+base_url = None
 
 def req(method, resource, data=None):
     url = '{0}/{1}'.format(base_url, resource)
@@ -142,7 +143,7 @@ def restart_ossec():
         exit("ERROR - RESTARTING OSSEC:{0}".format(std_err))
 
 
-def process(api_url, agent_name, username, password, group=None, force=False): 
+def process(agent_name, username, password, group=None, force=False): 
     auth = HTTPBasicAuth(username, password)
     print("Adding agent.")
 
@@ -158,7 +159,7 @@ def process(api_url, agent_name, username, password, group=None, force=False):
     import_key(agent_key)
     
     print("Changing ossec.conf manager IP settings")
-    parsed_uri = urlparse.urlparse(api_url)
+    parsed_uri = urlparse.urlparse(base_url)
     manager_host =  parsed_uri.netloc.split(':')[0]
     update_manager_host(manager_host)
 
@@ -194,6 +195,7 @@ def main():
     if interactive: #ask user for all details
         agent_name = raw_input("Please enter an agent Name. Default:[{}]: ".format(get_hostname())) or get_hostname()
         group = raw_input("Enter the Wazuh Agent group you would like to put this Agent in. Default:[default]: ") or None
+        #base_url var is in global scope
         base_url = raw_input("Enter the Wazuh API Url (E.g. https://200.10.10.10:55000, or https://wzh.myserver.com:55000): ")
         verify = False
         if base_url.lower().startswith("https"):
@@ -217,7 +219,7 @@ def main():
         force = args.force
         verify = args.verify_cert
 
-    process(api_url=base_url, agent_name=agent_name, username=username, password=password, group=group, force=force)
+    process(agent_name=agent_name, username=username, password=password, group=group, force=force)
 
 if __name__ == "__main__":
     main()
