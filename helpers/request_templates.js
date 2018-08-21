@@ -37,7 +37,7 @@ exports.single_field_array_request = function(entrypoint_name, req, res, apicach
 
     for (extra in extra_query_cheks) {
         if (extra in req.query) {
-            if (extra == 'select')
+            if (extra == 'select' || extra == 'fields')
                 data_request['arguments'][extra] = filter.select_param_to_json(req.query[extra]);
             else
                 data_request['arguments'][extra] = req.query[extra];

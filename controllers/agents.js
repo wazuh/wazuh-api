@@ -1005,30 +1005,10 @@ router.post('/insert', function(req, res) {
  *
  */
 router.get('/stats/distinct', cache(), function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /agents/stats/distinct");
+    req_arguments = {'fields': req.query.fields};
+    extra_query_params = {'fields':'select_param'};
 
-    req.apicacheGroup = "manager";
-
-    var data_request = { 'function': '/agents/stats/distinct', 'arguments': {} };
-    var filters = {
-        'offset': 'numbers', 'limit': 'numbers', 'select': 'select_param', 'sort': 'sort_param',
-        'search': 'search_param', 'fields': 'select_param'
-    };
-
-    if ('fields' in req.query)
-        data_request['arguments']['db_select'] = filter.select_param_to_json(req.query.fields);
-    if ('select' in req.query)
-        data_request['arguments']['filter_fields'] = filter.select_param_to_json(req.query.select);
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    templates.array_request('/agents/stats/distinct', req, res, "agents", req_arguments, {}, extra_query_params);
 })
 
 module.exports = router;

@@ -195,7 +195,7 @@ if __name__ == "__main__":
             'PUT/agents/:agent_id/upgrade_custom': Agent.upgrade_agent_custom,
             '/agents/:agent_id/upgrade_result': Agent.get_upgrade_result,
 
-            '/agents/stats/distinct': distinct.get_distinct_agents,
+            '/agents/stats/distinct': Agent.get_distinct_agents,
 
             # Groups
             '/agents/groups': Agent.get_all_groups,
