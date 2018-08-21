@@ -210,7 +210,7 @@ def main():
         force = raw_input("Force REPLACING of Agent if IP already exists? (y/n) Default:[n] ") or False
         if force in ('y', 'Y', 'yes', 'Yes', 'YES'):
             force = True
-        else 
+        else:
             force = False
 
     else: #get the details from the cmd args. 
