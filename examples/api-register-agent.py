@@ -24,9 +24,11 @@ except Exception as e:
     print("No module 'requests' found. Install: pip install requests")
     sys.exit()
 
+#Global scope variables
 OSSEC_CONF_PATH = '/var/ossec/etc/ossec.conf'
 verify = False
 base_url = None
+auth=None
 
 def req(method, resource, data=None):
     url = '{0}/{1}'.format(base_url, resource)
@@ -143,10 +145,8 @@ def restart_ossec():
         exit("ERROR - RESTARTING OSSEC:{0}".format(std_err))
 
 
-def process(agent_name, username, password, group=None, force=False): 
-    auth = HTTPBasicAuth(username, password)
+def register_agent(agent_name, username, password, group=None, force=False):  
     print("Adding agent.")
-
     agent_id, agent_key = add_agent(agt_name=agent_name,force=force)
     print("Agent '{0}' with ID '{1}' added.".format(agent_name, agent_id))
 
@@ -219,7 +219,10 @@ def main():
         force = args.force
         verify = args.verify_cert
 
-    process(agent_name=agent_name, username=username, password=password, group=group, force=force)
+    #auth var is in global scope
+    auth = HTTPBasicAuth(username, password)
+
+    register_agent(agent_name=agent_name, username=username, password=password, group=group, force=force)
 
 if __name__ == "__main__":
     main()
