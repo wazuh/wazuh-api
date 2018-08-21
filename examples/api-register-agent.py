@@ -146,7 +146,7 @@ def restart_ossec():
     restarted = False
 
     for line_output in std_out.split(os.linesep.encode('utf-8')):
-        if "Completed." in line_output:
+        if "Completed.".encode('utf-8') in line_output:
             restarted = True
             break
 
