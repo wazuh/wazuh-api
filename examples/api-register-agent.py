@@ -1,4 +1,4 @@
-###!/usr/bin/env python
+#!/usr/bin/env python
 
 ###
 #  Python script for registering agents automatically with the API
