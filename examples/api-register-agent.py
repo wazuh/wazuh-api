@@ -142,7 +142,7 @@ def restart_ossec():
         exit("ERROR - RESTARTING OSSEC:{0}".format(std_err))
 
 
-def process(wazuh_url, agent_name, username, password, group=None, verify=False, force=False): 
+def process(wazuh_url, agent_name, username, password, group=None, force=False): 
     auth = HTTPBasicAuth(username, password)
     print("Adding agent.")
 
@@ -197,6 +197,7 @@ def main():
         base_url = raw_input("Enter the Wazuh API Url (E.g. https://200.10.10.10:55000, or https://wzh.myserver.com:55000): ")
         verify = False
         if base_url.lower().startswith("https"):
+            #verify var is in global scope
             verify = raw_input("Verify SSL certificate of API endpoint? (y/n) Default:[n]: ") or False
             if verify in ('y', 'Y', 'yes', 'Yes', 'YES'): verify = True
         if "55000" not in base_url: print ("*Warning*: Your URL does not seem to include the default port 55000. This is fine if your wazuh API is listening on a different port.")
@@ -216,6 +217,7 @@ def main():
         force = args.force
         verify = args.verify_cert
 
+    process(wazuh_url=wazuh_url, agent_name=agent_name, username=username, password=password, group=group, force=force)
 
 if __name__ == "__main__":
     main()
