@@ -151,7 +151,7 @@ def process(wazuh_url, agent_name, username, password, group=None, verify=False,
 
     if group is not None: 
         print ("Setting agent group to {}".format(group))
-	    set_group(agent_id, group)
+        set_group(agent_id, group)
         print ("Agent group set")
 
     print("Importing authentication key.")
