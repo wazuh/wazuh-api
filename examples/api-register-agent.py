@@ -203,6 +203,7 @@ def main():
         exit("{} was not found. Do you have the wazuh-agent installed? See https://documentation.wazuh.com/current/installation-guide/installing-wazuh-agent/index.html".format(OSSEC_CONF_PATH))
  
     if interactive: #ask user for all details
+        print ("\nThis script also supports direct command line parameters. Use \"api-register-agent.py -h\" for more info\n\n") 
         agent_name = input("Please enter an agent Name. Default:[{}]: ".format(get_hostname())) or get_hostname()
         group = input("Enter the Wazuh Agent group you would like to put this Agent in. Default:[default]: ") or None
         base_url = input("Enter the base Wazuh API Url (E.g. https://200.10.10.10:55000, or https://wzh.myserver.com:55000): ")
