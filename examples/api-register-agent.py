@@ -214,7 +214,7 @@ def main():
             force = False
 
     else: #get the details from the cmd args. 
-	agent_name = args.agent_name
+    agent_name = args.agent_name
         group = args.group
         base_url = args.wazuh_url
         username = args.username
