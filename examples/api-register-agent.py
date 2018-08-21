@@ -15,6 +15,12 @@ import os
 import json
 import sys
 import argparse, getpass
+try:
+    import requests
+    from requests.auth import HTTPBasicAuth
+except Exception as e:
+    print("No module 'requests' found. Install: pip install requests")
+    sys.exit()
 
 #Compatibility for both Python 2 and 3. 
 try: 
@@ -23,11 +29,10 @@ except ImportError:
     from urllib.parse import urlparse
 from subprocess import PIPE, Popen
 try:
-    import requests
-    from requests.auth import HTTPBasicAuth
-except Exception as e:
-    print("No module 'requests' found. Install: pip install requests")
-    sys.exit()
+   input = raw_input
+except NameError:
+   pass
+
 
 #Global scope variables
 OSSEC_CONF_PATH = '/var/ossec/etc/ossec.conf'
@@ -198,11 +203,11 @@ def main():
         exit("{} was not found. Do you have the wazuh-agent installed? See https://documentation.wazuh.com/current/installation-guide/installing-wazuh-agent/index.html".format(OSSEC_CONF_PATH))
  
     if interactive: #ask user for all details
-        agent_name = raw_input("Please enter an agent Name. Default:[{}]: ".format(get_hostname())) or get_hostname()
-        group = raw_input("Enter the Wazuh Agent group you would like to put this Agent in. Default:[default]: ") or None
-        base_url = raw_input("Enter the base Wazuh API Url (E.g. https://200.10.10.10:55000, or https://wzh.myserver.com:55000): ")
+        agent_name = input("Please enter an agent Name. Default:[{}]: ".format(get_hostname())) or get_hostname()
+        group = input("Enter the Wazuh Agent group you would like to put this Agent in. Default:[default]: ") or None
+        base_url = input("Enter the base Wazuh API Url (E.g. https://200.10.10.10:55000, or https://wzh.myserver.com:55000): ")
         if base_url.lower().startswith("https"):
-            verify = raw_input("Verify SSL certificate of API endpoint? (y/n) Default:[n]: ") or False
+            verify = input("Verify SSL certificate of API endpoint? (y/n) Default:[n]: ") or False
             if verify in ('y', 'Y', 'yes', 'Yes', 'YES'): 
                 verify = True
             else:
@@ -210,9 +215,9 @@ def main():
 
         if "55000" not in base_url: print ("*Warning*: Your URL does not seem to include the default port 55000. This is fine if your wazuh API is listening on a different port.")
         if "http" not in base_url: print ("*Warning*: Your URL does not include a protocol (http:// or https://)")
-        username = raw_input ("Enter the Wazuh API username. Default:[wazuh]: ") or "wazuh"
+        username = input ("Enter the Wazuh API username. Default:[wazuh]: ") or "wazuh"
         password = getpass.getpass("Enter the Wazuh API Password and press ENTER: ")
-        force = raw_input("Force REPLACING of Agent if IP already exists? (y/n) Default:[n] ") or False
+        force = input("Force REPLACING of Agent if IP already exists? (y/n) Default:[n] ") or False
         if force in ('y', 'Y', 'yes', 'Yes', 'YES'):
             force = True
         else:
