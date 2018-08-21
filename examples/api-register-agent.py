@@ -187,8 +187,8 @@ def main():
     parser.add_argument('-u', '--username', help='The Wazuh API username. Required.')
     parser.add_argument('-p', '--password', help='The Wazuh API password. Required.')
     parser.add_argument('-g', '--group', help='The Wazuh agent group. If unspecified, the default group will be used.')
-    parser.add_argument('-v', '--verify-cert', help='Certificate validation, keep False for self-signed certificates (if not using https, just ignore). Default False.', action ='store_true')
-    parser.add_argument('-f', '--force', help='Force replacement of agent. Useful when if agent IP is already registered. Default False.', action='store_true') 
+    parser.add_argument('-v', '--verify-cert', help='Certificate validation, keep False for self-signed certificates. Omit if not using https or using self-signed cert. Default unset.', action ='store_true')
+    parser.add_argument('-f', '--force', help='Force replacement of agent. Useful when if agent IP is already registered. Default unset.', action='store_true') 
     args = parser.parse_args()
 
     #if user fills up at least one cmd line argument, he does not want the interactive mode.
