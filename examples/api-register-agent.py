@@ -111,7 +111,7 @@ def get_hostname():
 
 
 def execute(cmd_list, stdin=None):
-    p = Popen(cmd_list, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    p = Popen(cmd_list, stdin=PIPE, stdout=PIPE, stderr=PIPE, encoding='utf8')
     std_out, std_err = p.communicate(stdin)
     return_code = p.returncode
     return std_out, std_err, return_code
