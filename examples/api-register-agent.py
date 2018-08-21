@@ -189,7 +189,7 @@ def main():
             exit ('The wazuh-url, agent-name, username and password parameters are mandatory. E.g. At a minimum: \n\n# python api-register-agent.py -w https://wazuh-api.myserver.com:5000 -n MyWebserver -u wazuh -p demo666\n\n Otherwise do not specify any params and use the interactive mode\n Use -h flag for help.')
 
     if not conf_exists(): 
-        exit("{} was not found. Do you have the wazuh-agent installed? See https://documentation.wazuh.com/current/installation-guide/installing-wazuh-agent/index.html".format(OSSEC_CONF_PATH)    
+        exit("{} was not found. Do you have the wazuh-agent installed? See https://documentation.wazuh.com/current/installation-guide/installing-wazuh-agent/index.html".format(OSSEC_CONF_PATH))
  
     if interactive: #ask user for all details
         agent_name = raw_input("Please enter an agent Name. Default:[{}]: ".format(get_hostname())) or get_hostname()
