@@ -25,7 +25,7 @@ except Exception as e:
     sys.exit()
 
 OSSEC_CONF_PATH = '/var/ossec/etc/ossec.conf'
-verify = false
+verify = False
 
 def req(method, resource, data=None):
     url = '{0}/{1}'.format(base_url, resource)
