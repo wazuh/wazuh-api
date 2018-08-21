@@ -141,8 +141,8 @@ def update_manager_host(manager_host):
 
 
 def restart_ossec():
-    cmd = "/var/ossec/bin/ossec-control"
-    std_out, std_err, r_code = execute([cmd, "restart"])
+    cmd = "/var/ossec/bin/ossec-control".encode('utf-8')
+    std_out, std_err, r_code = execute([cmd, "restart".encode('utf-8')])
     restarted = False
 
     for line_output in std_out.split(os.linesep):
