@@ -15,7 +15,12 @@ import os
 import json
 import sys
 import argparse, getpass
-import urlparse
+
+#Compatibility for both Python 2 and 3. 
+try: 
+    import urlparse
+except ImportError: 
+    from urllib.parse import urlparse
 from subprocess import PIPE, Popen
 try:
     import requests
@@ -158,7 +163,7 @@ def register_agent(agent_name, username, password, group=None, force=False):
     import_key(agent_key)
     
     print("Changing ossec.conf manager IP settings")
-    parsed_uri = urlparse.urlparse(base_url)
+    parsed_uri = urlparse(base_url)
     manager_host =  parsed_uri.netloc.split(':')[0]
     update_manager_host(manager_host)
 
