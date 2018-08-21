@@ -24,7 +24,7 @@ except Exception as e:
 
 #Compatibility for both Python 2 and 3. 
 try: 
-    import urlparse
+    from urlparse import urlparse
 except ImportError: 
     from urllib.parse import urlparse
 from subprocess import PIPE, Popen
