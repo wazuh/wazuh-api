@@ -97,7 +97,7 @@ def set_group(agent_id, group_id):
 
 def import_key(agent_key):
     cmd = "/var/ossec/bin/manage_agents"
-    std_out, std_err, r_code = execute([cmd, "-i", agent_key], "y\n\n")
+    std_out, std_err, r_code = execute([cmd.encode('utf-8'), "-i".encode('utf-8'), agent_key.encode('utf-8')], "y\n\n".encode('utf-8'))
     if r_code != 0:
         exit("ERROR - IMPORT KEY:{0}".format(std_err))
 
@@ -111,7 +111,7 @@ def get_hostname():
 
 
 def execute(cmd_list, stdin=None):
-    p = Popen(cmd_list, stdin=PIPE, stdout=PIPE, stderr=PIPE, encoding='utf8')
+    p = Popen(cmd_list, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     std_out, std_err = p.communicate(stdin)
     return_code = p.returncode
     return std_out, std_err, return_code
