@@ -171,6 +171,7 @@ def main():
     #main() only gets config params from the user via either cmd line args
     #or interactive mode and passes them on to the process() function.  
     interactive = True
+    global base_url, verify, auth
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter, description="Run this script in interactive mode without providing any parameters: #python api-register-agent.py. You can also provide all configuration paramters via cmd parameters as follows. ")
     parser.add_argument('-w', '--wazuh-url', help='The Wazuh API url. Required.')
     parser.add_argument('-n', '--agent-name', help='The new agent name, typically the hostname. Required.')
@@ -195,11 +196,9 @@ def main():
     if interactive: #ask user for all details
         agent_name = raw_input("Please enter an agent Name. Default:[{}]: ".format(get_hostname())) or get_hostname()
         group = raw_input("Enter the Wazuh Agent group you would like to put this Agent in. Default:[default]: ") or None
-        #base_url var is in global scope
         base_url = raw_input("Enter the Wazuh API Url (E.g. https://200.10.10.10:55000, or https://wzh.myserver.com:55000): ")
         verify = False
         if base_url.lower().startswith("https"):
-            #verify var is in global scope
             verify = raw_input("Verify SSL certificate of API endpoint? (y/n) Default:[n]: ") or False
             if verify in ('y', 'Y', 'yes', 'Yes', 'YES'): verify = True
         if "55000" not in base_url: print ("*Warning*: Your URL does not seem to include the default port 55000. This is fine if your wazuh API is listening on a different port.")
@@ -219,7 +218,6 @@ def main():
         force = args.force
         verify = args.verify_cert
 
-    #auth var is in global scope
     auth = HTTPBasicAuth(username, password)
 
     register_agent(agent_name=agent_name, username=username, password=password, group=group, force=force)
