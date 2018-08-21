@@ -32,7 +32,6 @@ auth=None
 
 def req(method, resource, data=None):
     url = '{0}/{1}'.format(base_url, resource)
-    print url
     try:
         requests.packages.urllib3.disable_warnings()
 
@@ -196,7 +195,7 @@ def main():
     if interactive: #ask user for all details
         agent_name = raw_input("Please enter an agent Name. Default:[{}]: ".format(get_hostname())) or get_hostname()
         group = raw_input("Enter the Wazuh Agent group you would like to put this Agent in. Default:[default]: ") or None
-        base_url = raw_input("Enter the Wazuh API Url (E.g. https://200.10.10.10:55000, or https://wzh.myserver.com:55000): ")
+        base_url = raw_input("Enter the base Wazuh API Url (E.g. https://200.10.10.10:55000, or https://wzh.myserver.com:55000): ")
         verify = False
         if base_url.lower().startswith("https"):
             verify = raw_input("Verify SSL certificate of API endpoint? (y/n) Default:[n]: ") or False
@@ -206,7 +205,7 @@ def main():
         username = raw_input ("Enter the Wazuh API username. Default:[wazuh]: ") or "wazuh"
         password = getpass.getpass("Enter the Wazuh API Password and press ENTER: ")
         force = False
-        force = raw_input("Force REPLACING of Agent if IP already exists? (y/n) Default:[n] ") or "n"
+        force = raw_input("Force REPLACING of Agent if IP already exists? (y/n) Default:[n] ") or False
         if force in ('y', 'Y', 'yes', 'Yes', 'YES'):
             force = True
     else: #get the details from the cmd args. 
@@ -219,7 +218,6 @@ def main():
         verify = args.verify_cert
 
     auth = HTTPBasicAuth(username, password)
-
     register_agent(agent_name=agent_name, username=username, password=password, group=group, force=force)
 
 if __name__ == "__main__":
