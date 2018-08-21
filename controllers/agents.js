@@ -22,13 +22,8 @@ var router = require('express').Router();
  * @apiParam {String} [select] Select which fields to return (separated by comma).
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
- * @apiParam {String} [older_than] Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date.
- * @apiParam {String} [os.platform] Filters by OS platform.
- * @apiParam {String} [os.version] Filters by OS version.
- * @apiParam {String} [manager] Filters by manager hostname to which agents are connected.
- * @apiParam {String} [version] Filters by agents version.
- * @apiParam {String} [group] Filters by group of agents.
+ * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [q] Query to filter results by. For example q="status=Active"
  *
  * @apiDescription Returns a list with the available agents.
  *
@@ -92,12 +87,7 @@ router.get('/summary/os', cache(), function(req, res) {
  * @apiParam {String} [select] Select which fields to return (separated by comma).
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
- * @apiParam {String} [older_than] Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date.
- * @apiParam {String} [os.platform] Filters by OS platform.
- * @apiParam {String} [os.version] Filters by OS version.
- * @apiParam {String} [manager] Filters by manager hostname to which agents are connected.
- * @apiParam {String} [version] Filters by agents version.
+ * @apiParam {String} [q] Query to filter result. For example q="status=Active"
  *
  * @apiDescription Returns a list with the available agents without group.
  *
@@ -118,6 +108,7 @@ router.get('/no_group', cache(), function (req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String} [hash] Select algorithm to generate the sum.
  *
  * @apiDescription Returns the list of existing agent groups.
  *
@@ -162,12 +153,7 @@ router.get('/groups', cache(), function(req, res) {
  * @apiParam {String} [select] Select which fields to return (separated by comma).
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
- * @apiParam {String} [older_than] Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date.
- * @apiParam {String} [os.platform] Filters by OS platform.
- * @apiParam {String} [os.version] Filters by OS version.
- * @apiParam {String} [manager] Filters by manager hostname to which agents are connected.
- * @apiParam {String} [version] Filters by agents version.
+ * @apiParam {String} [q] Query to filter results by.
  *
  * @apiDescription Returns the list of agents in a group.
  *
@@ -314,6 +300,7 @@ router.get('/groups/:group_id/files', cache(), function(req, res) {
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [q] Query to filter result. For example q="status=Active"
  *
  * @apiDescription Returns the list of outdated agents.
  *
@@ -332,6 +319,7 @@ router.get('/outdated', cache(), function(req, res) {
  * @apiGroup Info
  *
  * @apiParam {String} agent_name Agent name.
+ * @apiParam {String} [select] List of selected fields.
  *
  * @apiDescription Returns various information from an agent called :agent_name.
  *
@@ -369,6 +357,7 @@ router.get('/name/:agent_name', cache(), function(req, res) {
  * @apiGroup Info
  *
  * @apiParam {Number} agent_id Agent ID.
+ * @apiParam {String} [select] List of selected fields.
  *
  * @apiDescription Returns various information from an agent.
  *
@@ -737,7 +726,7 @@ router.delete('/groups', function(req, res) {
  * @apiDescription Removes an agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/001?pretty"
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/008?pretty"
  *
  */
 router.delete('/:agent_id', function(req, res) {
@@ -997,7 +986,8 @@ router.post('/insert', function(req, res) {
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [fields] List of fields affecting the operation.
  * @apiParam {String} [select] List of selected fields.
- * 
+ * @apiParam {String} [q] Query to filter result. For example q="status=Active"
+ *
  * @apiDescription Returns all the different combinations that agents have for the selected fields. It also indicates the total number of agents that have each combination.
  *
  * @apiExample {curl} Example usage:

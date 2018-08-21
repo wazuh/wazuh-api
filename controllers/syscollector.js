@@ -19,10 +19,11 @@ var router = require('express').Router();
  * @apiGroup OS
  *
  * @apiParam {Number} agent_id Agent ID.
+ * @apiParam {String} [select] List of selected fields.
  *
  * @apiDescription Returns the agent's OS info
  *
- * @apiExample {curl} Example usage*:
+ * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/os?pretty"
  *
  */
@@ -52,10 +53,11 @@ router.get('/:agent_id/os', function(req, res) {
  * @apiGroup Hardware
  *
  * @apiParam {Number} agent_id Agent ID.
+ * @apiParam {String} [select] List of selected fields.
  *
  * @apiDescription Returns the agent's hardware info
  *
- * @apiExample {curl} Example usage*:
+ * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/hardware?pretty"
  *
  */
@@ -102,7 +104,7 @@ router.get('/:agent_id/hardware', function(req, res) {
  *
  * @apiDescription Returns the agent's packages info
  *
- * @apiExample {curl} Example usage*:
+ * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/packages?pretty&limit=2&offset=10&sort=-name"
  *
  */
@@ -153,7 +155,7 @@ router.get('/:agent_id/packages', function(req, res) {
 /**
  * @api {get} /syscollector/:agent_id/processes Get processes info
  * @apiName GetProcesses_agent
- * @apiGroup Syscollector
+ * @apiGroup Processes
  *
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {Number} [offset] First element to return in the collection.
@@ -174,7 +176,7 @@ router.get('/:agent_id/packages', function(req, res) {
  *
  * @apiDescription Returns the agent's processes info
  *
- * @apiExample {curl} Example usage*:
+ * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/processes?pretty&limit=2&offset=10&sort=-name"
  *
  */
@@ -246,9 +248,9 @@ router.get('/:agent_id/processes', function (req, res) {
 
 
 /**
- * @api {get} /syscollector/:agent_id/ports Get ports info of all agents
- * @apiName GetPorts
- * @apiGroup Syscollector
+ * @api {get} /syscollector/:agent_id/ports Get ports info of an agent
+ * @apiName GetPorts_agent
+ * @apiGroup Ports
  *
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {Number} [offset] First element to return in the collection.
@@ -265,8 +267,8 @@ router.get('/:agent_id/processes', function (req, res) {
  *
  * @apiDescription Returns the agent's ports info
  *
- * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/:agent_id/ports?pretty"
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/ports?pretty&sort=-protocol&limit=2"
  *
  */
 router.get('/:agent_id/ports', function (req, res) {
@@ -325,9 +327,9 @@ router.get('/:agent_id/ports', function (req, res) {
 
 
 /**
- * @api {get} /syscollector/:agent_id/netaddr Get network address info of all agents
- * @apiName GetNetaddr
- * @apiGroup Syscollector
+ * @api {get} /syscollector/:agent_id/netaddr Get network address info of an agent
+ * @apiName GetNetaddr_agent
+ * @apiGroup Netaddr
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
@@ -341,8 +343,8 @@ router.get('/:agent_id/ports', function (req, res) {
  *
  * @apiDescription Returns the agent's network address info
  *
- * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/:agent_id/netaddr?pretty"
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/netaddr?pretty&limit=2&sort=proto"
  *
  */
 router.get('/:agent_id/netaddr', function (req, res) {
@@ -392,9 +394,9 @@ router.get('/:agent_id/netaddr', function (req, res) {
 
 
 /**
- * @api {get} /syscollector/:agent_id/netproto Get network protocol info of all agents
- * @apiName GetNetproto
- * @apiGroup Syscollector
+ * @api {get} /syscollector/:agent_id/netproto Get network protocol info of an agent
+ * @apiName GetNetproto_agent
+ * @apiGroup Netproto
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
@@ -408,8 +410,8 @@ router.get('/:agent_id/netaddr', function (req, res) {
  *
  * @apiDescription Returns the agent's network protocol info
  *
- * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/:agent_id/netproto?pretty"
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/netproto?pretty&limit=2&sort=type"
  *
  */
 router.get('/:agent_id/netproto', function (req, res) {
@@ -459,9 +461,9 @@ router.get('/:agent_id/netproto', function (req, res) {
 
 
 /**
- * @api {get} /syscollector/:agent_id/netiface Get network interface info of all agents
- * @apiName GetNetiface
- * @apiGroup Syscollector
+ * @api {get} /syscollector/:agent_id/netiface Get network interface info of an agent
+ * @apiName GetNetiface_agent
+ * @apiGroup Netiface
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
@@ -484,8 +486,8 @@ router.get('/:agent_id/netproto', function (req, res) {
  *
  * @apiDescription Returns the agent's network interface info
  *
- * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/:agent_id/netiface?pretty"
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/netiface?pretty&limit=2&sort=state"
  *
  */
 router.get('/:agent_id/netiface', function (req, res) {

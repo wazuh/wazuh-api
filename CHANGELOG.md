@@ -1,39 +1,38 @@
 # Change Log
 All notable changes to this project will be documented in this file.
-## [TBD]
-- API logs rotation. ([#117](https://github.com/wazuh/wazuh-api/pull/117))
-
 
 ## [v3.5.0]
 
 ### Added
 - Show authenticated user in API logs ([#67](https://github.com/wazuh/wazuh-api/pull/67)).
-### Added
-- New API requests for syscollector ([#89](https://github.com/wazuh/wazuh-api/pull/89)).:
-    * `GET/syscollector/processes`.
+- New API requests for Syscollector ([#89](https://github.com/wazuh/wazuh-api/pull/89)):
+    * `GET/experimental/syscollector/processes`.
     * `GET/syscollector/:agent_id/processes`.
-    * `GET/syscollector/ports`.
+    * `GET/experimental/syscollector/ports`.
     * `GET/syscollector/:agent_id/ports`.
-    * `GET/syscollector/netaddr`.
+    * `GET/experimental/syscollector/netaddr`.
     * `GET/syscollector/:agent_id/netaddr`.
-    * `GET/syscollector/netproto`.
+    * `GET/experimental/syscollector/netproto`.
     * `GET/syscollector/:agent_id/netproto`.
-    * `GET/syscollector/netiface`.
+    * `GET/experimental/syscollector/netiface`.
     * `GET/syscollector/:agent_id/netiface`.
+- Option to download the wpk using HTTP in `UPDATE/agents/:agent_id/upgrade`. ([#109](https://github.com/wazuh/wazuh-api/pull/109))
+- Rotate log files at midnight. ([#117](https://github.com/wazuh/wazuh-api/pull/117))
+- New API requests for the CIS-CAT module ([#142](https://github.com/wazuh/wazuh-api/pull/142)):
+    * `GET/experimental/ciscat/results`.
+    * `GET/ciscat/:agent_id/results`.
+
 
 ### Changed
-- GET/agents/groups: Rename `merged_sum` and `conf_sum` fields to `mergedSum` and `configSum` ([wazuh/wazuh#761](https://github.com/wazuh/wazuh/pull/761)).
-- GET/manager/logs/summary: Added more log levels to the output: error, info, critical, warning and debug ([wazuh/wazuh#856](https://github.com/wazuh/wazuh/pull/856)).
+- Renamed `merged_sum` and `conf_sum` fields to `mergedSum` and `configSum` in `GET/agents/groups` ([wazuh/wazuh#761](https://github.com/wazuh/wazuh/pull/761)).
+- Added more log levels to the output in `GET/manager/logs/summary`: `error`, `info`, `critical`, `warning` and `debug` ([wazuh/wazuh#856](https://github.com/wazuh/wazuh/pull/856)).
+- Updated `api-register-agent.ps1` to use TLS 1.2 ([#51](https://github.com/wazuh/wazuh-api/pull/51)).
+- Input validation accepts more characters ([#83](https://github.com/wazuh/wazuh-api/pull/83)).
 
 ### Fixed
-- GET/manager/logs: Fixed bug when reading logs with non-ascii characters ([wazuh/wazuh#856](https://github.com/wazuh/wazuh/pull/856)).
-- Fix error sorting fields that have both uppercase and lowercase characters ([wazuh/wazuh#814](https://github.com/wazuh/wazuh/pull/814)).
-
-## [TBD]
-
-### Added
-
-- Option to download the wpk using http in API request `UPDATE/agents/:agent_id/upgrade`. ([#109](https://github.com/wazuh/wazuh-api/pull/109))
+- Fixed bug when reading logs with non-ascii characters in `GET/manager/logs` ([wazuh/wazuh#856](https://github.com/wazuh/wazuh/pull/856)).
+- Fixed error sorting fields that have both uppercase and lowercase characters ([wazuh/wazuh#814](https://github.com/wazuh/wazuh/pull/814)).
+- Adapted `api-register-agent.ps1` to the changes of ossec.conf ([#51](https://github.com/wazuh/wazuh-api/pull/51)).
 
 
 ## [v3.4.0]
