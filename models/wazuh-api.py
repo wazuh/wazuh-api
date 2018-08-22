@@ -29,6 +29,7 @@ try:
     import wazuh.manager as manager
     import wazuh.stats as stats
     import wazuh.rootcheck as rootcheck
+    import wazuh.active_response as active_response
     import wazuh.syscheck as syscheck
     import wazuh.syscollector as syscollector
     import wazuh.distinct as distinct
@@ -190,7 +191,7 @@ if __name__ == "__main__":
             'POST/agents/insert': Agent.insert_agent,
             'DELETE/agents/:agent_id': Agent.remove_agent,
             'DELETE/agents/': Agent.remove_agents,
-            
+
             # Upgrade agents
             'PUT/agents/:agent_id/upgrade': Agent.upgrade_agent,
             'PUT/agents/:agent_id/upgrade_custom': Agent.upgrade_agent_custom,
@@ -263,6 +264,9 @@ if __name__ == "__main__":
             '/syscollector/:agent_id/netaddr': syscollector.get_netaddr_agent,
             '/syscollector/:agent_id/netproto': syscollector.get_netproto_agent,
             '/syscollector/:agent_id/netiface': syscollector.get_netiface_agent,
+
+            # Active response
+            '/PUT/active-response/:agent_id': active_response.run_command,
 
             # CIS-CAT
             '/ciscat/:agent_id/results': ciscat.get_results_agent,
