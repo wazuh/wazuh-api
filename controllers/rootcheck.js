@@ -33,9 +33,10 @@ var router = require('express').Router();
  *
  */
 router.get('/:agent_id', cache(), function(req, res) {
+    extra_filters = {'status':'names', 'cis':'alphanumeric_param', 'pci':'alphanumeric_param'};
     templates.array_request("/rootcheck/:agent_id", req, res, "rootcheck",
                             {'agent_id':req.params.agent_id},
-                            {'agent_id':'numbers'});
+                            {'agent_id':'numbers'}, {}, extra_filters);
 })
 
 /**

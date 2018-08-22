@@ -31,7 +31,6 @@ try:
     import wazuh.rootcheck as rootcheck
     import wazuh.syscheck as syscheck
     import wazuh.syscollector as syscollector
-    import wazuh.distinct as distinct
     import wazuh.ciscat as ciscat
 except (ImportError, SyntaxError) as e:
     error = str(e)

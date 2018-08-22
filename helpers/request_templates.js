@@ -9,7 +9,7 @@
  * Foundation.
  */
 
-exports.single_field_array_request = function(entrypoint_name, req, res, apicacheGroup, extra_arguments={}, param_cheks={}, extra_query_cheks={}) {
+exports.single_field_array_request = function(entrypoint_name, req, res, apicacheGroup, extra_arguments={}, param_cheks={}, extra_query_cheks={}, extra_filters={}) {
     logger.debug(req.connection.remoteAddress + " GET " + entrypoint_name);
 
     req.apicacheGroup = apicacheGroup;
@@ -18,7 +18,7 @@ exports.single_field_array_request = function(entrypoint_name, req, res, apicach
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
                    'search':'search_param', 'q':'query_param'};
 
-    if (!filter.check(req.query, Object.assign({}, filters, extra_query_cheks), req, res))  // Filter with error
+    if (!filter.check(req.query, Object.assign({}, filters, extra_query_cheks, extra_filters), req, res))  // Filter with error
         return;
 
     if (!filter.check(req.params, param_cheks, req, res))  // Filter with error
@@ -44,11 +44,18 @@ exports.single_field_array_request = function(entrypoint_name, req, res, apicach
         }
     }
 
+    if (Object.keys(extra_filters).length > 1) {
+        data_request['arguments']['filters'] = {}
+        for (extra in extra_filters) {
+            data_request['arguments']['filters'][extra] = req.query[extra].toLowerCase();
+        }
+    }
+
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 }
 
 
-exports.array_request = function (entrypoint_name, req, res, apicacheGroup, extra_arguments={}, param_cheks={}, extra_query_cheks={}) {
+exports.array_request = function (entrypoint_name, req, res, apicacheGroup, extra_arguments={}, param_cheks={}, extra_query_cheks={}, extra_filters={}) {
     extra_query_cheks['select'] = 'select_param';
-    this.single_field_array_request(entrypoint_name, req, res, apicacheGroup, extra_arguments, param_cheks, extra_query_cheks);
+    this.single_field_array_request(entrypoint_name, req, res, apicacheGroup, extra_arguments, param_cheks, extra_query_cheks, extra_filters);
 }

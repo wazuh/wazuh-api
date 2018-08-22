@@ -24,6 +24,15 @@ var router = require('express').Router();
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields.
  * @apiParam {String} [q] Query to filter results by. For example q="status=Active"
+ * @apiParam {String} [older_than] Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date.
+ * @apiParam {String} [os.platform] Filters by OS platform.
+ * @apiParam {String} [os.version] Filters by OS version.
+ * @apiParam {String} [manager] Filters by manager hostname to which agents are connected.
+ * @apiParam {String} [version] Filters by agents version.
+ * @apiParam {String} [group] Filters by group of agents.
+ * @apiParam {String} [node] Filters by node name.
+ * @apiParam {String} [name] Filters by agent name.
+ * @apiParam {String} [ip] Filters by agent IP.
  *
  * @apiDescription Returns a list with the available agents.
  *
@@ -32,7 +41,12 @@ var router = require('express').Router();
  *
  */
 router.get('/', cache(), function(req, res) {
-    templates.array_request("/agents", req, res, "agents");
+    var extra_filters = {'status':'alphanumeric_param', 'os.platform':'alphanumeric_param',
+                         'os.version':'alphanumeric_param', 'manager':'alphanumeric_param',
+                         'version':'alphanumeric_param', 'node': 'alphanumeric_param',
+                         'older_than':'timeframe_type', 'group':'alphanumeric_param',
+                         'name': 'alphanumeric_param', 'ip': 'ips' };
+    templates.array_request("/agents", req, res, "agents", {}, {}, {}, extra_filters);
 })
 
 /**
@@ -153,6 +167,7 @@ router.get('/groups', cache(), function(req, res) {
  * @apiParam {String} [select] Select which fields to return (separated by comma).
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status.
  * @apiParam {String} [q] Query to filter results by.
  *
  * @apiDescription Returns the list of agents in a group.
@@ -164,8 +179,9 @@ router.get('/groups', cache(), function(req, res) {
 router.get('/groups/:group_id', cache(), function(req, res) {
     req_arguments = {'group_id': req.params.group_id};
     param_cheks = {'group_id':'names'};
+    extra_filters = {'status': 'alphanumeric_param'}
 
-    templates.array_request('/agents/groups/:group_id', req, res, "agents", req_arguments, param_cheks);
+    templates.array_request('/agents/groups/:group_id', req, res, "agents", req_arguments, param_cheks, {}, extra_filters);
 });
 
 

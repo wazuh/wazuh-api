@@ -38,10 +38,12 @@ var router = require('express').Router();
  *
  */
 router.get('/:agent_id', cache(), function(req, res) {
+    extra_filters = {'event':'names', 'file':'paths', 'filetype':'names', 'md5':'hashes', 'sha1':'hashes', 'hash':'hashes'};
     templates.array_request("/syscheck/:agent_id", req, res, "syscheck",
                            {'agent_id': req.params.agent_id},
                            {'agent_id':'numbers'},
-                           {'summary':'names'});
+                           {'summary':'names'},
+                            extra_filters);
 })
 
 /**
