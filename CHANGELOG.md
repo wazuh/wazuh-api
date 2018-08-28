@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.6.0]
+
+### Added
+- Name and ip filters to GET /agents request ([#143](https://github.com/wazuh/wazuh-api/pull/143)).
+
+
 ## [v3.5.0]
 
 ### Added
