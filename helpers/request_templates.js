@@ -44,7 +44,7 @@ exports.single_field_array_request = function(entrypoint_name, req, res, apicach
         }
     }
 
-    if (Object.keys(extra_filters).length > 1) {
+    if (Object.keys(extra_filters).length > 0) {
         data_request['arguments']['filters'] = {}
         for (extra in extra_filters) {
             if (extra in req.query)

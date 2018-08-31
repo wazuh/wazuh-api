@@ -110,7 +110,8 @@ router.get('/summary/os', cache(), function(req, res) {
  *
  */
 router.get('/no_group', cache(), function (req, res) {
-    templates.array_request('/agents/no_group', req, res, "agents");
+    extra_filters = {'status': 'alphanumeric_param'}
+    templates.array_request('/agents/no_group', req, res, "agents", {}, {}, {}, extra_filters);
 })
 
 /**
