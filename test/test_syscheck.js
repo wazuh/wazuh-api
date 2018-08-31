@@ -175,7 +175,7 @@ describe('Syscheck', function() {
 
         it('Filters: event', function(done) {
             request(common.url)
-            .get("/syscheck/000?event=added&offset=0&limit=10")
+            .get("/syscheck/000?event=modified&offset=0&limit=10")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)

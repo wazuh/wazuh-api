@@ -31,7 +31,6 @@ describe('Rootcheck', function() {
             .expect(200)
             .end(function(err,res){
                 if (err) return done(err);
-
                 res.body.should.have.properties(['error', 'data']);
 
                 res.body.error.should.equal(0);
