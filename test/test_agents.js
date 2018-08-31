@@ -451,6 +451,25 @@ describe('Agents', function() {
                 });
         });
 
+        it('Filters: query', function (done) {
+            request(common.url)
+                .get("/agents?q=group=default;lastKeepAlive<1d")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(400)
+                .end(function (err, res) {
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['items','totalItems']);
+                    res.body.data.totalItems.should.be.above(0);
+                    res.body.data.items.should.be.instanceof(Array);
+                    res.body.data.items[0].group.should.be.equal('default');
+                    done();
+                });
+        });
+
     });  // GET/agents
 
     describe('GET/agents/summary', function() {

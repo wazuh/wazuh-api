@@ -229,6 +229,24 @@ describe('Rootcheck', function() {
                 done();
             });
         });
+
+        it('Filters: query', function(done) {
+            request(common.url)
+            .get("/rootcheck/000?q=status!=outstanding;oldDay<30m;pci=2.2.4")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.integer;;
+                res.body.data.items.should.be.instanceof(Array);
+                done();
+            });
+        });
     });  // GET/rootcheck/:agent_id
 
     describe('GET/rootcheck/:agent_id/pci', function() {
