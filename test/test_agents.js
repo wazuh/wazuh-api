@@ -14,13 +14,11 @@ var assert  = require('assert');
 var request = require('supertest');
 var fs      = require('fs');
 var common  = require('./common.js');
-var sleep = require('sleep');
-
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 var disconnected_agent_properties = ['status', 'ip', 'id', 'name', 'dateAdd'];
-var manager_properties = disconnected_agent_properties.concat(['version', 'manager_host', 'lastKeepAlive', 'os']);
+var manager_properties = disconnected_agent_properties.concat(['version', 'manager', 'lastKeepAlive', 'os']);
 var agent_properties = manager_properties.concat(['configSum', 'mergedSum', 'group']);
 var agent_os_properties = ['major', 'name', 'uname', 'platform', 'version', 'codename', 'arch'];
 
@@ -80,11 +78,8 @@ describe('Agents', function() {
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.body.should.have.properties(['error', 'data']);
-                res.body.data.should.have.properties(['items', 'totalItems']);
-
-                res.body.error.should.equal(0);
-                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1406);
                 done();
             });
         });
@@ -146,7 +141,7 @@ describe('Agents', function() {
 
         it('Selector', function(done) {
             request(common.url)
-            .get("/agents?select=date_add,merged_sum")
+            .get("/agents?select=dateAdd,mergedSum")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -227,7 +222,7 @@ describe('Agents', function() {
                 res.body.data.items.should.be.instanceof(Array);
                 expected_os_platform = res.body.data.items[0].os.platform;
                 expected_os_version = res.body.data.items[0].os.version;
-                expected_manager_host = res.body.data.items[0].manager_host;
+                expected_manager_host = res.body.data.items[0].manager;
                 done();
             });
         });
@@ -281,7 +276,7 @@ describe('Agents', function() {
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
                 res.body.data.items[0].os.should.have.properties(['version']);
-                res.body.data.items[0].manager_host.should.be.equal(expected_manager_host);
+                res.body.data.items[0].manager.should.be.equal(expected_manager_host);
                 done();
             });
         });
@@ -456,6 +451,25 @@ describe('Agents', function() {
                 });
         });
 
+        it('Filters: query', function (done) {
+            request(common.url)
+                .get("/agents?q=group=default;lastKeepAlive<1d")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(400)
+                .end(function (err, res) {
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['items','totalItems']);
+                    res.body.data.totalItems.should.be.above(0);
+                    res.body.data.items.should.be.instanceof(Array);
+                    res.body.data.items[0].group.should.be.equal('default');
+                    done();
+                });
+        });
+
     });  // GET/agents
 
     describe('GET/agents/summary', function() {
@@ -588,7 +602,7 @@ describe('Agents', function() {
 
         it('Selector', function(done) {
             request(common.url)
-            .get("/agents/001?select=date_add,merged_sum")
+            .get("/agents/001?select=dateAdd,mergedSum")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -732,7 +746,7 @@ describe('Agents', function() {
 
         it('Selector', function(done) {
             request(common.url)
-            .get("/agents/name/"+expected_name+"?select=date_add,merged_sum,os_name")
+            .get("/agents/name/"+expected_name+"?select=dateAdd,mergedSum,os.name")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -996,13 +1010,8 @@ describe('Agents', function() {
                 .end(function (err, res) {
                     if (err) return done(err);
 
-                    res.body.should.have.properties(['error', 'data']);
-
-                    res.body.error.should.equal(0);
-                    res.body.data.should.be.an.array;
-                    res.body.data.should.have.properties(['items', 'totalItems']);
-                    res.body.data.totalItems.should.above(0)
-                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                    res.body.should.have.properties(['error', 'message']);
+                    res.body.error.should.equal(1406);
                     done();
                 });
         });
@@ -1104,7 +1113,7 @@ describe('Agents', function() {
 
         after(function (done) {
             request(common.url)
-                .delete("/agents/" + agent_id)
+                .delete("/agents/" + agent_id + '?purge')
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1147,13 +1156,8 @@ describe('Agents', function() {
                 .end(function (err, res) {
                     if (err) return done(err);
 
-                    res.body.should.have.properties(['error', 'data']);
-
-                    res.body.error.should.equal(0);
-                    res.body.data.should.be.an.array;
-                    res.body.data.should.have.properties(['items', 'totalItems']);
-                    res.body.data.totalItems.should.above(0)
-                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                    res.body.should.have.properties(['error', 'message']);
+                    res.body.error.should.equal(1406);
                     done();
                 });
         });
@@ -1204,15 +1208,11 @@ describe('Agents', function() {
                 .end(function (err, res) {
                     if (err) return done(err);
 
-                    res.body.should.have.properties(['error', 'data']);
-
-                    res.body.error.should.equal(0);
-                    res.body.data.should.be.an.array;
-                    res.body.data.should.have.properties(['items', 'totalItems']);
-                    res.body.data.totalItems.should.above(0)
-                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                    res.body.should.have.properties(['error', 'message']);
+                    res.body.error.should.equal(1406);
                     done();
                 });
+        });
 
         it('Select', function(done) {
             request(common.url)
@@ -1312,13 +1312,8 @@ describe('Agents', function() {
                 .end(function (err, res) {
                     if (err) return done(err);
 
-                    res.body.should.have.properties(['error', 'data']);
-
-                    res.body.error.should.equal(0);
-                    res.body.data.should.be.an.array;
-                    res.body.data.should.have.properties(['items', 'totalItems']);
-                    res.body.data.totalItems.should.above(0)
-                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                    res.body.should.have.properties(['error', 'message']);
+                    res.body.error.should.equal(1406);
                     done();
                 });
         });
@@ -1367,13 +1362,8 @@ describe('Agents', function() {
                 .end(function (err, res) {
                     if (err) return done(err);
 
-                    res.body.should.have.properties(['error', 'data']);
-
-                    res.body.error.should.equal(0);
-                    res.body.data.should.be.an.array;
-                    res.body.data.should.have.properties(['items', 'totalItems']);
-                    res.body.data.totalItems.should.above(0)
-                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(res.body.data.totalItems);
+                    res.body.should.have.properties(['error', 'message']);
+                    res.body.error.should.equal(1727);
                     done();
                 });
         });
@@ -1588,42 +1578,29 @@ describe('Agents', function() {
 
 
     describe('DELETE/agents', function () {
-
-        var agent_name1 = "agentToDelete"
-        var agent_name2 = "agentToDelete2"
-        var agent_id1 = 0
-        var agent_id2 = 0
         before(function (done) {
             request(common.url)
-                .put("/agents/" + agent_name1)
+                .put("/agents/agentToDelete")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
                 .end(function (err, res) {
                     if (err) throw err;
-                    agent_id1 = res.body.data.id;
                     done();
                 });
-            });
         });
 
         before(function (done) {
 
             request(common.url)
-                .put("/agents/" + agent_name2)
+                .put("/agents/agentToDelete2")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
                 .end(function (err, res) {
                     if (err) throw err;
-                    agent_id2 = res.body.data.id;
                     done();
                 });
-        });
-
-        before(function (done) {
-            sleep.sleep(1)
-            done();
         });
 
         it('Request', function (done) {
@@ -1639,30 +1616,35 @@ describe('Agents', function() {
                     done();
                 });
         });
-
+        
         it('Filter: older_than, status and ids', function (done) {
-            request(common.url)
-                .delete("/agents?status=neverconnected&older_than=1s")
-                .send({ 'ids': [agent_id1]})
-                .auth(common.credentials.user, common.credentials.password)
-                .expect("Content-type", /json/)
-                .expect(200)
-                .end(function (err, res) {
-                    if (err) return done(err);
-
-                    res.body.should.have.properties(['error', 'data']);
-                    res.body.data.should.have.properties(['affected_agents', 'msg', 'older_than']);
-
-                    res.body.data.affected_agents[0].should.equal(agent_id1);
-
-                    res.body.error.should.equal(0);
-                    done();
-                });
+            setTimeout(function(){
+                request(common.url)
+                    .delete("/agents?purge&older_than=1s&status=neverconnected")
+                    .send({ 'ids': ['002']})
+                    .auth(common.credentials.user, common.credentials.password)
+                    .expect("Content-type", /json/)
+                    .expect(200)
+                    .end(function (err, res) {
+                        if (err) return done(err);
+    
+                        res.body.should.have.properties(['error', 'data']);
+                        res.body.data.should.have.properties(['affected_agents', 'msg', 'older_than']);
+                        if ('failed_ids' in res.body.data && res.body.data.failed_ids.length > 0)
+                            console.log(res.body.data.failed_ids[0].error);
+                        res.body.data.msg.should.equal("All selected agents were removed");
+                        res.body.data.affected_agents[0].should.equal('002');
+                        res.body.data.affected_agents.should.have.lengthOf(1);
+    
+                        res.body.error.should.equal(0);
+                        done();
+                    });
+            }, 1500);
         });
 
         it('Errors: Get deleted agent', function (done) {
             request(common.url)
-                .get("/agents/" + agent_id1)
+                .get("/agents/002")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1677,7 +1659,7 @@ describe('Agents', function() {
 
         it('Filter: older_than', function (done) {
             request(common.url)
-                .delete("/agents?older_than=1s")
+                .delete("/agents?older_than=1s&purge&status=neverconnected")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1686,7 +1668,8 @@ describe('Agents', function() {
 
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.should.have.properties(['affected_agents', 'msg', 'older_than']);
-
+                    res.body.data.msg.should.equal("All selected agents were removed");
+                    res.body.data.affected_agents[0].should.equal('003');
                     res.body.error.should.equal(0);
                     done();
                 });
@@ -1695,5 +1678,142 @@ describe('Agents', function() {
     });  // DELETE/agents
 
 
+    describe('GET/agents/stats/distinct', function () {
+
+        var fields = ['node_name', 'version', 'manager', 'os'];
+
+        it('Request', function (done) {
+            request(common.url)
+                .get("/agents/stats/distinct")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.totalItems.should.be.above(0);
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(fields);
+                    res.body.data.items[0].os.should.have.properties(agent_os_properties);
+                    done();
+                });
+        });
+
+        it('Pagination', function (done) {
+            request(common.url)
+                .get("/agents/stats/distinct?offset=0&limit=1")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
+                    res.body.data.items[0].should.have.properties(fields);
+                    res.body.data.items[0].os.should.have.properties(agent_os_properties);
+                    done();
+                });
+        });
+
+        it('Retrieve all elements with limit=0', function (done) {
+            request(common.url)
+                .get("/agents/stats/distinct?limit=0")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'message']);
+                    res.body.error.should.equal(1406);
+                    done();
+                });
+        });
+
+        it('Sort', function (done) {
+            request(common.url)
+                .get("/agents/stats/distinct?sort=-node_name")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.totalItems.should.be.above(0);
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(fields);
+                    res.body.data.items[0].os.should.have.properties(agent_os_properties);
+                    done();
+                });
+        });
+
+        it('Search', function (done) {
+            request(common.url)
+                .get("/agents/stats/distinct?search=linux")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.totalItems.should.be.above(0);
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(fields);
+                    res.body.data.items[0].os.should.have.properties(agent_os_properties);
+                    done();
+                });
+        });
+
+        it('Select', function (done) {
+            request(common.url)
+                .get("/agents/stats/distinct?select=os.platform")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.totalItems.should.be.above(0);
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(['os']);
+                    res.body.data.items[0].os.should.have.properties(['platform']);
+                    done();
+                });
+        });
+
+        it('Wrong select', function (done) {
+            request(common.url)
+                .get("/agents/stats/distinct?select=wrong_field")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'message']);
+
+                    res.body.error.should.equal(1724);
+                    res.body.message.should.be.instanceof(String)
+                    done();
+                });
+        });
+
+
+    }); // GET/agents/stats/distinct
 
 });  // Agents
