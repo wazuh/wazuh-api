@@ -265,9 +265,6 @@ if __name__ == "__main__":
             '/syscollector/:agent_id/netproto': syscollector.get_netproto_agent,
             '/syscollector/:agent_id/netiface': syscollector.get_netiface_agent,
 
-            # Active response
-            '/PUT/active-response/:agent_id': active_response.run_command,
-
             # CIS-CAT
             '/ciscat/:agent_id/results': ciscat.get_results_agent,
 
@@ -280,7 +277,8 @@ if __name__ == "__main__":
             '/experimental/syscollector/netaddr': syscollector.get_netaddr,
             '/experimental/syscollector/netproto': syscollector.get_netproto,
             '/experimental/syscollector/netiface': syscollector.get_netiface,
-            '/experimental/ciscat/results': ciscat.get_ciscat_results
+            '/experimental/ciscat/results': ciscat.get_ciscat_results,
+            '/PUT/experimental/active-response/:agent_id': active_response.run_command
         }
 
         if list_f:
