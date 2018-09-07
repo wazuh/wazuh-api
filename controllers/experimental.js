@@ -271,9 +271,9 @@ router.get('/syscollector/processes', function (req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
@@ -353,9 +353,9 @@ router.get('/syscollector/ports', function (req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
@@ -423,9 +423,9 @@ router.get('/syscollector/netaddr', function (req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
@@ -485,9 +485,9 @@ router.get('/syscollector/netproto', function (req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
@@ -560,9 +560,9 @@ router.get('/syscollector/netiface', function (req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
