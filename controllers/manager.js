@@ -239,4 +239,25 @@ router.get('/logs/summary', cache(), function(req, res) {
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
+/**
+ * @api {get} /manager/stats/analysisd Get analysisd stats
+ * @apiName GetAnalysisdStats
+ * @apiGroup Stats
+ *
+ *
+ * @apiDescription Returns a summary of the current analysisd stats.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/stats/analysisd?pretty"
+ *
+ */
+router.get('/stats/analysisd', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /manager/stats/analysisd");
+
+    req.apicacheGroup = "manager";
+
+    var data_request = {'function': '/manager/stats/analysisd', 'arguments': {}};
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
 module.exports = router;
