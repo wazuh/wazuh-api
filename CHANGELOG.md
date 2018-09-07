@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.6.1]
+
+### Added
+- Add PUT/active-response/:agent_id API call ([#151](https://github.com/wazuh/wazuh-api/pull/151)).
+
+
 ## [v3.6.0]
 
 ### Added
