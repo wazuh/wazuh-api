@@ -9,6 +9,22 @@
  * Foundation.
  */
 
+ /*
+    Function used in API requests that return a list with strings.
+    Examples:
+        GET/agents/os/summary
+        GET/rootcheck/:agent_id/pci
+
+    Field descritions:
+    * entrypoint_name -> Name of the entrypoint (example: /agents, /agents/os/summary)
+    * req -> parameter req
+    * res -> parameter res
+    * apiCacheGroup -> api cache group of the API call
+    * extra_arguments -> extra arguments needed in the API call (example: group id, agent id)
+    * param_checks -> type of the extra arguments (example: group_id: names, agent_id:numbers)
+    * extra_query_checks -> fields types to check in the request's query (example: status: names, files: path...)
+    * extra_filters -> extra parameters in the query (examples: status, filename, etc)
+ */
 exports.single_field_array_request = function(entrypoint_name, req, res, apicacheGroup, extra_arguments={}, param_cheks={}, extra_query_cheks={}, extra_filters={}) {
     logger.debug(req.connection.remoteAddress + " GET " + entrypoint_name);
 
@@ -55,7 +71,12 @@ exports.single_field_array_request = function(entrypoint_name, req, res, apicach
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 }
 
-
+ /*
+    Function used in API requests that return a list with dictionaries. Its the same as "single_field_array_request" but includes field "select".
+    Examples:
+        GET/agents
+        GET/rootcheck/:agent_id
+ */
 exports.array_request = function (entrypoint_name, req, res, apicacheGroup, extra_arguments={}, param_cheks={}, extra_query_cheks={}, extra_filters={}) {
     extra_query_cheks['select'] = 'select_param';
     this.single_field_array_request(entrypoint_name, req, res, apicacheGroup, extra_arguments, param_cheks, extra_query_cheks, extra_filters);
