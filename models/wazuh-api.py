@@ -226,6 +226,7 @@ if __name__ == "__main__":
             '/manager/logs/summary': manager.ossec_log_summary,
             '/manager/logs': manager.ossec_log,
             '/manager/stats/analysisd': stats.analysisd,
+            '/manager/stats/remoted': stats.remoted,
 
             # Cluster
             '/cluster/status': cluster.get_status_json,
