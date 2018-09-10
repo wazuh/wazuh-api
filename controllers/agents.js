@@ -23,6 +23,7 @@ var router = require('express').Router();
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
  * @apiParam {String} [q] Query to filter results by. For example q="status=Active"
  * @apiParam {String} [older_than] Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date.
  * @apiParam {String} [os.platform] Filters by OS platform.
