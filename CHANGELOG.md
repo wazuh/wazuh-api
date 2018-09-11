@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Added support for queries in agents, rootcheck and syscheck API requests ([#128](https://github.com/wazuh/wazuh-api/pull/128))
 
+## [v3.6.1]
+
+### Added
+- Add PUT/active-response/:agent_id API call ([#151](https://github.com/wazuh/wazuh-api/pull/151)).
+
 ## [v3.6.0]
 
 ### Added
