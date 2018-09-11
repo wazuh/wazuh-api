@@ -42,12 +42,12 @@ var router = require('express').Router();
  *
  */
 router.get('/', cache(), function(req, res) {
-    var extra_filters = {'status':'alphanumeric_param', 'os.platform':'alphanumeric_param',
+    var query_checks = {'status':'alphanumeric_param', 'os.platform':'alphanumeric_param',
                          'os.version':'alphanumeric_param', 'manager':'alphanumeric_param',
                          'version':'alphanumeric_param', 'node': 'alphanumeric_param',
                          'older_than':'timeframe_type', 'group':'alphanumeric_param',
                          'name': 'alphanumeric_param', 'ip': 'ips' };
-    templates.array_request("/agents", req, res, "agents", {}, {}, {}, extra_filters);
+    templates.array_request("/agents", req, res, "agents", {}, query_checks);
 })
 
 /**
@@ -111,8 +111,8 @@ router.get('/summary/os', cache(), function(req, res) {
  *
  */
 router.get('/no_group', cache(), function (req, res) {
-    extra_filters = {'status': 'alphanumeric_param'}
-    templates.array_request('/agents/no_group', req, res, "agents", {}, {}, {}, extra_filters);
+    query_checks = {'status': 'alphanumeric_param'}
+    templates.array_request('/agents/no_group', req, res, "agents", {}, query_checks);
 })
 
 /**
@@ -179,11 +179,10 @@ router.get('/groups', cache(), function(req, res) {
  *
  */
 router.get('/groups/:group_id', cache(), function(req, res) {
-    req_arguments = {'group_id': req.params.group_id};
     param_cheks = {'group_id':'names'};
-    extra_filters = {'status': 'alphanumeric_param'}
+    query_checks = {'status': 'alphanumeric_param'}
 
-    templates.array_request('/agents/groups/:group_id', req, res, "agents", req_arguments, param_cheks, {}, extra_filters);
+    templates.array_request('/agents/groups/:group_id', req, res, "agents", param_cheks, query_checks);
 });
 
 
@@ -1013,10 +1012,8 @@ router.post('/insert', function(req, res) {
  *
  */
 router.get('/stats/distinct', cache(), function (req, res) {
-    req_arguments = {'fields': req.query.fields};
-    extra_query_params = {'fields':'select_param'};
-
-    templates.array_request('/agents/stats/distinct', req, res, "agents", req_arguments, {}, extra_query_params);
+    query_checks = {'fields':'select_param'};
+    templates.array_request('/agents/stats/distinct', req, res, "agents", {}, query_checks);
 })
 
 module.exports = router;

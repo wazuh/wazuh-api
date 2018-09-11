@@ -33,10 +33,8 @@ var router = require('express').Router();
  *
  */
 router.get('/:agent_id', cache(), function(req, res) {
-    extra_filters = {'status':'names', 'cis':'alphanumeric_param', 'pci':'alphanumeric_param'};
-    templates.array_request("/rootcheck/:agent_id", req, res, "rootcheck",
-                            {'agent_id':req.params.agent_id},
-                            {'agent_id':'numbers'}, {}, extra_filters);
+    query_checks = {'status':'names', 'cis':'alphanumeric_param', 'pci':'alphanumeric_param'};
+    templates.array_request("/rootcheck/:agent_id", req, res, "rootcheck", {'agent_id':'numbers'}, query_checks);
 })
 
 /**
@@ -57,8 +55,7 @@ router.get('/:agent_id', cache(), function(req, res) {
  */
 router.get('/:agent_id/pci', cache(), function(req, res) {
     templates.single_field_array_request("/rootcheck/:agent_id/pci", req, res, "rootcheck",
-                                        {'agent_id':req.params.agent_id},
-                                        {'agent_id':'numbers'});
+                                        {'agent_id':'numbers'}, {});
 })
 
 /**
@@ -79,8 +76,7 @@ router.get('/:agent_id/pci', cache(), function(req, res) {
  */
 router.get('/:agent_id/cis', cache(), function(req, res) {
     templates.single_field_array_request("/rootcheck/:agent_id/cis", req, res, "rootcheck",
-                                        {'agent_id':req.params.agent_id},
-                                        {'agent_id':'numbers'});
+                                        {'agent_id':'numbers'}, {});
 })
 
 /**
