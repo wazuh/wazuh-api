@@ -175,7 +175,7 @@ describe('Syscheck', function() {
 
         it('Filters: event', function(done) {
             request(common.url)
-            .get("/syscheck/000?event=added&offset=0&limit=10")
+            .get("/syscheck/000?event=modified&offset=0&limit=10")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -287,6 +287,24 @@ describe('Syscheck', function() {
         it('Filters: hash', function(done) {
             request(common.url)
             .get("/syscheck/000?hash=fbed7cd200928050bc8d1a8d8ca342dd23723027")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.an.integer;
+                res.body.data.items.should.be.instanceof(Array)
+                done();
+            });
+        });
+
+        it('Filters: query', function(done) {
+            request(common.url)
+            .get("/syscheck/000?q=event!=added;scanDate<40m")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
