@@ -38,44 +38,9 @@ var router = require('express').Router();
  *
  */
 router.get('/:agent_id', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /syscheck/:agent_id");
-
-    req.apicacheGroup = "syscheck";
-
-    var data_request = {'function': '/syscheck/:agent_id', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'event':'names', 'file':'paths', 'filetype':'names', 'summary':'names', 'md5':'hashes', 'sha1':'hashes', 'hash':'hashes'};
-
-    if (!filter.check(req.query, filters, req, res))  // Filter with error
-        return;
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('event' in req.query)
-        data_request['arguments']['event'] = req.query.event;
-    if ('file' in req.query)
-        data_request['arguments']['filename'] = req.query.file;
-    if ('filetype' in req.query)
-        data_request['arguments']['filetype'] = req.query.filetype;
-    if ('summary' in req.query && req.query.summary == "yes")
-        data_request['arguments']['summary'] = req.query.summary;
-    if ('md5' in req.query)
-        data_request['arguments']['md5'] = req.query.md5.toLowerCase();
-    if ('sha1' in req.query)
-        data_request['arguments']['sha1'] = req.query.sha1.toLowerCase();
-    if ('hash' in req.query)
-        data_request['arguments']['hash'] = req.query.hash.toLowerCase();
-
-
-    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
-        return;
-    data_request['arguments']['agent_id'] = req.params.agent_id;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    query_checks = {'event':'names', 'file':'paths', 'filetype':'names', 'md5':'hashes', 'sha1':'hashes', 'hash':'hashes', 'summary': 'names'};
+    templates.array_request("/syscheck/:agent_id", req, res, "syscheck",
+                           {'agent_id':'numbers'}, query_checks);
 })
 
 /**

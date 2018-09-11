@@ -35,9 +35,9 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.error.should.equal(0);
-                    res.body.data.should.have.properties(['os', 'manager_host']);
+                    res.body.data.should.have.properties(['os', 'manager']);
                     res.body.data.os.should.have.properties(['arch', 'platform']);
-                    expected_hostname = res.body.data.manager_host;
+                    expected_hostname = res.body.data.manager;
                     expected_architecture = res.body.data.os.arch;
                     done();
                 });
