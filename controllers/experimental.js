@@ -622,7 +622,7 @@ router.get('/syscollector/netiface', function (req, res) {
  * @apiDescription Returns the agent's ciscat results info
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/ciscat/results?pretty&limit=2&offset=10&sort=-score"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/ciscat/results?pretty&sort=-score"
  *
  */
 router.get('/ciscat/results', function (req, res) {

@@ -1040,7 +1040,7 @@ router.post('/insert', function(req, res) {
  * @apiDescription Returns all the different combinations that agents have for the selected fields. It also indicates the total number of agents that have each combination.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/stats/distinct?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/stats/distinct?pretty&fields=os.platform"
  *
  */
 router.get('/stats/distinct', cache(), function (req, res) {

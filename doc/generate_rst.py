@@ -84,6 +84,15 @@ hardcoded_items = {
 
         # POST /agents/purge
         'PostAgentsPurge' : {"error":0,"data":{"totalItems":2,"items":[{"id":"001","name":"test1"},{"id":"002","name":"test2"}],"timeframe":104400}},
+
+        # GET /ciscat/:agent_id/results
+        'GetCiscat_agent': {"error":0,"data":{"totalItems":2,"items":[{"profile":"xccdf_org.cisecurity.benchmarks_profile_Level_2_-_Server","scan":{"id":1406741147,"time":"2018-09-06T07:50:15.632-07:00"},"notchecked":36,"pass":104,"benchmark":"CIS Ubuntu Linux 16.04 LTS Benchmark","unknown":1,"score":57,"error":0,"fail":79},{"profile":"xccdf_org.cisecurity.benchmarks_profile_Level_1_-_Workstation","scan":{"id":1406741147,"time":"2018-09-06T07:50:52.630-07:00"},"notchecked":71,"pass":96,"benchmark":"CIS Ubuntu Linux 16.04 LTS Benchmark","unknown":0,"score":64,"error":0,"fail":53}]}},
+
+        # GET /experimental/ciscat/results
+        'GetCiscat': {"error":0,"data":{"totalItems":2,"items":[{"profile":"xccdf_org.cisecurity.benchmarks_profile_Level_1_-_Workstation","scan":{"id":1260865673,"time":"2018-09-06T07:59:25.682-07:00"},"notchecked":71,"pass":96,"benchmark":"CIS Ubuntu Linux 16.04 LTS Benchmark","unknown":0,"score":64,"agent_id":"001","error":0,"fail":53},{"profile":"xccdf_org.cisecurity.benchmarks_profile_Level_2_-_Server","scan":{"id":1260865673,"time":"2018-09-06T07:58:39.342-07:00"},"notchecked":36,"pass":104,"benchmark":"CIS Ubuntu Linux 16.04 LTS Benchmark","unknown":1,"score":57,"agent_id":"001","error":0,"fail":79}]}},
+
+        # PUT /active-response/:agent_id
+        'PutARAgentIdCommand': {"error":0,"data":"Command sent."}
     }
 ### ### ###
 
