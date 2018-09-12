@@ -13,6 +13,7 @@
 errors = require('../helpers/errors');
 filter = require('../helpers/filters');
 execute = require('../helpers/execute');
+templates = require('../helpers/request_templates');
 apicache  = require('apicache');
 cache     = apicache.middleware;
 wazuh_control = api_path + "/models/wazuh-api.py";
@@ -76,6 +77,7 @@ router.use('/cache', require('./cache'));
 router.use('/cluster', require('./cluster'));
 router.use('/syscollector', require('./syscollector'));
 router.use('/ciscat', require('./ciscat'));
+router.use('/active-response', require('./active_response'));
 
 if (config.experimental_features){
     router.use('/experimental', require('./experimental'));
