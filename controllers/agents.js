@@ -761,7 +761,7 @@ router.delete('/:agent_id', function(req, res) {
 })
 
 /**
- * @api {delete} /agents/:agent_id/group Unset the agent group
+ * @api {delete} /agents/:agent_id/group Unsets all agent groups.
  * @apiName DeleteGroupAgent
  * @apiGroup Groups
  *
@@ -782,6 +782,34 @@ router.delete('/:agent_id/group', function(req, res) {
         return;
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {delete} /agents/:agent_id/group/:group_id Unset a single group of an agent
+ * @apiName DeleteGroupAgent
+ * @apiGroup Groups
+ *
+ * @apiParam {Number} agent_id Agent ID.
+ * @apiParam {String} group_id Group ID.
+ *
+ * @apiDescription Unsets the group of the agent but will leave the rest of its group if it belongs to a multigroup.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/004/group/default?pretty"
+ *
+ */
+router.delete('/:agent_id/group/:group_id', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " DELETE /agents/:agent_id/group/:group_id");
+
+    var data_request = {'function': 'DELETE/agents/:agent_id/group/:group_id', 'arguments': {}};
+
+    if (!filter.check(req.params, {'agent_id':'numbers', 'group_id': 'names'}, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+    data_request['arguments']['group_id'] = req.params.group_id;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
