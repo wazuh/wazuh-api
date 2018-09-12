@@ -680,6 +680,7 @@ router.put('/groups/:group_id', function(req, res) {
  *
  * @apiParam {Number} agent_id Agent unique ID.
  * @apiParam {String} group_id Group ID.
+ * @apiParam {Boolean} replace Wheter to append new group to current agent's group or replace it.
  *
  * @apiDescription Sets an agent to the specified group.
  *
@@ -691,13 +692,14 @@ router.put('/:agent_id/group/:group_id', function(req, res) {
     logger.debug(req.connection.remoteAddress + " PUT /agents/:agent_id/group/:group_id");
 
     var data_request = {'function': 'PUT/agents/:agent_id/group/:group_id', 'arguments': {}};
-    var filters = {'agent_id':'numbers', 'group_id':'names'};
+    var filters = {'agent_id':'numbers', 'group_id':'names', 'replace': 'empty_boolean'};
 
     if (!filter.check(req.params, filters, req, res))  // Filter with error
         return;
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
     data_request['arguments']['group_id'] = req.params.group_id;
+    data_request['arguments']['replace'] = 'replace' in req.query && req.query.replace != 'false' ? true : false;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -755,7 +757,7 @@ router.delete('/:agent_id', function(req, res) {
         return;
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
-    data_request['arguments']['purge'] = 'purge' in req.query ? true : false;
+    data_request['arguments']['purge'] = 'purge' in req.query && req.query.purge != 'false' ? true : false;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
