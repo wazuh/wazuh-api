@@ -35,7 +35,7 @@ var router = require('express').Router();
  * @apiDescription Returns the agent's ciscat results info
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/ciscat/000/results?pretty&limit=2&offset=10&sort=-score"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/ciscat/000/results?pretty&sort=-score"
  *
  */
 router.get('/:agent_id/results', function (req, res) {

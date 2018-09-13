@@ -9,16 +9,30 @@
  * Foundation.
  */
 
-exports.single_field_array_request = function(entrypoint_name, req, res, apicacheGroup, extra_arguments={}, param_cheks={}, extra_query_cheks={}, extra_filters={}) {
+ /*
+    Function used in API requests that return a list with strings.
+    Examples:
+        GET/agents/os/summary
+        GET/rootcheck/:agent_id/pci
+
+    Field descritions:
+    * entrypoint_name -> Name of the entrypoint (example: /agents, /agents/os/summary)
+    * req -> parameter req
+    * res -> parameter res
+    * apiCacheGroup -> api cache group of the API call
+    * param_checks -> Input validation checks for arguments in req.params.
+    * query_checks -> Input validation checks for arguments in req.query.
+ */
+exports.single_field_array_request = function(entrypoint_name, req, res, apicacheGroup, param_cheks={}, query_cheks={}) {
     logger.debug(req.connection.remoteAddress + " GET " + entrypoint_name);
 
     req.apicacheGroup = apicacheGroup;
 
-    var data_request = {'function': entrypoint_name, 'arguments': extra_arguments};
+    var data_request = {'function': entrypoint_name, 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
                    'search':'search_param', 'q':'query_param'};
 
-    if (!filter.check(req.query, Object.assign({}, filters, extra_query_cheks, extra_filters), req, res))  // Filter with error
+    if (!filter.check(req.query, Object.assign({}, filters, query_cheks), req, res))  // Filter with error
         return;
 
     if (!filter.check(req.params, param_cheks, req, res))  // Filter with error
@@ -35,28 +49,32 @@ exports.single_field_array_request = function(entrypoint_name, req, res, apicach
     if ('q' in req.query)
         data_request['arguments']['q'] = req.query.q;
 
-    for (extra in extra_query_cheks) {
+    filters = {}
+
+    for (extra in Object.assign({}, query_cheks, param_cheks)) {
         if (extra in req.query) {
-            if (extra == 'select' || extra == 'fields')
+            if (query_cheks[extra] == 'select_param')
                 data_request['arguments'][extra] = filter.select_param_to_json(req.query[extra]);
-            else
-                data_request['arguments'][extra] = req.query[extra];
-        }
+            else if (extra == 'summary')
+                data_request['arguments'][extra] = req.query['extra'];
+            else if (!(extra in data_request['arguments']))
+                filters[extra] = req.query[extra];
+        } else if (extra in req.params)
+            data_request['arguments'][extra] = req.params[extra];
     }
 
-    if (Object.keys(extra_filters).length > 0) {
-        data_request['arguments']['filters'] = {}
-        for (extra in extra_filters) {
-            if (extra in req.query)
-                data_request['arguments']['filters'][extra] = req.query[extra].toLowerCase();
-        }
-    }
+    if (Object.keys(filters).length > 0) data_request['arguments']['filters'] = filters
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 }
 
-
-exports.array_request = function (entrypoint_name, req, res, apicacheGroup, extra_arguments={}, param_cheks={}, extra_query_cheks={}, extra_filters={}) {
-    extra_query_cheks['select'] = 'select_param';
-    this.single_field_array_request(entrypoint_name, req, res, apicacheGroup, extra_arguments, param_cheks, extra_query_cheks, extra_filters);
+ /*
+    Function used in API requests that return a list with dictionaries. Its the same as "single_field_array_request" but includes field "select".
+    Examples:
+        GET/agents
+        GET/rootcheck/:agent_id
+ */
+exports.array_request = function (entrypoint_name, req, res, apicacheGroup, param_cheks={}, query_cheks={}) {
+    query_cheks['select'] = 'select_param';
+    this.single_field_array_request(entrypoint_name, req, res, apicacheGroup, param_cheks, query_cheks);
 }
