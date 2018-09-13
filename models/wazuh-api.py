@@ -209,6 +209,7 @@ if __name__ == "__main__":
             'PUT/agents/groups/:group_id': Agent.create_group,
             'DELETE/agents/groups/:group_id':Agent.remove_group,
             'DELETE/agents/:agent_id/group':Agent.unset_group,
+            'DELETE/agents/:agent_id/group/:group_id':Agent.unset_group,
             'DELETE/agents/groups': Agent.remove_group,
 
             # Decoders
