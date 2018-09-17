@@ -1815,5 +1815,534 @@ describe('Agents', function() {
 
 
     }); // GET/agents/stats/distinct
+    
+    
+	describe('GET/agents/:agent/config/:component/:configuration', function () {
+		
+		// agent	
+		it('Request-Agent-Client', function(done) {
+            request(common.url)
+            .get("/agents/001/config/agent/client")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        it('Request-Agent-Buffer', function(done) {
+            request(common.url)
+            .get("/agents/001/config/agent/buffer")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        it('Request-Agent-Label', function(done) {
+            request(common.url)
+            .get("/agents/001/config/agent/label")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+
+		it('Request-Agent-Internal', function(done) {
+            request(common.url)
+            .get("/agents/001/config/agent/internal")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+		
+		// agentless
+		it('Request-Agentless-Agentless', function(done) {
+            request(common.url)
+            .get("/agents/001/config/agentless/agentless")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        // analysis
+		it('Request-Analysis-Global', function(done) {
+            request(common.url)
+            .get("/agents/001/config/analysis/global")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        it('Request-Analysis-Active-response', function(done) {
+            request(common.url)
+            .get("/agents/001/config/analysis/active-response")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        it('Request-Analysis-Alerts', function(done) {
+            request(common.url)
+            .get("/agents/001/config/analysis/alerts")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        it('Request-Analysis-Command', function(done) {
+            request(common.url)
+            .get("/agents/001/config/analysis/command")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        it('Request-Analysis-Rules', function(done) {
+            request(common.url)
+            .get("/agents/001/config/analysis/rules")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        it('Request-Analysis-Decoders', function(done) {
+            request(common.url)
+            .get("/agents/001/config/analysis/decoders")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        it('Request-Analysis-Internal', function(done) {
+            request(common.url)
+            .get("/agents/001/config/analysis/internal")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        // auth
+		it('Request-Auth-Auth', function(done) {
+            request(common.url)
+            .get("/agents/001/config/auth/auth")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        // com
+		it('Request-Com-Active-response', function(done) {
+            request(common.url)
+            .get("/agents/001/config/com/active-response")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['active-response']);
+                res.body.data['active-response'].should.have.properties(['disabled', 'ca_store']);
+
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        it('Request-Com-Internal', function(done) {
+            request(common.url)
+            .get("/agents/001/config/com/internal")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['internal']);
+                res.body.data.internal.should.have.properties(['execd']);
+                res.body.data.internal.execd.should.have.properties(['request_timeout', 'max_restart_lock']);
+
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        // csyslog
+		it('Request-Csyslog-Csyslog', function(done) {
+            request(common.url)
+            .get("/agents/001/config/csyslog/csyslog")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        // integrator
+		it('Request-Integrator-Integration', function(done) {
+            request(common.url)
+            .get("/agents/001/config/integrator/integration")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        // logcollector
+		it('Request-Logcollector-Localfile', function(done) {
+            request(common.url)
+            .get("/agents/001/config/logcollector/localfile")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['localfile']);
+                
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        it('Request-Logcollector-Socket', function(done) {
+            request(common.url)
+            .get("/agents/001/config/logcollector/socket")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        it('Request-Logcollector-Internal', function(done) {
+            request(common.url)
+            .get("/agents/001/config/logcollector/internal")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['internal']);
+                res.body.data.internal.should.have.properties(['logcollector']);
+                res.body.data.internal.logcollector.should.have.properties(['open_attempts', 'input_threads',
+                'vcheck_files', 'max_files', 'sock_fail_time', 'queue_size', 'max_lines', 'remote_commands',
+                'loop_timeout', 'debug', 'open_attempts']);
+
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        // mail
+		it('Request-Mail-Global', function(done) {
+            request(common.url)
+            .get("/agents/001/config/mail/global")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        it('Request-Mail-Alerts', function(done) {
+            request(common.url)
+            .get("/agents/001/config/mail/alerts")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        it('Request-Mail-Internal', function(done) {
+            request(common.url)
+            .get("/agents/001/config/mail/internal")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        // monitor
+		it('Request-Monitor-Internal', function(done) {
+            request(common.url)
+            .get("/agents/001/config/monitor/internal")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        // request
+		it('Request-Request-Remote', function(done) {
+            request(common.url)
+            .get("/agents/001/config/request/remote")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        it('Request-Request-Internal', function(done) {
+            request(common.url)
+            .get("/agents/001/config/request/internal")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        // syscheck
+		it('Request-Syscheck-Syscheck', function(done) {
+            request(common.url)
+            .get("/agents/001/config/syscheck/syscheck")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['syscheck']);
+                res.body.data.syscheck.should.have.properties(['ignore', 'skip_nfs', 'directories',
+                'scan_on_start', 'disabled', 'frequency', 'restart_audit', 'nodiff']);
+                
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        it('Request-Syscheck-Rootcheck', function(done) {
+            request(common.url)
+            .get("/agents/001/config/syscheck/rootcheck")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['rootcheck']);
+                res.body.data.rootcheck.should.have.properties(['check_unixaudit', 'check_sys', 'rootkit_trojans',
+                'skip_nfs', 'check_if', 'check_pids', 'check_dev', 'check_ports', 'disabled', 'rootkit_files',
+                // 'frequency', 'scanall', 'check_trojans', 'base_directory', 'check_files', 'system_audit']); // base directory value is empty
+                'frequency', 'scanall', 'check_trojans', 'check_files', 'system_audit']);
+                
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        it('Request-Syscheck-Internal', function(done) {
+            request(common.url)
+            .get("/agents/001/config/syscheck/internal")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['internal']);
+                res.body.data.internal.should.have.properties(['syscheck', 'rootcheck']);
+                
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+        // wmodules
+		it('Request-Wmodules-Wmodules', function(done) {
+            request(common.url)
+            .get("/agents/001/config/wmodules/wmodules")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['wmodules']);
+                //res.body.data.wmodules.should.have.properties(['open-scap', 'cis-cat',
+                //'osquery', 'syscollector', 'database', 'wazuh_download']);
+                res.body.data.wmodules[0].should.have.properties(['open-scap']);
+                res.body.data.wmodules[1].should.have.properties(['cis-cat']);
+                res.body.data.wmodules[2].should.have.properties(['osquery']);
+                res.body.data.wmodules[3].should.have.properties(['syscollector']);
+                res.body.data.wmodules[4].should.have.properties(['database']);
+                res.body.data.wmodules[5].should.have.properties(['wazuh_download']);
+                
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+        
+
+    }); // GET/agents/:agent/config/:component/:configuration
 
 });  // Agents
