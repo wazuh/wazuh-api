@@ -337,6 +337,66 @@ describe('Manager', function() {
 
     });  // GET/manager/stats/weekly
 
+    describe('GET/manager/stats/analysisd', function() {
+
+        it('Request', function(done) {
+            request(common.url)
+            .get("/manager/stats/analysisd")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.Object;
+
+                res.body.data.should.have.properties(['archives_queue_size',
+                'events_dropped', 'alerts_queue_size', 'rule_matching_queue_usage',
+                'events_processed', 'event_queue_usage', 'events_edps',
+                'hostinfo_events_decoded', 'syscollector_events_decoded',
+                'rootcheck_edps', 'firewall_queue_usage', 'alerts_queue_usage',
+                'firewall_queue_size', 'alerts_written', 'firewall_written',
+                'syscheck_queue_size', 'events_received', 'rootcheck_queue_usage',
+                'rootcheck_events_decoded', 'rootcheck_queue_size', 'syscheck_edps',
+                'fts_written', 'syscheck_queue_usage', 'other_events_edps',
+                'statistical_queue_usage', 'hostinfo_edps', 'hostinfo_queue_usage',
+                'syscheck_events_decoded', 'syscheck_events_decoded', 'archives_queue_usage',
+                'statistical_queue_size', 'total_events_decoded', 'hostinfo_queue_size',
+                'syscollector_queue_size', 'rule_matching_queue_size',
+                'other_events_decoded', 'event_queue_size', 'syscollector_edps']);
+                done();
+            });
+        });
+
+    });  // GET/manager/stats/analysisd
+
+    describe('GET/manager/stats/remoted', function() {
+
+        it('Request', function(done) {
+            request(common.url)
+            .get("/manager/stats/remoted")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.Object;
+                res.body.data.should.have.properties(['discarded_count',
+                'msg_sent', 'queue_size', 'ctrl_msg_count', 'evt_count',
+                'tcp_sessions', 'total_queue_size']);
+                done();
+            });
+        });
+
+    });  // GET/manager/stats/remoted
+
     describe('GET/manager/logs', function() {
 
         it('Request', function(done) {

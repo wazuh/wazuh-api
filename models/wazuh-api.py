@@ -223,6 +223,8 @@ if __name__ == "__main__":
             '/manager/stats': stats.totals,
             '/manager/stats/hourly': stats.hourly,
             '/manager/stats/weekly': stats.weekly,
+            '/manager/stats/analysisd': stats.analysisd,
+            '/manager/stats/remoted': stats.remoted,
             '/manager/logs/summary': manager.ossec_log_summary,
             '/manager/logs': manager.ossec_log,
 
