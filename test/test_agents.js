@@ -1830,6 +1830,9 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
+				res.body.data.should.have.properties('client');
+				res.body.data.client.should.have.properties(['crypto_method', 'remote_conf', 'auto_restart',
+				'server', 'config-profile', 'time-reconnect', 'notify_time']);
 
                 res.body.error.should.equal(0);
                 done();
@@ -1846,15 +1849,18 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties('buffer');
+				res.body.data.buffer.should.have.properties(['disabled',
+				'queue_size', 'events_per_second']);
 
                 res.body.error.should.equal(0);
                 done();
             });
         });
         
-        it('Request-Agent-Label', function(done) {
+        it('Request-Agent-Labels', function(done) {
             request(common.url)
-            .get("/agents/001/config/agent/label")
+            .get("/agents/001/config/agent/labels")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -1862,6 +1868,7 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
+                // res.body.data.shoul.have.properties('labels'); // empty list	
 
                 res.body.error.should.equal(0);
                 done();
@@ -1878,6 +1885,16 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties('internal');
+				res.body.data.internal.should.have.properties(['monitord', 'remoted',
+				'agent']);
+				res.body.data.internal.monitord.should.have.properties(['daily_rotations',
+				'day_wait', 'keep_log_days', 'compress', 'size_rotate', 'rotate_log']);
+				res.body.data.internal.remoted.should.have.properties('request_rto_msec',
+				'recv_counter_flush', 'request_pool', 'comp_average_printout',
+				'verify_msg_id', 'max_attempts');
+				res.body.data.internal.agent.should.have.properties('normal_level',
+				'min_eps', 'recv_timeout', 'state_interval', 'warn_level', 'debug', 'tolerance');
 
                 res.body.error.should.equal(0);
                 done();
@@ -2052,7 +2069,7 @@ describe('Agents', function() {
         // auth
 		it('Request-Auth-Auth', function(done) {
             request(common.url)
-            .get("/agents/001/config/auth/auth")
+            .get("/agents/000/config/auth/auth")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -2060,6 +2077,11 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties('auth');
+                res.body.data.auth.should.have.properties(['purge', 'ssl_auto_negotiate', 'ciphers',
+                'force_insert', 'ssl_verify_host', 'limit_maxagents', 'force_time',
+                'ssl_manager_key', 'disabled', 'ssl_manager_cert', 'use_source_ip',
+                'use_password', 'port']);
 
                 res.body.error.should.equal(0);
                 done();
@@ -2137,7 +2159,7 @@ describe('Agents', function() {
                 done();
             });
         });
-        
+
         // logcollector  // fails without any motive
 		it('Request-Logcollector-Localfile', function(done) {
             request(common.url)
