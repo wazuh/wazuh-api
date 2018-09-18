@@ -480,20 +480,9 @@ router.get('/:agent_id/upgrade_result', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/001/config/logcollector/localfile?pretty"
  *
  */
- router.get('/:agent_id/config/:component/:configuration', function(req, res) {
-     logger.debug(req.connection.remoteAddress + " GET /agents/:agent_id/config/:component/:configuration");
-
-     var data_request = {'function': '/agents/:agent_id/config/:component/:configuration', 'arguments': {}};
-     var filters = {'agent_id': 'numbers', 'component': 'names', 'configuration': 'names'};
-
-     if (!filter.check(req.params, filters, req, res))  // Filter with error
-         return;
-
-     data_request['arguments']['agent_id'] = req.params.agent_id;
-     data_request['arguments']['component'] = req.params.component;
-     data_request['arguments']['configuration'] = req.params.configuration;
-
-     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+ router.get('/:agent_id/config/:component/:configuration', function(req, res) {     
+     param_cheks = {'agent_id': 'numbers', 'component': 'names', 'configuration': 'names'};     
+     templates.array_request('/agents/:agent_id/config/:component/:configuration', req, res, "agents", param_cheks=param_cheks, query_cheks={});
  })
 
 
