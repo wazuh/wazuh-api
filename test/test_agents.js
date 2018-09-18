@@ -2183,7 +2183,8 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
-                res.body.data.should.have.properties(['internal']);
+                res.body.data.should.have.properties('internal');
+                res.body.data.internal.should.have.properties('logcollector');
 				res.body.data.internal.logcollector.should.have.properties(['open_attempts', 'input_threads',
                 'vcheck_files', 'max_files', 'sock_fail_time', 'queue_size', 'max_lines', 'remote_commands',
                 'loop_timeout', 'debug', 'open_attempts']);
@@ -2196,7 +2197,7 @@ describe('Agents', function() {
         // mail
 		it('Request-Mail-Global', function(done) {
             request(common.url)
-            .get("/agents/001/config/mail/global")
+            .get("/agents/000/config/mail/global")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -2204,6 +2205,9 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties('global');
+                res.body.data.global.should.have.properties(['email_maxperhour', 'email_to',
+                'email_from', 'smtp_server']);
                 
                 res.body.error.should.equal(0);
                 done();
@@ -2212,14 +2216,14 @@ describe('Agents', function() {
         
         it('Request-Mail-Alerts', function(done) {
             request(common.url)
-            .get("/agents/001/config/mail/alerts")
+            .get("/agents/000/config/mail/alerts")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.body.should.have.properties(['error', 'data']);
+                // res.body.should.have.properties(['error', 'data']); // data property is empty
                 
                 res.body.error.should.equal(0);
                 done();
@@ -2228,7 +2232,7 @@ describe('Agents', function() {
         
         it('Request-Mail-Internal', function(done) {
             request(common.url)
-            .get("/agents/001/config/mail/internal")
+            .get("/agents/000/config/mail/internal")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -2236,6 +2240,10 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties('internal');
+                res.body.data.internal.should.have.properties('mail');
+                res.body.data.internal.mail.should.have.properties(['strict_checking',
+                'grouping']);
                 
                 res.body.error.should.equal(0);
                 done();
