@@ -1,12 +1,6 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-
-## [v3.7.0]
-
-### Added
-- Add GET/agents/:agent_id/config/:component/:configuration call ([#72](https://github.com/wazuh/wazuh-api/pull/72)).
-
 ## [v3.6.1]
 
 ### Added
