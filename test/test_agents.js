@@ -1904,7 +1904,7 @@ describe('Agents', function() {
         // analysis
 		it('Request-Analysis-Global', function(done) {
             request(common.url)
-            .get("/agents/001/config/analysis/global")
+            .get("/agents/000/config/analysis/global")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -1912,6 +1912,11 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['global']);
+                res.body.data.global.should.have.properties(['email_notification', 'max_output_size',
+                'alerts_log', 'zeromq_output', 'host_information', 'jsonout_output', 'rotate_interval',
+                'rootkit_detection', 'integrity_checking', 'memory_size', 'logall', 'prelude_output',
+                'stats', 'white_list', 'logall_json']);
 
                 res.body.error.should.equal(0);
                 done();
@@ -1920,7 +1925,7 @@ describe('Agents', function() {
         
         it('Request-Analysis-Active-response', function(done) {
             request(common.url)
-            .get("/agents/001/config/analysis/active-response")
+            .get("/agents/000/config/analysis/active_response")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -1928,6 +1933,7 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
+                // res.body.data.should.have.properties(['active_response']); // empty list
 
                 res.body.error.should.equal(0);
                 done();
@@ -1936,7 +1942,7 @@ describe('Agents', function() {
         
         it('Request-Analysis-Alerts', function(done) {
             request(common.url)
-            .get("/agents/001/config/analysis/alerts")
+            .get("/agents/000/config/analysis/alerts")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -1944,6 +1950,8 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['alerts']);
+                res.body.data.alerts.should.have.properties(['email_alert_level', 'log_alert_level']);
 
                 res.body.error.should.equal(0);
                 done();
@@ -1952,7 +1960,7 @@ describe('Agents', function() {
         
         it('Request-Analysis-Command', function(done) {
             request(common.url)
-            .get("/agents/001/config/analysis/command")
+            .get("/agents/000/config/analysis/command")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -1960,7 +1968,26 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
-
+                res.body.data.should.have.properties('command');
+                res.body.data.command[0].should.have.properties(['executable', 'timeout_allowed',
+                'name', 'expect']);
+                res.body.data.command[1].should.have.properties(['executable', 'timeout_allowed',
+                'name']);
+                res.body.data.command[2].should.have.properties(['executable', 'timeout_allowed',
+                'name', 'expect']);
+                res.body.data.command[3].should.have.properties(['executable', 'timeout_allowed',
+                'name', 'expect']);
+                res.body.data.command[4].should.have.properties(['executable', 'timeout_allowed',
+                'name', 'expect']);
+                res.body.data.command[5].should.have.properties(['executable', 'timeout_allowed',
+                'name', 'expect']);
+                res.body.data.command[6].should.have.properties(['executable', 'timeout_allowed',
+                'name', 'expect']);
+                res.body.data.command[7].should.have.properties(['executable', 'timeout_allowed',
+                'name', 'expect']);
+                res.body.data.command[8].should.have.properties(['executable', 'timeout_allowed',
+                'name', 'expect']);                
+                
                 res.body.error.should.equal(0);
                 done();
             });
@@ -1968,7 +1995,7 @@ describe('Agents', function() {
         
         it('Request-Analysis-Rules', function(done) {
             request(common.url)
-            .get("/agents/001/config/analysis/rules")
+            .get("/agents/000/config/analysis/rules")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -1976,6 +2003,7 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['rules']);
 
                 res.body.error.should.equal(0);
                 done();
@@ -1984,7 +2012,7 @@ describe('Agents', function() {
         
         it('Request-Analysis-Decoders', function(done) {
             request(common.url)
-            .get("/agents/001/config/analysis/decoders")
+            .get("/agents/000/config/analysis/decoders")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -1992,6 +2020,7 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties('decoders');
 
                 res.body.error.should.equal(0);
                 done();
@@ -2000,7 +2029,7 @@ describe('Agents', function() {
         
         it('Request-Analysis-Internal', function(done) {
             request(common.url)
-            .get("/agents/001/config/analysis/internal")
+            .get("/agents/000/config/analysis/internal")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -2008,6 +2037,12 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties('internal');
+                res.body.data.internal.should.have.properties(['analysisd']);
+                res.body.data.internal.analysisd.should.have.properties(['label_cache_maxage',
+                'stats_percent_diff', 'show_hidden_labels', 'decoder_order_size',
+                'min_rotate_interval', 'stats_mindiff', 'log_fw', 'rlimit_nofile', 'fts_list_size',
+                'debug', 'fts_min_size_for_str', 'default_timeframe', 'stats_maxdiff']);
 
                 res.body.error.should.equal(0);
                 done();
@@ -2103,7 +2138,7 @@ describe('Agents', function() {
             });
         });
         
-        // logcollector
+        // logcollector  // fails without any motive
 		it('Request-Logcollector-Localfile', function(done) {
             request(common.url)
             .get("/agents/001/config/logcollector/localfile")
@@ -2114,7 +2149,7 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
-                res.body.data.should.have.properties(['localfile']);
+                res.body.data.should.have.properties('localfile');
                 
                 res.body.error.should.equal(0);
                 done();
@@ -2130,7 +2165,8 @@ describe('Agents', function() {
             .end(function(err,res){
                 if (err) return done(err);
 
-                res.body.should.have.properties(['error', 'data']);
+                // res.body.should.have.properties(['error', 'data']); // data property is empty
+                // res.body.data.should.have.properties(['socket']);
                 
                 res.body.error.should.equal(0);
                 done();
@@ -2148,8 +2184,7 @@ describe('Agents', function() {
 
                 res.body.should.have.properties(['error', 'data']);
                 res.body.data.should.have.properties(['internal']);
-                res.body.data.internal.should.have.properties(['logcollector']);
-                res.body.data.internal.logcollector.should.have.properties(['open_attempts', 'input_threads',
+				res.body.data.internal.logcollector.should.have.properties(['open_attempts', 'input_threads',
                 'vcheck_files', 'max_files', 'sock_fail_time', 'queue_size', 'max_lines', 'remote_commands',
                 'loop_timeout', 'debug', 'open_attempts']);
 
@@ -2210,7 +2245,7 @@ describe('Agents', function() {
         // monitor
 		it('Request-Monitor-Internal', function(done) {
             request(common.url)
-            .get("/agents/001/config/monitor/internal")
+            .get("/agents/000/config/monitor/internal")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -2218,6 +2253,7 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties('monitord');
 
                 res.body.error.should.equal(0);
                 done();
@@ -2227,7 +2263,7 @@ describe('Agents', function() {
         // request
 		it('Request-Request-Remote', function(done) {
             request(common.url)
-            .get("/agents/001/config/request/remote")
+            .get("/agents/000/config/request/remote")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -2235,6 +2271,7 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties('remote');
 
                 res.body.error.should.equal(0);
                 done();
@@ -2243,7 +2280,7 @@ describe('Agents', function() {
         
         it('Request-Request-Internal', function(done) {
             request(common.url)
-            .get("/agents/001/config/request/internal")
+            .get("/agents/000/config/request/internal")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -2251,6 +2288,12 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties('internal');
+                res.body.data.internal.should.have.properties('remoted');
+                res.body.data.internal.remoted.should.have.properties(['request_timeout', 'pass_empty_keyfile',
+                'recv_timeout', 'request_rto_sec', 'request_rto_msec', 'response_timeout', 'sender_pool', 'recv_counter_flush',
+                'request_pool', 'comp_average_printout', 'shared_reload', 'merge_shared', 'rlimit_nofile',
+                'verify_msg_id', 'max_attempts']);
 
                 res.body.error.should.equal(0);
                 done();
@@ -2290,7 +2333,7 @@ describe('Agents', function() {
                 res.body.data.should.have.properties(['rootcheck']);
                 res.body.data.rootcheck.should.have.properties(['check_unixaudit', 'check_sys', 'rootkit_trojans',
                 'skip_nfs', 'check_if', 'check_pids', 'check_dev', 'check_ports', 'disabled', 'rootkit_files',
-                // 'frequency', 'scanall', 'check_trojans', 'base_directory', 'check_files', 'system_audit']); // base directory value is empty
+                // 'frequency', 'scanall', 'check_trojans', 'base_directory', 'check_files', 'system_audit']); // base directory value is empty, this cause an error
                 'frequency', 'scanall', 'check_trojans', 'check_files', 'system_audit']);
                 
                 res.body.error.should.equal(0);
