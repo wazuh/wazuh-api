@@ -1904,7 +1904,7 @@ describe('Agents', function() {
 		// agentless
 		it('Request-Agentless-Agentless', function(done) {
             request(common.url)
-            .get("/agents/001/config/agentless/agentless")
+            .get("/agents/000/config/agentless/agentless")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -1912,6 +1912,9 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties('agentless'); // returns an array
+                res.body.data.agentless[0].should.have.properties(['state', 'host',
+                'frequency', 'arguments', 'type', 'port']);
 
                 res.body.error.should.equal(0);
                 done();
@@ -2129,7 +2132,7 @@ describe('Agents', function() {
         // csyslog
 		it('Request-Csyslog-Csyslog', function(done) {
             request(common.url)
-            .get("/agents/001/config/csyslog/csyslog")
+            .get("/agents/000/config/csyslog/csyslog")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -2137,6 +2140,9 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['syslog_output']);
+                res.body.data['syslog_output'][0].should.have.properties(['format',
+                'level', 'use_fqdn', 'port', 'server']);
                 
                 res.body.error.should.equal(0);
                 done();
@@ -2146,7 +2152,7 @@ describe('Agents', function() {
         // integrator
 		it('Request-Integrator-Integration', function(done) {
             request(common.url)
-            .get("/agents/001/config/integrator/integration")
+            .get("/agents/000/config/integrator/integration")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -2154,6 +2160,9 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties('integration');
+                res.body.data.integration[0].should.have.properties(['alert_format', 'hook_url',
+                'group', 'name', 'level']);
                 
                 res.body.error.should.equal(0);
                 done();
