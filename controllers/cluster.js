@@ -180,4 +180,267 @@ router.get('/config', cache(), function(req, res) {
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
+/**
+ * @api {get} /cluster/:node_id/status Get node node_id's status
+ * @apiName GetManagerStatus
+ * @apiGroup Info
+ *
+ * @apiDescription Returns the status of the manager processes.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/status?pretty"
+ *
+ */
+router.get('/:node_id/status', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/:node_id/status");
+
+    req.apicacheGroup = "cluster";
+
+    var data_request = {'function': '/cluster/:node_id/status', 'arguments': {}};
+
+    if (!filter.check(req.params, {'node_id':'names'}, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['node_id'] = req.params.node_id;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {get} /cluster/:node_id/info Get node_id's information
+ * @apiName GetManagerInfo
+ * @apiGroup Info
+ *
+ * @apiDescription Returns basic information about manager.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/info?pretty"
+ *
+ */
+router.get('/:node_id/info', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/:node_id/info");
+
+    req.apicacheGroup = "cluster";
+
+    var data_request = {'function': '/cluster/:node_id/info', 'arguments': {}};
+
+    if (!filter.check(req.params, {'node_id':'names'}, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['node_id'] = req.params.node_id;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {get} /cluster/:node_id/configuration Get node node_id's configuration
+ * @apiName GetManagerConfiguration
+ * @apiGroup Configuration
+ *
+ * @apiParam {String} [section] Indicates the ossec.conf section: global, rules, syscheck, rootcheck, remote, alerts, command, active-response, localfile.
+ * @apiParam {String} [field] Indicates a section child, e.g, fields for rule section are: include, decoder_dir, etc.
+ *
+ * @apiDescription Returns ossec.conf in JSON format.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/configuration?section=global&pretty"
+ *
+ */
+router.get('/:node_id/configuration', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/:node_id/configuration");
+
+    req.apicacheGroup = "cluster";
+
+    var data_request = {'function': '/cluster/:node_id/configuration', 'arguments': {}};
+    var filters = {'section':'names', 'field': 'names', 'node_id': 'names'};
+
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['node_id'] = req.params.node_id;
+
+    if ('section' in req.query)
+        data_request['arguments']['section'] = req.query.section;
+    if ('field' in req.query){
+        if ('section' in req.query)
+            data_request['arguments']['field'] = req.query.field;
+        else
+            res_h.bad_request(req, res, 604, "Missing field: 'section'");
+    }
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {get} /cluster/:node_id/stats Get node node_id's stats
+ * @apiName GetManagerStats
+ * @apiGroup Stats
+ *
+ * @apiParam {String} [date] Selects the date for getting the statistical information. Format: YYYYMMDD
+ *
+ * @apiDescription Returns Wazuh statistical information for the current or specified date.
+ *
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/stats?pretty"
+ *
+ */
+router.get('/:node_id/stats', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/:node_id/stats");
+
+    req.apicacheGroup = "cluster";
+
+    var data_request = {'function': '/cluster/:node_id/stats', 'arguments': {}};
+    var filters = {'date':'dates', 'node_id': 'names'};
+
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['node_id'] = req.params.node_id;
+
+    if ('date' in req.query){
+        data_request['arguments']['year'] = req.query.date.substring(0, 4);
+        data_request['arguments']['month'] = req.query.date.substring(4, 6);
+        data_request['arguments']['day'] = req.query.date.substring(6, 8);
+    }
+    else{
+        var moment = require('moment');
+        date = moment().format('YYYYMMDD')
+        data_request['arguments']['year'] = date.substring(0, 4);
+        data_request['arguments']['month'] = date.substring(4, 6);
+        data_request['arguments']['day'] = date.substring(6, 8);
+    }
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {get} /cluster/:node_id/stats/hourly Get node node_id's stats by hour
+ * @apiName GetManagerStatsHourly
+ * @apiGroup Stats
+ *
+ *
+ * @apiDescription Returns Wazuh statistical information per hour. Each number in the averages field represents the average of alerts per hour.
+ *
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/stats/hourly?pretty"
+ *
+ */
+router.get('/:node_id/stats/hourly', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/:node_id/stats/hourly");
+
+    req.apicacheGroup = "cluster";
+
+    var data_request = {'function': '/cluster/:node_id/stats/hourly', 'arguments': {}};
+
+    if (!filter.check(req.params, {'node_id':'names'}, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['node_id'] = req.params.node_id;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {get} /cluster/:node_id/stats/weekly Get node node_id's stats by week
+ * @apiName GetManagerStatsWeekly
+ * @apiGroup Stats
+ *
+ *
+ * @apiDescription Returns Wazuh statistical information per week. Each number in the hours field represents the average alerts per hour for that specific day.
+ *
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/stats/weekly?pretty"
+ *
+ */
+router.get('/:node_id/stats/weekly', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/:node_id/stats/weekly");
+
+    req.apicacheGroup = "cluster";
+
+    var data_request = {'function': '/cluster/:node_id/stats/weekly', 'arguments': {}};
+
+    if (!filter.check(req.params, {'node_id':'names'}, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['node_id'] = req.params.node_id;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {get} /cluster/:node_id/logs Get ossec.log
+ * @apiName GetManagerLogs
+ * @apiGroup Logs
+ *
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String="all","error", "warning", "info"} [type_log] Filters by type of log.
+ * @apiParam {String} [category] Filters by category of log.
+ *
+ * @apiDescription Returns the three last months of ossec.log.
+ *
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/logs?offset=0&limit=5&pretty"
+ *
+ */
+router.get('/:node_id/logs', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/:node_id/logs");
+
+    req.apicacheGroup = "cluster";
+
+    var data_request = {'function': '/cluster/:node_id/logs', 'arguments': {}};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
+                   'search':'search_param', 'type_log':'names',
+                   'category': 'search_param', 'node_id':'names'};
+
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['node_id'] = req.params.node_id;
+
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = Number(req.query.offset);
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = Number(req.query.limit);
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+    if ('type_log' in req.query)
+        data_request['arguments']['type_log'] = req.query.type_log;
+    if ('category' in req.query)
+        data_request['arguments']['category'] = req.query.category;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {get} /cluster/:node_id/logs/summary Get summary of ossec.log
+ * @apiName GetManagerLogsSummary
+ * @apiGroup Logs
+ *
+ *
+ * @apiDescription Returns a summary of the last three months of the ``ossec.log`` file.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/logs/summary?pretty"
+ *
+ */
+router.get('/:node_id/logs/summary', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/:node_id/logs/summary");
+
+    req.apicacheGroup = "cluster";
+
+    var data_request = {'function': '/cluster/:node_id/logs/summary', 'arguments': {}};
+
+    if (!filter.check(req.params, {'node_id':'names'}, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['node_id'] = req.params.node_id;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+
 module.exports = router;
