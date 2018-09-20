@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.6.2]
+
+### Added
+- Add `hash` parameter to GET/agents/groups/:group_id/files API call ([#166](https://github.com/wazuh/wazuh-api/pull/166))
+
 ## [v3.6.1]
 
 ### Added
