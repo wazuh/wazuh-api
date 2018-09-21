@@ -9,6 +9,8 @@ from getopt import getopt, GetoptError
 from os import path as os_path
 import json
 import signal
+import logging
+import time
 
 error_wazuh_package = 0
 exception_error = None
@@ -20,20 +22,7 @@ try:
     path.append(new_path)
     from wazuh import Wazuh
     from wazuh.exception import WazuhException
-    from wazuh.agent import Agent
-    from wazuh.rule import Rule
-    from wazuh.decoder import Decoder
-    import wazuh.cluster.cluster as cluster
-    import wazuh.cluster.control as cluster_control
-    import wazuh.configuration as configuration
-    import wazuh.manager as manager
-    import wazuh.stats as stats
-    import wazuh.rootcheck as rootcheck
-    import wazuh.active_response as active_response
-    import wazuh.syscheck as syscheck
-    import wazuh.syscollector as syscollector
-    import wazuh.distinct as distinct
-    import wazuh.ciscat as ciscat
+    from wazuh.cluster.dapi import dapi
 except (ImportError, SyntaxError) as e:
     error = str(e)
     error_wazuh_package = -1
@@ -49,6 +38,7 @@ except Exception as e:
         error_wazuh_package = -2
         exception_error = e
 
+
 def print_json(data, error=0):
     output = {'error': error}
 
@@ -60,21 +50,9 @@ def print_json(data, error=0):
     output[key] = data
 
     if pretty:
-        print(json.dumps(output, default=encode_json, indent=4))
+        print(json.dumps(output, indent=4))
     else:
-        print(json.dumps(output, default=encode_json))
-
-
-def encode_json(o):
-    if isinstance(o, Rule):
-        return o.to_dict()
-    elif isinstance(o, Agent):
-        return o.to_dict()
-    elif isinstance(o, Decoder):
-        return o.to_dict()
-
-    print_json("Wazuh-Python Internal Error: data encoding unknown", 1000)
-    exit(1)
+        print(json.dumps(output))
 
 
 def is_json(myjson):
@@ -112,6 +90,8 @@ def usage():
     exit(1)
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG)
+
     request = {}
     pretty = False
     debug = False
@@ -172,127 +152,21 @@ if __name__ == "__main__":
 
     # Main
     try:
+        before = time.time()
         wazuh = Wazuh(ossec_path=request['ossec_path'])
 
-        functions = {
-            # Agents
-            '/agents/:agent_id': Agent.get_agent,
-            '/agents/name/:agent_name': Agent.get_agent_by_name,
-            '/agents/:agent_id/key': Agent.get_agent_key,
-            '/agents': Agent.get_agents_overview,
-            '/agents/summary': Agent.get_agents_summary,
-            '/agents/summary/os': Agent.get_os_summary,
-            '/agents/outdated': Agent.get_outdated_agents,
-            'PUT/agents/:agent_id/restart': Agent.restart_agents,
-            'PUT/agents/restart': Agent.restart_agents,
-            'PUT/agents/:agent_name': Agent.add_agent,
-            'POST/agents/restart': Agent.restart_agents,
-            'POST/agents': Agent.add_agent,
-            'POST/agents/insert': Agent.insert_agent,
-            'DELETE/agents/:agent_id': Agent.remove_agent,
-            'DELETE/agents/': Agent.remove_agents,
-
-            # Upgrade agents
-            'PUT/agents/:agent_id/upgrade': Agent.upgrade_agent,
-            'PUT/agents/:agent_id/upgrade_custom': Agent.upgrade_agent_custom,
-            '/agents/:agent_id/upgrade_result': Agent.get_upgrade_result,
-
-            '/agents/stats/distinct': distinct.get_distinct_agents,
-
-            # Groups
-            '/agents/groups': Agent.get_all_groups,
-            '/agents/no_group': Agent.get_agents_without_group,
-            '/agents/groups/:group_id': Agent.get_agent_group,
-            '/agents/groups/:group_id/configuration':configuration.get_agent_conf,
-            '/agents/groups/:group_id/files':Agent.get_group_files,
-            '/agents/groups/:group_id/files/:filename':configuration.get_file_conf,
-            'PUT/agents/:agent_id/group/:group_id': Agent.set_group,
-            'PUT/agents/groups/:group_id': Agent.create_group,
-            'DELETE/agents/groups/:group_id':Agent.remove_group,
-            'DELETE/agents/:agent_id/group':Agent.unset_group,
-            'DELETE/agents/groups': Agent.remove_group,
-
-            # Decoders
-            '/decoders': Decoder.get_decoders,
-            '/decoders/files': Decoder.get_decoders_files,
-
-            # Managers
-            '/manager/info': wazuh.get_ossec_init,
-            '/manager/status': manager.status,
-            '/manager/configuration': configuration.get_ossec_conf,
-            '/manager/stats': stats.totals,
-            '/manager/stats/hourly': stats.hourly,
-            '/manager/stats/weekly': stats.weekly,
-            '/manager/logs/summary': manager.ossec_log_summary,
-            '/manager/logs': manager.ossec_log,
-
-            # Cluster
-            '/cluster/status': cluster.get_status_json,
-            '/cluster/config': cluster.read_config,
-            '/cluster/node': cluster.get_node,
-            '/cluster/nodes': cluster_control.get_nodes_api,
-            '/cluster/nodes/:node_name': cluster_control.get_nodes_api,
-            '/cluster/healthcheck': cluster_control.get_healthcheck,
-
-            # Rootcheck
-            '/rootcheck/:agent_id': rootcheck.print_db,
-            '/rootcheck/:agent_id/pci': rootcheck.get_pci,
-            '/rootcheck/:agent_id/cis': rootcheck.get_cis,
-            '/rootcheck/:agent_id/last_scan': rootcheck.last_scan,
-            'PUT/rootcheck': rootcheck.run,
-            'DELETE/rootcheck': rootcheck.clear,
-
-            # Rules
-            '/rules': Rule.get_rules,
-            '/rules/groups': Rule.get_groups,
-            '/rules/pci': Rule.get_pci,
-            '/rules/gdpr': Rule.get_gdpr,
-            '/rules/files': Rule.get_rules_files,
-
-            # Syscheck
-            '/syscheck/:agent_id': syscheck.files,
-            '/syscheck/:agent_id/last_scan': syscheck.last_scan,
-            'PUT/syscheck': syscheck.run,
-            'DELETE/syscheck': syscheck.clear,
-
-            # Syscollector
-            '/syscollector/:agent_id/os': syscollector.get_os_agent,
-            '/syscollector/:agent_id/hardware': syscollector.get_hardware_agent,
-            '/syscollector/:agent_id/packages': syscollector.get_packages_agent,
-            '/syscollector/:agent_id/processes': syscollector.get_processes_agent,
-            '/syscollector/:agent_id/ports': syscollector.get_ports_agent,
-            '/syscollector/:agent_id/netaddr': syscollector.get_netaddr_agent,
-            '/syscollector/:agent_id/netproto': syscollector.get_netproto_agent,
-            '/syscollector/:agent_id/netiface': syscollector.get_netiface_agent,
-
-            # Active response
-            '/PUT/active-response/:agent_id': active_response.run_command,
-
-            # CIS-CAT
-            '/ciscat/:agent_id/results': ciscat.get_results_agent,
-
-            # Experimental
-            '/experimental/syscollector/os': syscollector.get_os,
-            '/experimental/syscollector/hardware': syscollector.get_hardware,
-            '/experimental/syscollector/packages': syscollector.get_packages,
-            '/experimental/syscollector/processes': syscollector.get_processes,
-            '/experimental/syscollector/ports': syscollector.get_ports,
-            '/experimental/syscollector/netaddr': syscollector.get_netaddr,
-            '/experimental/syscollector/netproto': syscollector.get_netproto,
-            '/experimental/syscollector/netiface': syscollector.get_netiface,
-            '/experimental/ciscat/results': ciscat.get_ciscat_results
-        }
-
         if list_f:
-            print_json(sorted(functions.keys()))
+            print_json(sorted(dapi.get_functions()))
             exit(0)
 
-        if 'arguments' in request and request['arguments']:
-            data = functions[request['function']](**request['arguments'])
-        else:
-            data = functions[request['function']]()
+        request['from_cluster'] = False
+        data = dapi.distribute_function(request, pretty, debug)
+        after = time.time()
+        logging.debug("Total time: {}".format(after - before))
+        logging.debug("Size of all received data: {}".format(len(data)))
 
-        print_json(data)
+        print(data)
+
     except WazuhException as e:
         print_json(e.message, e.code)
         if debug:

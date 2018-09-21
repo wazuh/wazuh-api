@@ -35,9 +35,9 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.error.should.equal(0);
-                    res.body.data.should.have.properties(['os', 'manager_host']);
+                    res.body.data.should.have.properties(['os', 'manager']);
                     res.body.data.os.should.have.properties(['arch', 'platform']);
-                    expected_hostname = res.body.data.manager_host;
+                    expected_hostname = res.body.data.manager;
                     expected_architecture = res.body.data.os.arch;
                     done();
                 });
@@ -1213,26 +1213,9 @@ describe('Syscollector', function () {
         });
 
         var expected_ram_free = "";
-        before(function (done) {
-            request(common.url)
-                .get("/experimental/syscollector/hardware?limit=1")
-                .auth(common.credentials.user, common.credentials.password)
-                .expect("Content-type", /json/)
-                .expect(200)
-                .end(function (err, res) {
-                    if (err) return done(err);
-                    res.body.should.have.properties(['error', 'data']);
-                    res.body.error.should.equal(0);
-                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                    res.body.data.items[0].should.have.properties(['ram']);
-                    expected_ram_free = res.body.data.items[0].ram.free;
-                    done();
-                });
-        });
-
         it('Search', function (done) {
             request(common.url)
-                .get("/experimental/syscollector/hardware?search=" + expected_ram_free)
+                .get("/experimental/syscollector/hardware?search=Intel")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1245,7 +1228,6 @@ describe('Syscollector', function () {
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
                     res.body.data.items[0].should.have.properties(hardware_fields);
-                    res.body.data.items[0].ram.free.should.be.equal(expected_ram_free);
                     done();
                 });
         });

@@ -19,10 +19,12 @@ var router = require('express').Router();
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [select] Select which fields to return (separated by comma).
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields.
  * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
+ * @apiParam {String} [q] Query to filter results by. For example q="status=Active"
  * @apiParam {String} [older_than] Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date.
  * @apiParam {String} [os.platform] Filters by OS platform.
  * @apiParam {String} [os.version] Filters by OS version.
@@ -30,6 +32,8 @@ var router = require('express').Router();
  * @apiParam {String} [version] Filters by agents version.
  * @apiParam {String} [group] Filters by group of agents.
  * @apiParam {String} [node] Filters by node name.
+ * @apiParam {String} [name] Filters by agent name.
+ * @apiParam {String} [ip] Filters by agent IP.
  *
  * @apiDescription Returns a list with the available agents.
  *
@@ -38,56 +42,12 @@ var router = require('express').Router();
  *
  */
 router.get('/', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /agents");
-
-    req.apicacheGroup = "agents";
-
-    var data_request = {'function': '/agents', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
-                   'select':'select_param', 'search':'search_param',
-                    'status':'alphanumeric_param', 'os.platform':'alphanumeric_param',
-                   'os.version':'alphanumeric_param', 'manager':'alphanumeric_param',
-                   'version':'alphanumeric_param', 'node': 'alphanumeric_param',
-                    'older_than':'timeframe_type', 'group':'alphanumeric_param',
-                    'name': 'alphanumeric_param', 'ip': 'ips'};
-
-    if (!filter.check(req.query, filters, req, res))  // Filter with error
-        return;
-
-    data_request['arguments']['filters'] = {}
-
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select);
-    if ('status' in req.query)
-        data_request['arguments']['filters']['status'] = req.query.status;
-    if ('os.platform' in req.query)
-        data_request['arguments']['filters']['os_platform'] = req.query['os.platform'];
-    if ('os.version' in req.query)
-        data_request['arguments']['filters']['os_version'] = req.query['os.version'];
-    if ('manager' in req.query)
-        data_request['arguments']['filters']['manager_host'] = req.query['manager'];
-    if ('node' in req.query)
-        data_request['arguments']['filters']['node_name'] = req.query['node'];
-    if ('version' in req.query)
-        data_request['arguments']['filters']['version'] = req.query['version'];
-    if ('older_than' in req.query)
-        data_request['arguments']['filters']['older_than'] = req.query['older_than'];
-    if ('group' in req.query)
-        data_request['arguments']['filters']['group'] = req.query['group'];
-    if ('ip' in req.query)
-        data_request['arguments']['filters']['ip'] = req.query.ip;
-    if ('name' in req.query)
-        data_request['arguments']['filters']['name'] = req.query.name;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    var query_checks = {'status':'alphanumeric_param', 'os.platform':'alphanumeric_param',
+                         'os.version':'alphanumeric_param', 'manager':'alphanumeric_param',
+                         'version':'alphanumeric_param', 'node': 'alphanumeric_param',
+                         'older_than':'timeframe_type', 'group':'alphanumeric_param',
+                         'name': 'alphanumeric_param', 'ip': 'ips' };
+    templates.array_request("/agents", req, res, "agents", {}, query_checks);
 })
 
 /**
@@ -120,6 +80,7 @@ router.get('/summary', cache(), function(req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String} [q] Query to filter result. For example q="status=Active"
  *
  * @apiDescription Returns a summary of the OS.
  *
@@ -128,26 +89,7 @@ router.get('/summary', cache(), function(req, res) {
  *
  */
 router.get('/summary/os', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /agents/summary/os");
-
-    req.apicacheGroup = "agents";
-
-    var data_request = {'function': '/agents/summary/os', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
-
-    if (!filter.check(req.query, filters, req, res))  // Filter with error
-        return;
-
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    templates.single_field_array_request("/agents/summary/os", req, res, "agents");
 })
 
 /**
@@ -157,9 +99,10 @@ router.get('/summary/os', cache(), function(req, res) {
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [select] Select which fields to return (separated by comma).
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [q] Query to filter result. For example q="status=Active"
  *
  * @apiDescription Returns a list with the available agents without group.
  *
@@ -168,34 +111,8 @@ router.get('/summary/os', cache(), function(req, res) {
  *
  */
 router.get('/no_group', cache(), function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /agents");
-
-    req.apicacheGroup = "agents";
-
-    var data_request = { 'function': '/agents/no_group', 'arguments': {} };
-    var filters = { 'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
-                    'select': 'select_param', 'search': 'search_param',
-                    'status': 'alphanumeric_param'};
-
-    if (!filter.check(req.query, filters, req, res))  // Filter with error
-        return;
-
-    data_request['arguments']['filters'] = {}
-
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select);
-    if ('status' in req.query)
-        data_request['arguments']['filters']['status'] = req.query.status;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    query_checks = {'status': 'alphanumeric_param'}
+    templates.array_request('/agents/no_group', req, res, "agents", {}, query_checks);
 })
 
 /**
@@ -249,10 +166,11 @@ router.get('/groups', cache(), function(req, res) {
  * @apiParam {String} group_id Group ID.
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [select] Select which fields to return (separated by comma).
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
  * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status.
+ * @apiParam {String} [q] Query to filter results by.
  *
  * @apiDescription Returns the list of agents in a group.
  *
@@ -261,41 +179,11 @@ router.get('/groups', cache(), function(req, res) {
  *
  */
 router.get('/groups/:group_id', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /agents/groups/:group_id");
+    param_cheks = {'group_id':'names'};
+    query_checks = {'status': 'alphanumeric_param'}
 
-    req.apicacheGroup = "agents";
-
-    var data_request = {'function': '/agents/groups/:group_id', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
-                   'search':'search_param', 'select':'select_param',
-                   'status': 'alphanumeric_param'};
-
-    if (!filter.check(req.params, {'group_id':'names'}, req, res))  // Filter with error
-        return;
-
-    data_request['arguments']['group_id'] = req.params.group_id;
-
-
-    if (!filter.check(req.query, filters, req, res))  // Filter with error
-        return;
-
-    data_request['arguments']['filters'] = {}
-
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select);
-    if ('status' in req.query)
-        data_request['arguments']['filters']['status'] = req.query.status;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
-})
+    templates.array_request('/agents/groups/:group_id', req, res, "agents", param_cheks, query_checks);
+});
 
 
 /**
@@ -432,6 +320,7 @@ router.get('/groups/:group_id/files', cache(), function(req, res) {
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [q] Query to filter result. For example q="status=Active"
  *
  * @apiDescription Returns the list of outdated agents.
  *
@@ -440,24 +329,7 @@ router.get('/groups/:group_id/files', cache(), function(req, res) {
  *
  */
 router.get('/outdated', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /agents/outdated");
-
-    req.apicacheGroup = "agents";
-
-    var data_request = {'function': '/agents/outdated', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param'};
-
-    if (!filter.check(req.query, filters, req, res))  // Filter with error
-        return;
-
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    templates.array_request("/agents/outdated",req,res,"agents");
 })
 
 
@@ -811,6 +683,7 @@ router.put('/groups/:group_id', function(req, res) {
  *
  * @apiParam {Number} agent_id Agent unique ID.
  * @apiParam {String} group_id Group ID.
+ * @apiParam {Boolean} replace Wheter to append new group to current agent's group or replace it.
  *
  * @apiDescription Sets an agent to the specified group.
  *
@@ -822,13 +695,14 @@ router.put('/:agent_id/group/:group_id', function(req, res) {
     logger.debug(req.connection.remoteAddress + " PUT /agents/:agent_id/group/:group_id");
 
     var data_request = {'function': 'PUT/agents/:agent_id/group/:group_id', 'arguments': {}};
-    var filters = {'agent_id':'numbers', 'group_id':'names'};
+    var filters = {'agent_id':'numbers', 'group_id':'names', 'replace': 'empty_boolean'};
 
     if (!filter.check(req.params, filters, req, res))  // Filter with error
         return;
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
     data_request['arguments']['group_id'] = req.params.group_id;
+    data_request['arguments']['replace'] = 'replace' in req.query && req.query.replace != 'false' ? true : false;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -886,13 +760,13 @@ router.delete('/:agent_id', function(req, res) {
         return;
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
-    data_request['arguments']['purge'] = 'purge' in req.query ? true : false;
+    data_request['arguments']['purge'] = 'purge' in req.query && req.query.purge != 'false' ? true : false;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
- * @api {delete} /agents/:agent_id/group Unset the agent group
+ * @api {delete} /agents/:agent_id/group Unsets all agent groups.
  * @apiName DeleteGroupAgent
  * @apiGroup Groups
  *
@@ -913,6 +787,34 @@ router.delete('/:agent_id/group', function(req, res) {
         return;
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {delete} /agents/:agent_id/group/:group_id Unset a single group of an agent
+ * @apiName DeleteGroupAgent
+ * @apiGroup Groups
+ *
+ * @apiParam {Number} agent_id Agent ID.
+ * @apiParam {String} group_id Group ID.
+ *
+ * @apiDescription Unsets the group of the agent but will leave the rest of its group if it belongs to a multigroup.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/004/group/default?pretty"
+ *
+ */
+router.delete('/:agent_id/group/:group_id', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " DELETE /agents/:agent_id/group/:group_id");
+
+    var data_request = {'function': 'DELETE/agents/:agent_id/group/:group_id', 'arguments': {}};
+
+    if (!filter.check(req.params, {'agent_id':'numbers', 'group_id': 'names'}, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+    data_request['arguments']['group_id'] = req.params.group_id;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -1134,6 +1036,7 @@ router.post('/insert', function(req, res) {
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [fields] List of fields affecting the operation.
  * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [q] Query to filter result. For example q="status=Active"
  *
  * @apiDescription Returns all the different combinations that agents have for the selected fields. It also indicates the total number of agents that have each combination.
  *
@@ -1142,30 +1045,8 @@ router.post('/insert', function(req, res) {
  *
  */
 router.get('/stats/distinct', cache(), function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /agents/stats/distinct");
-
-    req.apicacheGroup = "manager";
-
-    var data_request = { 'function': '/agents/stats/distinct', 'arguments': {} };
-    var filters = {
-        'offset': 'numbers', 'limit': 'numbers', 'select': 'select_param', 'sort': 'sort_param',
-        'search': 'search_param', 'fields': 'select_param'
-    };
-
-    if ('fields' in req.query)
-        data_request['arguments']['db_select'] = filter.select_param_to_json(req.query.fields);
-    if ('select' in req.query)
-        data_request['arguments']['filter_fields'] = filter.select_param_to_json(req.query.select);
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    query_checks = {'fields':'select_param'};
+    templates.array_request('/agents/stats/distinct', req, res, "agents", {}, query_checks);
 })
 
 module.exports = router;

@@ -33,38 +33,8 @@ var router = require('express').Router();
  *
  */
 router.get('/:agent_id', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /rootcheck/:agent_id");
-
-    req.apicacheGroup = "rootcheck";
-
-    var data_request = {'function': '/rootcheck/:agent_id', 'arguments': {}};
-
-    var filters = {'status': 'names', 'cis':'alphanumeric_param', 'pci':'alphanumeric_param', 'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
-
-    if (!filter.check(req.query, filters, req, res))  // Filter with error
-        return;
-
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('status' in req.query)
-        data_request['arguments']['status'] = req.query.status;
-    if ('cis' in req.query)
-        data_request['arguments']['cis'] = req.query.cis;
-    if ('pci' in req.query)
-        data_request['arguments']['pci'] = req.query.pci;
-
-    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
-        return;
-
-    data_request['arguments']['agent_id'] = req.params.agent_id;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    query_checks = {'status':'names', 'cis':'alphanumeric_param', 'pci':'alphanumeric_param'};
+    templates.array_request("/rootcheck/:agent_id", req, res, "rootcheck", {'agent_id':'numbers'}, query_checks);
 })
 
 /**
@@ -84,31 +54,8 @@ router.get('/:agent_id', cache(), function(req, res) {
  *
  */
 router.get('/:agent_id/pci', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /rootcheck/:agent_id/pci");
-
-    req.apicacheGroup = "rootcheck";
-
-    var data_request = {'function': '/rootcheck/:agent_id/pci', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
-
-    if (!filter.check(req.query, filters, req, res))  // Filter with error
-        return;
-
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-
-    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
-        return;
-
-    data_request['arguments']['agent_id'] = req.params.agent_id;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    templates.single_field_array_request("/rootcheck/:agent_id/pci", req, res, "rootcheck",
+                                        {'agent_id':'numbers'}, {});
 })
 
 /**
@@ -128,31 +75,8 @@ router.get('/:agent_id/pci', cache(), function(req, res) {
  *
  */
 router.get('/:agent_id/cis', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /rootcheck/:agent_id/cis");
-
-    req.apicacheGroup = "rootcheck";
-
-    var data_request = {'function': '/rootcheck/:agent_id/cis', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
-
-    if (!filter.check(req.query, filters, req, res))  // Filter with error
-        return;
-
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-
-    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
-        return;
-
-    data_request['arguments']['agent_id'] = req.params.agent_id;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    templates.single_field_array_request("/rootcheck/:agent_id/cis", req, res, "rootcheck",
+                                        {'agent_id':'numbers'}, {});
 })
 
 /**

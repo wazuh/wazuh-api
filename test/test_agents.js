@@ -18,7 +18,7 @@ var common  = require('./common.js');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 var disconnected_agent_properties = ['status', 'ip', 'id', 'name', 'dateAdd'];
-var manager_properties = disconnected_agent_properties.concat(['version', 'manager_host', 'lastKeepAlive', 'os']);
+var manager_properties = disconnected_agent_properties.concat(['version', 'manager', 'lastKeepAlive', 'os']);
 var agent_properties = manager_properties.concat(['configSum', 'mergedSum', 'group']);
 var agent_os_properties = ['major', 'name', 'uname', 'platform', 'version', 'codename', 'arch'];
 
@@ -141,7 +141,7 @@ describe('Agents', function() {
 
         it('Selector', function(done) {
             request(common.url)
-            .get("/agents?select=date_add,merged_sum")
+            .get("/agents?select=dateAdd,mergedSum")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -222,7 +222,7 @@ describe('Agents', function() {
                 res.body.data.items.should.be.instanceof(Array);
                 expected_os_platform = res.body.data.items[0].os.platform;
                 expected_os_version = res.body.data.items[0].os.version;
-                expected_manager_host = res.body.data.items[0].manager_host;
+                expected_manager_host = res.body.data.items[0].manager;
                 done();
             });
         });
@@ -276,7 +276,7 @@ describe('Agents', function() {
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
                 res.body.data.items[0].os.should.have.properties(['version']);
-                res.body.data.items[0].manager_host.should.be.equal(expected_manager_host);
+                res.body.data.items[0].manager.should.be.equal(expected_manager_host);
                 done();
             });
         });
@@ -451,6 +451,25 @@ describe('Agents', function() {
                 });
         });
 
+        it('Filters: query', function (done) {
+            request(common.url)
+                .get("/agents?q=group=default;lastKeepAlive<1d")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(400)
+                .end(function (err, res) {
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['items','totalItems']);
+                    res.body.data.totalItems.should.be.above(0);
+                    res.body.data.items.should.be.instanceof(Array);
+                    res.body.data.items[0].group.should.be.equal('default');
+                    done();
+                });
+        });
+
     });  // GET/agents
 
     describe('GET/agents/summary', function() {
@@ -583,7 +602,7 @@ describe('Agents', function() {
 
         it('Selector', function(done) {
             request(common.url)
-            .get("/agents/001?select=date_add,merged_sum")
+            .get("/agents/001?select=dateAdd,mergedSum")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -727,7 +746,7 @@ describe('Agents', function() {
 
         it('Selector', function(done) {
             request(common.url)
-            .get("/agents/name/"+expected_name+"?select=date_add,merged_sum,os_name")
+            .get("/agents/name/"+expected_name+"?select=dateAdd,mergedSum,os.name")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -809,6 +828,57 @@ describe('Agents', function() {
         });
     });  // GET/agents/:agent_id/key
 
+    describe('PUT/agents/groups/:group_id', function() {
+
+        it('Request', function(done) {
+
+            request(common.url)
+            .put("/agents/groups/webserver")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+
+        it('Params: Bad group name', function(done) {
+            request(common.url)
+            .put("/agents/groups/!group")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(601);
+                done();
+            });
+        });
+
+        it('Params: Group already exists', function(done) {
+            request(common.url)
+            .put("/agents/groups/webserver")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1711);
+                done();
+            });
+        });
+
+    });  // PUT/agents/groups/:group_id
+
     describe('PUT/agents/:agent_id/group/:group_id', function() {
 
         it('Request', function(done) {
@@ -858,26 +928,9 @@ describe('Agents', function() {
             });
         });
 
-    });  // PUT/agents/:agent_id/group/:group_id
-
-    describe('PUT/agents/groups/:group_id', function() {
-
-        after(function(done) {
+        it('Params: Replace parameter', function(done) {
             request(common.url)
-            .delete("/agents/groups/newgroupcreated")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err, res) {
-                if (err) return done(err);
-                done();
-              });
-        });
-
-        it('Request', function(done) {
-
-            request(common.url)
-            .put("/agents/groups/newgroupcreated")
+            .put("/agents/001/group/dmz?replace")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -885,47 +938,16 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
-
                 res.body.error.should.equal(0);
                 done();
             });
         });
 
-        it('Params: Bad group name', function(done) {
-            request(common.url)
-            .put("/agents/groups/!group")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(400)
-            .end(function(err,res){
-                if (err) return done(err);
+    });  // PUT/agents/:agent_id/group/:group_id
 
-                res.body.should.have.properties(['error', 'message']);
-                res.body.error.should.equal(601);
-                done();
-            });
-        });
-
-        it('Params: Group already exists', function(done) {
-            request(common.url)
-            .put("/agents/groups/webserver")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'message']);
-                res.body.error.should.equal(1711);
-                done();
-            });
-        });
-
-    });  // PUT/agents/groups/:group_id
-
+    var agent_id = 0
     describe('GET/agents/no_group', function () {
         var agent_name = "agentWithoutGroup"
-        var agent_id = 0
         before(function (done) {
             request(common.url)
                 .put("/agents/" + agent_name)
@@ -1507,6 +1529,107 @@ describe('Agents', function() {
 
     });  // DELETE/agents/:agent_id/group
 
+    describe('DELETE/agents/:agent_id/group/:group_id', function() {
+
+        before(function (done) {
+            request(common.url)
+                .put("/agents/001/group/dmz")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) throw err;
+                    done();
+                });
+        });
+
+
+        it('Request', function(done) {
+
+            request(common.url)
+            .delete("/agents/001/group/dmz")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.type('string');
+                done();
+            });
+        });
+
+        it('Errors: ID is not present', function(done) {
+
+            request(common.url)
+            .delete("/agents/54952/group/webserver")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(1701);
+                res.body.message.should.be.type('string');
+                done();
+            });
+        });
+
+        it('Errors: Group is not present', function(done) {
+
+            request(common.url)
+            .delete("/agents/001/group/adsdfdfs")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(1734);
+                res.body.message.should.be.type('string');
+                done();
+            });
+        });
+
+        it('Params: Bad agent id', function(done) {
+            request(common.url)
+            .delete("/agents/abc/group/webserver")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(600);
+                done();
+            });
+        });
+
+        it('Params: Bad group id', function(done) {
+            request(common.url)
+            .delete("/agents/001/group/aaaaaaaa")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1734);
+                done();
+            });
+        });
+
+    });  // DELETE/agents/:agent_id/group/:group_id
+
     describe('DELETE/agents/groups/:group_id', function() {
 
         it('Request', function(done) {
@@ -1663,25 +1786,30 @@ describe('Agents', function() {
                     done();
                 });
         });
-
+        
         it('Filter: older_than, status and ids', function (done) {
-            request(common.url)
-                .delete("/agents?purge&older_than=1s&status=neverconnected")
-                .send({ 'ids': ['002']})
-                .auth(common.credentials.user, common.credentials.password)
-                .expect("Content-type", /json/)
-                .expect(200)
-                .end(function (err, res) {
-                    if (err) return done(err);
-
-                    res.body.should.have.properties(['error', 'data']);
-                    res.body.data.should.have.properties(['affected_agents', 'msg', 'older_than']);
-                    res.body.data.msg.should.equal("All selected agents were removed");
-                    res.body.data.affected_agents[0].should.equal('002');
-
-                    res.body.error.should.equal(0);
-                    done();
-                });
+            setTimeout(function(){
+                request(common.url)
+                    .delete("/agents?purge&older_than=1s&status=neverconnected")
+                    .send({ 'ids': ['002']})
+                    .auth(common.credentials.user, common.credentials.password)
+                    .expect("Content-type", /json/)
+                    .expect(200)
+                    .end(function (err, res) {
+                        if (err) return done(err);
+    
+                        res.body.should.have.properties(['error', 'data']);
+                        res.body.data.should.have.properties(['affected_agents', 'msg', 'older_than']);
+                        if ('failed_ids' in res.body.data && res.body.data.failed_ids.length > 0)
+                            console.log(res.body.data.failed_ids[0].error);
+                        res.body.data.msg.should.equal("All selected agents were removed");
+                        res.body.data.affected_agents[0].should.equal('002');
+                        res.body.data.affected_agents.should.have.lengthOf(1);
+    
+                        res.body.error.should.equal(0);
+                        done();
+                    });
+            }, 1500);
         });
 
         it('Errors: Get deleted agent', function (done) {
@@ -1722,7 +1850,7 @@ describe('Agents', function() {
 
     describe('GET/agents/stats/distinct', function () {
 
-        var fields = ['group', 'node_name', 'version', 'manager_host', 'os'];
+        var fields = ['node_name', 'version', 'manager', 'os'];
 
         it('Request', function (done) {
             request(common.url)
