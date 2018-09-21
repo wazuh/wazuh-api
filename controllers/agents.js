@@ -466,6 +466,27 @@ router.get('/:agent_id/upgrade_result', function(req, res) {
 
 
 /**
+ * @api {get} /agents/:agent_id/config/:component/:configuration Get loaded configuration from agent
+ * @apiName GetConfig
+ * @apiGroup Config
+ *
+ * @apiParam {Number} agent_id Agent ID.
+ * @apiParam {String} component Selected component.
+ * @apiParam {String} configuration Configuration to read.
+ *
+ * @apiDescription Returns the loaded configuration from agent in JSON format.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/001/config/logcollector/localfile?pretty"
+ *
+ */
+ router.get('/:agent_id/config/:component/:configuration', function(req, res) {     
+     param_cheks = {'agent_id': 'numbers', 'component': 'names', 'configuration': 'names'};     
+     templates.array_request('/agents/:agent_id/config/:component/:configuration', req, res, "agents", param_cheks=param_cheks, query_cheks={});
+ })
+
+
+/**
  * @api {put} /agents/restart Restart all agents
  * @apiName PutAgentsRestart
  * @apiGroup Restart
