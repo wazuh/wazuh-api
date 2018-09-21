@@ -433,8 +433,8 @@ setup_api() {
     if [ ! -f $APILOG_PATH ]; then
         touch $APILOG_PATH
     fi
-    exec_cmd "chown root:ossec $APILOG_PATH"
-    exec_cmd "chmod 660 $APILOG_PATH"
+    exec_cmd "chown ossec:ossec $APILOG_PATH"
+    exec_cmd "chmod 640 $APILOG_PATH"
 
     APILOG_DIR="${DIRECTORY}/logs/api"
     if [ ! -d $APILOG_DIR ]; then

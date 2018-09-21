@@ -828,6 +828,57 @@ describe('Agents', function() {
         });
     });  // GET/agents/:agent_id/key
 
+    describe('PUT/agents/groups/:group_id', function() {
+
+        it('Request', function(done) {
+
+            request(common.url)
+            .put("/agents/groups/webserver")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+
+        it('Params: Bad group name', function(done) {
+            request(common.url)
+            .put("/agents/groups/!group")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(601);
+                done();
+            });
+        });
+
+        it('Params: Group already exists', function(done) {
+            request(common.url)
+            .put("/agents/groups/webserver")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1711);
+                done();
+            });
+        });
+
+    });  // PUT/agents/groups/:group_id
+
     describe('PUT/agents/:agent_id/group/:group_id', function() {
 
         it('Request', function(done) {
@@ -877,26 +928,9 @@ describe('Agents', function() {
             });
         });
 
-    });  // PUT/agents/:agent_id/group/:group_id
-
-    describe('PUT/agents/groups/:group_id', function() {
-
-        after(function(done) {
+        it('Params: Replace parameter', function(done) {
             request(common.url)
-            .delete("/agents/groups/newgroupcreated")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err, res) {
-                if (err) return done(err);
-                done();
-              });
-        });
-
-        it('Request', function(done) {
-
-            request(common.url)
-            .put("/agents/groups/newgroupcreated")
+            .put("/agents/001/group/dmz?replace")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -904,47 +938,16 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
-
                 res.body.error.should.equal(0);
                 done();
             });
         });
 
-        it('Params: Bad group name', function(done) {
-            request(common.url)
-            .put("/agents/groups/!group")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(400)
-            .end(function(err,res){
-                if (err) return done(err);
+    });  // PUT/agents/:agent_id/group/:group_id
 
-                res.body.should.have.properties(['error', 'message']);
-                res.body.error.should.equal(601);
-                done();
-            });
-        });
-
-        it('Params: Group already exists', function(done) {
-            request(common.url)
-            .put("/agents/groups/webserver")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'message']);
-                res.body.error.should.equal(1711);
-                done();
-            });
-        });
-
-    });  // PUT/agents/groups/:group_id
-
+    var agent_id = 0
     describe('GET/agents/no_group', function () {
         var agent_name = "agentWithoutGroup"
-        var agent_id = 0
         before(function (done) {
             request(common.url)
                 .put("/agents/" + agent_name)
@@ -1459,6 +1462,107 @@ describe('Agents', function() {
         });
 
     });  // DELETE/agents/:agent_id/group
+
+    describe('DELETE/agents/:agent_id/group/:group_id', function() {
+
+        before(function (done) {
+            request(common.url)
+                .put("/agents/001/group/dmz")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) throw err;
+                    done();
+                });
+        });
+
+
+        it('Request', function(done) {
+
+            request(common.url)
+            .delete("/agents/001/group/dmz")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.type('string');
+                done();
+            });
+        });
+
+        it('Errors: ID is not present', function(done) {
+
+            request(common.url)
+            .delete("/agents/54952/group/webserver")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(1701);
+                res.body.message.should.be.type('string');
+                done();
+            });
+        });
+
+        it('Errors: Group is not present', function(done) {
+
+            request(common.url)
+            .delete("/agents/001/group/adsdfdfs")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(1734);
+                res.body.message.should.be.type('string');
+                done();
+            });
+        });
+
+        it('Params: Bad agent id', function(done) {
+            request(common.url)
+            .delete("/agents/abc/group/webserver")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(600);
+                done();
+            });
+        });
+
+        it('Params: Bad group id', function(done) {
+            request(common.url)
+            .delete("/agents/001/group/aaaaaaaa")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1734);
+                done();
+            });
+        });
+
+    });  // DELETE/agents/:agent_id/group/:group_id
 
     describe('DELETE/agents/groups/:group_id', function() {
 
