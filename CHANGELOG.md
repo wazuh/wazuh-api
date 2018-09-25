@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Added support for queries in agents, rootcheck and syscheck API requests ([#128](https://github.com/wazuh/wazuh-api/pull/128))
 - Added API support for multigroups ([#159](https://github.com/wazuh/wazuh-api/pull/159))
+- Add `hash` parameter to GET/agents/groups/:group_id/files API call ([#166](https://github.com/wazuh/wazuh-api/pull/166))
 - Add GET/agents/:agent_id/config/:component/:configuration call ([#72](https://github.com/wazuh/wazuh-api/pull/72)).
 
 ### Changed

@@ -1144,6 +1144,7 @@ describe('Agents', function() {
 
                 res.body.data.should.be.an.array;
                 res.body.data.should.have.properties(['totalItems','items']);
+                res.body.data[0].should.have.properties(['count','mergedSum','configSum','name']);
                 res.body.data.items.should.be.instanceOf(Array);
 
                 done();
@@ -1163,6 +1164,38 @@ describe('Agents', function() {
                     res.body.error.should.equal(1406);
                     done();
                 });
+        });
+
+        it('Hash algorithm', function(done) {
+            request(common.url)
+            .get("/agents/groups?hash=sha256")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.error.should.equal(0);
+                res.body.data.should.have.properties(['totalItems','items']);
+                res.body.data.items[0].should.have.properties(['count','mergedSum','configSum','name']);
+                done();
+            });
+        });
+
+        it('Wrong Hash algorithm', function(done) {
+            request(common.url)
+            .get("/agents/groups?hash=aaaaaa")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1723);
+                done();
+            });
         });
 
     });  // GET/agents/groups
@@ -1337,6 +1370,7 @@ describe('Agents', function() {
 
                 res.body.should.have.properties(['error', 'data']);
                 res.body.error.should.equal(0);
+                res.body.data[0].should.have.properties(['hash','filename']);
                 done();
             });
         });
@@ -1369,6 +1403,38 @@ describe('Agents', function() {
                     res.body.error.should.equal(1727);
                     done();
                 });
+        });
+
+        it('Hash algorithm', function(done) {
+            request(common.url)
+            .get("/agents/groups/webserver/files?hash=sha256")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.error.should.equal(0);
+                res.body.data.should.have.properties(['totalItems','items']);
+                res.body.data.items[0].should.have.properties(['hash','filename']);
+                done();
+            });
+        });
+
+        it('Wrong Hash algorithm', function(done) {
+            request(common.url)
+            .get("/agents/groups/webserver/files?hash=aaaaaa")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1723);
+                done();
+            });
         });
 
     });  // GET/agents/groups/:group_id/files
