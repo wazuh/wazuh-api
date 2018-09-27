@@ -64,7 +64,7 @@ exports.ranges = function(range) {
 }
 
 exports.hashes = function(hash) {
-    return input_val(hash, /^[0-9a-fA-F]{32}(?:[0-9a-fA-F]{8})?$/); // md5 or sha1
+    return input_val(hash, /^[0-9a-fA-F]{32}(?:[0-9a-fA-F]{8})?$|(?:[0-9a-fA-F]{32})?$/); // md5, sha1 or sha256
 }
 
 exports.ossec_key = function(key) {
