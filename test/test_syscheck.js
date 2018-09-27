@@ -91,9 +91,9 @@ describe('Syscheck', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['uid', 'date', 'uname',
-                'file', 'mtime', 'perm', 'inode', 'size', 'sha1', 'gname', 'gid', 'perm',
-                'md5']);
+                res.body.data.items[0].should.have.properties(['date', 'mtime', 'file',
+                'size', 'perm', 'uname', 'gname', 'md5', 'sha1', 'sha256', 'inode', 'gid',
+                'uid', 'type']);
                 done();
             });
         });
@@ -112,9 +112,9 @@ describe('Syscheck', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['uid', 'date', 'uname',
-                'file', 'mtime', 'perm', 'inode', 'size', 'sha1', 'gname', 'gid', 'perm',
-                'md5']);
+                res.body.data.items[0].should.have.properties(['date', 'mtime', 'file',
+                'size', 'perm', 'uname', 'gname', 'md5', 'sha1', 'sha256', 'inode', 'gid',
+                'uid', 'type']);
                 done();
             });
         });
@@ -213,7 +213,9 @@ describe('Syscheck', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['uid', 'scanDate', 'user', 'file', 'modificationDate', 'octalMode', 'inode', 'event', 'size', 'sha1', 'group', 'gid', 'permissions', 'md5']);
+                res.body.data.items[0].should.have.properties(['date', 'mtime', 'file',
+                'size', 'perm', 'uname', 'gname', 'md5', 'sha1', 'sha256', 'inode', 'gid',
+                'uid', 'type']);
                 done();
             });
         });
@@ -232,7 +234,7 @@ describe('Syscheck', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['modificationDate', 'event', 'file', 'scanDate']);
+                res.body.data.items[0].should.have.properties(['mdate', 'file', 'date']);
                 done();
             });
         });
