@@ -181,25 +181,6 @@ describe('Syscheck', function() {
             });
         });
 
-        it('Filters: event', function(done) {
-            request(common.url)
-            .get("/syscheck/000?event=modified&offset=0&limit=10")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.totalItems.should.be.above(0);
-                res.body.data.items.should.be.instanceof(Array)
-                res.body.data.items[0].should.have.properties(['uid', 'scanDate', 'user', 'file', 'modificationDate', 'octalMode', 'inode', 'event', 'size', 'sha1', 'group', 'gid', 'permissions', 'md5']);
-                done();
-            });
-        });
-
         it('Filters: file', function(done) {
             request(common.url)
             .get("/syscheck/000?file=/var/ossec/etc/ossec.conf&offset=0&limit=10")
