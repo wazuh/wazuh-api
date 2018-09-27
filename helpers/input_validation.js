@@ -80,6 +80,10 @@ exports.empty_boolean = function(b) {
     return input_val(b, /^$|(^true|false$)/);
 }
 
+exports.yes_no_boolean = function(b) {
+    return input_val(b, /^$|(^yes|no$)/);
+}
+
 exports.boolean = function(b) {
     return input_val(b, /^true|false$/);
 }
