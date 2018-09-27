@@ -56,7 +56,7 @@ exports.single_field_array_request = function(entrypoint_name, req, res, apicach
             if (query_cheks[extra] == 'select_param')
                 data_request['arguments'][extra] = filter.select_param_to_json(req.query[extra]);
             else if (extra == 'summary')
-                data_request['arguments'][extra] = req.query['extra'];
+                data_request['arguments'][extra] = req.query[extra] === 'yes'
             else if (!(extra in data_request['arguments']))
                 filters[extra] = req.query[extra];
         } else if (extra in req.params)
