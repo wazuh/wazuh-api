@@ -23,9 +23,8 @@ var router = require('express').Router();
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String="added","readded", "modified", "deleted"} [event] Filters files by event.
  * @apiParam {String} [file] Filters file by filename.
- * @apiParam {String="file","registry"} [filetype] Selects type of file.
+ * @apiParam {String="file","registry"} [type] Selects type of file.
  * @apiParam {String="yes", "no"} [summary] Returns a summary grouping by filename.
  * @apiParam {String} [md5] Returns the files with the specified md5 hash.
  * @apiParam {String} [sha1] Returns the files with the specified sha1 hash.
@@ -45,7 +44,7 @@ router.get('/:agent_id', cache(), function(req, res) {
 
     var data_request = {'function': '/syscheck/:agent_id', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
-		'search':'search_param', 'file':'paths', 'filetype':'names',
+		'search':'search_param', 'file':'paths', 'type':'names',
 		'summary':'yes_no_boolean', 'select': 'alphanumeric_param','md5':'hashes', 'sha1':'hashes',
 		'sha256': 'hashes', 'hash':'hashes'};
 		
@@ -63,9 +62,9 @@ router.get('/:agent_id', cache(), function(req, res) {
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
     if ('file' in req.query)
-        data_request['arguments']['filename'] = req.query.file;
-    if ('filetype' in req.query)
-        data_request['arguments']['filetype'] = req.query.filetype;
+        data_request['arguments']['filters']['file'] = req.query.file;
+    if ('type' in req.query)
+        data_request['arguments']['filters']['type'] = req.query.filetype;
     if ('summary' in req.query && req.query.summary == "yes")
         data_request['arguments']['summary'] = req.query.summary;
     if ('select' in req.query)
