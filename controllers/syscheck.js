@@ -46,7 +46,11 @@ router.get('/:agent_id', cache(), function(req, res) {
     var data_request = {'function': '/syscheck/:agent_id', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
 		'search':'search_param', 'file':'paths', 'filetype':'names',
-		'summary':'names', 'md5':'hashes', 'sha1':'hashes', 'sha256': 'hashes', 'hash':'hashes'};
+		'summary':'names', 'select': 'alphanumeric_param','md5':'hashes', 'sha1':'hashes',
+		'sha256': 'hashes', 'hash':'hashes'};
+		
+	data_request.arguments['filters'] = {}
+	
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -64,14 +68,16 @@ router.get('/:agent_id', cache(), function(req, res) {
         data_request['arguments']['filetype'] = req.query.filetype;
     if ('summary' in req.query && req.query.summary == "yes")
         data_request['arguments']['summary'] = req.query.summary;
+    if ('select' in req.query)
+        data_request['arguments']['select'] = req.query.select;
     if ('md5' in req.query)
-        data_request['arguments']['md5'] = req.query.md5.toLowerCase();
+        data_request.arguments.filters['md5'] = req.query.md5.toLowerCase();
     if ('sha1' in req.query)
-        data_request['arguments']['sha1'] = req.query.sha1.toLowerCase();
+        data_request.arguments.filters['sha1'] = req.query.sha1.toLowerCase();
     if ('sha256' in req.query)
-        data_request['arguments']['sha256'] = req.query.sha1.toLowerCase();
+        data_request.arguments.filters['sha256'] = req.query.sha256.toLowerCase();
     if ('hash' in req.query)
-        data_request['arguments']['hash'] = req.query.hash.toLowerCase();
+        data_request.arguments.filters['hash'] = req.query.hash.toLowerCase();
 
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
