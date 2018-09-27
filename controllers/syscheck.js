@@ -46,7 +46,7 @@ router.get('/:agent_id', cache(), function(req, res) {
     var data_request = {'function': '/syscheck/:agent_id', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
 		'search':'search_param', 'file':'paths', 'filetype':'names',
-		'summary':'names', 'select': 'alphanumeric_param','md5':'hashes', 'sha1':'hashes',
+		'summary':'yes_no_boolean', 'select': 'alphanumeric_param','md5':'hashes', 'sha1':'hashes',
 		'sha256': 'hashes', 'hash':'hashes'};
 		
 	data_request.arguments['filters'] = {}
@@ -69,7 +69,7 @@ router.get('/:agent_id', cache(), function(req, res) {
     if ('summary' in req.query && req.query.summary == "yes")
         data_request['arguments']['summary'] = req.query.summary;
     if ('select' in req.query)
-        data_request['arguments']['select'] = req.query.select;
+        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select);
     if ('md5' in req.query)
         data_request.arguments.filters['md5'] = req.query.md5.toLowerCase();
     if ('sha1' in req.query)
@@ -179,7 +179,7 @@ router.delete('/:agent_id', function(req, res) {
 
     apicache.clear("syscheck");
 
-    var data_request = {'function': 'DELETE/syscheck/:agent_id', 'arguments': {}};
+    var data_request = {'function': 'DELETE/syscheck', 'arguments': {}};
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
         return;
