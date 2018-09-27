@@ -81,7 +81,7 @@ exports.empty_boolean = function(b) {
 }
 
 exports.yes_no_boolean = function(b) {
-    return input_val(b, /^$|(^yes|no$)/);
+    return input_val(b, /^yes$|^no$/);
 }
 
 exports.boolean = function(b) {
