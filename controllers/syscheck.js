@@ -179,7 +179,7 @@ router.delete('/:agent_id', function(req, res) {
 
     apicache.clear("syscheck");
 
-    var data_request = {'function': 'DELETE/syscheck', 'arguments': {}};
+    var data_request = {'function': 'DELETE/syscheck/:agent_id', 'arguments': {}};
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
         return;
