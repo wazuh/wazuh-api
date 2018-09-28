@@ -64,7 +64,7 @@ router.get('/:agent_id', cache(), function(req, res) {
     if ('file' in req.query)
         data_request['arguments']['filters']['file'] = req.query.file;
     if ('type' in req.query)
-        data_request['arguments']['filters']['type'] = req.query.filetype;
+        data_request['arguments']['filters']['type'] = req.query.type;
     if ('summary' in req.query && req.query.summary == "yes")
         data_request['arguments']['summary'] = req.query.summary;
     if ('select' in req.query)
