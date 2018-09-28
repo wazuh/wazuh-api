@@ -423,7 +423,7 @@ describe('Syscheck', function() {
         it('Request', function(done) {
             this.timeout(common.timeout);
             request(common.url)
-            .delete("experimental/syscheck")
+            .delete("/experimental/syscheck")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
