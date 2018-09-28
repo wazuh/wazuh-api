@@ -418,12 +418,12 @@ describe('Syscheck', function() {
 
     });  // DELETE/syscheck/:agent_id
 
-    describe('DELETE/syscheck', function() {
+    describe('DELETE/experimental/syscheck', function() {
 
         it('Request', function(done) {
             this.timeout(common.timeout);
             request(common.url)
-            .delete("/syscheck/000")
+            .delete("experimental/syscheck")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -438,7 +438,7 @@ describe('Syscheck', function() {
             });
         });
 
-    });  // DELETE/syscheck
+    });  // DELETE/experimental/syscheck
 
     describe('PUT/syscheck/:agent_id', function() {
 
