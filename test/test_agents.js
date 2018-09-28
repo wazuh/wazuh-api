@@ -383,7 +383,8 @@ describe('Agents', function() {
                     res.body.data.should.have.properties(['items','totalItems']);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array);
-                    res.body.data.items[0].group.should.be.equal('default');
+                    res.body.data.items[0].group.should.be.instanceof(Array);
+                    res.body.data.items[0].group[0].should.be.equal('default');
                     done();
                 });
         });
@@ -465,7 +466,7 @@ describe('Agents', function() {
                     res.body.data.should.have.properties(['items','totalItems']);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array);
-                    res.body.data.items[0].group.should.be.equal('default');
+                    res.body.data.items[0].group[0].should.be.equal('default');
                     done();
                 });
         });
@@ -1144,7 +1145,7 @@ describe('Agents', function() {
 
                 res.body.data.should.be.an.array;
                 res.body.data.should.have.properties(['totalItems','items']);
-                res.body.data[0].should.have.properties(['count','mergedSum','configSum','name']);
+                res.body.data.items[0].should.have.properties(['count','mergedSum','configSum','name']);
                 res.body.data.items.should.be.instanceOf(Array);
 
                 done();
@@ -1370,7 +1371,7 @@ describe('Agents', function() {
 
                 res.body.should.have.properties(['error', 'data']);
                 res.body.error.should.equal(0);
-                res.body.data[0].should.have.properties(['hash','filename']);
+                res.body.data.items[0].should.have.properties(['hash','filename']);
                 done();
             });
         });
@@ -1400,7 +1401,7 @@ describe('Agents', function() {
                     if (err) return done(err);
 
                     res.body.should.have.properties(['error', 'message']);
-                    res.body.error.should.equal(1727);
+                    res.body.error.should.equal(1406);
                     done();
                 });
         });
@@ -1809,7 +1810,7 @@ describe('Agents', function() {
                         res.body.error.should.equal(0);
                         done();
                     });
-            }, 1500);
+            }, 3500);
         });
 
         it('Errors: Get deleted agent', function (done) {
