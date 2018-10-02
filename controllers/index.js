@@ -16,7 +16,8 @@ execute = require('../helpers/execute');
 templates = require('../helpers/request_templates');
 apicache  = require('apicache');
 cache     = apicache.middleware;
-wazuh_control = api_path + "/models/wazuh-api.py";
+wazuh_contro
+l = api_path + "/models/wazuh-api.py";
 
 var router = require('express').Router();
 var validator = require('../helpers/input_validation');
@@ -110,14 +111,8 @@ router.all('*',function(req, res) {
 
 // Router Errors
 router.use(function(err, req, res, next){
-    logger.log("Internal Error");
-    if(err.stack)
-        logger.log(err.stack);
-    logger.log("Exiting...");
-
-    setTimeout(function(){ process.exit(1); }, 500);
+    res_h.send(req, res, { error: 3, message: err.message || err }, 500)
 });
-
 
 
 module.exports = router
