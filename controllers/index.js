@@ -16,8 +16,7 @@ execute = require('../helpers/execute');
 templates = require('../helpers/request_templates');
 apicache  = require('apicache');
 cache     = apicache.middleware;
-wazuh_contro
-l = api_path + "/models/wazuh-api.py";
+wazuh_control = api_path + "/models/wazuh-api.py";
 
 var router = require('express').Router();
 var validator = require('../helpers/input_validation');
