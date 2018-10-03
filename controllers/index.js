@@ -110,7 +110,12 @@ router.all('*',function(req, res) {
 
 // Router Errors
 router.use(function(err, req, res, next){
-    res_h.send(req, res, { error: 3, message: err.message || err }, 500)
+    logger.log("Internal Error");
+    if(err.stack)
+        logger.log(err.stack);
+    logger.log("Exiting...");
+
+    res_h.send(req, res, { error: 3 }, 500)
 });
 
 
