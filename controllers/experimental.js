@@ -322,6 +322,7 @@ router.get('/syscollector/processes', function (req, res) {
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields.
  * @apiParam {Number} [pid] Filters by pid.
  * @apiParam {String} [protocol] Filters by protocol.
@@ -330,6 +331,7 @@ router.get('/syscollector/processes', function (req, res) {
  * @apiParam {String} [remote_ip] Filters by remote_ip.
  * @apiParam {Number} [tx_queue] Filters by tx_queue.
  * @apiParam {String} [state] Filters by state.
+ * @apiParam {String} [process] Filters by process.
  *
  * @apiDescription Returns the agent's ports info
  *
@@ -395,6 +397,7 @@ router.get('/syscollector/ports', function (req, res) {
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields.
  * @apiParam {String} [proto] Filters by proto.
  * @apiParam {String} [address] Filters by address.
@@ -454,6 +457,7 @@ router.get('/syscollector/netaddr', function (req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [iface] Filters by iface.
  * @apiParam {String} [type] Filters by type.
  * @apiParam {String} [gateway] Filters by gateway.
@@ -511,6 +515,7 @@ router.get('/syscollector/netproto', function (req, res) {
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields.
  * @apiParam {String} [name] Filters by name.
  * @apiParam {String} [adapter] Filters by adapter.
@@ -601,6 +606,7 @@ router.get('/syscollector/netiface', function (req, res) {
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields.
  * @apiParam {String} [benchmark] Filters by benchmark.
  * @apiParam {String} [profile] Filters by evaluated profile.
@@ -624,7 +630,6 @@ router.get('/ciscat/results', function (req, res) {
     var filters = {
         'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
         'search': 'search_param', 'select': 'select_param',
-
         'benchmark': 'alphanumeric_param', 'profile': 'alphanumeric_param', 'pass': 'alphanumeric_param',
         'fail': 'alphanumeric_param',
         'error': 'numbers', 'notchecked': 'numbers',
