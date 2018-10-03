@@ -115,9 +115,8 @@ router.use(function(err, req, res, next){
         logger.log(err.stack);
     logger.log("Exiting...");
 
-    setTimeout(function(){ process.exit(1); }, 500);
+    res_h.send(req, res, { error: 3 }, 500)
 });
-
 
 
 module.exports = router
