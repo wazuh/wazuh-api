@@ -667,4 +667,26 @@ router.get('/ciscat/results', function (req, res) {
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
+/**
+ * @api {delete} /experimental/syscheck Clear syscheck database
+ * @apiName DeleteSyscheck
+ * @apiGroup Clear
+ *
+ *
+ * @apiDescription Clears the syscheck database for all agents.
+ *
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/experimental/syscheck?pretty"
+ *
+ */
+router.delete('/syscheck', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " DELETE /experimental/syscheck");
+
+    apicache.clear("syscheck");
+
+    var data_request = {'function': 'DELETE/experimental/syscheck', 'arguments': {}};
+    data_request['arguments']['all_agents'] = 1;
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
 module.exports = router;

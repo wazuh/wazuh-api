@@ -64,7 +64,7 @@ exports.ranges = function(range) {
 }
 
 exports.hashes = function(hash) {
-    return input_val(hash, /^[0-9a-fA-F]{32}(?:[0-9a-fA-F]{8})?$/); // md5 or sha1
+    return input_val(hash, /^[0-9a-fA-F]{32}(?:[0-9a-fA-F]{8})?$|(?:[0-9a-fA-F]{32})?$/); // md5, sha1 or sha256
 }
 
 exports.ossec_key = function(key) {
@@ -78,6 +78,10 @@ exports.timeframe_type = function(timeframe) {
 
 exports.empty_boolean = function(b) {
     return input_val(b, /^$|(^true|false$)/);
+}
+
+exports.yes_no_boolean = function(b) {
+    return input_val(b, /^yes$|^no$/);
 }
 
 exports.boolean = function(b) {
