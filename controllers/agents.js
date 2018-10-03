@@ -716,7 +716,7 @@ router.put('/groups/:group_id', function(req, res) {
 })
 
 /**
- * @api {put} /agents/:agent_id/group/:group_id Set agent group
+ * @api {put} /agents/:agent_id/group/:group_id Add agent group
  * @apiName PutGroupAgent
  * @apiGroup Groups
  *
@@ -724,7 +724,7 @@ router.put('/groups/:group_id', function(req, res) {
  * @apiParam {String} group_id Group ID.
  * @apiParam {Boolean} replace Wheter to append new group to current agent's group or replace it.
  *
- * @apiDescription Sets an agent to the specified group.
+ * @apiDescription Adds an agent to the specified group.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/004/group/webserver?pretty"
@@ -805,13 +805,13 @@ router.delete('/:agent_id', function(req, res) {
 })
 
 /**
- * @api {delete} /agents/:agent_id/group Unsets all agent groups.
+ * @api {delete} /agents/:agent_id/group Remove all agent groups.
  * @apiName DeleteGroupAgent
  * @apiGroup Groups
  *
  * @apiParam {Number} agent_id Agent ID.
  *
- * @apiDescription Unsets the group of the agent. The agent will automatically revert to the 'default' group.
+ * @apiDescription Removes the group of the agent. The agent will automatically revert to the 'default' group.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/004/group?pretty"
@@ -831,14 +831,14 @@ router.delete('/:agent_id/group', function(req, res) {
 })
 
 /**
- * @api {delete} /agents/:agent_id/group/:group_id Unset a single group of an agent
+ * @api {delete} /agents/:agent_id/group/:group_id Remove a single group of an agent
  * @apiName DeleteGroupAgent
  * @apiGroup Groups
  *
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {String} group_id Group ID.
  *
- * @apiDescription Unsets the group of the agent but will leave the rest of its group if it belongs to a multigroup.
+ * @apiDescription Remove the group of the agent but will leave the rest of its group if it belongs to a multigroup.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/004/group/default?pretty"
