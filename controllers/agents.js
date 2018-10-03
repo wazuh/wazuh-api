@@ -227,46 +227,6 @@ router.get('/groups/:group_id/configuration', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /agents/multigroups/:group_id/configuration Get group configuration
- * @apiName GetAgentMultiGroupConfiguration
- * @apiGroup Multigroups
- *
- * @apiParam {String} group_id Group ID.
- * @apiParam {Number} [offset] First element to return in the collection.
- * @apiParam {Number} [limit=500] Maximum number of elements to return.
- *
- * @apiDescription Returns the group configuration (agent.conf).
- *
- * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/multigroups/dmz/configuration?pretty"
- *
- */
-router.get('/multigroups/:group_id/configuration', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /agents/multigroups/:group_id/configuration");
-
-    req.apicacheGroup = "agents";
-
-    var data_request = {'function': '/agents/multigroups/:group_id/configuration', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers'};
-
-    if (!filter.check(req.params, {'group_id':'names'}, req, res))  // Filter with error
-        return;
-
-    data_request['arguments']['group_id'] = req.params.group_id;
-
-
-    if (!filter.check(req.query, filters, req, res))  // Filter with error
-        return;
-
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
-})
-
-/**
  * @api {get} /agents/groups/:group_id/files/:filename Get a file in group
  * @apiName GetAgentGroupFile
  * @apiGroup Groups
