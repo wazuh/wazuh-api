@@ -716,15 +716,15 @@ router.put('/groups/:group_id', function(req, res) {
 })
 
 /**
- * @api {put} /agents/:agent_id/group/:group_id Set agent group
+ * @api {put} /agents/:agent_id/group/:group_id Add agent group
  * @apiName PutGroupAgent
  * @apiGroup Groups
  *
  * @apiParam {Number} agent_id Agent unique ID.
  * @apiParam {String} group_id Group ID.
- * @apiParam {Boolean} replace Wheter to append new group to current agent's group or replace it.
+ * @apiParam {Boolean} force_single_group Wheter to append new group to current agent's group or replace it.
  *
- * @apiDescription Sets an agent to the specified group.
+ * @apiDescription Adds an agent to the specified group.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/004/group/webserver?pretty"
@@ -734,14 +734,14 @@ router.put('/:agent_id/group/:group_id', function(req, res) {
     logger.debug(req.connection.remoteAddress + " PUT /agents/:agent_id/group/:group_id");
 
     var data_request = {'function': 'PUT/agents/:agent_id/group/:group_id', 'arguments': {}};
-    var filters = {'agent_id':'numbers', 'group_id':'names', 'replace': 'empty_boolean'};
+    var filters = {'agent_id':'numbers', 'group_id':'names', 'force_single_group': 'empty_boolean'};
 
     if (!filter.check(req.params, filters, req, res))  // Filter with error
         return;
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
     data_request['arguments']['group_id'] = req.params.group_id;
-    data_request['arguments']['replace'] = 'replace' in req.query && req.query.replace != 'false' ? true : false;
+    data_request['arguments']['replace'] = 'force_single_group' in req.query && req.query.replace != 'false' ? true : false;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -805,13 +805,13 @@ router.delete('/:agent_id', function(req, res) {
 })
 
 /**
- * @api {delete} /agents/:agent_id/group Unsets all agent groups.
+ * @api {delete} /agents/:agent_id/group Remove all agent groups.
  * @apiName DeleteGroupAgent
  * @apiGroup Groups
  *
  * @apiParam {Number} agent_id Agent ID.
  *
- * @apiDescription Unsets the group of the agent. The agent will automatically revert to the 'default' group.
+ * @apiDescription Removes the group of the agent. The agent will automatically revert to the 'default' group.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/004/group?pretty"
@@ -831,14 +831,14 @@ router.delete('/:agent_id/group', function(req, res) {
 })
 
 /**
- * @api {delete} /agents/:agent_id/group/:group_id Unset a single group of an agent
+ * @api {delete} /agents/:agent_id/group/:group_id Remove a single group of an agent
  * @apiName DeleteGroupAgent
  * @apiGroup Groups
  *
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {String} group_id Group ID.
  *
- * @apiDescription Unsets the group of the agent but will leave the rest of its group if it belongs to a multigroup.
+ * @apiDescription Remove the group of the agent but will leave the rest of its group if it belongs to a multigroup.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/004/group/default?pretty"
