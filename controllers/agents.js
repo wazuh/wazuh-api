@@ -488,6 +488,24 @@ router.get('/:agent_id/upgrade_result', function(req, res) {
      templates.array_request('/agents/:agent_id/config/:component/:configuration', req, res, "agents", param_cheks=param_cheks, query_cheks={});
  })
 
+ /**
+ * @api {get} /agents/:agent_id/group/is_sync Get sycn status of agent
+ * @apiName GetSync
+ * @apiGroup Group
+ *
+ * @apiParam {Number} agent_id Agent ID.
+ *
+ * @apiDescription Returns the sync status in JSON format
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/001/group/is_sync?pretty"
+ *
+ */
+router.get('/:agent_id/group/is_sync', function(req, res) {     
+    param_cheks = {'agent_id': 'numbers'};     
+    templates.array_request('/agents/:agent_id/group/is_sync', req, res, "agents", param_cheks=param_cheks, query_cheks={});
+})
+
 
 /**
  * @api {put} /agents/restart Restart all agents
