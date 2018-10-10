@@ -7,7 +7,7 @@
  
     ``` 
     npm install mocha -g
-    npm install glob supertest mocha should moment getos sleep
+    npm install glob supertest mocha should moment
     ```
 
  * Cluster configurated and running with 2 connected nodes: `master` and `client`.
