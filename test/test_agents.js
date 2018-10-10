@@ -973,7 +973,7 @@ describe('Agents', function() {
                     agent_id = res.body.data.id;
                     setTimeout(function(){ 
                         done();
-                     }, 20)
+                    }, 20)
                 });
         });
 
@@ -996,7 +996,7 @@ describe('Agents', function() {
                     res.body.data.items[0].should.have.properties(['ip', 'id', 'name']);
                     setTimeout(function(){ 
                         done();
-                     }, 20)
+                    }, 20)
                 });
         });
 
@@ -1020,7 +1020,7 @@ describe('Agents', function() {
                     res.body.data.items[0].should.have.properties(['ip', 'id', 'name']);
                     setTimeout(function(){ 
                         done();
-                     }, 20)
+                    }, 20)
                 });
         });
 
@@ -1776,7 +1776,9 @@ describe('Agents', function() {
                 .expect(200)
                 .end(function (err, res) {
                     if (err) throw err;
-                    done();
+                    setTimeout(function(){ 
+                        done();
+                    }, 20)
                 });
         });
 
@@ -1789,7 +1791,9 @@ describe('Agents', function() {
                 .expect(200)
                 .end(function (err, res) {
                     if (err) throw err;
-                    done();
+                    setTimeout(function(){ 
+                        done();
+                    }, 20)
                 });
         });
 
@@ -1803,7 +1807,9 @@ describe('Agents', function() {
                     if (err) return done(err);
 
                     res.body.should.have.properties(['error', 'message']);
-                    done();
+                    setTimeout(function(){ 
+                        done();
+                    }, 20)
                 });
         });
         
@@ -1829,7 +1835,7 @@ describe('Agents', function() {
                         res.body.error.should.equal(0);
                         setTimeout(function(){ 
                             done();
-                         }, 20)
+                        }, 20)
                     });
             }, 3500);
         });
