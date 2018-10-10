@@ -1823,11 +1823,13 @@ describe('Agents', function() {
                         if ('failed_ids' in res.body.data && res.body.data.failed_ids.length > 0)
                             console.log(res.body.data.failed_ids[0].error);
                         res.body.data.msg.should.equal("All selected agents were removed");
-                        res.body.data.affected_agents[0].should.equal('002');
+                        res.body.data.affected_agents[0].should.equal('003');
                         res.body.data.affected_agents.should.have.lengthOf(1);
     
                         res.body.error.should.equal(0);
-                        done();
+                        setTimeout(function(){ 
+                            done();
+                         }, 20)
                     });
             }, 3500);
         });
@@ -1859,7 +1861,7 @@ describe('Agents', function() {
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.should.have.properties(['affected_agents', 'msg', 'older_than']);
                     res.body.data.msg.should.equal("All selected agents were removed");
-                    res.body.data.affected_agents[0].should.equal('003');
+                    res.body.data.affected_agents[0].should.equal('004');
                     res.body.error.should.equal(0);
                     done();
                 });
