@@ -958,7 +958,9 @@ describe('Agents', function() {
                 .end(function (err, res) {
                     if (err) throw err;
                     agent_id = res.body.data.id;
-                    done();
+                    setTimeout(function(){ 
+                        done();
+                     }, 20)
                 });
         });
 
@@ -979,7 +981,9 @@ describe('Agents', function() {
                     res.body.data.totalItems.should.above(0);
                     res.body.data.items.should.be.instanceof(Array)
                     res.body.data.items[0].should.have.properties(['ip', 'id', 'name']);
-                    done();
+                    setTimeout(function(){ 
+                        done();
+                     }, 20)
                 });
         });
 
@@ -1001,7 +1005,9 @@ describe('Agents', function() {
                     res.body.data.totalItems.should.above(0);
                     res.body.data.items.should.be.instanceof(Array)
                     res.body.data.items[0].should.have.properties(['ip', 'id', 'name']);
-                    done();
+                    setTimeout(function(){ 
+                        done();
+                     }, 20)
                 });
         });
 
