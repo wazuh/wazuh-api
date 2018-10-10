@@ -2593,7 +2593,7 @@ describe('Agents', function() {
         // wmodules
 		it('Request-Wmodules-Wmodules', function(done) {
             request(common.url)
-            .get("/agents/001/config/wmodules/wmodules")
+            .get("/agents/002/config/wmodules/wmodules")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -2608,8 +2608,6 @@ describe('Agents', function() {
                 res.body.data.wmodules[1].should.have.properties(['cis-cat']);
                 res.body.data.wmodules[2].should.have.properties(['osquery']);
                 res.body.data.wmodules[3].should.have.properties(['syscollector']);
-                res.body.data.wmodules[4].should.have.properties(['database']);
-                res.body.data.wmodules[5].should.have.properties(['wazuh_download']);
                 
                 res.body.error.should.equal(0);
                 done();
