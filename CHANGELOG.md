@@ -6,12 +6,27 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Added support for queries in agents, rootcheck and syscheck API requests ([#128](https://github.com/wazuh/wazuh-api/pull/128))
 - Added API support for multigroups ([#159](https://github.com/wazuh/wazuh-api/pull/159))
-- Add `hash` parameter to GET/agents/groups/:group_id/files API call ([#166](https://github.com/wazuh/wazuh-api/pull/166))
-- Add GET/agents/:agent_id/config/:component/:configuration call ([#72](https://github.com/wazuh/wazuh-api/pull/72)).
+- Add `hash` parameter to `GET/agents/groups/:group_id/files` API call ([#166](https://github.com/wazuh/wazuh-api/pull/166))
+- Retieve agent configuration on demand: `GET/agents/:agent_id/config/:component/:configuration` API call ([#72](https://github.com/wazuh/wazuh-api/pull/72)).
+- Added statistical data for `analysisd` and `remoted`. ([#158](https://github.com/wazuh/wazuh-api/pull/158))
+  - Added API call `GET/manager/stats/analysisd` to query Analysisd statistics.
+  - Added API call `GET/manager/stats/remoted` to query Remoted statistics.
+- Add _OS Query wodle_ configuration to `GET/manager/configuration` API call ([wazuh/wazuh#1585](https://github.com/wazuh/wazuh/pull/1585))
+- Add _Vulnerability detector wodle_ configuration to `GET/manager/configuration` API call ([wazuh/wazuh#1453](https://github.com/wazuh/wazuh/pull/1453))
+- Check if an agent's group configuration is synchronized: `GET/agent/:agent_id/group/is_sync` API call ([#180](https://github.com/wazuh/wazuh-api/pull/180))
 
 ### Changed
 - Changed api.log permissions. Now it is installed with 640 permissions and ossec:ossec owner ([#164](https://github.com/wazuh/wazuh-api/pull/164))
+- Field `group` from agents API calls is now returned as a list ([wazuh/wazuh#1437](https://github.com/wazuh/wazuh/pull/1437))
 
+### Fixed
+- Fixed error showing logs containing strange characters ([wazuh/wazuh#1584](https://github.com/wazuh/wazuh/pull/1584))
+- Fixed error when registering an agent named `%` ([#178](https://github.com/wazuh/wazuh-api/pull/178))
+- Fix error when limiting results in syscollector API calls ([wazuh/wazuh#1457](https://github.com/wazuh/wazuh/pull/1457))
+
+### Removed
+- Removed `id` field from syscollector network API calls ([#169](https://github.com/wazuh/wazuh-api/pull/169))
+- Removed `event` filter from `GET/syscheck/:agent_id` API call ([#721](https://github.com/wazuh/wazuh-api/pull/171))
 
 ## [v3.6.1]
 
