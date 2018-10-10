@@ -882,6 +882,20 @@ describe('Agents', function() {
 
     describe('PUT/agents/:agent_id/group/:group_id', function() {
 
+        // adds dmz group
+        before(function (done) {
+            request(common.url)
+                .put("/agents/groups/dmz")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) throw err;
+                    agent_id = res.body.data.id;
+                    done();
+                });
+        });
+
         it('Request', function(done) {
 
             request(common.url)
