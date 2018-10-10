@@ -474,8 +474,8 @@ router.get('/:agent_id/upgrade_result', function(req, res) {
  * @apiGroup Config
  *
  * @apiParam {Number} agent_id Agent ID.
- * @apiParam {String} component Selected component.
- * @apiParam {String} configuration Configuration to read.
+ * @apiParam {String="agent","agentless","analysis","auth","com","csyslog","integrator","logcollector","mail","monitor","request","syscheck","wmodules"} component Selected component.
+ * @apiParam {String="client","buffer","labels","internal","agentless","global","active_response","alerts","command","rules","decoders","internal","auth","active-response","internal","cluster","csyslog","integration","localfile","socket","remote","syscheck","rootcheck","wmodules"} configuration Configuration to read.
  *
  * @apiDescription Returns the loaded configuration from agent in JSON format.
  *
@@ -484,9 +484,19 @@ router.get('/:agent_id/upgrade_result', function(req, res) {
  *
  */
  router.get('/:agent_id/config/:component/:configuration', function(req, res) {     
-     param_cheks = {'agent_id': 'numbers', 'component': 'names', 'configuration': 'names'};     
-     templates.array_request('/agents/:agent_id/config/:component/:configuration', req, res, "agents", param_cheks=param_cheks, query_cheks={});
- })
+    logger.debug(req.connection.remoteAddress + " GET /agents/:agent_id/config/:component/:configuration");
+
+    var data_request = {'function': '/agents/:agent_id/config/:component/:configuration', 'arguments': {}};
+
+    if (!filter.check(req.params, {'agent_id':'numbers', 'component':'names', 'configuration':'names'}, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+    data_request['arguments']['component'] = req.params.component;
+    data_request['arguments']['configuration'] = req.params.configuration;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
 
  /**
  * @api {get} /agents/:agent_id/group/is_sync Get sycn status of agent
