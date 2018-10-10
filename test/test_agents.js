@@ -891,7 +891,6 @@ describe('Agents', function() {
                 .expect(200)
                 .end(function (err, res) {
                     if (err) throw err;
-                    agent_id = res.body.data.id;
                     done();
                 });
         });

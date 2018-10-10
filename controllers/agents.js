@@ -727,7 +727,7 @@ router.put('/groups/:group_id', function(req, res) {
  * @apiDescription Adds an agent to the specified group.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/004/group/webserver?pretty"
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/004/group/dmz?pretty"
  *
  */
 router.put('/:agent_id/group/:group_id', function(req, res) {
@@ -841,7 +841,7 @@ router.delete('/:agent_id/group', function(req, res) {
  * @apiDescription Remove the group of the agent but will leave the rest of its group if it belongs to a multigroup.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/004/group/default?pretty"
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/004/group/dmz?pretty"
  *
  */
 router.delete('/:agent_id/group/:group_id', function(req, res) {
