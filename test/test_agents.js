@@ -98,7 +98,7 @@ describe('Agents', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items[0].id.should.equal('001');
+                res.body.data.items[0].id.should.equal('002');
                 res.body.data.items[0].should.have.properties(agent_properties);
                 done();
             });
@@ -882,6 +882,19 @@ describe('Agents', function() {
 
     describe('PUT/agents/:agent_id/group/:group_id', function() {
 
+        // adds dmz group
+        before(function (done) {
+            request(common.url)
+                .put("/agents/groups/dmz")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) throw err;
+                    done();
+                });
+        });
+
         it('Request', function(done) {
 
             request(common.url)
@@ -931,7 +944,7 @@ describe('Agents', function() {
 
         it('Params: Replace parameter', function(done) {
             request(common.url)
-            .put("/agents/001/group/dmz?replace")
+            .put("/agents/001/group/dmz?force_single_group")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -958,7 +971,9 @@ describe('Agents', function() {
                 .end(function (err, res) {
                     if (err) throw err;
                     agent_id = res.body.data.id;
-                    done();
+                    setTimeout(function(){ 
+                        done();
+                    }, 30)
                 });
         });
 
@@ -1445,7 +1460,7 @@ describe('Agents', function() {
         it('Request', function(done) {
 
             request(common.url)
-            .get("/agents/groups/webserver/files/cis_debian_linux_rcl.txt")
+            .get("/agents/groups/webserver/files/agent.conf")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -1747,7 +1762,8 @@ describe('Agents', function() {
 
     });  // PUT/agents/:agent_id/restart
 
-
+    agent1_id = "";
+    agent2_id = "";
     describe('DELETE/agents', function () {
         before(function (done) {
             request(common.url)
@@ -1757,6 +1773,7 @@ describe('Agents', function() {
                 .expect(200)
                 .end(function (err, res) {
                     if (err) throw err;
+                    agent1_id = res.body.data.id
                     done();
                 });
         });
@@ -1770,6 +1787,7 @@ describe('Agents', function() {
                 .expect(200)
                 .end(function (err, res) {
                     if (err) throw err;
+                    agent2_id = res.body.data.id
                     done();
                 });
         });
@@ -1782,7 +1800,6 @@ describe('Agents', function() {
                 .expect(400)
                 .end(function (err, res) {
                     if (err) return done(err);
-
                     res.body.should.have.properties(['error', 'message']);
                     done();
                 });
@@ -1792,7 +1809,7 @@ describe('Agents', function() {
             setTimeout(function(){
                 request(common.url)
                     .delete("/agents?purge&older_than=1s&status=neverconnected")
-                    .send({ 'ids': ['002']})
+                    .send({ 'ids': [agent1_id]})
                     .auth(common.credentials.user, common.credentials.password)
                     .expect("Content-type", /json/)
                     .expect(200)
@@ -1804,18 +1821,20 @@ describe('Agents', function() {
                         if ('failed_ids' in res.body.data && res.body.data.failed_ids.length > 0)
                             console.log(res.body.data.failed_ids[0].error);
                         res.body.data.msg.should.equal("All selected agents were removed");
-                        res.body.data.affected_agents[0].should.equal('002');
+                        res.body.data.affected_agents[0].should.equal(agent1_id);
                         res.body.data.affected_agents.should.have.lengthOf(1);
     
                         res.body.error.should.equal(0);
-                        done();
+                        setTimeout(function(){ 
+                            done();
+                        }, 30)
                     });
             }, 3500);
         });
 
         it('Errors: Get deleted agent', function (done) {
             request(common.url)
-                .get("/agents/002")
+                .get("/agents/" + agent1_id)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1824,7 +1843,9 @@ describe('Agents', function() {
 
                     res.body.should.have.properties(['error', 'message']);
                     res.body.error.should.equal(1701);
-                    done();
+                    setTimeout(function(){ 
+                        done();
+                    }, 30)
                 });
         });
 
@@ -1840,7 +1861,7 @@ describe('Agents', function() {
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.should.have.properties(['affected_agents', 'msg', 'older_than']);
                     res.body.data.msg.should.equal("All selected agents were removed");
-                    res.body.data.affected_agents[0].should.equal('003');
+                    res.body.data.affected_agents[0].should.equal(agent2_id);
                     res.body.error.should.equal(0);
                     done();
                 });
@@ -1993,7 +2014,7 @@ describe('Agents', function() {
 		// agent	
 		it('Request-Agent-Client', function(done) {
             request(common.url)
-            .get("/agents/001/config/agent/client")
+            .get("/agents/002/config/agent/client")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -2012,7 +2033,7 @@ describe('Agents', function() {
         
         it('Request-Agent-Buffer', function(done) {
             request(common.url)
-            .get("/agents/001/config/agent/buffer")
+            .get("/agents/002/config/agent/buffer")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -2031,7 +2052,7 @@ describe('Agents', function() {
         
         it('Request-Agent-Labels', function(done) {
             request(common.url)
-            .get("/agents/001/config/agent/labels")
+            .get("/agents/002/config/agent/labels")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -2048,7 +2069,7 @@ describe('Agents', function() {
 
 		it('Request-Agent-Internal', function(done) {
             request(common.url)
-            .get("/agents/001/config/agent/internal")
+            .get("/agents/002/config/agent/internal")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -2265,7 +2286,7 @@ describe('Agents', function() {
         // com
 		it('Request-Com-Active-response', function(done) {
             request(common.url)
-            .get("/agents/001/config/com/active-response")
+            .get("/agents/002/config/com/active-response")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -2283,7 +2304,7 @@ describe('Agents', function() {
         
         it('Request-Com-Internal', function(done) {
             request(common.url)
-            .get("/agents/001/config/com/internal")
+            .get("/agents/002/config/com/internal")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -2343,7 +2364,7 @@ describe('Agents', function() {
         // logcollector  // fails without any motive
 		it('Request-Logcollector-Localfile', function(done) {
             request(common.url)
-            .get("/agents/001/config/logcollector/localfile")
+            .get("/agents/002/config/logcollector/localfile")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -2360,7 +2381,7 @@ describe('Agents', function() {
         
         it('Request-Logcollector-Socket', function(done) {
             request(common.url)
-            .get("/agents/001/config/logcollector/socket")
+            .get("/agents/002/config/logcollector/socket")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -2377,7 +2398,7 @@ describe('Agents', function() {
         
         it('Request-Logcollector-Internal', function(done) {
             request(common.url)
-            .get("/agents/001/config/logcollector/internal")
+            .get("/agents/002/config/logcollector/internal")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -2513,7 +2534,7 @@ describe('Agents', function() {
         // syscheck
 		it('Request-Syscheck-Syscheck', function(done) {
             request(common.url)
-            .get("/agents/001/config/syscheck/syscheck")
+            .get("/agents/002/config/syscheck/syscheck")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -2532,7 +2553,7 @@ describe('Agents', function() {
         
         it('Request-Syscheck-Rootcheck', function(done) {
             request(common.url)
-            .get("/agents/001/config/syscheck/rootcheck")
+            .get("/agents/002/config/syscheck/rootcheck")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -2553,7 +2574,7 @@ describe('Agents', function() {
         
         it('Request-Syscheck-Internal', function(done) {
             request(common.url)
-            .get("/agents/001/config/syscheck/internal")
+            .get("/agents/002/config/syscheck/internal")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -2572,7 +2593,7 @@ describe('Agents', function() {
         // wmodules
 		it('Request-Wmodules-Wmodules', function(done) {
             request(common.url)
-            .get("/agents/001/config/wmodules/wmodules")
+            .get("/agents/002/config/wmodules/wmodules")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -2587,8 +2608,6 @@ describe('Agents', function() {
                 res.body.data.wmodules[1].should.have.properties(['cis-cat']);
                 res.body.data.wmodules[2].should.have.properties(['osquery']);
                 res.body.data.wmodules[3].should.have.properties(['syscollector']);
-                res.body.data.wmodules[4].should.have.properties(['database']);
-                res.body.data.wmodules[5].should.have.properties(['wazuh_download']);
                 
                 res.body.error.should.equal(0);
                 done();

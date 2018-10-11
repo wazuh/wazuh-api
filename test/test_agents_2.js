@@ -115,7 +115,9 @@ describe('Agents', function() {
             .end(function(err, res) {
                 if (err) throw err;
                 agent_id = res.body.data.id;
-                done();
+                setTimeout(function(){ 
+                    done();
+                }, 30)
               });
         });
 
@@ -128,7 +130,6 @@ describe('Agents', function() {
             .expect(200)
             .end(function(err,res){
                 if (err) return done(err);
-
                 res.body.should.have.properties(['error', 'data']);
                 res.body.data.should.have.properties(['msg', 'affected_agents']);
 
@@ -202,7 +203,6 @@ describe('Agents', function() {
                 .expect(200)
                 .end(function(err,res){
                     if (err) return done(err);
-
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.should.have.properties(['id', 'key']);
 
@@ -211,7 +211,9 @@ describe('Agents', function() {
                     res.body.data.key.should.match(/^[0-9a-zA-Z=]+$/);
                     agent_id = res.body.data.id;
                     agent_key = res.body.data.key;
-                    done();
+                    setTimeout(function(){ 
+                        done();
+                    }, 30)
                 });
             });
 
@@ -323,7 +325,9 @@ describe('Agents', function() {
                     res.body.data.id.should.match(/^\d+$/);
                     res.body.data.key.should.match(/^[0-9a-zA-Z=]+$/);
                     agent_id = res.body.data.id;
-                    done();
+                    setTimeout(function(){ 
+                        done();
+                    }, 30)
                 });
             });
 
@@ -358,7 +362,6 @@ describe('Agents', function() {
                     .expect(200)
                     .end(function(err, res) {
                         if (err) return done(err);
-                        agent_id = 0;
                         done();
                       });
                 }
@@ -462,7 +465,9 @@ describe('Agents', function() {
                     res.body.data.id.should.match(/^\d+$/);
                     res.body.data.key.should.match(/^[a-zA-Z0-9=]+/);
                     agent_id = res.body.data.id;
-                    done();
+                    setTimeout(function(){ 
+                        done();
+                    }, 30)
                 });
             });
 
@@ -628,7 +633,6 @@ describe('Agents', function() {
                     .expect(200)
                     .end(function(err, res) {
                         if (err) return done(err);
-                        agent_id = 0;
                         done();
                       });
                 }
