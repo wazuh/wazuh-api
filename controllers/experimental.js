@@ -31,7 +31,7 @@ var router = require('express').Router();
  * @apiDescription Returns the agent's packages info
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/packages?pretty&sort=-name&limit=2&offset=4"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/packages?pretty&sort=-name&limit=2"
  *
  */
 router.get('/syscollector/packages', function (req, res) {
@@ -97,7 +97,7 @@ router.get('/syscollector/packages', function (req, res) {
  * @apiDescription Returns the agent's os info
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/os?pretty&sort=-os_name"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/os?pretty"
  *
  */
 router.get('/syscollector/os', function (req, res) {
@@ -168,7 +168,7 @@ router.get('/syscollector/os', function (req, res) {
  * @apiDescription Returns the agent's hardware info
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/hardware?pretty&sort=-ram_free"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/hardware?pretty"
  *
  */
 router.get('/syscollector/hardware', function (req, res) {
@@ -534,7 +534,7 @@ router.get('/syscollector/netproto', function (req, res) {
  * @apiDescription Returns the agent's network interface info
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/netiface?pretty&limit=2&sort=rx_bytes"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/netiface?pretty&limit=2"
  *
  */
 router.get('/syscollector/netiface', function (req, res) {

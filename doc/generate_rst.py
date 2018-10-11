@@ -39,6 +39,16 @@ hardcoded_items = {
         # GET - /manager/stats/weekly
         'GetManagerStatsWeekly': {"error":0,"data":{"Wed":{"hours":[223,"...",456],"interactions":0},"Sun":{"hours":[332,"...",313],"interactions":0},"Fri":{"hours":[131,"...",432],"interactions":0},"Tue":{"hours":[536,"...",345],"interactions":0},"Mon":{"hours":[444,"...",556],"interactions":0},"Thu":{"hours":[888,"...",123],"interactions":0},"Sat":{"hours":[134,"...",995],"interactions":0}}},
 
+        # GET - /cluster/:node_id/stats
+        'GetManagerStatsCluster': {"error":0,"data":[{"hour":5,"firewall":0,"alerts":[{"times":4,"sigid":5715,"level":3},{"times":2,"sigid":1002,"level":2},{"...":"..."}],"totalAlerts":107,"syscheck":1257,"events":1483},{"...":"..."}]},
+
+        # GET - /cluster/:node_id/stats/hourly
+        'GetManagerStatsHourlyCluster': {"error":0,"data":{"averages":[100,357,242,500,422,"...",123],"interactions":0}},
+
+        # GET - /cluster/:node_id/stats/weekly
+        'GetManagerStatsWeeklyCluster': {"error":0,"data":{"Wed":{"hours":[223,"...",456],"interactions":0},"Sun":{"hours":[332,"...",313],"interactions":0},"Fri":{"hours":[131,"...",432],"interactions":0},"Tue":{"hours":[536,"...",345],"interactions":0},"Mon":{"hours":[444,"...",556],"interactions":0},"Thu":{"hours":[888,"...",123],"interactions":0},"Sat":{"hours":[134,"...",995],"interactions":0}}},
+
+
         # PUT - /agents/restart
         'PutAgentsRestart': {"error":0,"data":"Restarting all agents"},
 
@@ -79,7 +89,7 @@ hardcoded_items = {
         'GetUpgradeResult' : {"error": 0,"data": "Agent upgraded successfully"},
 
         # POST /agents/restart
-        'PostAgentListRestart' : {"error": 0,"data": "All selected agents were restarted"},
+        'PostAgentListRestart' : {"error":0,"data":{"msg":"All selected agents were restarted","affected_agents":["002","004"]}},
 
         # GET /agents/purgeable/:timeframe
         'GetAgentsPurgeable' : {"error":0,"data":{"items":[{"id":"001","name":"test1"},{"id":"002","name":"test2"}],"timeframe":104400}},
