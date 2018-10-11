@@ -23,13 +23,14 @@ var router = require('express').Router();
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String="added","readded", "modified", "deleted"} [event] Filters files by event.
  * @apiParam {String} [file] Filters file by filename.
- * @apiParam {String="file","registry"} [filetype] Selects type of file.
+ * @apiParam {String="file","registry"} [type] Selects type of file.
  * @apiParam {String="yes", "no"} [summary] Returns a summary grouping by filename.
+ * @apiParam {String} [select] List of selected fields.
  * @apiParam {String} [md5] Returns the files with the specified md5 hash.
  * @apiParam {String} [sha1] Returns the files with the specified sha1 hash.
- * @apiParam {String} [hash] Returns the files with the specified hash (md5 or sha1).
+ * @apiParam {String} [sha256] Returns the files with the specified sha256 hash.
+ * @apiParam {String} [hash] Returns the files with the specified hash (md5, sha1 or sha256).
  *
  * @apiDescription Returns the syscheck files of an agent.
  *
@@ -43,7 +44,13 @@ router.get('/:agent_id', cache(), function(req, res) {
     req.apicacheGroup = "syscheck";
 
     var data_request = {'function': '/syscheck/:agent_id', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'event':'names', 'file':'paths', 'filetype':'names', 'summary':'names', 'md5':'hashes', 'sha1':'hashes', 'hash':'hashes'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
+		'search':'search_param', 'file':'paths', 'type':'names',
+		'summary':'yes_no_boolean', 'select': 'alphanumeric_param','md5':'hashes', 'sha1':'hashes',
+		'sha256': 'hashes', 'hash':'hashes'};
+		
+	data_request.arguments['filters'] = {}
+	
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -55,20 +62,22 @@ router.get('/:agent_id', cache(), function(req, res) {
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('event' in req.query)
-        data_request['arguments']['event'] = req.query.event;
     if ('file' in req.query)
-        data_request['arguments']['filename'] = req.query.file;
-    if ('filetype' in req.query)
-        data_request['arguments']['filetype'] = req.query.filetype;
+        data_request['arguments']['filters']['file'] = req.query.file;
+    if ('type' in req.query)
+        data_request['arguments']['filters']['type'] = req.query.type;
     if ('summary' in req.query && req.query.summary == "yes")
         data_request['arguments']['summary'] = req.query.summary;
+    if ('select' in req.query)
+        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select);
     if ('md5' in req.query)
-        data_request['arguments']['md5'] = req.query.md5.toLowerCase();
+        data_request.arguments.filters['md5'] = req.query.md5.toLowerCase();
     if ('sha1' in req.query)
-        data_request['arguments']['sha1'] = req.query.sha1.toLowerCase();
+        data_request.arguments.filters['sha1'] = req.query.sha1.toLowerCase();
+    if ('sha256' in req.query)
+        data_request.arguments.filters['sha256'] = req.query.sha256.toLowerCase();
     if ('hash' in req.query)
-        data_request['arguments']['hash'] = req.query.hash.toLowerCase();
+        data_request.arguments.filters['hash'] = req.query.hash.toLowerCase();
 
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
@@ -77,6 +86,7 @@ router.get('/:agent_id', cache(), function(req, res) {
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
+
 
 /**
  * @api {get} /syscheck/:agent_id/last_scan Get last syscheck scan
@@ -151,29 +161,6 @@ router.put('/:agent_id', function(req, res) {
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
-
-/**
- * @api {delete} /syscheck Clear syscheck database
- * @apiName DeleteSyscheck
- * @apiGroup Clear
- *
- *
- * @apiDescription Clears the syscheck database for all agents.
- *
- * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/syscheck?pretty"
- *
- */
-router.delete('/', function(req, res) {
-    logger.debug(req.connection.remoteAddress + " DELETE /syscheck");
-
-    apicache.clear("syscheck");
-
-    var data_request = {'function': 'DELETE/syscheck', 'arguments': {}};
-    data_request['arguments']['all_agents'] = 1;
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
-})
-
 /**
  * @api {delete} /syscheck/:agent_id Clear syscheck database of an agent
  * @apiName DeleteSyscheckAgentId
@@ -192,7 +179,7 @@ router.delete('/:agent_id', function(req, res) {
 
     apicache.clear("syscheck");
 
-    var data_request = {'function': 'DELETE/syscheck', 'arguments': {}};
+    var data_request = {'function': 'DELETE/syscheck/:agent_id', 'arguments': {}};
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
         return;

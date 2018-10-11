@@ -13,6 +13,7 @@
 errors = require('../helpers/errors');
 filter = require('../helpers/filters');
 execute = require('../helpers/execute');
+templates = require('../helpers/request_templates');
 apicache  = require('apicache');
 cache     = apicache.middleware;
 wazuh_control = api_path + "/models/wazuh-api.py";
@@ -114,9 +115,8 @@ router.use(function(err, req, res, next){
         logger.log(err.stack);
     logger.log("Exiting...");
 
-    setTimeout(function(){ process.exit(1); }, 500);
+    res_h.send(req, res, { error: 3 }, 500)
 });
-
 
 
 module.exports = router

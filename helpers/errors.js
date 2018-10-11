@@ -41,19 +41,21 @@ errors['611'] = "Param not valid. Valid characters: a-z, A-Z, 0-9, _, -, +, ,"; 
 errors['sort_param'] = 611;
 errors['612'] = "Param not valid. Invalid characters: ; & | * ^ >";  // search
 errors['search_param'] = 612;
-errors['613'] = "Param not valid. Valid characters: md5/sha1 hash";  // hashes
+errors['613'] = "Param not valid. Valid values: md5/sha1/sha256 hash";  // hashes
 errors['hashes'] = 613;
 errors['614'] = "Invalid request"
 errors['615'] = "Param not valid. Valid characters: a-z A-Z 0-9";  // keys
 errors['ossec_key'] = 615;
-errors['616'] = "Param not valid. Valid characters: array of numbers";
+errors['616'] = "Param not valid. Valid values: array of numbers";
 errors['array_numbers'] = 616;
 errors['timeframe_type'] = 617;
 errors['617'] = "Param not valid. Valid characters: [0-9]d|[0-9]h|[0-9]m|[0-9]s|0-9";
 errors['boolean'] = 618;
-errors['618'] = "Param not valid. Valid characters: true or false";
+errors['618'] = "Param not valid. Valid values: true or false";
 errors['619'] = "Param not valid. Valid characters: a-z A-Z 0-9 space . , _";  // select
 errors['select_param'] = 619;
+errors['yes_no_boolean'] = 620;
+errors['620'] = "Param not valid. Valid values: yes or no";
 
 errors['700'] = "File not found"
 

@@ -35,9 +35,9 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'data']);
                     res.body.error.should.equal(0);
-                    res.body.data.should.have.properties(['os', 'manager_host']);
+                    res.body.data.should.have.properties(['os', 'manager']);
                     res.body.data.os.should.have.properties(['arch', 'platform']);
-                    expected_hostname = res.body.data.manager_host;
+                    expected_hostname = res.body.data.manager;
                     expected_architecture = res.body.data.os.arch;
                     done();
                 });
@@ -1213,26 +1213,9 @@ describe('Syscollector', function () {
         });
 
         var expected_ram_free = "";
-        before(function (done) {
-            request(common.url)
-                .get("/experimental/syscollector/hardware?limit=1")
-                .auth(common.credentials.user, common.credentials.password)
-                .expect("Content-type", /json/)
-                .expect(200)
-                .end(function (err, res) {
-                    if (err) return done(err);
-                    res.body.should.have.properties(['error', 'data']);
-                    res.body.error.should.equal(0);
-                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                    res.body.data.items[0].should.have.properties(['ram']);
-                    expected_ram_free = res.body.data.items[0].ram.free;
-                    done();
-                });
-        });
-
         it('Search', function (done) {
             request(common.url)
-                .get("/experimental/syscollector/hardware?search=" + expected_ram_free)
+                .get("/experimental/syscollector/hardware?search=Intel")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1245,7 +1228,6 @@ describe('Syscollector', function () {
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
                     res.body.data.items[0].should.have.properties(hardware_fields);
-                    res.body.data.items[0].ram.free.should.be.equal(expected_ram_free);
                     done();
                 });
         });
@@ -2086,8 +2068,7 @@ describe('Syscollector', function () {
 
 
     describe('GET/syscollector/netaddr', function () {
-        netaddr_properties = ['id', 'scan_id', 'proto', 'address',
-            'netmask', 'broadcast', 'agent_id']
+        netaddr_properties = ['scan_id', 'proto', 'address', 'netmask', 'broadcast', 'agent_id']
 
         it('Request', function (done) {
             request(common.url)
@@ -2179,7 +2160,6 @@ describe('Syscollector', function () {
         expected_address = "";
         expected_broadcast = "";
         expected_netmask = "";
-        expected_id = "";
         before(function (done) {
             request(common.url)
                 .get("/experimental/syscollector/netaddr?limit=1")
@@ -2195,7 +2175,6 @@ describe('Syscollector', function () {
                     expected_address = res.body.data.items[0].address;
                     expected_broadcast = res.body.data.items[0].broadcast;
                     expected_netmask = res.body.data.items[0].netmask;
-                    expected_id = res.body.data.items[0].id;
                     done();
                 });
         });
@@ -2308,26 +2287,10 @@ describe('Syscollector', function () {
                 });
         });
 
-        it('Filter: id', function (done) {
-            request(common.url)
-                .get("/experimental/syscollector/netaddr?id=" + expected_id)
-                .auth(common.credentials.user, common.credentials.password)
-                .expect("Content-type", /json/)
-                .expect(200)
-                .end(function (err, res) {
-                    if (err) return done(err);
-                    res.body.should.have.properties(['error', 'data']);
-                    res.body.data.items[0].should.have.properties(netaddr_properties);
-                    res.body.data.items[0].id.should.be.equal(expected_id);
-                    done();
-                });
-        });
-
     });  // GET/syscollector/netaddr
 
     describe('GET/syscollector/netproto', function () {
-        netproto_properties = ['id', 'scan_id', 'iface', 'type',
-            'gateway', 'dhcp']
+        netproto_properties = ['scan_id', 'iface', 'type', 'gateway', 'dhcp']
 
         it('Request', function (done) {
             request(common.url)
@@ -2419,7 +2382,6 @@ describe('Syscollector', function () {
         expected_type = "";
         expected_gateway = "";
         expected_dhcp = "";
-        expected_id = "";
         before(function (done) {
             request(common.url)
                 .get("/experimental/syscollector/netproto?limit=1")
@@ -2435,7 +2397,6 @@ describe('Syscollector', function () {
                     expected_type = res.body.data.items[0].type;
                     expected_gateway = res.body.data.items[0].gateway;
                     expected_dhcp = res.body.data.items[0].dhcp;
-                    expected_id = res.body.data.items[0].id;
                     done();
                 });
         });
@@ -2547,27 +2508,10 @@ describe('Syscollector', function () {
                     done();
                 });
         });
-
-        it('Filter: id', function (done) {
-            request(common.url)
-                .get("/experimental/syscollector/netproto?=" + expected_proto)
-                .auth(common.credentials.user, common.credentials.password)
-                .expect("Content-type", /json/)
-                .expect(200)
-                .end(function (err, res) {
-                    if (err) return done(err);
-                    res.body.should.have.properties(['error', 'data']);
-                    res.body.data.items[0].should.have.properties(netproto_properties);
-                    res.body.data.items[0].id.should.be.equal(expected_id);
-                    done();
-                });
-        });
-
-
     });  // GET/syscollector/netproto
 
 
-    netiface_properties = ['id', 'scan', 'name', 'type', 'state', 'mtu', 'mac', 'tx', 'rx', 'agent_id']
+    netiface_properties = ['scan', 'name', 'type', 'state', 'mtu', 'mac', 'tx', 'rx', 'agent_id']
     describe('GET/syscollector/netiface', function () {
 
         it('Request', function (done) {
@@ -2656,7 +2600,6 @@ describe('Syscollector', function () {
                 });
         });
 
-        expected_id = "";
         expected_name = "";
         expected_adapter = "";
         expected_type = "";
@@ -2682,7 +2625,6 @@ describe('Syscollector', function () {
                     res.body.should.have.properties(['error', 'data']);
                     res.body.error.should.equal(0);
                     res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                    expected_id = res.body.data.items[0].id;
                     expected_name = res.body.data.items[0].name;
                     expected_adapter = res.body.data.items[0].adapter;
                     expected_type = res.body.data.items[0].type;
@@ -2745,21 +2687,6 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'message']);
                     res.body.error.should.equal(1403);
-                    done();
-                });
-        });
-
-        it('Filter: id', function (done) {
-            request(common.url)
-                .get("/experimental/syscollector/netiface?id=" + expected_id)
-                .auth(common.credentials.user, common.credentials.password)
-                .expect("Content-type", /json/)
-                .expect(200)
-                .end(function (err, res) {
-                    if (err) return done(err);
-                    res.body.should.have.properties(['error', 'data']);
-                    res.body.data.items[0].should.have.properties(netiface_properties);
-                    res.body.data.items[0].id.should.be.equal(expected_id);
                     done();
                 });
         });
@@ -3679,7 +3606,6 @@ describe('Syscollector', function () {
         expected_address = "";
         expected_broadcast = "";
         expected_netmask = "";
-        expected_id = "";
         before(function (done) {
             request(common.url)
                 .get("/syscollector/" + agent_id + "/netaddr?limit=1")
@@ -3695,7 +3621,6 @@ describe('Syscollector', function () {
                     expected_address = res.body.data.items[0].address;
                     expected_broadcast = res.body.data.items[0].broadcast;
                     expected_netmask = res.body.data.items[0].netmask;
-                    expected_id = res.body.data.items[0].id;
                     done();
                 });
         });
@@ -3808,26 +3733,10 @@ describe('Syscollector', function () {
                 });
         });
 
-        it('Filter: id', function (done) {
-            request(common.url)
-                .get("/syscollector/" + agent_id + "/netaddr?id=" + expected_id)
-                .auth(common.credentials.user, common.credentials.password)
-                .expect("Content-type", /json/)
-                .expect(200)
-                .end(function (err, res) {
-                    if (err) return done(err);
-                    res.body.should.have.properties(['error', 'data']);
-                    res.body.data.items[0].should.have.properties(netaddr_properties);
-                    res.body.data.items[0].id.should.be.equal(expected_id);
-                    done();
-                });
-        });
-
     });  // GET/syscollector/:agent_id/netaddr
 
     describe('GET/syscollector/' + agent_id + '/netproto', function () {
-        netproto_properties = ['id', 'scan_id', 'iface', 'type',
-            'gateway', 'dhcp']
+        netproto_properties = ['scan_id', 'iface', 'type', 'gateway', 'dhcp']
 
         it('Request', function (done) {
             request(common.url)
@@ -3919,7 +3828,6 @@ describe('Syscollector', function () {
         expected_type = "";
         expected_gateway = "";
         expected_dhcp = "";
-        expected_id = "";
         before(function (done) {
             request(common.url)
                 .get("/syscollector/" + agent_id + "/netproto?limit=1")
@@ -3935,7 +3843,6 @@ describe('Syscollector', function () {
                     expected_type = res.body.data.items[0].type;
                     expected_gateway = res.body.data.items[0].gateway;
                     expected_dhcp = res.body.data.items[0].dhcp;
-                    expected_id = res.body.data.items[0].id;
                     done();
                 });
         });
@@ -4048,22 +3955,6 @@ describe('Syscollector', function () {
                 });
         });
 
-        it('Filter: id', function (done) {
-            request(common.url)
-                .get("/syscollector/" + agent_id + "/netproto?=" + expected_proto)
-                .auth(common.credentials.user, common.credentials.password)
-                .expect("Content-type", /json/)
-                .expect(200)
-                .end(function (err, res) {
-                    if (err) return done(err);
-                    res.body.should.have.properties(['error', 'data']);
-                    res.body.data.items[0].should.have.properties(netproto_properties);
-                    res.body.data.items[0].id.should.be.equal(expected_id);
-                    done();
-                });
-        });
-
-
     });  // GET/syscollector/:agent_id/netproto
 
     describe('GET/syscollector/' + agent_id + '/netiface', function () {
@@ -4155,7 +4046,6 @@ describe('Syscollector', function () {
                 });
         });
 
-        expected_id = "";
         expected_name = "";
         expected_adapter = "";
         expected_type = "";
@@ -4181,7 +4071,6 @@ describe('Syscollector', function () {
                     res.body.should.have.properties(['error', 'data']);
                     res.body.error.should.equal(0);
                     res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                    expected_id = res.body.data.items[0].id;
                     expected_name = res.body.data.items[0].name;
                     expected_adapter = res.body.data.items[0].adapter;
                     expected_type = res.body.data.items[0].type;
@@ -4244,21 +4133,6 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'message']);
                     res.body.error.should.equal(1403);
-                    done();
-                });
-        });
-
-        it('Filter: id', function (done) {
-            request(common.url)
-                .get("/syscollector/" + agent_id + "/netiface?id=" + expected_id)
-                .auth(common.credentials.user, common.credentials.password)
-                .expect("Content-type", /json/)
-                .expect(200)
-                .end(function (err, res) {
-                    if (err) return done(err);
-                    res.body.should.have.properties(['error', 'data']);
-                    res.body.data.items[0].should.have.properties(netiface_properties);
-                    res.body.data.items[0].id.should.be.equal(expected_id);
                     done();
                 });
         });

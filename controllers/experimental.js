@@ -31,7 +31,7 @@ var router = require('express').Router();
  * @apiDescription Returns the agent's packages info
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/packages?pretty&sort=-name&limit=2&offset=4"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/packages?pretty&sort=-name&limit=2"
  *
  */
 router.get('/syscollector/packages', function (req, res) {
@@ -97,7 +97,7 @@ router.get('/syscollector/packages', function (req, res) {
  * @apiDescription Returns the agent's os info
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/os?pretty&sort=-os_name"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/os?pretty"
  *
  */
 router.get('/syscollector/os', function (req, res) {
@@ -168,7 +168,7 @@ router.get('/syscollector/os', function (req, res) {
  * @apiDescription Returns the agent's hardware info
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/hardware?pretty&sort=-ram_free"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/hardware?pretty"
  *
  */
 router.get('/syscollector/hardware', function (req, res) {
@@ -228,11 +228,15 @@ router.get('/syscollector/hardware', function (req, res) {
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields.
  * @apiParam {Number} [pid] Filters by process pid.
+ * @apiParam {String} [state] Filters by process state.
+ * @apiParam {Number} [ppid] Filters by process parent pid.
  * @apiParam {String} [egroup] Filters by process egroup.
  * @apiParam {String} [euser] Filters by process euser.
  * @apiParam {String} [fgroup] Filters by process fgroup.
+ * @apiParam {String} [name] Filters by process name.
  * @apiParam {Number} [nlwp] Filters by process nlwp.
  * @apiParam {Number} [pgrp] Filters by process pgrp.
  * @apiParam {Number} [priority] Filters by process priority.
@@ -271,9 +275,9 @@ router.get('/syscollector/processes', function (req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
@@ -318,6 +322,7 @@ router.get('/syscollector/processes', function (req, res) {
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields.
  * @apiParam {Number} [pid] Filters by pid.
  * @apiParam {String} [protocol] Filters by protocol.
@@ -326,6 +331,7 @@ router.get('/syscollector/processes', function (req, res) {
  * @apiParam {String} [remote_ip] Filters by remote_ip.
  * @apiParam {Number} [tx_queue] Filters by tx_queue.
  * @apiParam {String} [state] Filters by state.
+ * @apiParam {String} [process] Filters by process.
  *
  * @apiDescription Returns the agent's ports info
  *
@@ -353,9 +359,9 @@ router.get('/syscollector/ports', function (req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
@@ -391,8 +397,8 @@ router.get('/syscollector/ports', function (req, res) {
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields.
- * @apiParam {String} [id] Filters by id.
  * @apiParam {String} [proto] Filters by proto.
  * @apiParam {String} [address] Filters by address.
  * @apiParam {String} [broadcast] Filters by broadcast.
@@ -413,7 +419,6 @@ router.get('/syscollector/netaddr', function (req, res) {
         'search': 'search_param', 'select': 'select_param',
         'proto': 'alphanumeric_param', 'address': 'alphanumeric_param',
         'broadcast': 'alphanumeric_param', 'netmask': 'alphanumeric_param',
-        'id': 'numbers'
     };
 
     if (!filter.check(req.query, filters, req, res))
@@ -423,9 +428,9 @@ router.get('/syscollector/netaddr', function (req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
@@ -438,8 +443,6 @@ router.get('/syscollector/netaddr', function (req, res) {
         data_request['arguments']['filters']['broadcast'] = req.query.broadcast;
     if ('netmask' in req.query)
         data_request['arguments']['filters']['netmask'] = req.query.netmask;
-    if ('id' in req.query)
-        data_request['arguments']['filters']['id'] = req.query.id;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -454,7 +457,7 @@ router.get('/syscollector/netaddr', function (req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [select] List of selected fields.
- * @apiParam {String} [id] Filters by id.
+ * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [iface] Filters by iface.
  * @apiParam {String} [type] Filters by type.
  * @apiParam {String} [gateway] Filters by gateway.
@@ -474,8 +477,7 @@ router.get('/syscollector/netproto', function (req, res) {
         'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
         'search': 'search_param', 'select': 'select_param',
         'iface': 'alphanumeric_param', 'type': 'alphanumeric_param',
-        'gateway': 'alphanumeric_param', 'dhcp': 'alphanumeric_param',
-        'id': 'numbers'
+        'gateway': 'alphanumeric_param', 'dhcp': 'alphanumeric_param'
     };
 
     if (!filter.check(req.query, filters, req, res))
@@ -485,9 +487,9 @@ router.get('/syscollector/netproto', function (req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
@@ -500,8 +502,6 @@ router.get('/syscollector/netproto', function (req, res) {
         data_request['arguments']['filters']['gateway'] = req.query.gateway;
     if ('dhcp' in req.query)
         data_request['arguments']['filters']['dhcp'] = req.query.dhcp;
-    if ('id' in req.query)
-        data_request['arguments']['filters']['id'] = req.query.id;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -515,8 +515,8 @@ router.get('/syscollector/netproto', function (req, res) {
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields.
- * @apiParam {String} [id] Filters by id.
  * @apiParam {String} [name] Filters by name.
  * @apiParam {String} [adapter] Filters by adapter.
  * @apiParam {String} [type] Filters by type.
@@ -534,7 +534,7 @@ router.get('/syscollector/netproto', function (req, res) {
  * @apiDescription Returns the agent's network interface info
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/netiface?pretty&limit=2&sort=rx_bytes"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/experimental/syscollector/netiface?pretty&limit=2"
  *
  */
 router.get('/syscollector/netiface', function (req, res) {
@@ -543,8 +543,7 @@ router.get('/syscollector/netiface', function (req, res) {
     var data_request = { 'function': '/experimental/syscollector/netiface', 'arguments': {} };
     var filters = {
         'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
-        'search': 'search_param', 'select': 'select_param',
-        'id': 'numbers', 'name': 'alphanumeric_param',
+        'search': 'search_param', 'select': 'select_param', 'name': 'alphanumeric_param',
         'adapter': 'alphanumeric_param', 'type': 'alphanumeric_param',
         'state': 'alphanumeric_param', 'mtu': 'numbers',
          'tx_packets': 'numbers', 'rx_packets': 'numbers', 'tx_bytes': 'numbers',
@@ -560,15 +559,13 @@ router.get('/syscollector/netiface', function (req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('id' in req.query)
-        data_request['arguments']['filters']['id'] = req.query.id;
     if ('name' in req.query)
         data_request['arguments']['filters']['name'] = req.query.name;
     if ('adapter' in req.query)
@@ -609,6 +606,7 @@ router.get('/syscollector/netiface', function (req, res) {
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields.
  * @apiParam {String} [benchmark] Filters by benchmark.
  * @apiParam {String} [profile] Filters by evaluated profile.
@@ -632,7 +630,6 @@ router.get('/ciscat/results', function (req, res) {
     var filters = {
         'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
         'search': 'search_param', 'select': 'select_param',
-
         'benchmark': 'alphanumeric_param', 'profile': 'alphanumeric_param', 'pass': 'alphanumeric_param',
         'fail': 'alphanumeric_param',
         'error': 'numbers', 'notchecked': 'numbers',
@@ -676,6 +673,28 @@ router.get('/ciscat/results', function (req, res) {
     if ('score' in req.query)
         data_request['arguments']['filters']['score'] = req.query.score;
 
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {delete} /experimental/syscheck Clear syscheck database
+ * @apiName DeleteSyscheck
+ * @apiGroup Clear
+ *
+ *
+ * @apiDescription Clears the syscheck database for all agents.
+ *
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/experimental/syscheck?pretty"
+ *
+ */
+router.delete('/syscheck', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " DELETE /experimental/syscheck");
+
+    apicache.clear("syscheck");
+
+    var data_request = {'function': 'DELETE/experimental/syscheck', 'arguments': {}};
+    data_request['arguments']['all_agents'] = 1;
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 

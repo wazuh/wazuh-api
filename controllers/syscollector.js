@@ -161,11 +161,15 @@ router.get('/:agent_id/packages', function(req, res) {
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields.
  * @apiParam {Number} [pid] Filters by process pid.
+ * @apiParam {String} [state] Filters by process state.
+ * @apiParam {Number} [ppid] Filters by process parent pid.
  * @apiParam {String} [egroup] Filters by process egroup.
  * @apiParam {String} [euser] Filters by process euser.
  * @apiParam {String} [fgroup] Filters by process fgroup.
+ * @apiParam {String} [name] Filters by process name.
  * @apiParam {Number} [nlwp] Filters by process nlwp.
  * @apiParam {Number} [pgrp] Filters by process pgrp.
  * @apiParam {Number} [priority] Filters by process priority.
@@ -209,9 +213,9 @@ router.get('/:agent_id/processes', function (req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
@@ -256,6 +260,7 @@ router.get('/:agent_id/processes', function (req, res) {
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields.
  * @apiParam {Number} [pid] Filters by pid.
  * @apiParam {String} [protocol] Filters by protocol.
@@ -296,9 +301,9 @@ router.get('/:agent_id/ports', function (req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
@@ -334,8 +339,8 @@ router.get('/:agent_id/ports', function (req, res) {
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields.
- * @apiParam {String} [id] Filters by id.
  * @apiParam {String} [proto] Filters by proto.
  * @apiParam {String} [address] Filters by address.
  * @apiParam {String} [broadcast] Filters by broadcast.
@@ -356,7 +361,6 @@ router.get('/:agent_id/netaddr', function (req, res) {
         'search': 'search_param', 'select': 'select_param',
         'proto': 'alphanumeric_param', 'address': 'alphanumeric_param',
         'broadcast': 'alphanumeric_param', 'netmask': 'alphanumeric_param',
-        'id': 'numbers'
     };
 
     if (!filter.check(req.params, { 'agent_id': 'numbers' }, req, res))  // Filter with error
@@ -371,9 +375,9 @@ router.get('/:agent_id/netaddr', function (req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
@@ -386,8 +390,6 @@ router.get('/:agent_id/netaddr', function (req, res) {
         data_request['arguments']['filters']['broadcast'] = req.query.broadcast;
     if ('netmask' in req.query)
         data_request['arguments']['filters']['netmask'] = req.query.netmask;
-    if ('id' in req.query)
-        data_request['arguments']['filters']['id'] = req.query.id;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -401,8 +403,8 @@ router.get('/:agent_id/netaddr', function (req, res) {
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields.
- * @apiParam {String} [id] Filters by id.
  * @apiParam {String} [iface] Filters by iface.
  * @apiParam {String} [type] Filters by type.
  * @apiParam {String} [gateway] Filters by gateway.
@@ -423,7 +425,6 @@ router.get('/:agent_id/netproto', function (req, res) {
         'search': 'search_param', 'select': 'select_param',
         'iface': 'alphanumeric_param', 'type': 'alphanumeric_param',
         'gateway': 'alphanumeric_param', 'dhcp': 'alphanumeric_param',
-        'id': 'numbers'
     };
 
     if (!filter.check(req.params, { 'agent_id': 'numbers' }, req, res))  // Filter with error
@@ -438,9 +439,9 @@ router.get('/:agent_id/netproto', function (req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
@@ -453,8 +454,6 @@ router.get('/:agent_id/netproto', function (req, res) {
         data_request['arguments']['filters']['gateway'] = req.query.gateway;
     if ('dhcp' in req.query)
         data_request['arguments']['filters']['dhcp'] = req.query.dhcp;
-    if ('id' in req.query)
-        data_request['arguments']['filters']['id'] = req.query.id;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -468,8 +467,8 @@ router.get('/:agent_id/netproto', function (req, res) {
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields.
- * @apiParam {String} [id] Filters by id.
  * @apiParam {String} [name] Filters by name.
  * @apiParam {String} [adapter] Filters by adapter.
  * @apiParam {String} [type] Filters by type.
@@ -496,8 +495,7 @@ router.get('/:agent_id/netiface', function (req, res) {
     var data_request = { 'function': '/syscollector/:agent_id/netiface', 'arguments': {} };
     var filters = {
         'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
-        'search': 'search_param', 'select': 'select_param',
-        'id': 'numbers', 'name': 'alphanumeric_param',
+        'search': 'search_param', 'select': 'select_param', 'name': 'alphanumeric_param',
         'adapter': 'alphanumeric_param', 'type': 'alphanumeric_param',
         'state': 'alphanumeric_param', 'mtu': 'numbers',
         'tx_packets': 'numbers', 'rx_packets': 'numbers', 'tx_bytes': 'numbers',
@@ -518,15 +516,13 @@ router.get('/:agent_id/netiface', function (req, res) {
     if ('select' in req.query)
         data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
     if ('offset' in req.query)
-        data_request['arguments']['offset'] = req.query.offset;
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
-        data_request['arguments']['limit'] = req.query.limit;
+        data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('id' in req.query)
-        data_request['arguments']['filters']['id'] = req.query.id;
     if ('name' in req.query)
         data_request['arguments']['filters']['name'] = req.query.name;
     if ('adapter' in req.query)
