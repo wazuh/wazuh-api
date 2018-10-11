@@ -8,9 +8,11 @@
 # Requirements
 # https
 # Auth: foo:bar
+# requests
 
 import json
 import sys
+import requests
 
 TIMEOUT = 30  # cURL TIMEOUT. 0 to disable "example response"
 
@@ -41,7 +43,7 @@ hardcoded_items = {
         'PutAgentsRestart': {"error":0,"data":"Restarting all agents"},
 
         # PUT - /agents/restart:agent_id
-        'PutAgentsRestartId': {"error":0,"data":"Restarting agent"},
+        'PutAgentsRestartId': {"error":0,"data":{"msg":"All selected agents were restarted","affected_agents":["007"]}},
 
         # DELETE - /rootcheck
         'DeleteRootcheck': {"error":0,"data":"Rootcheck database deleted"},
@@ -156,9 +158,52 @@ def create_table(headers, rows, sizes):
 
         output += insert_separator(sizes)
     return output
+
+
+def prepare_environment():
+    """
+    Sets up documentation required environment
+    """
+    agents_to_add = [
+        ("server001","10.0.0.62"),
+        ("dmz001","10.0.0.12"),
+        ("main_database","10.0.0.15"),
+        ("dmz002","10.0.0.14"),
+        ("server002","10.0.0.20")
+    ]
+    for name,ip in agents_to_add:
+        requests.post("https://127.0.0.1:55000/agents", auth=('foo','bar'), data={"name":name,"ip":ip}, verify=False)
+    
+    groups_to_create = ["dmz","webserver","database"]
+    for group in groups_to_create:
+        requests.put("https://127.0.0.1:55000/agents/groups/"+group, auth=('foo','bar'), verify=False)
+    
+    agents_groups = [
+        ("001","dmz"),
+        ("002","webserver"),
+        ("003","database"),
+        ("004","dmz"),
+        ("005","webserver")
+    ]
+    for a_id, g_id in agents_groups:
+        requests.put("https://127.0.0.1:55000/agents/{}/group/{}".format(a_id, g_id), auth=('foo','bar'), verify=False)
+    
+    with open("/var/ossec/etc/shared/dmz/agent.conf","w") as f:
+        f.write('<agent_config os="Linux">\n<localfile>\n<location>/var/log/linux.log</location>\n<log_format>syslog</log_format>\n</localfile>\n</agent_config>\n')
+    
+
+def clean_environment():
+    """
+    Cleans generated environment in case the docs need to be generated more times
+    """
+    requests.delete("https://127.0.0.1:55000/agents", auth=("foo","bar"), params={"older_than":"1s","status":"neverconnected","purge":"true"}, verify=False)
+    requests.delete("https://127.0.0.1:55000/agents/groups", auth=("foo","bar"), data={"ids":["dmz","webserver","database","pciserver"]}, verify=False)
+
 ### ### ###
 
 if __name__ == "__main__":
+    prepare_environment()
+
     alerts = []
     hardcoded = []
     docu_file_json = './build/html/api_data.json'
@@ -318,20 +363,20 @@ if __name__ == "__main__":
             f.write('\n')  # for item in subsection
         f.write('\n')  # for subsection
 
-f.close()
+    f.close()
 
+    clean_environment()
 
+    if hardcoded:
+        print("\n\nHardcoded items:\n")
+        for hc in hardcoded:
+            print(hc)
 
-if hardcoded:
-    print("\n\nHardcoded items:\n")
-    for hc in hardcoded:
-        print(hc)
+    if alerts:
+        print('\n\n' + '*'*50)
+        print("There are no example responses for these requests:\n")
+        for alert in alerts:
+            print(alert)
+        print('*'*50)
 
-if alerts:
-    print('\n\n' + '*'*50)
-    print("There are no example responses for these requests:\n")
-    for alert in alerts:
-        print(alert)
-    print('*'*50)
-
-print("\nDone.\n\n")
+    print("\nDone.\n\n")
