@@ -23,7 +23,7 @@ introduction = "Reference\n======================\nThis API reference is organiz
 str_request_list = 'Request List'
 section_separator = '-'*40
 subsection_separator = '+'*40
-subsubsection_separator = '~'*40
+subsubsection_separator = '~'*60
 str_request = '**Request**:'
 str_parameter = '**Parameters:**'
 str_example_req = '**Example Request:**'
@@ -302,7 +302,7 @@ if __name__ == "__main__":
                     rows = []
                     f.write('\n{0}\n\n'.format(str_parameter))
                     params = item['parameter']['fields']['Parameter']
-                    table = create_table(['Param', 'Type', 'Description'], params, [20, 15, 200])
+                    table = create_table(['Param', 'Type', 'Description'], params, [30, 15, 200])
                     f.write(table)
                 f.write('\n')
 

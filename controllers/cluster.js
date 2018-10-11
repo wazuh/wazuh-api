@@ -367,8 +367,8 @@ router.get('/:node_id/stats/weekly', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /cluster/:node_id/logs Get ossec.log
- * @apiName GetManagerLogs
+ * @api {get} /cluster/:node_id/logs Get ossec.log from a specific node in cluster.
+ * @apiName GetManagerLogsCluster
  * @apiGroup Logs
  *
  * @apiParam {Number} [offset] First element to return in the collection.
@@ -416,8 +416,8 @@ router.get('/:node_id/logs', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /cluster/:node_id/logs/summary Get summary of ossec.log
- * @apiName GetManagerLogsSummary
+ * @api {get} /cluster/:node_id/logs/summary Get summary of ossec.log from a specific node in cluster.
+ * @apiName GetManagerLogsSummaryCluster
  * @apiGroup Logs
  *
  *
