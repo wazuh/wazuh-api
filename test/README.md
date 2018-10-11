@@ -86,6 +86,15 @@
                 <do_not_delay />
             </email_alerts>
             ```
+            3. Run `maild` service:
+            ```shellsession
+            #  /var/ossec/bin/ossec-maild
+            ```
+        * Authd:
+            1. Run `authd` service:
+            ```shellsession
+            #  /var/ossec/bin/ossec-authd
+            ```
 
 
 
