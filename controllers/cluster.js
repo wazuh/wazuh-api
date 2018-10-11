@@ -272,14 +272,14 @@ router.get('/:node_id/configuration', cache(), function(req, res) {
 
 /**
  * @api {get} /cluster/:node_id/stats Get node node_id's stats
- * @apiName GetManagerStats
+ * @apiName GetManagerStatsCluster
  * @apiGroup Stats
  *
  * @apiParam {String} [date] Selects the date for getting the statistical information. Format: YYYYMMDD
  *
  * @apiDescription Returns Wazuh statistical information for the current or specified date.
  *
- * @apiExample {curl} Example usage:
+ * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/stats?pretty"
  *
  */
@@ -314,13 +314,13 @@ router.get('/:node_id/stats', cache(), function(req, res) {
 
 /**
  * @api {get} /cluster/:node_id/stats/hourly Get node node_id's stats by hour
- * @apiName GetManagerStatsHourly
+ * @apiName GetManagerStatsHourlyCluster
  * @apiGroup Stats
  *
  *
  * @apiDescription Returns Wazuh statistical information per hour. Each number in the averages field represents the average of alerts per hour.
  *
- * @apiExample {curl} Example usage:
+ * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/stats/hourly?pretty"
  *
  */
@@ -341,13 +341,13 @@ router.get('/:node_id/stats/hourly', cache(), function(req, res) {
 
 /**
  * @api {get} /cluster/:node_id/stats/weekly Get node node_id's stats by week
- * @apiName GetManagerStatsWeekly
+ * @apiName GetManagerStatsWeeklyCluster
  * @apiGroup Stats
  *
  *
  * @apiDescription Returns Wazuh statistical information per week. Each number in the hours field represents the average alerts per hour for that specific day.
  *
- * @apiExample {curl} Example usage:
+ * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/stats/weekly?pretty"
  *
  */
@@ -367,8 +367,8 @@ router.get('/:node_id/stats/weekly', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /cluster/:node_id/logs Get ossec.log
- * @apiName GetManagerLogs
+ * @api {get} /cluster/:node_id/logs Get ossec.log from a specific node in cluster.
+ * @apiName GetManagerLogsCluster
  * @apiGroup Logs
  *
  * @apiParam {Number} [offset] First element to return in the collection.
@@ -416,8 +416,8 @@ router.get('/:node_id/logs', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /cluster/:node_id/logs/summary Get summary of ossec.log
- * @apiName GetManagerLogsSummary
+ * @api {get} /cluster/:node_id/logs/summary Get summary of ossec.log from a specific node in cluster.
+ * @apiName GetManagerLogsSummaryCluster
  * @apiGroup Logs
  *
  *
