@@ -1770,7 +1770,7 @@ describe('Agents', function() {
     describe('DELETE/agents', function () {
         before(function (done) {
             request(common.url)
-                .put("/agents/agentToDelete")
+                .put("/agents/agentToDelete")  // ID 004
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1785,7 +1785,7 @@ describe('Agents', function() {
         before(function (done) {
 
             request(common.url)
-                .put("/agents/agentToDelete2")
+                .put("/agents/agentToDelete2")  // ID 005
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1817,7 +1817,7 @@ describe('Agents', function() {
             setTimeout(function(){
                 request(common.url)
                     .delete("/agents?purge&older_than=1s&status=neverconnected")
-                    .send({ 'ids': ['003']})
+                    .send({ 'ids': ['004']})
                     .auth(common.credentials.user, common.credentials.password)
                     .expect("Content-type", /json/)
                     .expect(200)
@@ -1829,7 +1829,7 @@ describe('Agents', function() {
                         if ('failed_ids' in res.body.data && res.body.data.failed_ids.length > 0)
                             console.log(res.body.data.failed_ids[0].error);
                         res.body.data.msg.should.equal("All selected agents were removed");
-                        res.body.data.affected_agents[0].should.equal('003');
+                        res.body.data.affected_agents[0].should.equal('004');
                         res.body.data.affected_agents.should.have.lengthOf(1);
     
                         res.body.error.should.equal(0);
@@ -1842,7 +1842,7 @@ describe('Agents', function() {
 
         it('Errors: Get deleted agent', function (done) {
             request(common.url)
-                .get("/agents/003")
+                .get("/agents/004")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1867,7 +1867,7 @@ describe('Agents', function() {
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.should.have.properties(['affected_agents', 'msg', 'older_than']);
                     res.body.data.msg.should.equal("All selected agents were removed");
-                    res.body.data.affected_agents[0].should.equal('004');
+                    res.body.data.affected_agents[0].should.equal('005');
                     res.body.error.should.equal(0);
                     done();
                 });
