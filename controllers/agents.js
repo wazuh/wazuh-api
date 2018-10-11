@@ -797,7 +797,7 @@ router.delete('/groups', function(req, res) {
  * @apiDescription Removes an agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/008?pretty"
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/008?pretty&purge"
  *
  */
 router.delete('/:agent_id', function(req, res) {
@@ -906,7 +906,7 @@ router.delete('/groups/:group_id', function(req, res) {
  * @apiDescription Removes agents, using a list of them or a criterion based on the status or time of the last connection. The Wazuh API must be restarted after removing an agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE -H "Content-Type:application/json" -d '{"ids":["003","005"]}' "https://127.0.0.1:55000/agents?pretty&older_than=10s"
+ *     curl -u foo:bar -k -X DELETE -H "Content-Type:application/json" -d '{"ids":["003","005"]}' "https://127.0.0.1:55000/agents?pretty&older_than=10s&purge"
  *
  */
 router.delete('/', function(req, res) {
