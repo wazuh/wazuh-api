@@ -8,9 +8,11 @@
 # Requirements
 # https
 # Auth: foo:bar
+# requests
 
 import json
 import sys
+import requests
 
 TIMEOUT = 30  # cURL TIMEOUT. 0 to disable "example response"
 
@@ -21,7 +23,7 @@ introduction = "Reference\n======================\nThis API reference is organiz
 str_request_list = 'Request List'
 section_separator = '-'*40
 subsection_separator = '+'*40
-subsubsection_separator = '~'*40
+subsubsection_separator = '~'*60
 str_request = '**Request**:'
 str_parameter = '**Parameters:**'
 str_example_req = '**Example Request:**'
@@ -37,11 +39,21 @@ hardcoded_items = {
         # GET - /manager/stats/weekly
         'GetManagerStatsWeekly': {"error":0,"data":{"Wed":{"hours":[223,"...",456],"interactions":0},"Sun":{"hours":[332,"...",313],"interactions":0},"Fri":{"hours":[131,"...",432],"interactions":0},"Tue":{"hours":[536,"...",345],"interactions":0},"Mon":{"hours":[444,"...",556],"interactions":0},"Thu":{"hours":[888,"...",123],"interactions":0},"Sat":{"hours":[134,"...",995],"interactions":0}}},
 
+        # GET - /cluster/:node_id/stats
+        'GetManagerStatsCluster': {"error":0,"data":[{"hour":5,"firewall":0,"alerts":[{"times":4,"sigid":5715,"level":3},{"times":2,"sigid":1002,"level":2},{"...":"..."}],"totalAlerts":107,"syscheck":1257,"events":1483},{"...":"..."}]},
+
+        # GET - /cluster/:node_id/stats/hourly
+        'GetManagerStatsHourlyCluster': {"error":0,"data":{"averages":[100,357,242,500,422,"...",123],"interactions":0}},
+
+        # GET - /cluster/:node_id/stats/weekly
+        'GetManagerStatsWeeklyCluster': {"error":0,"data":{"Wed":{"hours":[223,"...",456],"interactions":0},"Sun":{"hours":[332,"...",313],"interactions":0},"Fri":{"hours":[131,"...",432],"interactions":0},"Tue":{"hours":[536,"...",345],"interactions":0},"Mon":{"hours":[444,"...",556],"interactions":0},"Thu":{"hours":[888,"...",123],"interactions":0},"Sat":{"hours":[134,"...",995],"interactions":0}}},
+
+
         # PUT - /agents/restart
         'PutAgentsRestart': {"error":0,"data":"Restarting all agents"},
 
         # PUT - /agents/restart:agent_id
-        'PutAgentsRestartId': {"error":0,"data":"Restarting agent"},
+        'PutAgentsRestartId': {"error":0,"data":{"msg":"All selected agents were restarted","affected_agents":["007"]}},
 
         # DELETE - /rootcheck
         'DeleteRootcheck': {"error":0,"data":"Rootcheck database deleted"},
@@ -77,7 +89,7 @@ hardcoded_items = {
         'GetUpgradeResult' : {"error": 0,"data": "Agent upgraded successfully"},
 
         # POST /agents/restart
-        'PostAgentListRestart' : {"error": 0,"data": "All selected agents were restarted"},
+        'PostAgentListRestart' : {"error":0,"data":{"msg":"All selected agents were restarted","affected_agents":["002","004"]}},
 
         # GET /agents/purgeable/:timeframe
         'GetAgentsPurgeable' : {"error":0,"data":{"items":[{"id":"001","name":"test1"},{"id":"002","name":"test2"}],"timeframe":104400}},
@@ -156,9 +168,52 @@ def create_table(headers, rows, sizes):
 
         output += insert_separator(sizes)
     return output
+
+
+def prepare_environment():
+    """
+    Sets up documentation required environment
+    """
+    agents_to_add = [
+        ("server001","10.0.0.62"),
+        ("dmz001","10.0.0.12"),
+        ("main_database","10.0.0.15"),
+        ("dmz002","10.0.0.14"),
+        ("server002","10.0.0.20")
+    ]
+    for name,ip in agents_to_add:
+        requests.post("https://127.0.0.1:55000/agents", auth=('foo','bar'), data={"name":name,"ip":ip}, verify=False)
+    
+    groups_to_create = ["dmz","webserver","database"]
+    for group in groups_to_create:
+        requests.put("https://127.0.0.1:55000/agents/groups/"+group, auth=('foo','bar'), verify=False)
+    
+    agents_groups = [
+        ("001","dmz"),
+        ("002","webserver"),
+        ("003","database"),
+        ("004","dmz"),
+        ("005","webserver")
+    ]
+    for a_id, g_id in agents_groups:
+        requests.put("https://127.0.0.1:55000/agents/{}/group/{}".format(a_id, g_id), auth=('foo','bar'), verify=False)
+    
+    with open("/var/ossec/etc/shared/dmz/agent.conf","w") as f:
+        f.write('<agent_config os="Linux">\n<localfile>\n<location>/var/log/linux.log</location>\n<log_format>syslog</log_format>\n</localfile>\n</agent_config>\n')
+    
+
+def clean_environment():
+    """
+    Cleans generated environment in case the docs need to be generated more times
+    """
+    requests.delete("https://127.0.0.1:55000/agents", auth=("foo","bar"), params={"older_than":"1s","status":"neverconnected","purge":"true"}, verify=False)
+    requests.delete("https://127.0.0.1:55000/agents/groups", auth=("foo","bar"), data={"ids":["dmz","webserver","database","pciserver"]}, verify=False)
+
 ### ### ###
 
 if __name__ == "__main__":
+    prepare_environment()
+
     alerts = []
     hardcoded = []
     docu_file_json = './build/html/api_data.json'
@@ -257,7 +312,7 @@ if __name__ == "__main__":
                     rows = []
                     f.write('\n{0}\n\n'.format(str_parameter))
                     params = item['parameter']['fields']['Parameter']
-                    table = create_table(['Param', 'Type', 'Description'], params, [20, 15, 200])
+                    table = create_table(['Param', 'Type', 'Description'], params, [30, 15, 200])
                     f.write(table)
                 f.write('\n')
 
@@ -318,20 +373,20 @@ if __name__ == "__main__":
             f.write('\n')  # for item in subsection
         f.write('\n')  # for subsection
 
-f.close()
+    f.close()
 
+    clean_environment()
 
+    if hardcoded:
+        print("\n\nHardcoded items:\n")
+        for hc in hardcoded:
+            print(hc)
 
-if hardcoded:
-    print("\n\nHardcoded items:\n")
-    for hc in hardcoded:
-        print(hc)
+    if alerts:
+        print('\n\n' + '*'*50)
+        print("There are no example responses for these requests:\n")
+        for alert in alerts:
+            print(alert)
+        print('*'*50)
 
-if alerts:
-    print('\n\n' + '*'*50)
-    print("There are no example responses for these requests:\n")
-    for alert in alerts:
-        print(alert)
-    print('*'*50)
-
-print("\nDone.\n\n")
+    print("\nDone.\n\n")
