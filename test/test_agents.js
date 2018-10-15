@@ -2205,40 +2205,6 @@ describe('Agents', function() {
             });
         });
         
-        it('Request-Analysis-Rules', function(done) {
-            request(common.url)
-            .get("/agents/000/config/analysis/rules")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-                res.body.data.should.have.properties(['rules']);
-
-                res.body.error.should.equal(0);
-                done();
-            });
-        });
-        
-        it('Request-Analysis-Decoders', function(done) {
-            request(common.url)
-            .get("/agents/000/config/analysis/decoders")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-                res.body.data.should.have.properties('decoders');
-
-                res.body.error.should.equal(0);
-                done();
-            });
-        });
-        
         it('Request-Analysis-Internal', function(done) {
             request(common.url)
             .get("/agents/000/config/analysis/internal")
