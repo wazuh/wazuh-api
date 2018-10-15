@@ -504,7 +504,7 @@ describe('Syscollector', function () {
     });  // GET/syscollector/:agent_id/packages
 
 
-    describe('GET/syscollector/packages', function () {
+    describe('GET/experimental/syscollector/packages', function () {
 
         it('Request', function (done) {
             request(common.url)
@@ -852,7 +852,7 @@ describe('Syscollector', function () {
 
 
 
-    describe('GET/syscollector/os', function () {
+    describe('GET/experimental/syscollector/os', function () {
 
         it('Request', function (done) {
             request(common.url)
@@ -1121,9 +1121,9 @@ describe('Syscollector', function () {
                 });
         });
 
-    });  // GET/syscollector/os
+    });  // GET/experimental/syscollector/os
 
-    describe('GET/syscollector/hardware', function () {
+    describe('GET/experimental/syscollector/hardware', function () {
 
         it('Request', function (done) {
             request(common.url)
@@ -1256,24 +1256,6 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'message']);
                     res.body.error.should.equal(1403);
-                    done();
-                });
-        });
-
-        it('Filter ram_free', function (done) {
-            request(common.url)
-                .get("/experimental/syscollector/hardware?ram_free=" + expected_ram_free)
-                .auth(common.credentials.user, common.credentials.password)
-                .expect("Content-type", /json/)
-                .expect(200)
-                .end(function (err, res) {
-                    if (err) return done(err);
-                    res.body.should.have.properties(['error', 'data']);
-                    res.body.error.should.equal(0);
-                    res.body.data.totalItems.should.be.above(0);
-                    res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['ram']);
-                    res.body.data.items[0].ram.free.should.be.equal(expected_ram_free);
                     done();
                 });
         });
@@ -1421,11 +1403,11 @@ describe('Syscollector', function () {
                 });
         });
 
-    });  // GET/syscollector/hardware
+    });  // GET experimental/syscollector/hardware
 
 
 
-    describe('GET/syscollector/processes', function () {
+    describe('GET/experimental/syscollector/processes', function () {
         processes_properties = ['tty', 'rgroup', 'sgroup', 'resident', 'share',
         'session', 'scan_time', 'size', 'scan_id', 'egroup', 'tgid', 'priority',
         'fgroup', 'state', 'nlwp', 'nice', 'euser', 'start_time', 'stime',
