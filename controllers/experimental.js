@@ -286,6 +286,8 @@ router.get('/syscollector/processes', function (req, res) {
         data_request['arguments']['filters']['state'] = req.query.state;
     if ('pid' in req.query)
         data_request['arguments']['filters']['pid'] = req.query.pid;
+    if ('ppid' in req.query)
+        data_request['arguments']['filters']['ppid'] = req.query.ppid;
     if ('egroup' in req.query)
         data_request['arguments']['filters']['egroup'] = req.query.egroup;
     if ('euser' in req.query)
