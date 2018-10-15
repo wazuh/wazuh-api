@@ -1791,7 +1791,7 @@ describe('Syscollector', function () {
 
     ports_properties = ['scan', 'protocol', 'local', 'remote', 'tx_queue',
                         'rx_queue', 'inode', 'state']
-    describe('GET/syscollector/ports', function () {
+    describe('GET/experimental/syscollector/ports', function () {
 
         it('Request', function (done) {
             request(common.url)
@@ -2046,7 +2046,7 @@ describe('Syscollector', function () {
 
 
 
-    });  // GET/syscollector/ports
+    });  // GET/experimental/syscollector/ports
 
 
     describe('GET/syscollector/netaddr', function () {
@@ -2271,7 +2271,7 @@ describe('Syscollector', function () {
 
     });  // GET/syscollector/netaddr
 
-    describe('GET/syscollector/netproto', function () {
+    describe('GET/experimental/syscollector/netproto', function () {
         netproto_properties = ['scan_id', 'iface', 'type', 'gateway', 'dhcp']
 
         it('Request', function (done) {
@@ -2494,7 +2494,7 @@ describe('Syscollector', function () {
 
 
     netiface_properties = ['scan', 'name', 'type', 'state', 'mtu', 'mac', 'tx', 'rx', 'agent_id']
-    describe('GET/syscollector/netiface', function () {
+    describe('GET/experimental/syscollector/netiface', function () {
 
         it('Request', function (done) {
             request(common.url)
