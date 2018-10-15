@@ -56,6 +56,8 @@ errors['619'] = "Param not valid. Valid characters: a-z A-Z 0-9 space . , _";  /
 errors['select_param'] = 619;
 errors['yes_no_boolean'] = 620;
 errors['620'] = "Param not valid. Valid values: yes or no";
+errors['array_names'] = 621;
+errors['621'] = "Invalid character in parameters";
 
 errors['700'] = "File not found"
 
