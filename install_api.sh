@@ -415,10 +415,13 @@ setup_api() {
     fi
     exec_cmd "chown -R root:ossec $API_PATH/node_modules"
     exec_cmd "chmod -R 750 $API_PATH/node_modules"
-
-    if [ ! -f $API_PATH/configuration/auth/htpasswd ]; then
-        exec_cmd "ln -s $API_PATH/node_modules/htpasswd/bin/htpasswd $API_PATH/configuration/auth/htpasswd"
+    
+    # it is necessary to remove htpasswd in order to correctly create the symbolic link
+    if [ -e $API_PATH/configuration/auth/htpasswd ]; then
+        exec_cmd "rm $API_PATH/configuration/auth/htpasswd"
     fi
+        
+    exec_cmd "ln -s $API_PATH/node_modules/htpasswd/bin/htpasswd $API_PATH/configuration/auth/htpasswd"
 
     # Set OSSEC directory in API configuration
     if [ "X${DIRECTORY}" != "X/var/ossec" ]; then
