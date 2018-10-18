@@ -13,9 +13,9 @@
  * Cluster configurated and running with 2 connected nodes: `master` and `worker`.
  * Two connected agents:
     * id `000` and version _Wazuh v3.7.0_. Must have the following additional configuration:
-    	* Experimental features:
+    	* Enable experimental features in `/var/ossec/api/configuration/config.js`:
 	   ```
-	   config.experimental_features = false; -> config.experimental_features = true;
+	   config.experimental_features = true;
 	   ```
         * Agentless:
             ```shellsession
