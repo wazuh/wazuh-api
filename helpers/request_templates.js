@@ -23,7 +23,15 @@
     * param_checks -> Input validation checks for arguments in req.params.
     * query_checks -> Input validation checks for arguments in req.query.
  */
-exports.single_field_array_request = function(entrypoint_name, req, res, apicacheGroup, param_cheks={}, query_cheks={}) {
+exports.single_field_array_request = function(entrypoint_name, req, res, apicacheGroup, param_checks, query_checks) {
+    if(!param_checks || typeof param_checks !== 'object'){
+        param_checks = {};
+    }
+
+    if(!query_checks || typeof query_checks !== 'object'){
+        query_checks = {};
+    }
+
     logger.debug(req.connection.remoteAddress + " GET " + entrypoint_name);
 
     req.apicacheGroup = apicacheGroup;
@@ -32,10 +40,10 @@ exports.single_field_array_request = function(entrypoint_name, req, res, apicach
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
                    'search':'search_param', 'q':'query_param'};
 
-    if (!filter.check(req.query, Object.assign({}, filters, query_cheks), req, res))  // Filter with error
+    if (!filter.check(req.query, Object.assign({}, filters, query_checks), req, res))  // Filter with error
         return;
 
-    if (!filter.check(req.params, param_cheks, req, res))  // Filter with error
+    if (!filter.check(req.params, param_checks, req, res))  // Filter with error
         return;
 
     if ('offset' in req.query)
@@ -51,9 +59,9 @@ exports.single_field_array_request = function(entrypoint_name, req, res, apicach
 
     filters = {}
 
-    for (extra in Object.assign({}, query_cheks, param_cheks)) {
+    for (extra in Object.assign({}, query_checks, param_checks)) {
         if (extra in req.query) {
-            if (query_cheks[extra] == 'select_param')
+            if (query_checks[extra] == 'select_param')
                 data_request['arguments'][extra] = filter.select_param_to_json(req.query[extra]);
             else if (extra == 'summary')
                 data_request['arguments'][extra] = req.query[extra] === 'yes'
@@ -74,7 +82,15 @@ exports.single_field_array_request = function(entrypoint_name, req, res, apicach
         GET/agents
         GET/rootcheck/:agent_id
  */
-exports.array_request = function (entrypoint_name, req, res, apicacheGroup, param_cheks={}, query_cheks={}) {
-    query_cheks['select'] = 'select_param';
-    this.single_field_array_request(entrypoint_name, req, res, apicacheGroup, param_cheks, query_cheks);
+exports.array_request = function (entrypoint_name, req, res, apicacheGroup, param_checks, query_checks{}) {
+    if(!param_checks || typeof param_checks !== 'object'){
+        param_checks = {};
+    }
+
+    if(!query_checks || typeof query_checks !== 'object'){
+        query_checks = {};
+    }
+
+    query_checks['select'] = 'select_param';
+    this.single_field_array_request(entrypoint_name, req, res, apicacheGroup, param_checks, query_checks);
 }
