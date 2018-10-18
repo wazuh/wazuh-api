@@ -14,9 +14,9 @@
  * Two connected agents:
     * id `000` and version _Wazuh v3.7.0_. Must have the following additional configuration:
     	* Enable experimental features in `/var/ossec/api/configuration/config.js`:
-	   ```
-	   config.experimental_features = true;
-	   ```
+	    ```
+	    config.experimental_features = true;
+	    ```
         * Agentless:
             ```shellsession
             # /var/ossec/bin/ossec-control enable agentless
