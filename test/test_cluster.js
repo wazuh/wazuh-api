@@ -208,7 +208,7 @@ describe('Cluster', function () {
                 });
         });
 
-        it('Unexisting node', function (done) {
+        it('Unexisting node stats', function (done) {
             request(common.url)
                 .get("/cluster/unexisting_node/stats")
                 .auth(common.credentials.user, common.credentials.password)
@@ -224,6 +224,44 @@ describe('Cluster', function () {
                     done();
                 });
         });
+
+        it('Analysisd stats', function (done) {
+            request(common.url)
+                .get("/cluster/:node_id/stats/analysisd")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.totalItems.should.be.above(0);
+                    res.body.data.items.should.have.properties(['discarded_count', 'msg_sent', 'queue_size',
+                                                                'ctrl_msg_count', 'evt_count', 'tcp_sessions',
+                                                                'total_queue_size']);
+                    done();
+                });
+        });
+
+        it('Remoted stats', function (done) {
+            request(common.url)
+                .get("/cluster/:node_id/stats/remoted")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.totalItems.should.be.above(0);
+                    done();
+                });
+        });
+
 
 
     }); // GET/cluster/nodes
