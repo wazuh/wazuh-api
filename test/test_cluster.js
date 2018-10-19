@@ -210,7 +210,7 @@ describe('Cluster', function () {
 
         it('Unexisting node', function (done) {
             request(common.url)
-                .get("/cluster/unexisting_node/stats?pretty")
+                .get("/cluster/unexisting_node/stats")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
