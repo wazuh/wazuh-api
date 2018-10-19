@@ -188,7 +188,7 @@ app.use(function(req, res, next) {
     var regex_version = /^\d+\.\d+\.\d+$/i;
 
     if(type_node == 'worker'){
-        res_h.bad_request(req, res, "803", "API calls in worker nodes are not allowed");
+        res_h.bad_request(req, res, "803");
     }
 
     if (typeof app_version_header != 'undefined'){
