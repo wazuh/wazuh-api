@@ -208,6 +208,23 @@ describe('Cluster', function () {
                 });
         });
 
+        it('Unexisting node', function (done) {
+            request(common.url)
+                .get("/cluster/unexisting_node/stats?pretty")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'message']);
+
+                    res.body.error.should.equal(3018);
+                    res.body.message.should.be.instanceof(String)
+                    done();
+                });
+        });
+
 
     }); // GET/cluster/nodes
 
