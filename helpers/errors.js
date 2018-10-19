@@ -65,7 +65,7 @@ errors['700'] = "File not found"
 errors['800'] = "Error adding agent due to header 'x-forwarded-for' is not present";
 errors['801'] = "Wrong format for 'wazuh-app-version' header. Expected format: 'X.Y.Z'";
 errors['802'] = "Invalid 'wazuh-app-version' header";
-errors['803'] = "API does not work in worker nodes"
+errors['803'] = "API does not work in worker nodes";
 
 exports.description = function(n){
     if (n in errors)
