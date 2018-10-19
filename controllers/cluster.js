@@ -383,7 +383,7 @@ router.get('/:node_id/stats/analysisd', cache(), function(req, res) {
 
     req.apicacheGroup = "cluster";
 
-    var data_request = {'function': '/cluster/:node_id/stats/remoted', 'arguments': {}};
+    var data_request = {'function': '/cluster/:node_id/stats/analysisd', 'arguments': {}};
     
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
