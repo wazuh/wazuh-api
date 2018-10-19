@@ -179,10 +179,10 @@ router.get('/groups', cache(), function(req, res) {
  *
  */
 router.get('/groups/:group_id', cache(), function(req, res) {
-    param_cheks = {'group_id':'names'};
+    param_checks = {'group_id':'names'};
     query_checks = {'status': 'alphanumeric_param'}
 
-    templates.array_request('/agents/groups/:group_id', req, res, "agents", param_cheks, query_checks);
+    templates.array_request('/agents/groups/:group_id', req, res, "agents", param_checks, query_checks);
 });
 
 
@@ -512,8 +512,8 @@ router.get('/:agent_id/upgrade_result', function(req, res) {
  *
  */
 router.get('/:agent_id/group/is_sync', function(req, res) {     
-    param_cheks = {'agent_id': 'numbers'};     
-    templates.array_request('/agents/:agent_id/group/is_sync', req, res, "agents", param_cheks=param_cheks, query_cheks={});
+    param_checks = {'agent_id': 'numbers'};     
+    templates.array_request('/agents/:agent_id/group/is_sync', req, res, "agents", param_checks);
 })
 
 
