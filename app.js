@@ -166,12 +166,17 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 
 // check node type
+
 function check_type_node(){
-    var fs = require('fs');
-    var ossec_configuration = fs.readFileSync(config.ossec_path + "/etc/ossec.conf", "utf-8")
-    var parser = require('xml2json')
-    var xml_config = parser.toJson(ossec_configuration, {object: true})
-    var type_node = xml_config['ossec_config']['cluster']['node_type']
+    try {
+        var fs = require('fs');
+        var ossec_configuration = fs.readFileSync(config.ossec_path + "/etc/ossec.conf", "utf-8")
+        var parser = require('xml2json')
+        var xml_config = parser.toJson(ossec_configuration, {object: true})
+        var type_node = xml_config['ossec_config']['cluster']['node_type']
+    }catch(err){
+        var type_node = 'master'
+    }
 
     return type_node
 }
