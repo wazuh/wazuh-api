@@ -31,7 +31,7 @@ var router = require('express').Router();
  * @apiParam {String} [manager] Filters by manager hostname to which agents are connected.
  * @apiParam {String} [version] Filters by agents version.
  * @apiParam {String} [group] Filters by group of agents.
- * @apiParam {String} [node] Filters by node name.
+ * @apiParam {String} [node_name] Filters by node name.
  * @apiParam {String} [name] Filters by agent name.
  * @apiParam {String} [ip] Filters by agent IP.
  *
@@ -44,7 +44,7 @@ var router = require('express').Router();
 router.get('/', cache(), function(req, res) {
     var query_checks = {'status':'alphanumeric_param', 'os.platform':'alphanumeric_param',
                          'os.version':'alphanumeric_param', 'manager':'alphanumeric_param',
-                         'version':'alphanumeric_param', 'node': 'alphanumeric_param',
+                         'version':'alphanumeric_param', 'node_name': 'alphanumeric_param',
                          'older_than':'timeframe_type', 'group':'alphanumeric_param',
                          'name': 'alphanumeric_param', 'ip': 'ips' };
     templates.array_request("/agents", req, res, "agents", {}, query_checks);
