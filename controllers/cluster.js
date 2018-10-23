@@ -367,6 +367,49 @@ router.get('/:node_id/stats/weekly', cache(), function(req, res) {
 })
 
 /**
+ * @api {get} /cluster/:node_id/stats/analysisd Get node node_id's stats
+ * @apiName GetManagerStatsCluster
+ * @apiGroup Stats
+ * 
+ * 
+ * @apiDescription Returns a summary of the current analysisd stats on the node.
+ *
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/analysisd/stats?pretty"
+ *
+ */
+router.get('/:node_id/stats/analysisd', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/:node_id/stats/analysisd");
+
+    req.apicacheGroup = "cluster";
+
+    var data_request = {'function': '/cluster/:node_id/stats/analysisd', 'arguments': {}};
+    
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {get} /cluster/:node_id/stats/remoted Get node node_id's stats
+ * @apiName GetManagerStatsCluster
+ * @apiGroup Stats
+ *
+ * 
+ * @apiDescription Returns a summary of the current remoted stats on the node.
+ *
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/stats/remoted?pretty"
+ *
+ */
+router.get('/:node_id/stats/remoted', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/:node_id/stats/remoted");
+
+    req.apicacheGroup = "cluster";
+
+    var data_request = {'function': '/cluster/:node_id/stats/remoted', 'arguments': {}};
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
  * @api {get} /cluster/:node_id/logs Get ossec.log from a specific node in cluster.
  * @apiName GetManagerLogsCluster
  * @apiGroup Logs
