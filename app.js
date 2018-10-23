@@ -171,8 +171,8 @@ function check_type_node(){
     try {
         var fs = require('fs');
         var ossec_configuration = fs.readFileSync(config.ossec_path + "/etc/ossec.conf", "utf-8")
-        var parser = require('xml2json')
-        var xml_config = parser.toJson(ossec_configuration, {object: true})
+        var parser = require('xml2json-light')
+        var xml_config = parser.xml2json(ossec_configuration)
         var type_node = xml_config['ossec_config']['cluster']['node_type']
     }catch(err){
         var type_node = 'master'
