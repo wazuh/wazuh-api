@@ -127,9 +127,9 @@ router.get('/healthcheck', cache(), function (req, res) {
     req.apicacheGroup = "cluster";
 
     var data_request = { 'function': '/cluster/healthcheck', 'arguments': {} };
-    var filters = { 'node': 'names'};
+    var filters = { 'node': 'names' };
 
-    if (!filter.check(req.params, filters, req, res))  // Filter with error
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
 
     data_request['arguments']['filter_node'] = req.query.node;
