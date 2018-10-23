@@ -28,6 +28,7 @@ var router = require('express').Router();
  * @apiParam {String} [older_than] Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date.
  * @apiParam {String} [os.platform] Filters by OS platform.
  * @apiParam {String} [os.version] Filters by OS version.
+ * @apiParam {String} [os.name] Filters by OS name.
  * @apiParam {String} [manager] Filters by manager hostname to which agents are connected.
  * @apiParam {String} [version] Filters by agents version.
  * @apiParam {String} [group] Filters by group of agents.
@@ -46,7 +47,8 @@ router.get('/', cache(), function(req, res) {
                          'os.version':'alphanumeric_param', 'manager':'alphanumeric_param',
                          'version':'alphanumeric_param', 'node': 'alphanumeric_param',
                          'older_than':'timeframe_type', 'group':'alphanumeric_param',
-                         'name': 'alphanumeric_param', 'ip': 'ips' };
+                         'name': 'alphanumeric_param', 'ip': 'ips',
+                         'os.name':'alphanumeric_param' };
     templates.array_request("/agents", req, res, "agents", {}, query_checks);
 })
 
