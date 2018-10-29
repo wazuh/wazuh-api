@@ -358,7 +358,7 @@ describe('Syscollector', function () {
                 });
         });
 
-        it('Filter vendor', function (done) {
+        it('Filter: vendor', function (done) {
             request(common.url)
                 .get("/syscollector/" + agent_id + "/packages?vendor=" + expected_vendor)
                 .auth(common.credentials.user, common.credentials.password)
@@ -395,7 +395,7 @@ describe('Syscollector', function () {
                 });
         });
 
-        it('Filter name', function (done) {
+        it('Filter: name', function (done) {
             request(common.url)
                 .get("/syscollector/" + agent_id + "/packages?name=" + expected_filter_name)
                 .auth(common.credentials.user, common.credentials.password)
@@ -432,7 +432,7 @@ describe('Syscollector', function () {
                 });
         });
 
-        it('Filter architecture', function (done) {
+        it('Filter: architecture', function (done) {
             request(common.url)
                 .get("/syscollector/" + agent_id + "/packages?architecture=" + expected_architecture)
                 .auth(common.credentials.user, common.credentials.password)
@@ -469,7 +469,7 @@ describe('Syscollector', function () {
                 });
         });
 
-        it('Filter format', function (done) {
+        it('Filter: format', function (done) {
             request(common.url)
                 .get("/syscollector/" + agent_id + "/packages?format=" + expected_format)
                 .auth(common.credentials.user, common.credentials.password)
@@ -705,7 +705,7 @@ describe('Syscollector', function () {
                 });
         });
 
-        it('Filter vendor', function (done) {
+        it('Filter: vendor', function (done) {
             request(common.url)
                 .get("/experimental/syscollector/packages?vendor=" + expected_vendor)
                 .auth(common.credentials.user, common.credentials.password)
@@ -742,7 +742,7 @@ describe('Syscollector', function () {
                 });
         });
 
-        it('Filter name', function (done) {
+        it('Filter: name', function (done) {
             request(common.url)
                 .get("/experimental/syscollector/packages?name=" + expected_filter_name)
                 .auth(common.credentials.user, common.credentials.password)
@@ -779,7 +779,7 @@ describe('Syscollector', function () {
                 });
         });
 
-        it('Filter architecture', function (done) {
+        it('Filter: architecture', function (done) {
             request(common.url)
                 .get("/experimental/syscollector/packages?architecture=" + expected_architecture)
                 .auth(common.credentials.user, common.credentials.password)
@@ -816,7 +816,7 @@ describe('Syscollector', function () {
                 });
         });
 
-        it('Filter format', function (done) {
+        it('Filter: format', function (done) {
             request(common.url)
                 .get("/experimental/syscollector/packages?format=" + expected_format)
                 .auth(common.credentials.user, common.credentials.password)
@@ -1011,7 +1011,7 @@ describe('Syscollector', function () {
                 });
         });
 
-        it('Filter architecture', function (done) {
+        it('Filter: architecture', function (done) {
             request(common.url)
                 .get("/experimental/syscollector/os?architecture=" + expected_architecture)
                 .auth(common.credentials.user, common.credentials.password)
@@ -1047,7 +1047,7 @@ describe('Syscollector', function () {
                 });
         });
 
-        it('Filter os_name', function (done) {
+        it('Filter: os_name', function (done) {
             request(common.url)
                 .get("/experimental/syscollector/os?os_name=" + expected_os_name)
                 .auth(common.credentials.user, common.credentials.password)
@@ -1103,7 +1103,7 @@ describe('Syscollector', function () {
                 });
         });
 
-        it('Filter release', function (done) {
+        it('Filter: release', function (done) {
             request(common.url)
                 .get("/experimental/syscollector/os?release=" + expected_release)
                 .auth(common.credentials.user, common.credentials.password)
@@ -1278,7 +1278,7 @@ describe('Syscollector', function () {
                 });
         });
 
-        it('Filter ram_total', function (done) {
+        it('Filter: ram_total', function (done) {
             request(common.url)
                 .get("/experimental/syscollector/hardware?ram_total=" + expected_ram_total)
                 .auth(common.credentials.user, common.credentials.password)
@@ -1314,7 +1314,7 @@ describe('Syscollector', function () {
                 });
         });
 
-        it('Filter cpu_cores', function (done) {
+        it('Filter: cpu_cores', function (done) {
             request(common.url)
                 .get("/experimental/syscollector/hardware?cpu_cores=" + expected_cpu_cores)
                 .auth(common.credentials.user, common.credentials.password)
@@ -1350,7 +1350,7 @@ describe('Syscollector', function () {
                 });
         });
 
-        it('Filter cpu_mhz', function (done) {
+        it('Filter: cpu_mhz', function (done) {
             request(common.url)
                 .get("/experimental/syscollector/hardware?cpu_mhz=" + expected_cpu_mhz)
                 .auth(common.credentials.user, common.credentials.password)
@@ -1385,7 +1385,7 @@ describe('Syscollector', function () {
                 });
         });
 
-        it('Filter board_serial', function (done) {
+        it('Filter: board_serial', function (done) {
             request(common.url)
                 .get("/experimental/syscollector/hardware?board_serial=" + expected_board_serial)
                 .auth(common.credentials.user, common.credentials.password)
