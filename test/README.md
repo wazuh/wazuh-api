@@ -112,7 +112,7 @@
     2. Run `authd` service:
     ```shellsession
     #  /var/ossec/bin/ossec-authd
-            ```
+    ```
 
 ## Run all tests
     $ mocha test/ --timeout 10000
