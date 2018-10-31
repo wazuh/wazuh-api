@@ -60,10 +60,10 @@ router.all("*", function(req, res, next) {
             req['pretty'] = false;
         }
         // wait for
-        if ("wait_for" in req.query) {
+        if ("wait_for_complete" in req.query) {
             // Disable timeout in the current API call
             execute.set_disable_timeout(true);
-            delete req.query["wait_for"];
+            delete req.query["wait_for_complete"];
         }
     }
 
