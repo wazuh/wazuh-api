@@ -105,9 +105,13 @@ exports.search_param_to_json = function (search_param){
 exports.select_param_to_json = function (select_param){
     var select = {"fields": []};
 
-    select_param.split(',').map(function(x) {
-        select['fields'].push(x);
-    });  
+    if (typeof select_param == 'string') {
+        select_param.split(',').map(function(x) {
+            select['fields'].push(x);
+        });
+    } else {
+        select['fields'] = select_param;
+    }
 
     return select
 }
