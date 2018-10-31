@@ -164,25 +164,6 @@ if (config.ld_library_path.indexOf('api') != -1) {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-
-// check node type
-
-function check_type_node(){
-    try {
-        var fs = require('fs');
-        var ossec_configuration = fs.readFileSync(config.ossec_path + "/etc/ossec.conf", "utf-8")
-        var parser = require('xml2json-light')
-        var xml_config = parser.xml2json(ossec_configuration)
-        var type_node = xml_config['ossec_config']['cluster']['node_type']
-    }catch(err){
-        var type_node = 'master'
-    }
-
-    return type_node
-}
-
-var type_node = check_type_node()
-
 /**
  * Check Wazuh app version
  * Using: Header: "wazuh-app-version: X.Y.Z"
@@ -191,10 +172,6 @@ app.use(function(req, res, next) {
     var go_next = true;
     var app_version_header = req.get('wazuh-app-version');
     var regex_version = /^\d+\.\d+\.\d+$/i;
-
-    if(type_node == 'worker'){
-        res_h.bad_request(req, res, "803");
-    }
 
     if (typeof app_version_header != 'undefined'){
         if (!regex_version.test(app_version_header)){

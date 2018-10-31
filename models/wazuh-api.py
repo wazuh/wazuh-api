@@ -23,6 +23,7 @@ try:
     from wazuh import Wazuh
     from wazuh.exception import WazuhException
     from wazuh.cluster.dapi import dapi
+    from wazuh.cluster.cluster import read_config
 except (ImportError, SyntaxError) as e:
     error = str(e)
     error_wazuh_package = -1
@@ -152,6 +153,13 @@ if __name__ == "__main__":
 
     # Main
     try:
+
+        cluster_config = read_config()
+        executable_name = "Wazuh API"
+        master_ip = cluster_config['nodes'][0]
+        if cluster_config['node_type'] != 'master' and cluster_config['disabled'] == 'no':
+            raise WazuhException(3019, {"EXECUTABLE_NAME": executable_name, "MASTER_IP": master_ip})
+
         before = time.time()
         wazuh = Wazuh(ossec_path=request['ossec_path'])
 
