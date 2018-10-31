@@ -90,15 +90,6 @@
                 <do_not_delay />
             </email_alerts>
             ```
-            3. Run `maild` service:
-            ```shellsession
-            #  /var/ossec/bin/ossec-maild
-            ```
-        * Authd:
-            1. Run `authd` service:
-            ```shellsession
-            #  /var/ossec/bin/ossec-authd
-            ```
 
 
 
@@ -117,6 +108,15 @@
  
  * DB syscheck activated: Add `wazuh_database.sync_syscheck=1` to the file `/var/ossec/etc/local_internal_options.conf`.
  * Restart wazuh-manager.
+ * Then start needed services:
+    1. Run `maild` service:
+    ```shellsession
+    #  /var/ossec/bin/ossec-maild
+    ```
+    2. Run `authd` service:
+    ```shellsession
+    #  /var/ossec/bin/ossec-authd
+    ```
 
 ## Run all tests
     $ mocha test/ --timeout 10000
