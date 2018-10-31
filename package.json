@@ -14,8 +14,7 @@
     "htpasswd": "^2.3.4",
     "http-auth": "^3.0.1",
     "moment": "^2.15.0",
-    "rotating-file-stream": "^1.3.6",
-    "xml2json-light": "^1.0.6"
+    "rotating-file-stream": "^1.3.6"
   },
   "repository": {
     "type": "git",
