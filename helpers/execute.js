@@ -12,6 +12,7 @@
 var logger = require('../helpers/logger');
 var errors = require('../helpers/errors');
 var timeout = 240; // seconds
+var disable_timeout = false;
 
 if (config.ld_library_path.length > 0) {
     if (typeof process.env.LD_LIBRARY_PATH == 'undefined')
@@ -37,6 +38,7 @@ exports.exec = function(cmd, args, stdin, callback) {
         stdin['ossec_path'] = config.ossec_path;
 
     // log
+    stdin['arguments']['wait_for_complete'] = disable_timeout;
     var full_cmd = "CMD - Command: " + cmd + " args:" + args.join(' ') + " stdin:" + JSON.stringify(stdin);
     logger.debug(full_cmd);
 
@@ -47,11 +49,15 @@ exports.exec = function(cmd, args, stdin, callback) {
     var close = false;
     var tout = false;
 
-    setTimeout(function(){
-        logger.debug("Sending SIGTERM to " + full_cmd);
-        child.kill('SIGTERM');
-        tout = true;
-    }, timeout*1000);
+    if (!disable_timeout) {
+        setTimeout(function(){
+            logger.debug("Sending SIGTERM to " + full_cmd);
+            child.kill('SIGTERM');
+            tout = true;
+        }, timeout*1000);
+    } else {
+        logger.log("Timeout has been disabled in this API call.");
+    }
 
     // Delay to prevent write stdin when the pipe is closed.
     setTimeout(function(){
@@ -67,12 +73,16 @@ exports.exec = function(cmd, args, stdin, callback) {
     });
 
     child.on('error', function(err) {
+        // Reset disable timeout
+        disable_timeout = false;
         logger.error("CMD - Error executing command: " + err);
         error = true;
         callback({"error": 1, "message": errors.description(1)});  // Error executing internal command
     });
 
     child.on('close', (code) => {
+        // Reset disable timeout
+        disable_timeout = false;
         logger.debug("CMD - Exit code: " + code);
         close = true;
         if (!error){
@@ -118,6 +128,10 @@ exports.exec = function(cmd, args, stdin, callback) {
         }
     });
 
+}
+
+exports.set_disable_timeout = function(new_value) {
+    disable_timeout = new_value;
 }
 
 function tryParseJSON (jsonString){

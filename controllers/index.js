@@ -19,7 +19,6 @@ cache     = apicache.middleware;
 wazuh_control = api_path + "/models/wazuh-api.py";
 
 var router = require('express').Router();
-var validator = require('../helpers/input_validation');
 var os = require("os");
 
 // Cache options
@@ -59,6 +58,12 @@ router.all("*", function(req, res, next) {
             delete req.query["pretty"];
         } else {
             req['pretty'] = false;
+        }
+        // wait for
+        if ("wait_for_complete" in req.query) {
+            // Disable timeout in the current API call
+            execute.set_disable_timeout(true);
+            delete req.query["wait_for_complete"];
         }
     }
 
