@@ -73,6 +73,8 @@ exports.exec = function(cmd, args, stdin, callback) {
     });
 
     child.on('error', function(err) {
+        // Reset disable timeout
+        disable_timeout = false;
         logger.error("CMD - Error executing command: " + err);
         error = true;
         callback({"error": 1, "message": errors.description(1)});  // Error executing internal command
