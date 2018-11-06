@@ -73,8 +73,6 @@ if [ -n "$(ps -e | egrep ^\ *1\ .*systemd$)" ]; then
     systemctl enable wazuh-api
     systemctl restart wazuh-api
 
-    echo "Daemon installed successfully. Please check the status running:"
-    echo "  systemctl status wazuh-api"
 
 # Install for SysVinit / Upstart
 
