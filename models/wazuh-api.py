@@ -153,6 +153,7 @@ if __name__ == "__main__":
 
     # Main
     try:
+        wazuh = Wazuh(ossec_path=request['ossec_path'])
 
         cluster_config = read_config()
         executable_name = "Wazuh API"
@@ -161,7 +162,6 @@ if __name__ == "__main__":
             raise WazuhException(3019, {"EXECUTABLE_NAME": executable_name, "MASTER_IP": master_ip})
 
         before = time.time()
-        wazuh = Wazuh(ossec_path=request['ossec_path'])
 
         if list_f:
             print_json(sorted(dapi.get_functions()))
