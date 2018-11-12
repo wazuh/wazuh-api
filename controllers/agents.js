@@ -471,7 +471,7 @@ router.get('/:agent_id/upgrade_result', function(req, res) {
 
 
 /**
- * @api {get} /agents/:agent_id/config/:component/:configuration Get active configuration from agent
+ * @api {get} /agents/:agent_id/config/:component/:configuration Get active configuration
  * @apiName GetConfig
  * @apiGroup Config
  *
@@ -479,7 +479,7 @@ router.get('/:agent_id/upgrade_result', function(req, res) {
  * @apiParam {String="agent","agentless","analysis","auth","com","csyslog","integrator","logcollector","mail","monitor","request","syscheck","wmodules"} component Selected component.
  * @apiParam {String="client","buffer","labels","internal","agentless","global","active_response","alerts","command","rules","decoders","internal","auth","active-response","internal","cluster","csyslog","integration","localfile","socket","remote","syscheck","rootcheck","wmodules"} configuration Configuration to read.
  *
- * @apiDescription Returns the active configuration from agent in JSON format.
+ * @apiDescription Returns the active configuration in JSON format.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/001/config/logcollector/localfile?pretty"
