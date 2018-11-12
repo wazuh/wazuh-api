@@ -644,7 +644,7 @@ router.put('/:agent_id/upgrade', function(req, res) {
  * @apiGroup Upgrade
  *
  * @apiParam {Number} agent_id Agent unique ID.
- * @apiParam {String} file_path WPK file path.
+ * @apiParam {String} file_path Path to the WPK file. The file must be on a folder on the Wazuh's installation directory (by default, ``/var/ossec``).
  * @apiParam {String} installer Installation script.
  *
  * @apiDescription Upgrade the agent using a custom file.
