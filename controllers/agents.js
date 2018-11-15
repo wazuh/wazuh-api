@@ -471,7 +471,7 @@ router.get('/:agent_id/upgrade_result', function(req, res) {
 
 
 /**
- * @api {get} /agents/:agent_id/config/:component/:configuration Get loaded configuration from agent
+ * @api {get} /agents/:agent_id/config/:component/:configuration Get active configuration
  * @apiName GetConfig
  * @apiGroup Config
  *
@@ -479,7 +479,7 @@ router.get('/:agent_id/upgrade_result', function(req, res) {
  * @apiParam {String="agent","agentless","analysis","auth","com","csyslog","integrator","logcollector","mail","monitor","request","syscheck","wmodules"} component Selected component.
  * @apiParam {String="client","buffer","labels","internal","agentless","global","active_response","alerts","command","rules","decoders","internal","auth","active-response","internal","cluster","csyslog","integration","localfile","socket","remote","syscheck","rootcheck","wmodules"} configuration Configuration to read.
  *
- * @apiDescription Returns the loaded configuration from agent in JSON format.
+ * @apiDescription Returns the active configuration in JSON format.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/001/config/logcollector/localfile?pretty"
@@ -644,7 +644,7 @@ router.put('/:agent_id/upgrade', function(req, res) {
  * @apiGroup Upgrade
  *
  * @apiParam {Number} agent_id Agent unique ID.
- * @apiParam {String} file_path WPK file path.
+ * @apiParam {String} file_path Path to the WPK file. The file must be on a folder on the Wazuh's installation directory (by default, ``/var/ossec``).
  * @apiParam {String} installer Installation script.
  *
  * @apiDescription Upgrade the agent using a custom file.
