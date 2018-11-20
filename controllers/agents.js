@@ -501,7 +501,7 @@ router.get('/:agent_id/upgrade_result', function(req, res) {
 })
 
  /**
- * @api {get} /agents/:agent_id/group/is_sync Get sycn status of agent
+ * @api {get} /agents/:agent_id/group/is_sync Get sync status of agent
  * @apiName GetSync
  * @apiGroup Group
  *
