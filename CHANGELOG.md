@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.7.1]
+
+There are no changes for Wazuh API in this version.
+
+
 ## [v3.7.0]
 
 ### Added
