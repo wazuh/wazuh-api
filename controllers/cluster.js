@@ -43,7 +43,7 @@ router.get('/node', cache(), function (req, res) {
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields.
  * @apiParam {String} [type] Filters by node type.
- * *
+ * 
  * @apiDescription Returns the nodes info
  *
  * @apiExample {curl} Example usage:
@@ -114,7 +114,7 @@ router.get('/nodes/:node_name', cache(), function (req, res) {
  * @apiGroup Info
  *
  * @apiParam {String} [node] Filter information by node name.
- * *
+ * 
  * @apiDescription Show cluster health
  *
  * @apiExample {curl} Example usage:
