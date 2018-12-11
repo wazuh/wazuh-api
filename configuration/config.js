@@ -38,8 +38,8 @@ config.log_path = config.ossec_path + "/logs/api.log";
 config.python = [
     // Default installation
     {
-        bin: "python",
-        lib: ""
+        bin: "/var/ossec/python/bin/python3",
+        lib: "/var/ossec/python/lib"
     },
     // Python 3
     {
