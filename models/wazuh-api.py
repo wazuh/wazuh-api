@@ -165,7 +165,8 @@ if __name__ == "__main__":
             exit(0)
 
         request['from_cluster'] = False
-        data = asyncio.run(dapi.DistributedAPI(request, debug, pretty).distribute_function())
+        data = asyncio.run(dapi.DistributedAPI(input_json=request, logger=logging.getLogger(), 
+                                               debug=debug, pretty=pretty).distribute_function())
         after = time.time()
         logging.debug("Total time: {}".format(after - before))
         logging.debug("Size of all received data: {}".format(len(data)))
