@@ -229,6 +229,39 @@ router.get('/groups/:group_id/configuration', cache(), function(req, res) {
 })
 
 /**
+ * @api {get} /agents/groups/:group_id/configuration Put configuration file (agent.conf) into a group
+ * @apiName PostAgentGroupConfiguration
+ * @apiGroup Groups
+ *
+ * @apiParam {String} group_id Group ID.
+ *
+ * @apiDescription Upload the group configuration (agent.conf).
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X POST -H 'Content-type: text/xml' -d @agent.conf.xml "https://127.0.0.1:55000/agents/groups/dmz/configuration?pretty"
+ *
+ */
+router.post('/groups/:group_id/configuration', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " POST /agents/groups/:group_id/configuration");
+
+    req.apicacheGroup = "agents";
+
+    var data_request = {'function': '/agents/groups/:group_id/configuration', 'arguments': {}};
+    var filters = {'group_id': 'names'};
+
+    if (!filter.check(req.params, filters, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['group_id'] = req.params.group_id;
+    data_request['arguments']['xml_file'] = req.rawBody;
+
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
  * @api {get} /agents/groups/:group_id/files/:filename Get a file in group
  * @apiName GetAgentGroupFile
  * @apiGroup Groups
