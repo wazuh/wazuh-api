@@ -229,10 +229,11 @@ router.get('/groups/:group_id/configuration', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /agents/groups/:group_id/configuration Put configuration file (agent.conf) into a group
+ * @api {post} /agents/groups/:group_id/configuration Put configuration file (agent.conf) into a group
  * @apiName PostAgentGroupConfiguration
  * @apiGroup Groups
  *
+ * @apiParam {String} xml_file Configuration file.
  * @apiParam {String} group_id Group ID.
  *
  * @apiDescription Upload the group configuration (agent.conf).
@@ -789,40 +790,6 @@ router.put('/:agent_id/group/:group_id', function(req, res) {
     data_request['arguments']['replace'] = 'force_single_group' in req.query && req.query.replace != 'false' ? true : false;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
-})
-
-
-/**
- * @api {post} /agents/group/:group_id Add a list of agents to a group
- * @apiName PostGroupAgents
- * @apiGroup Groups
- *
- * @apiParam {Number} agent_id_list List of agents ID.
- * @apiParam {String} group_id Group ID.
- *
- * @apiDescription Adds a list of agents to the specified group.
- *
- * @apiExample {curl} Example usage:
- *     curl -u foo:bar -X POST -H "Content-Type:application/json" -d '{"ids":["001","002"]}' "http://localhost:55000/agents/group/dmz?pretty"
- *
- */
-router.post('/group/:group_id', function(req, res) {
-    logger.debug(req.connection.remoteAddress + " POST /agents/group/:group_id");
-
-    var data_request = {'function': 'POST/agents/group/:group_id', 'arguments': {}};
-    var filters = {'group_id':'names', 'ids':'array_numbers'}
-
-    if (!filter.check(req.params, filters, req, res))  // Filter with error
-        return;
-
-    data_request['arguments']['group_id'] = req.params.group_id;
-    data_request['arguments']['agent_id_list'] = req.body.ids;
-
-    if ('ids' in req.body){
-        console.log('arguments ', data_request['arguments'])
-        execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
-    }else
-        res_h.bad_request(req, res, 604, "Missing field: 'ids'");
 })
 
 
