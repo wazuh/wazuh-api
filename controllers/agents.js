@@ -238,7 +238,7 @@ router.get('/groups/:group_id/configuration', cache(), function(req, res) {
  * @apiDescription Upload the group configuration (agent.conf).
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X POST -H 'Content-type: text/xml' -d @agent.conf.xml "https://127.0.0.1:55000/agents/groups/dmz/configuration?pretty"
+ *     curl -u foo:bar -k -X POST -H 'Content-type: application/xml' -d @agent.conf.xml "https://127.0.0.1:55000/agents/groups/dmz/configuration?pretty"
  *
  */
 router.post('/groups/:group_id/configuration', cache(), function(req, res) {
@@ -246,14 +246,14 @@ router.post('/groups/:group_id/configuration', cache(), function(req, res) {
 
     req.apicacheGroup = "agents";
 
-    var data_request = {'function': '/agents/groups/:group_id/configuration', 'arguments': {}};
+    var data_request = {'function': 'POST/agents/groups/:group_id/configuration', 'arguments': {}};
     var filters = {'group_id': 'names'};
 
     if (!filter.check(req.params, filters, req, res))  // Filter with error
         return;
 
     data_request['arguments']['group_id'] = req.params.group_id;
-    data_request['arguments']['xml_file'] = req.rawBody;
+    data_request['arguments']['xml_file'] = req.body;
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;

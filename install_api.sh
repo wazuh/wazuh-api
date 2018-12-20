@@ -333,6 +333,13 @@ setup_api_permissions () {
 
     # API users permissions
     exec_cmd "chmod 660 $API_PATH/configuration/auth/user"
+
+    # permissions for execute verify-agent-conf binary
+    exec_cmd "chgrp ossec $DEF_OSSDIR/bin/verify-agent-conf $DEF_OSSDIR/lib $DEF_OSSDIR/lib/libwazuhext.so"
+
+    # permissions for writing on /var/ossec/tmp
+    exec_cmd "chmod g+w $DEF_OSSDIR/tmp"
+
 }
 
 setup_api() {
