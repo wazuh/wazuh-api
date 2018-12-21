@@ -239,7 +239,7 @@ router.get('/groups/:group_id/configuration', cache(), function(req, res) {
  * @apiDescription Upload the group configuration (agent.conf).
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X POST -H 'Content-type: application/xml' -d @agent.conf.xml "https://127.0.0.1:55000/agents/groups/dmz/configuration?pretty"
+ *     curl -u foo:bar -X POST -H 'Content-type: application/xml' -d @agent.conf.xml "https://127.0.0.1:55000/agents/groups/dmz/configuration?pretty"
  *
  */
 router.post('/groups/:group_id/configuration', cache(), function(req, res) {
