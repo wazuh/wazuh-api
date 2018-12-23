@@ -905,6 +905,39 @@ router.delete('/:agent_id/group/:group_id', function(req, res) {
 })
 
 /**
+ * @api {delete} /agents/group/:group_id Remove a single group of multiple agents
+ * @apiName DeleteGroupAgents
+ * @apiGroup Groups
+ *
+ * @apiParam {List} agent_id Agent ID list.
+ * @apiParam {String} group_id Group ID.
+ *
+ * @apiDescription Remove a list of agents of a group
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -X DELETE -H "Content-Type:application/json" -d '{"ids":["001","002"]}' "http://localhost:55000/agents/group/dmz?pretty"
+ *
+ */
+router.delete('/group/:group_id', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " DELETE /agents/group/:group_id");
+
+    var data_request = {'function': 'DELETE/agents/group/:group_id', 'arguments': {}};
+    var filters = {'group_id':'names', 'ids':'array_numbers'}
+
+    if (!filter.check(req.params, filters, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['group_id'] = req.params.group_id;
+    data_request['arguments']['agent_id_list'] = req.body.ids;
+
+    if ('ids' in req.body){
+        console.log('arguments ', data_request['arguments'])
+        execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    }else
+        res_h.bad_request(req, res, 604, "Missing field: 'ids'");
+})
+
+/**
  * @api {delete} /agents/groups/:group_id Remove group
  * @apiName DeleteGroupAgents
  * @apiGroup Groups
