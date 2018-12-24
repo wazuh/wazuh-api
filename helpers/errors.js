@@ -60,6 +60,7 @@ errors['array_names'] = 621;
 errors['621'] = "Invalid character in parameters";
 
 errors['700'] = "File not found"
+errors['701'] = "Size of XML file is too long"
 
 // Headers
 errors['800'] = "Error adding agent due to header 'x-forwarded-for' is not present";
