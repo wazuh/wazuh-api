@@ -211,6 +211,12 @@ app.use (function (err, req, res, next){
             msg = "Body: " + err.body;
         res_h.bad_request(req, res, "614", msg);
     }
+    else if (err == "PayloadTooLargeError: request entity too large"){
+        var msg = "";
+        if ('body' in err)
+            msg = "Body: " + err.body;
+        res_h.bad_request(req, res, "701", msg);
+    }
     else{
         logger.log("Internal Error");
         if(err.stack)
