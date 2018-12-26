@@ -2050,7 +2050,7 @@ describe('Syscollector', function () {
 
 
     describe('GET/syscollector/netaddr', function () {
-        netaddr_properties = ['scan_id', 'proto', 'address', 'netmask', 'broadcast', 'agent_id']
+        netaddr_properties = ['scan_id', 'iface', 'proto', 'address', 'netmask', 'broadcast', 'agent_id']
 
         it('Request', function (done) {
             request(common.url)
@@ -2138,6 +2138,7 @@ describe('Syscollector', function () {
                 });
         });
 
+        expected_iface = "";
         expected_proto = "";
         expected_address = "";
         expected_broadcast = "";
@@ -2205,6 +2206,21 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'message']);
                     res.body.error.should.equal(1403);
+                    done();
+                });
+        });
+
+        it('Filter: iface', function (done) {
+            request(common.url)
+                .get("/experimental/syscollector/netaddr?iface=" + expected_iface)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.data.items[0].should.have.properties(netaddr_properties);
+                    res.body.data.items[0].proto.should.be.equal(expected_iface);
                     done();
                 });
         });
@@ -3584,6 +3600,7 @@ describe('Syscollector', function () {
                 });
         });
 
+        expected_iface = "";
         expected_proto = "";
         expected_address = "";
         expected_broadcast = "";
@@ -3599,6 +3616,7 @@ describe('Syscollector', function () {
                     res.body.should.have.properties(['error', 'data']);
                     res.body.error.should.equal(0);
                     res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
+                    expected_iface = res.body.data.items[0].iface;
                     expected_proto = res.body.data.items[0].proto;
                     expected_address = res.body.data.items[0].address;
                     expected_broadcast = res.body.data.items[0].broadcast;
@@ -3651,6 +3669,21 @@ describe('Syscollector', function () {
                     if (err) return done(err);
                     res.body.should.have.properties(['error', 'message']);
                     res.body.error.should.equal(1403);
+                    done();
+                });
+        });
+
+        it('Filter: iface', function (done) {
+            request(common.url)
+                .get("/syscollector/" + agent_id + "/netaddr?iface=" + expected_iface)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.data.items[0].should.have.properties(netaddr_properties);
+                    res.body.data.items[0].proto.should.be.equal(expected_iface);
                     done();
                 });
         });
