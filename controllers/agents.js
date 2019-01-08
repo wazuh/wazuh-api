@@ -299,7 +299,7 @@ router.get('/groups/:group_id/files/:filename', cache(), function(req, res) {
         data_request['arguments']['type_conf'] = req.query.type;
 
     if ('format' in req.query) 
-        data_request['arguments']['format'] = req.query.format;
+        data_request['arguments']['return_format'] = req.query.format;
             
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
