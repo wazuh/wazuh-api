@@ -270,7 +270,8 @@ router.post('/groups/:group_id/configuration', cache(), function(req, res) {
  * @apiParam {String} [group_id] Group ID.
  * @apiParam {String} [file_name] Filename
  * @apiParam {String="conf","rootkit_files", "rootkit_trojans", "rcl"} [type] Type of file.
- *
+ * @apiParam {String="json","xml"} [format] Optional. Output format (JSON, XML).
+ * 
  * @apiDescription Returns the specified file belonging to the group parsed to JSON.
  *
  * @apiExample {curl} Example usage*:
@@ -291,12 +292,15 @@ router.get('/groups/:group_id/files/:filename', cache(), function(req, res) {
     data_request['arguments']['group_id'] = req.params.group_id;
     data_request['arguments']['filename'] = req.params.filename;
 
-    if (!filter.check(req.query, {'type': 'names'}, req, res))  // Filter with error
+    if (!filter.check(req.query, {'type': 'names', 'format': 'format'}, req, res))  // Filter with error
         return;
 
     if ('type' in req.query)
         data_request['arguments']['type_conf'] = req.query.type;
 
+    if ('format' in req.query) 
+        data_request['arguments']['format'] = req.query.format;
+            
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
