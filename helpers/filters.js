@@ -46,6 +46,17 @@ exports.check = function (query, filters, req, res){
     return true; // Filter OK
 }
 
+exports.check_xml = function(xml_string, req, res) {
+    var libxmljs = require('libxmljs');
+    try {
+        libxmljs.parseXml('<root>' + xml_string + '</root>');
+    } catch (error) {
+        res_h.bad_request(req, res, 622, error);
+        return false;
+    }
+    return true;
+}
+
 /*
  * filters = "-field1,field2"
  * Return:

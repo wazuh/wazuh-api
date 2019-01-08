@@ -252,6 +252,8 @@ router.post('/groups/:group_id/configuration', cache(), function(req, res) {
 
     if (!filter.check(req.params, filters, req, res))  // Filter with error
         return;
+    
+    if (!filter.check_xml(req.body, req, res)) return;
 
     data_request['arguments']['group_id'] = req.params.group_id;
     data_request['arguments']['xml_file'] = req.body;
@@ -284,6 +286,8 @@ router.post('/groups/:group_id/files/:file_name', cache(), function(req, res) {
 
     if (!filter.check(req.params, filters, req, res))  // Filter with error
         return;
+
+    if (!filter.check_xml(req.body, req, res)) return;
 
     data_request['arguments']['group_id'] = req.params.group_id;
     data_request['arguments']['xml_file'] = req.body;
