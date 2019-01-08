@@ -21,12 +21,12 @@ var path_log = path.dirname(config.log_path);
 var foreground = false;
 var ossec_uid = 0;
 var ossec_gid = 0;
+var userid = require('userid');
 
 // get ossec uid and gid
-fs.stat(path_log + '/api', function(err, stats) {
-    ossec_uid = stats['uid'];
-    ossec_gid = stats['gid'];
-});
+
+ossec_uid = userid.uid("root");
+ossec_gid = userid.gid("root");
 
 var LEVEL_DISABLED = 0;
 var LEVEL_INFO = 1;
