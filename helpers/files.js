@@ -17,7 +17,7 @@ var moment = require('moment');
     Returns the file name
 */
 exports.tmp_file_creator = function(file_contents) {
-    random_file_name = '/var/ossec/tmp/' + moment().format();
+    random_file_name = '/var/ossec/tmp/api_group_conf_' + moment().unix() + '_' + Math.floor(Math.random() * Math.floor(1000)).toString();
 
     fs.writeFile(random_file_name, file_contents, (err) => {
         if (err) {
