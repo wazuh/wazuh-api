@@ -256,8 +256,38 @@ router.post('/groups/:group_id/configuration', cache(), function(req, res) {
     data_request['arguments']['group_id'] = req.params.group_id;
     data_request['arguments']['xml_file'] = req.body;
 
-    if (!filter.check(req.query, filters, req, res))  // Filter with error
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {post} /agents/groups/:group_id/files/:file_name Upload file into a group
+ * @apiName PostAgentGroupFile
+ * @apiGroup Groups
+ *
+ * @apiParam {String} xml_file File. contents
+ * @apiParam {String} group_id Group ID.
+ * @apiParam {String} file_name File name.
+ *
+ * @apiDescription Upload a file to a group.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -X POST -H 'Content-type: application/xml' -d @agent.conf.xml "https://127.0.0.1:55000/agents/groups/dmz/files/agent.conf?pretty"
+ *
+ */
+router.post('/groups/:group_id/files/:file_name', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " POST /agents/groups/:group_id/files/:file_name");
+
+    req.apicacheGroup = "agents";
+
+    var data_request = {'function': 'POST/agents/groups/:group_id/files/:file_name', 'arguments': {}};
+    var filters = {'group_id': 'names', 'file_name': 'names'};
+
+    if (!filter.check(req.params, filters, req, res))  // Filter with error
         return;
+
+    data_request['arguments']['group_id'] = req.params.group_id;
+    data_request['arguments']['xml_file'] = req.body;
+    data_request['arguments']['file_name'] = req.params.file_name;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
