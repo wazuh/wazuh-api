@@ -343,6 +343,7 @@ router.get('/:agent_id/ports', function (req, res) {
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [iface] Filters by interface name.
  * @apiParam {String} [proto] Filters by proto.
  * @apiParam {String} [address] Filters by address.
  * @apiParam {String} [broadcast] Filters by broadcast.
@@ -360,7 +361,7 @@ router.get('/:agent_id/netaddr', function (req, res) {
     var data_request = { 'function': '/syscollector/:agent_id/netaddr', 'arguments': {} };
     var filters = {
         'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
-        'search': 'search_param', 'select': 'select_param',
+        'search': 'search_param', 'select': 'select_param', 'iface': 'alphanumeric_param',
         'proto': 'alphanumeric_param', 'address': 'alphanumeric_param',
         'broadcast': 'alphanumeric_param', 'netmask': 'alphanumeric_param',
     };
@@ -384,6 +385,8 @@ router.get('/:agent_id/netaddr', function (req, res) {
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+    if ('iface' in req.query)
+        data_request['arguments']['filters']['iface'] = req.query.iface;
     if ('proto' in req.query)
         data_request['arguments']['filters']['proto'] = req.query.proto;
     if ('address' in req.query)

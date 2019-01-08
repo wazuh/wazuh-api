@@ -13,9 +13,10 @@
     "express": "^4.14.0",
     "htpasswd": "^2.3.4",
     "http-auth": "^3.0.1",
-    "moment": "^2.15.0",
+    "libxmljs": "^0.19.5",
+    "moment": "^2.23.0",
     "rotating-file-stream": "^1.3.6",
-    "libxmljs": "^0.19.5"
+    "userid": "^0.3.1"
   },
   "repository": {
     "type": "git",
@@ -25,9 +26,10 @@
     "url": "https://github.com/wazuh/wazuh-api/issues"
   },
   "devDependencies": {
-    "mocha": "^3.0.0",
-    "should": "^11.1.0",
-    "supertest": "^2.0.0",
-    "glob": "^7.1.2"
+    "glob": "^7.1.3",
+    "mocha": "^3.5.3",
+    "mochawesome": "^3.1.1",
+    "should": "^11.2.1",
+    "supertest": "^2.0.1"
   }
 }
