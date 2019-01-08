@@ -333,6 +333,7 @@ setup_api_permissions () {
 
     # API users permissions
     exec_cmd "chmod 660 $API_PATH/configuration/auth/user"
+
 }
 
 setup_api() {

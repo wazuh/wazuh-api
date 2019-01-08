@@ -229,6 +229,74 @@ router.get('/groups/:group_id/configuration', cache(), function(req, res) {
 })
 
 /**
+ * @api {post} /agents/groups/:group_id/configuration Put configuration file (agent.conf) into a group
+ * @apiName PostAgentGroupConfiguration
+ * @apiGroup Groups
+ *
+ * @apiParam {String} xml_file Configuration file.
+ * @apiParam {String} group_id Group ID.
+ *
+ * @apiDescription Upload the group configuration (agent.conf).
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -X POST -H 'Content-type: application/xml' -d @agent.conf.xml "https://127.0.0.1:55000/agents/groups/dmz/configuration?pretty"
+ *
+ */
+router.post('/groups/:group_id/configuration', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " POST /agents/groups/:group_id/configuration");
+
+    req.apicacheGroup = "agents";
+
+    var data_request = {'function': 'POST/agents/groups/:group_id/configuration', 'arguments': {}};
+    var filters = {'group_id': 'names'};
+
+    if (!filter.check(req.params, filters, req, res))  // Filter with error
+        return;
+    
+    if (!filter.check_xml(req.body, req, res)) return;
+
+    data_request['arguments']['group_id'] = req.params.group_id;
+    data_request['arguments']['xml_file'] = require('../helpers/files').tmp_file_creator(req.body);
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {post} /agents/groups/:group_id/files/:file_name Upload file into a group
+ * @apiName PostAgentGroupFile
+ * @apiGroup Groups
+ *
+ * @apiParam {String} xml_file File. contents
+ * @apiParam {String} group_id Group ID.
+ * @apiParam {String} file_name File name.
+ *
+ * @apiDescription Upload a file to a group.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -X POST -H 'Content-type: application/xml' -d @agent.conf.xml "https://127.0.0.1:55000/agents/groups/dmz/files/agent.conf?pretty"
+ *
+ */
+router.post('/groups/:group_id/files/:file_name', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " POST /agents/groups/:group_id/files/:file_name");
+
+    req.apicacheGroup = "agents";
+
+    var data_request = {'function': 'POST/agents/groups/:group_id/files/:file_name', 'arguments': {}};
+    var filters = {'group_id': 'names', 'file_name': 'names'};
+
+    if (!filter.check(req.params, filters, req, res))  // Filter with error
+        return;
+
+    if (!filter.check_xml(req.body, req, res)) return;
+
+    data_request['arguments']['group_id'] = req.params.group_id;
+    data_request['arguments']['xml_file'] = require('../helpers/files').tmp_file_creator(req.body);
+    data_request['arguments']['file_name'] = req.params.file_name;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
  * @api {get} /agents/groups/:group_id/files/:filename Get a file in group
  * @apiName GetAgentGroupFile
  * @apiGroup Groups
@@ -236,7 +304,8 @@ router.get('/groups/:group_id/configuration', cache(), function(req, res) {
  * @apiParam {String} [group_id] Group ID.
  * @apiParam {String} [file_name] Filename
  * @apiParam {String="conf","rootkit_files", "rootkit_trojans", "rcl"} [type] Type of file.
- *
+ * @apiParam {String="json","xml"} [format] Optional. Output format (JSON, XML).
+ * 
  * @apiDescription Returns the specified file belonging to the group parsed to JSON.
  *
  * @apiExample {curl} Example usage*:
@@ -257,12 +326,15 @@ router.get('/groups/:group_id/files/:filename', cache(), function(req, res) {
     data_request['arguments']['group_id'] = req.params.group_id;
     data_request['arguments']['filename'] = req.params.filename;
 
-    if (!filter.check(req.query, {'type': 'names'}, req, res))  // Filter with error
+    if (!filter.check(req.query, {'type': 'names', 'format': 'format'}, req, res))  // Filter with error
         return;
 
     if ('type' in req.query)
         data_request['arguments']['type_conf'] = req.query.type;
 
+    if ('format' in req.query) 
+        data_request['arguments']['return_format'] = req.query.format;
+            
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
