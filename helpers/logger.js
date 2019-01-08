@@ -25,8 +25,8 @@ var userid = require('userid');
 
 // get ossec uid and gid
 
-ossec_uid = userid.uid("root");
-ossec_gid = userid.gid("root");
+ossec_uid = userid.uid("ossec");
+ossec_gid = userid.gid("ossec");
 
 var LEVEL_DISABLED = 0;
 var LEVEL_INFO = 1;
