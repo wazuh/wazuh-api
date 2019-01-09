@@ -18,9 +18,11 @@ try:
     new_path = '/var/ossec/framework'
     if not os_path.exists(new_path):
         current_path = path[0].split('/')
-        new_path = "/{0}/{1}/framework".format(current_path[1], current_path[2])
-    path.append(new_path)
+        new_path = "/{0}/{1}".format(current_path[1], current_path[2])
+        new_framework_path = "{}/framework".format(new_path)
+    path.append(new_framework_path)
     from wazuh import Wazuh
+    wazuh = Wazuh(ossec_path=new_path)
     from wazuh.exception import WazuhException
     from wazuh.cluster.dapi import dapi
     from wazuh.cluster.cluster import read_config
