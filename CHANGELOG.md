@@ -1,6 +1,19 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.8.0]
+
+### Added
+- Added API calls to upgrade agent groups configuration ([#257](https://github.com/wazuh/wazuh-api/pull/257)):
+    - `POST/agents/groups/:group_id/configuration`
+    - `POST/agents/groups/:group_id/files/:file_name`
+- Added filtering by interface name in `GET/syscollector/:agent_id/netaddr` ([#260](https://github.com/wazuh/wazuh-api/pull/260)).
+- Added API call to delete multiple agents from a group: `DELETE/agents/group/:group_id` ([#259](https://github.com/wazuh/wazuh-api/pull/259)).
+- Added API call to add multiple agents to a group: `POST/agents/group/:group_id` ([#256](https://github.com/wazuh/wazuh-api/pull/256)).
+
+### Fixed
+- Fixed bug getting ossec gid and uid in Docker containers ([#256](https://github.com/wazuh/wazuh-api/pull/265))
+
 ## [v3.7.2]
 
 There are no changes for Wazuh API in this version.
