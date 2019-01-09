@@ -47,14 +47,14 @@ exports.check = function (query, filters, req, res){
 }
 
 exports.check_xml = function(xml_string, req, res) {
-    var libxmljs = require('libxmljs');
-    try {
-        libxmljs.parseXml('<root>' + xml_string + '</root>');
-    } catch (error) {
-        res_h.bad_request(req, res, 622, error);
+    var parser = require('fast-xml-parser');
+    var is_valid = parser.validate(xml_string);
+    if (is_valid === true) {
+        return true;
+    } else {
+        res_h.bad_request(req, res, 622, is_valid.err.msg);
         return false;
-    }
-    return true;
+    };
 }
 
 /*
