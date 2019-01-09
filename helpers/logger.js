@@ -21,12 +21,14 @@ var path_log = path.dirname(config.log_path);
 var foreground = false;
 var ossec_uid = 0;
 var ossec_gid = 0;
-var userid = require('userid');
 
 // get ossec uid and gid
 
-ossec_uid = userid.uid("ossec");
-ossec_gid = userid.gid("ossec");
+var uidNumber = require("uid-number");
+uidNumber("ossec", "ossec", function(er, uid, gid) {
+    ossec_uid = gid;
+    ossec_gid = uid;
+});
 
 var LEVEL_DISABLED = 0;
 var LEVEL_INFO = 1;

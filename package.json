@@ -16,7 +16,7 @@
     "fast-xml-parser": "^3.12.11",
     "moment": "^2.23.0",
     "rotating-file-stream": "^1.3.6",
-    "userid": "^0.3.1"
+    "uid-number": "^0.0.6"
   },
   "repository": {
     "type": "git",
