@@ -19,7 +19,7 @@ var moment = require('moment');
 exports.tmp_file_creator = function(file_contents) {
     random_file_name = config.ossec_path + '/tmp/api_group_conf_' + moment().unix() + '_' + Math.floor(Math.random() * Math.floor(1000)).toString();
 
-    fs.writeFile(random_file_name, file_contents, (err) => {
+    fs.writeFileSync(random_file_name, file_contents, (err) => {
         if (err) {
             throw err; 
         }

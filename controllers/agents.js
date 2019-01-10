@@ -256,8 +256,13 @@ router.post('/groups/:group_id/configuration', cache(), function(req, res) {
     if (!filter.check_xml(req.body, req, res)) return;
 
     data_request['arguments']['group_id'] = req.params.group_id;
-    data_request['arguments']['xml_file'] = require('../helpers/files').tmp_file_creator(req.body);
-
+    try {
+        data_request['arguments']['xml_file'] = require('../helpers/files').tmp_file_creator(req.body);
+    } catch(err) {
+        res_h.bad_request(req, res, 702, err);
+        return;
+    }
+    
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -290,7 +295,12 @@ router.post('/groups/:group_id/files/:file_name', cache(), function(req, res) {
     if (!filter.check_xml(req.body, req, res)) return;
 
     data_request['arguments']['group_id'] = req.params.group_id;
-    data_request['arguments']['xml_file'] = require('../helpers/files').tmp_file_creator(req.body);
+    try {
+        data_request['arguments']['xml_file'] = require('../helpers/files').tmp_file_creator(req.body);
+    } catch(err) {
+        res_h.bad_request(req, res, 702, err);
+        return;
+    }
     data_request['arguments']['file_name'] = req.params.file_name;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
