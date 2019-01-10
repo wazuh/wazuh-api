@@ -52,7 +52,7 @@ exports.check_xml = function(xml_string, req, res) {
     if (is_valid === true) {
         return true;
     } else {
-        res_h.bad_request(req, res, 622, is_valid.err.msg);
+        res_h.bad_request(req, res, 703, is_valid.err.msg);
         return false;
     };
 }
