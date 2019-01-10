@@ -45,10 +45,10 @@ error_and_exit() {
 
     if [ "X${API_BACKUP}" == "Xyes" ]; then
         print "Backup directory: $API_PATH_BACKUP"
-        print "Restore backup:"
-        print "\t1. rm -r $API_PATH"
+        print "\t1. Save previous configuration: cp -rp $API_PATH_BACKUP/configuration $DEF_OSSDIR/tmp"
         print "\t2. Install API $API_OLD_VERSION"
-        print "\t3. Restore configuration: cp -rLfp $API_PATH_BACKUP/configuration $API_PATH/configuration"
+        print "\t3. Restore configuration: mv $DEF_OSSDIR/tmp/configuration $API_PATH/configuration"
+        print "\t4. Restart API"
     fi
 
     if [ -d "/root/wazuh-api-tmp" ]; then
