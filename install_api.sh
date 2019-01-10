@@ -300,7 +300,7 @@ backup_api () {
     fi
 
     if [ -d $API_PATH/ssl ]; then
-        exec_cmd "cp -rLfp $API_PATH $API_PATH_BACKUP/ssl"
+        exec_cmd "cp -rLfp $API_PATH/ssl $API_PATH_BACKUP/ssl"
     fi
 
     API_BACKUP='yes'
