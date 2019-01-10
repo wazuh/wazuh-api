@@ -48,7 +48,7 @@ error_and_exit() {
         print "Restore backup:"
         print "\t1. rm -r $API_PATH"
         print "\t2. Install API $API_OLD_VERSION"
-        print "\t3. Restore configuration: cp -p $API_PATH_BACKUP/configuration $API_PATH/configuration"
+        print "\t3. Restore configuration: cp -rLfp $API_PATH_BACKUP/configuration $API_PATH/configuration"
     fi
 
     if [ -d "/root/wazuh-api-tmp" ]; then
