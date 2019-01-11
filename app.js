@@ -163,7 +163,7 @@ if (config.ld_library_path.indexOf('api') != -1) {
 // Body
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.text({type:"application/xml", limit:"1mb"}));
+app.use(bodyParser.text({type:"application/xml", limit:"20kb"}));
 
 
 /**
