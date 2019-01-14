@@ -98,7 +98,7 @@ describe('Agents', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items[0].id.should.equal('002');
+                res.body.data.items[0].id.should.equal('003');
                 res.body.data.items[0].should.have.properties(agent_properties);
                 done();
             });
@@ -958,6 +958,143 @@ describe('Agents', function() {
         });
 
     });  // PUT/agents/:agent_id/group/:group_id
+
+    describe('POST/agents/groups/:group_id/files/:file_name', function () {
+
+        agent_xml = fs.readFileSync('./test/data/agent.conf.xml', 'utf8')
+        wrong_xml = fs.readFileSync('./test/data/wrong.conf.xml', 'utf8')
+        invalid_xml = fs.readFileSync('./test/data/invalid.conf.xml', 'utf8')
+        
+        before(function (done) {
+            request(common.url)
+                .put("/agents/groups/testsagentconf")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) throw err;
+                    done();
+                });
+        });
+
+        it('Request', function(done) {
+
+            request(common.url)
+            .post("/agents/groups/testsagentconf/files/agent.conf")
+            .auth(common.credentials.user, common.credentials.password)
+            .set('Content-Type', 'application/xml')
+            .send(agent_xml)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+
+        it('ErrorOnEmptyConf', function(done) {
+            request(common.url)
+            .post("/agents/groups/testsagentconf/files/agent.conf")
+            .auth(common.credentials.user, common.credentials.password)
+            .set('Content-Type', 'application/xml')
+            .send("")
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(703);
+                done();
+            });
+        });
+
+        it('OnlyAgentConfAllowed', function(done) {
+
+            request(common.url)
+            .post("/agents/groups/testsagentconf/files/aaaaaa")
+            .auth(common.credentials.user, common.credentials.password)
+            .set('Content-Type', 'application/xml')
+            .send(agent_xml)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(1111);
+                done();
+            });
+        });
+
+        it('InvalidConfDetected', function(done) {
+
+            request(common.url)
+            .post("/agents/groups/testsagentconf/files/agent.conf")
+            .auth(common.credentials.user, common.credentials.password)
+            .set('Content-Type', 'application/xml')
+            .send(invalid_xml)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(703);
+                done();
+            });
+        });
+
+        it('WrongConfDetected', function(done) {
+
+            request(common.url)
+            .post("/agents/groups/testsagentconf/files/agent.conf")
+            .auth(common.credentials.user, common.credentials.password)
+            .set('Content-Type', 'application/xml')
+            .send(wrong_xml)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(1114);
+                done();
+            });
+        });
+
+        it('TooBigXML', function(done) {
+
+            big_xml = agent_xml.repeat(500)
+            console.log(big_xml.length)
+            request(common.url)
+            .post("/agents/groups/testsagentconf/files/agent.conf")
+            .auth(common.credentials.user, common.credentials.password)
+            .set('Content-Type', 'application/xml')
+            .send(big_xml)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(701);
+                done();
+            });
+        });
+
+
+
+    });  // POST/agents/groups/:group_id/files/:file_name
 
     var agent_id = 0
     describe('GET/agents/no_group', function () {
@@ -2192,13 +2329,7 @@ describe('Agents', function() {
                 res.body.data.command[4].should.have.properties(['executable', 'timeout_allowed',
                 'name', 'expect']);
                 res.body.data.command[5].should.have.properties(['executable', 'timeout_allowed',
-                'name', 'expect']);
-                res.body.data.command[6].should.have.properties(['executable', 'timeout_allowed',
-                'name', 'expect']);
-                res.body.data.command[7].should.have.properties(['executable', 'timeout_allowed',
-                'name', 'expect']);
-                res.body.data.command[8].should.have.properties(['executable', 'timeout_allowed',
-                'name', 'expect']);                
+                'name', 'expect']);            
                 
                 res.body.error.should.equal(0);
                 done();
