@@ -229,6 +229,84 @@ router.get('/groups/:group_id/configuration', cache(), function(req, res) {
 })
 
 /**
+ * @api {post} /agents/groups/:group_id/configuration Put configuration file (agent.conf) into a group
+ * @apiName PostAgentGroupConfiguration
+ * @apiGroup Groups
+ *
+ * @apiParam {String} xml_file Configuration file.
+ * @apiParam {String} group_id Group ID.
+ *
+ * @apiDescription Upload the group configuration (agent.conf).
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -X POST -H 'Content-type: application/xml' -d @agent.conf.xml "https://127.0.0.1:55000/agents/groups/dmz/configuration?pretty"
+ *
+ */
+router.post('/groups/:group_id/configuration', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " POST /agents/groups/:group_id/configuration");
+
+    req.apicacheGroup = "agents";
+
+    var data_request = {'function': 'POST/agents/groups/:group_id/configuration', 'arguments': {}};
+    var filters = {'group_id': 'names'};
+
+    if (!filter.check(req.params, filters, req, res))  // Filter with error
+        return;
+    
+    if (!filter.check_xml(req.body, req, res)) return;
+
+    data_request['arguments']['group_id'] = req.params.group_id;
+    try {
+        data_request['arguments']['xml_file'] = require('../helpers/files').tmp_file_creator(req.body);
+    } catch(err) {
+        res_h.bad_request(req, res, 702, err);
+        return;
+    }
+    
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {post} /agents/groups/:group_id/files/:file_name Upload file into a group
+ * @apiName PostAgentGroupFile
+ * @apiGroup Groups
+ *
+ * @apiParam {String} xml_file File. contents
+ * @apiParam {String} group_id Group ID.
+ * @apiParam {String} file_name File name.
+ *
+ * @apiDescription Upload a file to a group.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -X POST -H 'Content-type: application/xml' -d @agent.conf.xml "https://127.0.0.1:55000/agents/groups/dmz/files/agent.conf?pretty"
+ *
+ */
+router.post('/groups/:group_id/files/:file_name', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " POST /agents/groups/:group_id/files/:file_name");
+
+    req.apicacheGroup = "agents";
+
+    var data_request = {'function': 'POST/agents/groups/:group_id/files/:file_name', 'arguments': {}};
+    var filters = {'group_id': 'names', 'file_name': 'names'};
+
+    if (!filter.check(req.params, filters, req, res))  // Filter with error
+        return;
+
+    if (!filter.check_xml(req.body, req, res)) return;
+
+    data_request['arguments']['group_id'] = req.params.group_id;
+    try {
+        data_request['arguments']['xml_file'] = require('../helpers/files').tmp_file_creator(req.body);
+    } catch(err) {
+        res_h.bad_request(req, res, 702, err);
+        return;
+    }
+    data_request['arguments']['file_name'] = req.params.file_name;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
  * @api {get} /agents/groups/:group_id/files/:filename Get a file in group
  * @apiName GetAgentGroupFile
  * @apiGroup Groups
@@ -236,7 +314,8 @@ router.get('/groups/:group_id/configuration', cache(), function(req, res) {
  * @apiParam {String} [group_id] Group ID.
  * @apiParam {String} [file_name] Filename
  * @apiParam {String="conf","rootkit_files", "rootkit_trojans", "rcl"} [type] Type of file.
- *
+ * @apiParam {String="json","xml"} [format] Optional. Output format (JSON, XML).
+ * 
  * @apiDescription Returns the specified file belonging to the group parsed to JSON.
  *
  * @apiExample {curl} Example usage*:
@@ -257,12 +336,15 @@ router.get('/groups/:group_id/files/:filename', cache(), function(req, res) {
     data_request['arguments']['group_id'] = req.params.group_id;
     data_request['arguments']['filename'] = req.params.filename;
 
-    if (!filter.check(req.query, {'type': 'names'}, req, res))  // Filter with error
+    if (!filter.check(req.query, {'type': 'names', 'format': 'format'}, req, res))  // Filter with error
         return;
 
     if ('type' in req.query)
         data_request['arguments']['type_conf'] = req.query.type;
 
+    if ('format' in req.query) 
+        data_request['arguments']['return_format'] = req.query.format;
+            
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -760,6 +842,40 @@ router.put('/:agent_id/group/:group_id', function(req, res) {
 
 
 /**
+ * @api {post} /agents/group/:group_id Add a list of agents to a group
+ * @apiName PostGroupAgents
+ * @apiGroup Groups
+ *
+ * @apiParam {Number} agent_id_list List of agents ID.
+ * @apiParam {String} group_id Group ID.
+ *
+ * @apiDescription Adds a list of agents to the specified group.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -X POST -H "Content-Type:application/json" -d '{"ids":["001","002"]}' "http://localhost:55000/agents/group/dmz?pretty"
+ *
+ */
+router.post('/group/:group_id', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " POST /agents/group/:group_id");
+
+    var data_request = {'function': 'POST/agents/group/:group_id', 'arguments': {}};
+    var filters = {'group_id':'names', 'ids':'array_numbers'}
+
+    if (!filter.check(req.params, filters, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['group_id'] = req.params.group_id;
+    data_request['arguments']['agent_id_list'] = req.body.ids;
+
+    if ('ids' in req.body){
+        console.log('arguments ', data_request['arguments'])
+        execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    }else
+        res_h.bad_request(req, res, 604, "Missing field: 'ids'");
+})
+
+
+/**
  * @api {delete} /agents/groups Delete a list of groups
  * @apiName DeleteAgentsGroups
  * @apiGroup Delete
@@ -868,6 +984,39 @@ router.delete('/:agent_id/group/:group_id', function(req, res) {
     data_request['arguments']['group_id'] = req.params.group_id;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {delete} /agents/group/:group_id Remove a single group of multiple agents
+ * @apiName DeleteGroupAgents
+ * @apiGroup Groups
+ *
+ * @apiParam {List} agent_id Agent ID list.
+ * @apiParam {String} group_id Group ID.
+ *
+ * @apiDescription Remove a list of agents of a group
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -X DELETE -H "Content-Type:application/json" -d '{"ids":["001","002"]}' "http://localhost:55000/agents/group/dmz?pretty"
+ *
+ */
+router.delete('/group/:group_id', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " DELETE /agents/group/:group_id");
+
+    var data_request = {'function': 'DELETE/agents/group/:group_id', 'arguments': {}};
+    var filters = {'group_id':'names', 'ids':'array_numbers'}
+
+    if (!filter.check(req.params, filters, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['group_id'] = req.params.group_id;
+    data_request['arguments']['agent_id_list'] = req.body.ids;
+
+    if ('ids' in req.body){
+        console.log('arguments ', data_request['arguments'])
+        execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    }else
+        res_h.bad_request(req, res, 604, "Missing field: 'ids'");
 })
 
 /**

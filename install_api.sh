@@ -45,10 +45,10 @@ error_and_exit() {
 
     if [ "X${API_BACKUP}" == "Xyes" ]; then
         print "Backup directory: $API_PATH_BACKUP"
-        print "Restore backup:"
-        print "\t1. rm -r $API_PATH"
-        print "\t2. mv $API_PATH_BACKUP $API_PATH"
-        print "\t3. chown ossec:ossec $API_PATH"
+        print "\t1. Save previous configuration: cp -rp $API_PATH_BACKUP/configuration $DEF_OSSDIR/tmp"
+        print "\t2. Install API $API_OLD_VERSION"
+        print "\t3. Restore configuration: mv $DEF_OSSDIR/tmp/configuration $API_PATH/configuration"
+        print "\t4. Restart API"
     fi
 
     if [ -d "/root/wazuh-api-tmp" ]; then
@@ -285,11 +285,24 @@ get_api () {
 
 backup_api () {
     if [ -e $API_PATH_BACKUP ]; then
-        exec_cmd "rm -rf $API_PATH_BACKUP"
+        exec_cmd "rm -rf $API_PATH_BACKUP/*"
+    else
+        exec_cmd "mkdir $API_PATH_BACKUP"
+        exec_cmd "chown root:ossec $API_PATH_BACKUP"
     fi
 
-    exec_cmd "cp -rLfp $API_PATH $API_PATH_BACKUP"
-    exec_cmd "chown root:root $API_PATH_BACKUP"
+    if [ -e $API_PATH/package.json ]; then
+        exec_cmd "cp -rLfp $API_PATH/package.json $API_PATH_BACKUP/package.json"
+    fi
+
+    if [ -d $API_PATH/configuration ]; then
+        exec_cmd "cp -rLfp $API_PATH/configuration $API_PATH_BACKUP/configuration"
+    fi
+
+    if [ -d $API_PATH/ssl ]; then
+        exec_cmd "cp -rLfp $API_PATH/ssl $API_PATH_BACKUP/ssl"
+    fi
+
     API_BACKUP='yes'
     API_OLD_VERSION=`cat $API_PATH_BACKUP/package.json | grep "version\":" | grep -P "\d+(?:\.\d+){0,2}\-*\w*" -o`
 }
@@ -333,6 +346,7 @@ setup_api_permissions () {
 
     # API users permissions
     exec_cmd "chmod 660 $API_PATH/configuration/auth/user"
+
 }
 
 setup_api() {

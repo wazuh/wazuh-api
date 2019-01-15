@@ -163,6 +163,8 @@ if (config.ld_library_path.indexOf('api') != -1) {
 // Body
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.text({type:"application/xml", limit:"1mb"}));
+
 
 /**
  * Check Wazuh app version
@@ -208,6 +210,12 @@ app.use (function (err, req, res, next){
         if ('body' in err)
             msg = "Body: " + err.body;
         res_h.bad_request(req, res, "614", msg);
+    }
+    else if (err == "PayloadTooLargeError: request entity too large"){
+        var msg = "";
+        if ('body' in err)
+            msg = "Body: " + err.body;
+        res_h.bad_request(req, res, "701", msg);
     }
     else{
         logger.log("Internal Error");
