@@ -8,11 +8,10 @@ wazuh_api_folder=$4
 apt-get update
 curl -s https://s3-us-west-1.amazonaws.com/packages-dev.wazuh.com/key/GPG-KEY-WAZUH | apt-key add -
 echo "deb https://s3-us-west-1.amazonaws.com/packages-dev.wazuh.com/pre-release/apt/ unstable main" | tee -a /etc/apt/sources.list.d/wazuh_pre_release.list
-#echo -e '[wazuh_staging]\ngpgcheck=1\ngpgkey=https://s3-us-west-1.amazonaws.com/packages-dev.wazuh.com/key/GPG-KEY-WAZUH\nenabled=1\nname=EL-$releasever - Wazuh\nbaseurl=https://s3-us-west-1.amazonaws.com/packages-dev.wazuh.com/staging/yum/\nprotect=1' | tee /etc/yum.repos.d/wazuh_pre.repo
 
 apt-get update
 apt-get install wazuh-manager -y
-apt-get install python python-cryptography -y 
+apt-get install python python-cryptography -y
 
 if [ "X${manager_type}" = "Xmaster" ]
 then
@@ -46,7 +45,7 @@ EOT
     sed -i "s:config.cache_enabled = \"yes\";:config.cache_enabled = \"no\";:g" /var/ossec/api/configuration/config.js
 
     systemctl restart wazuh-api
-    
+
     /var/ossec/bin/ossec-control enable agentless
     /var/ossec/bin/ossec-control enable client-syslog
     /var/ossec/bin/ossec-control enable integrator

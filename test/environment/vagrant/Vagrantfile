@@ -6,7 +6,7 @@ agents_net = "172.19.0.20"  # 172.17.0.20x
 n_workers = 1
 n_agents = 2
 box = "ubuntu/bionic64"
-wazuh_api_folder = "/home/danielruiz/git/wazuh-api"
+wazuh_api_folder = ENV['WAZUH_API_PATH']
 
 Vagrant.configure("2") do |config|
     # Manager master
@@ -20,9 +20,6 @@ Vagrant.configure("2") do |config|
           pmv.cpus   = 1
       end
       node.vm.hostname = "master"
-      # config.ssh.username = 'root'
-      # config.ssh.password = 'vagrant'
-      # config.ssh.insert_key = 'true'
     end
     # Manager worker
     (1..n_workers).each do |i|
@@ -36,9 +33,6 @@ Vagrant.configure("2") do |config|
               pmv.cpus   = 1
           end
           node.vm.hostname = "worker-#{i}"
-          # config.ssh.username = 'root'
-          # config.ssh.password = 'vagrant'
-          # config.ssh.insert_key = 'true'
         end
     end
     # Agents

@@ -964,7 +964,7 @@ describe('Agents', function() {
         agent_xml = fs.readFileSync('./test/data/agent.conf.xml', 'utf8')
         wrong_xml = fs.readFileSync('./test/data/wrong.conf.xml', 'utf8')
         invalid_xml = fs.readFileSync('./test/data/invalid.conf.xml', 'utf8')
-        
+
         before(function (done) {
             request(common.url)
                 .put("/agents/groups/testsagentconf")
@@ -1073,8 +1073,7 @@ describe('Agents', function() {
 
         it('TooBigXML', function(done) {
 
-            big_xml = agent_xml.repeat(500)
-            console.log(big_xml.length)
+            big_xml = agent_xml.repeat(600)
             request(common.url)
             .post("/agents/groups/testsagentconf/files/agent.conf")
             .auth(common.credentials.user, common.credentials.password)
@@ -1108,7 +1107,7 @@ describe('Agents', function() {
                 .end(function (err, res) {
                     if (err) throw err;
                     agent_id = res.body.data.id;
-                    setTimeout(function(){ 
+                    setTimeout(function(){
                         done();
                     }, 30)
                 });
@@ -1610,6 +1609,74 @@ describe('Agents', function() {
             });
         });
 
+        it('UsingFormatAgentConfXML', function(done) {
+
+            request(common.url)
+            .get("/agents/groups/webserver/files/agent.conf?format=xml")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.be.type('string');
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+
+        it('UsingFormatAgentConfJSON', function(done) {
+
+            request(common.url)
+            .get("/agents/groups/webserver/files/agent.conf?format=json")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.be.an.Object
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+
+        it('UsingFormatRootcheckXML', function(done) {
+
+            request(common.url)
+            .get("/agents/groups/webserver/files/agent.conf?format=xml")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.be.type('string');
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+
+        it('UsingFormatRootcheckJSON', function(done) {
+
+            request(common.url)
+            .get("/agents/groups/webserver/files/agent.conf?format=json")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.be.an.Object
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+
         it('Params: Bad group name', function(done) {
             request(common.url)
             .get("/agents/groups/wñ!/files/cis_debian_linux_rcl.txt")
@@ -1941,7 +2008,7 @@ describe('Agents', function() {
                     done();
                 });
         });
-        
+
         it('Filter: older_than, status and ids', function (done) {
             setTimeout(function(){
                 request(common.url)
@@ -1952,7 +2019,7 @@ describe('Agents', function() {
                     .expect(200)
                     .end(function (err, res) {
                         if (err) return done(err);
-    
+
                         res.body.should.have.properties(['error', 'data']);
                         res.body.data.should.have.properties(['affected_agents', 'msg', 'older_than']);
                         if ('failed_ids' in res.body.data && res.body.data.failed_ids.length > 0)
@@ -1960,9 +2027,9 @@ describe('Agents', function() {
                         res.body.data.msg.should.equal("All selected agents were removed");
                         res.body.data.affected_agents[0].should.equal(agent1_id);
                         res.body.data.affected_agents.should.have.lengthOf(1);
-    
+
                         res.body.error.should.equal(0);
-                        setTimeout(function(){ 
+                        setTimeout(function(){
                             done();
                         }, 30)
                     });
@@ -1980,7 +2047,7 @@ describe('Agents', function() {
 
                     res.body.should.have.properties(['error', 'message']);
                     res.body.error.should.equal(1701);
-                    setTimeout(function(){ 
+                    setTimeout(function(){
                         done();
                     }, 30)
                 });
@@ -2144,11 +2211,11 @@ describe('Agents', function() {
 
 
     }); // GET/agents/stats/distinct
-    
-    
+
+
 	describe('GET/agents/:agent/config/:component/:configuration', function () {
-		
-		// agent	
+
+		// agent
 		it('Request-Agent-Client', function(done) {
             request(common.url)
             .get("/agents/002/config/agent/client")
@@ -2167,7 +2234,7 @@ describe('Agents', function() {
                 done();
             });
         });
-        
+
         it('Request-Agent-Buffer', function(done) {
             request(common.url)
             .get("/agents/002/config/agent/buffer")
@@ -2186,7 +2253,7 @@ describe('Agents', function() {
                 done();
             });
         });
-        
+
         it('Request-Agent-Labels', function(done) {
             request(common.url)
             .get("/agents/002/config/agent/labels")
@@ -2197,7 +2264,7 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
-                // res.body.data.shoul.have.properties('labels'); // empty list	
+                // res.body.data.shoul.have.properties('labels'); // empty list
 
                 res.body.error.should.equal(0);
                 done();
@@ -2229,7 +2296,7 @@ describe('Agents', function() {
                 done();
             });
         });
-		
+
 		// agentless
 		it('Request-Agentless-Agentless', function(done) {
             request(common.url)
@@ -2249,7 +2316,7 @@ describe('Agents', function() {
                 done();
             });
         });
-        
+
         // analysis
 		it('Request-Analysis-Global', function(done) {
             request(common.url)
@@ -2271,7 +2338,7 @@ describe('Agents', function() {
                 done();
             });
         });
-        
+
         it('Request-Analysis-Active-response', function(done) {
             request(common.url)
             .get("/agents/000/config/analysis/active_response")
@@ -2288,7 +2355,7 @@ describe('Agents', function() {
                 done();
             });
         });
-        
+
         it('Request-Analysis-Alerts', function(done) {
             request(common.url)
             .get("/agents/000/config/analysis/alerts")
@@ -2306,7 +2373,7 @@ describe('Agents', function() {
                 done();
             });
         });
-        
+
         it('Request-Analysis-Command', function(done) {
             request(common.url)
             .get("/agents/000/config/analysis/command")
@@ -2329,13 +2396,13 @@ describe('Agents', function() {
                 res.body.data.command[4].should.have.properties(['executable', 'timeout_allowed',
                 'name', 'expect']);
                 res.body.data.command[5].should.have.properties(['executable', 'timeout_allowed',
-                'name', 'expect']);            
-                
+                'name', 'expect']);
+
                 res.body.error.should.equal(0);
                 done();
             });
         });
-        
+
         it('Request-Analysis-Internal', function(done) {
             request(common.url)
             .get("/agents/000/config/analysis/internal")
@@ -2357,7 +2424,7 @@ describe('Agents', function() {
                 done();
             });
         });
-        
+
         // auth
 		it('Request-Auth-Auth', function(done) {
             request(common.url)
@@ -2379,7 +2446,7 @@ describe('Agents', function() {
                 done();
             });
         });
-        
+
         // com
 		it('Request-Com-Active-response', function(done) {
             request(common.url)
@@ -2398,7 +2465,7 @@ describe('Agents', function() {
                 done();
             });
         });
-        
+
         it('Request-Com-Internal', function(done) {
             request(common.url)
             .get("/agents/002/config/com/internal")
@@ -2417,7 +2484,7 @@ describe('Agents', function() {
                 done();
             });
         });
-        
+
         // csyslog
 		it('Request-Csyslog-Csyslog', function(done) {
             request(common.url)
@@ -2432,12 +2499,12 @@ describe('Agents', function() {
                 res.body.data.should.have.properties(['syslog_output']);
                 res.body.data['syslog_output'][0].should.have.properties(['format',
                 'level', 'use_fqdn', 'port', 'server']);
-                
+
                 res.body.error.should.equal(0);
                 done();
             });
         });
-        
+
         // integrator
 		it('Request-Integrator-Integration', function(done) {
             request(common.url)
@@ -2452,7 +2519,7 @@ describe('Agents', function() {
                 res.body.data.should.have.properties('integration');
                 res.body.data.integration[0].should.have.properties(['alert_format', 'hook_url',
                 'group', 'name', 'level']);
-                
+
                 res.body.error.should.equal(0);
                 done();
             });
@@ -2470,12 +2537,12 @@ describe('Agents', function() {
 
                 res.body.should.have.properties(['error', 'data']);
                 res.body.data.should.have.properties('localfile');
-                
+
                 res.body.error.should.equal(0);
                 done();
             });
         });
-        
+
         it('Request-Logcollector-Socket', function(done) {
             request(common.url)
             .get("/agents/002/config/logcollector/socket")
@@ -2487,12 +2554,12 @@ describe('Agents', function() {
 
                 // res.body.should.have.properties(['error', 'data']); // data property is empty
                 // res.body.data.should.have.properties(['socket']);
-                
+
                 res.body.error.should.equal(0);
                 done();
             });
         });
-        
+
         it('Request-Logcollector-Internal', function(done) {
             request(common.url)
             .get("/agents/002/config/logcollector/internal")
@@ -2513,7 +2580,7 @@ describe('Agents', function() {
                 done();
             });
         });
-        
+
         // mail
 		it('Request-Mail-Global', function(done) {
             request(common.url)
@@ -2528,12 +2595,12 @@ describe('Agents', function() {
                 res.body.data.should.have.properties('global');
                 res.body.data.global.should.have.properties(['email_maxperhour', 'email_to',
                 'email_from', 'smtp_server']);
-                
+
                 res.body.error.should.equal(0);
                 done();
             });
         });
-        
+
         it('Request-Mail-Alerts', function(done) {
             request(common.url)
             .get("/agents/000/config/mail/alerts")
@@ -2544,12 +2611,12 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 // res.body.should.have.properties(['error', 'data']); // data property is empty
-                
+
                 res.body.error.should.equal(0);
                 done();
             });
         });
-        
+
         it('Request-Mail-Internal', function(done) {
             request(common.url)
             .get("/agents/000/config/mail/internal")
@@ -2564,12 +2631,12 @@ describe('Agents', function() {
                 res.body.data.internal.should.have.properties('mail');
                 res.body.data.internal.mail.should.have.properties(['strict_checking',
                 'grouping']);
-                
+
                 res.body.error.should.equal(0);
                 done();
             });
         });
-        
+
         // monitor
 		it('Request-Monitor-Internal', function(done) {
             request(common.url)
@@ -2587,7 +2654,7 @@ describe('Agents', function() {
                 done();
             });
         });
-        
+
         // request
 		it('Request-Request-Remote', function(done) {
             request(common.url)
@@ -2605,7 +2672,7 @@ describe('Agents', function() {
                 done();
             });
         });
-        
+
         it('Request-Request-Internal', function(done) {
             request(common.url)
             .get("/agents/000/config/request/internal")
@@ -2627,7 +2694,7 @@ describe('Agents', function() {
                 done();
             });
         });
-        
+
         // syscheck
 		it('Request-Syscheck-Syscheck', function(done) {
             request(common.url)
@@ -2642,12 +2709,12 @@ describe('Agents', function() {
                 res.body.data.should.have.properties(['syscheck']);
                 res.body.data.syscheck.should.have.properties(['ignore', 'skip_nfs', 'directories',
                 'scan_on_start', 'disabled', 'frequency', 'restart_audit', 'nodiff']);
-                
+
                 res.body.error.should.equal(0);
                 done();
             });
         });
-        
+
         it('Request-Syscheck-Rootcheck', function(done) {
             request(common.url)
             .get("/agents/002/config/syscheck/rootcheck")
@@ -2663,12 +2730,12 @@ describe('Agents', function() {
                 'skip_nfs', 'check_if', 'check_pids', 'check_dev', 'check_ports', 'disabled', 'rootkit_files',
                 // 'frequency', 'scanall', 'check_trojans', 'base_directory', 'check_files', 'system_audit']); // base directory value is empty, this cause an error
                 'frequency', 'scanall', 'check_trojans', 'check_files', 'system_audit']);
-                
+
                 res.body.error.should.equal(0);
                 done();
             });
         });
-        
+
         it('Request-Syscheck-Internal', function(done) {
             request(common.url)
             .get("/agents/002/config/syscheck/internal")
@@ -2681,12 +2748,12 @@ describe('Agents', function() {
                 res.body.should.have.properties(['error', 'data']);
                 res.body.data.should.have.properties(['internal']);
                 res.body.data.internal.should.have.properties(['syscheck', 'rootcheck']);
-                
+
                 res.body.error.should.equal(0);
                 done();
             });
         });
-        
+
         // wmodules
 		it('Request-Wmodules-Wmodules', function(done) {
             request(common.url)
@@ -2705,12 +2772,12 @@ describe('Agents', function() {
                 res.body.data.wmodules[1].should.have.properties(['cis-cat']);
                 res.body.data.wmodules[2].should.have.properties(['osquery']);
                 res.body.data.wmodules[3].should.have.properties(['syscollector']);
-                
+
                 res.body.error.should.equal(0);
                 done();
             });
         });
-        
+
 
     }); // GET/agents/:agent/config/:component/:configuration
 
