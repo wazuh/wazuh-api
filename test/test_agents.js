@@ -996,6 +996,25 @@ describe('Agents', function() {
             });
         });
 
+        it('ErrorOnBadGroup', function(done) {
+
+            request(common.url)
+            .post("/agents/groups/asdfg/files/agent.conf")
+            .auth(common.credentials.user, common.credentials.password)
+            .set('Content-Type', 'application/xml')
+            .send(agent_xml)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(1710);
+                done();
+            });
+        });
+
         it('ErrorOnEmptyConf', function(done) {
             request(common.url)
             .post("/agents/groups/testsagentconf/files/agent.conf")
@@ -1646,7 +1665,7 @@ describe('Agents', function() {
         it('UsingFormatRootcheckXML', function(done) {
 
             request(common.url)
-            .get("/agents/groups/webserver/files/agent.conf?format=xml")
+            .get("/agents/groups/default/files/cis_debian_linux_rcl.txt?format=xml")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -1654,7 +1673,7 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'data']);
-                res.body.data.should.be.type('string');
+                res.body.data.should.be.an.Object
                 res.body.error.should.equal(0);
                 done();
             });
@@ -1663,7 +1682,7 @@ describe('Agents', function() {
         it('UsingFormatRootcheckJSON', function(done) {
 
             request(common.url)
-            .get("/agents/groups/webserver/files/agent.conf?format=json")
+            .get("/agents/groups/default/files/cis_debian_linux_rcl.txt?format=json")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -1693,6 +1712,142 @@ describe('Agents', function() {
         });
 
     });  // GET/agents/groups/:group_id/files/:filename
+
+    describe('POST/agents/groups/:group_id/configuration', function () {
+
+        agent_xml = fs.readFileSync('./test/data/agent.conf.xml', 'utf8')
+        wrong_xml = fs.readFileSync('./test/data/wrong.conf.xml', 'utf8')
+        invalid_xml = fs.readFileSync('./test/data/invalid.conf.xml', 'utf8')
+
+        before(function (done) {
+            request(common.url)
+                .put("/agents/groups/testsagentconf2")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) throw err;
+                    done();
+                });
+        });
+
+        it('Request', function(done) {
+
+            request(common.url)
+            .post("/agents/groups/testsagentconf2/configuration")
+            .auth(common.credentials.user, common.credentials.password)
+            .set('Content-Type', 'application/xml')
+            .send(agent_xml)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                done();
+            });
+        });
+
+        it('ErrorOnBadGroup', function(done) {
+            request(common.url)
+            .post("/agents/groups/asdfg/configuration")
+            .auth(common.credentials.user, common.credentials.password)
+            .set('Content-Type', 'application/xml')
+            .send(agent_xml)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(1710);
+                done();
+            });
+        });
+
+        it('ErrorOnEmptyConf', function(done) {
+            request(common.url)
+            .post("/agents/groups/testsagentconf2/configuration")
+            .auth(common.credentials.user, common.credentials.password)
+            .set('Content-Type', 'application/xml')
+            .send("")
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(703);
+                done();
+            });
+        });
+
+
+        it('InvalidConfDetected', function(done) {
+
+            request(common.url)
+            .post("/agents/groups/testsagentconf2/configuration")
+            .auth(common.credentials.user, common.credentials.password)
+            .set('Content-Type', 'application/xml')
+            .send(invalid_xml)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(703);
+                done();
+            });
+        });
+
+        it('WrongConfDetected', function(done) {
+
+            request(common.url)
+            .post("/agents/groups/testsagentconf2/configuration")
+            .auth(common.credentials.user, common.credentials.password)
+            .set('Content-Type', 'application/xml')
+            .send(wrong_xml)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(1114);
+                done();
+            });
+        });
+
+        it('TooBigXML', function(done) {
+
+            big_xml = agent_xml.repeat(600)
+            request(common.url)
+            .post("/agents/groups/testsagentconf2/configuration")
+            .auth(common.credentials.user, common.credentials.password)
+            .set('Content-Type', 'application/xml')
+            .send(big_xml)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(701);
+                done();
+            });
+        });
+
+
+
+    });  // POST/agents/groups/:group_id/configuration
 
     describe('DELETE/agents/:agent_id/group', function() {
 
