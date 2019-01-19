@@ -23,9 +23,11 @@ var ossec_uid = 0;
 var ossec_gid = 0;
 
 // get ossec uid and gid
-fs.stat(path_log + '/api', function(err, stats) {
-    ossec_uid = stats['uid'];
-    ossec_gid = stats['gid'];
+
+var uidNumber = require("uid-number");
+uidNumber("ossec", "ossec", function(er, uid, gid) {
+    ossec_uid = gid;
+    ossec_gid = uid;
 });
 
 var LEVEL_DISABLED = 0;

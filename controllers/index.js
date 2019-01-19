@@ -38,7 +38,8 @@ apicache.options(cache_opt);
 router.post("*", function(req, res, next) {
     var content_type = req.get('Content-Type');
 
-    if (!content_type || !(content_type == 'application/json' || content_type == 'application/x-www-form-urlencoded')){
+    if (!content_type || !(content_type == 'application/json' || content_type == 'application/x-www-form-urlencoded'
+        || content_type == 'application/xml')){
         logger.debug(req.connection.remoteAddress + " POST " + req.path);
         res_h.bad_request(req, res, "607");
     }

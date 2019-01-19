@@ -46,6 +46,17 @@ exports.check = function (query, filters, req, res){
     return true; // Filter OK
 }
 
+exports.check_xml = function(xml_string, req, res) {
+    var parser = require('fast-xml-parser');
+    var is_valid = parser.validate(xml_string);
+    if (is_valid === true) {
+        return true;
+    } else {
+        res_h.bad_request(req, res, 703, is_valid.err.msg);
+        return false;
+    };
+}
+
 /*
  * filters = "-field1,field2"
  * Return:

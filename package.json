@@ -1,7 +1,7 @@
 {
   "name": "wazuh_api",
-  "version": "3.7.2",
-  "revision": "3707",
+  "version": "3.8.0",
+  "revision": "3803",
   "description": "Wazuh API.",
   "main": "app.js",
   "author": "Wazuh",
@@ -13,8 +13,10 @@
     "express": "^4.14.0",
     "htpasswd": "^2.3.4",
     "http-auth": "^3.0.1",
-    "moment": "^2.15.0",
-    "rotating-file-stream": "^1.3.6"
+    "fast-xml-parser": "^3.12.11",
+    "moment": "^2.23.0",
+    "rotating-file-stream": "^1.3.6",
+    "uid-number": "^0.0.6"
   },
   "repository": {
     "type": "git",
@@ -24,9 +26,10 @@
     "url": "https://github.com/wazuh/wazuh-api/issues"
   },
   "devDependencies": {
-    "mocha": "^3.0.0",
-    "should": "^11.1.0",
-    "supertest": "^2.0.0",
-    "glob": "^7.1.2"
+    "glob": "^7.1.3",
+    "mocha": "^3.5.3",
+    "mochawesome": "^3.1.1",
+    "should": "^11.2.1",
+    "supertest": "^2.0.1"
   }
 }

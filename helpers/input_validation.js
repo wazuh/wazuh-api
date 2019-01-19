@@ -91,3 +91,7 @@ exports.boolean = function(b) {
 exports.query_param = function(q) {
     return input_val(q, /[\w \d]+/);
 }
+
+exports.format = function(q) {
+    return input_val(q,/^xml|json$/)
+}
