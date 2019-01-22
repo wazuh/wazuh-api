@@ -281,4 +281,76 @@ router.get('/stats/remoted', cache(), function(req, res) {
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
+/**
+ * @api {get} /manager/files Get file
+ * @apiName GetFile
+ * @apiGroup Files
+ *
+ * @apiDescription Returns all rules.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/files?path=/etc/rules/local_rules.xml&pretty"
+ *
+ */
+router.get('/files', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /manager/files");
+
+    //req.apicacheGroup = "rules";
+
+    var data_request = {'function': '/manager/files', 'arguments': {}};
+
+    // limitar los paths
+
+    data_request['arguments']['path'] = req.query.path;
+    // filtrar valores
+    if ('format' in req.query)
+        data_request['arguments']['output_format'] = req.query.format;
+    else {
+        data_request['arguments']['output_format'] = 'json'
+    }
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+
+/**
+ * @api {post} /manager/rules Update local rules
+ * @apiName PostUpdateFile
+ * @apiGroup Groups
+ *
+ * @apiParam {String} xml_file File with rules.
+ * @apiParam {String} file_name File name.
+ *
+ * @apiDescription Upload a local rule file.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -X POST -H 'Content-type: application/xml' -d @rules.xml "https://127.0.0.1:55000/manager/files?path=/etc/rules&pretty"
+ *
+ */
+router.post('/files', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " POST /manager/files");
+
+    //req.apicacheGroup = "agents";
+
+    var data_request = {'function': 'POST/manager/files', 'arguments': {}};
+    //var filters = {'file_name': 'names'};
+
+    //if (!filter.check(req.params, filters, req, res))  // Filter with error
+    //    return;
+    // limitar los paths
+
+    if (!filter.check_xml(req.body, req, res)) return;
+
+    try {
+        data_request['arguments']['xml_file'] = require('../helpers/files').tmp_file_creator(req.body);
+    } catch(err) {
+        res_h.bad_request(req, res, 702, err);
+        return;
+    }
+
+    data_request['arguments']['path'] = req.query.path;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
 module.exports = router;
