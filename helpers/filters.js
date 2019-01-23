@@ -57,6 +57,24 @@ exports.check_xml = function(xml_string, req, res) {
     };
 }
 
+exports.escape_xml = function(xml_string, req, res) {
+    var xmlescape = require('xml-escape')
+    var xml_splitted = xml_string.split('<command>')
+    var to_replace = {}
+    for (x=1; x<xml_splitted.length; x++) {
+        command = xml_splitted[x].split('</command>')[0]
+        to_replace[command] = xmlescape(command)
+    }
+
+    var xml_escaped = xml_string
+    for (key in to_replace) {
+        var str_splitted = xml_escaped.split(key)
+        xml_escaped = str_splitted[0].concat(to_replace[key], str_splitted[1])
+    }
+
+    return xml_escaped
+}
+
 /*
  * filters = "-field1,field2"
  * Return:
