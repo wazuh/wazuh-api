@@ -62,7 +62,8 @@ errors['621'] = "Invalid character in parameters";
 errors['700'] = "File not found";
 errors['701'] = "Size of XML file is too long";
 errors['702'] = "Could not write XML temporary file";
-errors['703'] = 'Invalid XML file'; 
+errors['703'] = 'Invalid XML file';
+errors['704'] = 'Invalid path';
 
 // Headers
 errors['800'] = "Error adding agent due to header 'x-forwarded-for' is not present";

@@ -75,6 +75,25 @@ exports.escape_xml = function(xml_string, req, res) {
     return xml_escaped
 }
 
+exports.check_path = function(path, req, res) {
+    if (path.includes('./') || path.includes('../')) {
+        res_h.bad_request(req, res, 704);
+        return false
+    }
+
+    if (path == '/etc/ossec.conf') {
+        return true
+    }
+
+    re = new RegExp(/(\/etc\/rules\/|\/etc\/decoders\/|\/etc\/lists\/)[A-Za-z_\-\.\/]+/)
+    if (!re.test(path)) {
+        res_h.bad_request(req, res, 704);
+        return false
+    }
+
+    return true
+}
+
 /*
  * filters = "-field1,field2"
  * Return:

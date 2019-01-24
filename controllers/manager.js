@@ -298,15 +298,15 @@ router.get('/files', cache(), function(req, res) {
     //req.apicacheGroup = "rules";
 
     var data_request = {'function': '/manager/files', 'arguments': {}};
-
-    // limitar los paths
+    // check path parameter
+    if (!filter.check_path(req.query.path, req, res)) return;
 
     data_request['arguments']['path'] = req.query.path;
     // filtrar valores
     if ('format' in req.query)
         data_request['arguments']['output_format'] = req.query.format;
     else {
-        data_request['arguments']['output_format'] = 'json'
+        data_request['arguments']['output_format'] = 'xml'
     }
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
@@ -335,16 +335,18 @@ router.post('/files', cache(), function(req, res) {
     var data_request = {'function': 'POST/manager/files', 'arguments': {}};
     //var filters = {'file_name': 'names'};
 
-    //if (!filter.check(req.params, filters, req, res))  // Filter with error
+    //if (!filter.check(req.query, filters, req, res))  // Filter with error
     //    return;
     // limitar los paths
 
-    if (!filter.check_xml(req.body, req, res)) return;
+    var xml_escaped = require('../helpers/filters').escape_xml(req.body, req, res);
+
+    if (!filter.check_xml(xml_escaped, req, res)) return;
 
     try {
-        data_request['arguments']['xml_file'] = require('../helpers/files').tmp_file_creator(req.body);
+        data_request['arguments']['file'] = require('../helpers/files').tmp_file_creator(xml_escaped);
     } catch(err) {
-        res_h.bad_request(req, res, 702, err);
+        res_h.bad_request(req, res, 702, err)
         return;
     }
 
