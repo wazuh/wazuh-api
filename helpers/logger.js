@@ -141,7 +141,10 @@ stream.on('rotated', function(filename) {
 
     // Prevents from crashing the service if the above instructions fail    
     } catch (error) {
-        
-        console.log(error.message || error)
+        try {
+            logger.error(error.message || error);
+        } catch (err) {
+            console.log(err.message || err)
+        }
     }
 });
