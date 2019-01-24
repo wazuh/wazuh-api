@@ -117,8 +117,13 @@ exports.exec = function(cmd, args, stdin, callback) {
 
                         if ( json_cmd.hasOwnProperty('message') ){
                             logger.error(json_cmd.message);
-                            if (typeof json_cmd.message === 'string')
-                                json_result.message = json_cmd.message.split(":", 1)[0];
+                            if ( json_result.error === 1000)
+                                json_result.message = "Internal error"
+                            else{
+                                if (typeof json_cmd.message === 'string')
+                                    json_result.message = json_cmd.message.split(":", 1)[0];
+                            }
+                            
 			}
                     }
                     else{
