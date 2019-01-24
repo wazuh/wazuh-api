@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.8.1]
+
+### Fixed
+- Fixed improper error handling ([#296](https://github.com/wazuh/wazuh-api/pull/296)).
+- Fix bug setting file permissions when rotating API logs file ([#295](https://github.com/wazuh/wazuh-api/pull/295)).
+
 ## [v3.8.0]
 
 ### Added
@@ -19,7 +25,6 @@ All notable changes to this project will be documented in this file.
 - Fixed bug missing some keys when showing group files in `GET/agents/groups/:group_id/files/:file_name` ([wazuh/wazuh#2223](https://github.com/wazuh/wazuh/pull/2223)).
 - Fixed bug showing rules variables names instead of its value in `GET/rules/:rule_id` ([wazuh/wazuh#2222](https://github.com/wazuh/wazuh/pull/2222)).
 - `GET/rules` API call returns the attributes for `<list>` and `<info>` ([wazuh/wazuh#2358](https://github.com/wazuh/wazuh/pull/2358)).
-- Fix bug setting file permissions when rotating API logs file ([#295](https://github.com/wazuh/wazuh-api/pull/295)).
 
 ## [v3.7.2]
 
