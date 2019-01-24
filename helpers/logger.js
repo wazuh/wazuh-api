@@ -123,18 +123,28 @@ var stream = rfs(generator, {
 });
 
 stream.on('rotated', function(filename) {
-    // rotation job completed with success producing given filename
-    // setting correct permissions for generated files
-    logger.log("Rotated: " + filename);
-    fs.chmod(filename, 0o640);
-    fs.chmod(path.dirname(filename), 0o750);
-    fs.chmod(path.dirname(path.dirname(filename)), 0o750);
+    try {
+        // rotation job completed with success producing given filename
+        // setting correct permissions for generated files
+        logger.log("Rotated: " + filename);
+        fs.chmodSync(filename, 0o640);
+        fs.chmodSync(path.dirname(filename), 0o750);
+        fs.chmodSync(path.dirname(path.dirname(filename)), 0o750);
 
-    // if the API is running as root, set the user of the created files to ossec
-    if (!config.drop_privileges) {
-        fs.chown(filename, ossec_uid, ossec_gid);
-        fs.chown(path.dirname(filename), ossec_uid, ossec_gid);
-        fs.chown(path.dirname(path.dirname(filename)), ossec_uid, ossec_gid);
-        fs.chown(absolute_path_log, ossec_uid, ossec_gid);
+        // if the API is running as root, set the user of the created files to ossec
+        if (!config.drop_privileges) {
+            fs.chownSync(filename, ossec_uid, ossec_gid);
+            fs.chownSync(path.dirname(filename), ossec_uid, ossec_gid);
+            fs.chownSync(path.dirname(path.dirname(filename)), ossec_uid, ossec_gid);
+            fs.chownSync(absolute_path_log, ossec_uid, ossec_gid);
+        }
+
+    // Prevents from crashing the service if the above instructions fail    
+    } catch (error) {
+        try {
+            logger.error(error.message || error);
+        } catch (err) {
+            console.log(err.message || err)
+        }
     }
 });

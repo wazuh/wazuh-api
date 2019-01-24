@@ -4,7 +4,8 @@ All notable changes to this project will be documented in this file.
 ## [v3.8.1]
 
 ### Fixed
-- Fixed improper error handling ([#296](https://github.com/wazuh/wazuh-api/pull/296))
+- Fixed improper error handling ([#296](https://github.com/wazuh/wazuh-api/pull/296)).
+- Fix bug setting file permissions when rotating API logs file ([#295](https://github.com/wazuh/wazuh-api/pull/295)).
 
 ## [v3.8.0]
 
