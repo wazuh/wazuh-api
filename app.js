@@ -160,10 +160,12 @@ if (config.ld_library_path.indexOf('api') != -1) {
     logger.warning("Using a deprecated API configuration. The value config.ld_library_path must be config.ossec_path + \"/framework/lib\" instead of config.ossec_path + \"/api/framework/lib\"");
 }
 
+
 // Body
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.text({type:"application/xml", limit:"1mb"}));
+app.use(bodyParser.raw({type:"application/octet-stream", limit:"1mb"}));
 
 
 /**

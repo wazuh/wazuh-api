@@ -30,7 +30,7 @@ errors['605'] = "Param not valid. Date format: YYYYMMDD";  // Date
 errors['dates'] = 605;
 errors['606'] = "Param not valid. IP invalid";  // IP
 errors['ips'] = 606;  // IP
-errors['607'] = "Invalid content-type. POST requests should be 'application/json', 'application/x-www-form-urlencoded' or 'application/xml'";  //
+errors['607'] = "Invalid content-type. POST requests should be 'application/json', 'application/x-www-form-urlencoded', 'application/xml' or 'application/octet-stream'";  //
 errors['608'] = "Param not valid. Path invalid. Valid characters: a-z, A-Z, 0-9, ., _, -, :, /, \\";  // Paths
 errors['paths'] = 608;
 errors['609'] = "Param not valid. Valid characters: a-z, A-Z, 0-9, ., _, -, +";  // Alphanumeric params
@@ -58,8 +58,6 @@ errors['yes_no_boolean'] = 620;
 errors['620'] = "Param not valid. Valid values: yes or no";
 errors['array_names'] = 621;
 errors['621'] = "Invalid character in parameters";
-errors['622'] = "'format' parameter are required";
-errors['623'] = "'format' parameter should be 'xml' or 'text'";
 
 errors['700'] = "File not found";
 errors['701'] = "Size of XML file is too long";
@@ -72,6 +70,7 @@ errors['800'] = "Error adding agent due to header 'x-forwarded-for' is not prese
 errors['801'] = "Wrong format for 'wazuh-app-version' header. Expected format: 'X.Y.Z'";
 errors['802'] = "Invalid 'wazuh-app-version' header";
 errors['803'] = "Wazuh API is only available for master nodes";
+errors['804'] = "Invalid content-type for this request. Content-type should be 'application/xml' or 'application/octet-stream'";
 
 exports.description = function(n){
     if (n in errors)

@@ -298,26 +298,15 @@ router.get('/files', cache(), function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /manager/files");
 
     var data_request = {'function': '/manager/files', 'arguments': {}};
+    var filters = {'path': 'paths'};
+
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
+
     // check path parameter
     if (!filter.check_path(req.query.path, req, res)) return;
 
-    console.log('headers -> ', req.headers)
-    console.log('content-type -> ', req.headers['content-type'])
-    console.log('tipo -> ', typeof(req.headers['content-type']))
-
     data_request['arguments']['path'] = req.query.path;
-    // filtrar valores
-    if ('format' in req.query) {
-        if (req.query.format == 'xml') {
-            data_request['arguments']['output_format'] = req.query.format;
-        } else if (req.query.format == 'text') {
-            data_request['arguments']['output_format'] = req.query.format;
-        } else {
-            res_h.bad_request(req, res, 623);
-        }
-    } else {
-        res_h.bad_request(req, res, 622);
-    }
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -340,40 +329,40 @@ router.get('/files', cache(), function(req, res) {
 router.post('/files', cache(), function(req, res) {
     logger.debug(req.connection.remoteAddress + " POST /manager/files");
 
-    //req.apicacheGroup = "agents";
-
     var data_request = {'function': 'POST/manager/files', 'arguments': {}};
-    //var filters = {'file_name': 'names'};
-    //if (!filter.check(req.query, filters, req, res))  // Filter with error
-    //    return;
+    var filters = {'path': 'paths'};
+
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
+
     // check path parameter
     if (!filter.check_path(req.query.path, req, res)) return;
 
-    if (req.headers['content-type'] == 'application/json') {
+    if (req.headers['content-type'] == 'application/octet-stream') {
         try {
-            data_request['arguments']['file'] = require('../helpers/files').tmp_file_creator(req.body, req.headers['content-type']);
+            data_request['arguments']['file'] = require('../helpers/files').tmp_file_creator(req.body);
         } catch(err) {
-            res_h.bad_request(req, res, 702, err)
+            res_h.bad_request(req, res, 702, err);
             return;
         }
-        data_request['arguments']['path'] = req.query.path;
-        data_request['arguments']['content_type'] = req.headers['content-type'];
 
-        execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
-        return;
+    } else if (req.headers['content-type'] == 'application/xml') {
+
+        var xml_escaped = require('../helpers/filters').escape_xml(req.body, req, res);
+
+        if (!filter.check_xml(xml_escaped, req, res)) return;
+
+        try {
+            data_request['arguments']['file'] = require('../helpers/files').tmp_file_creator(xml_escaped);
+        } catch(err) {
+            res_h.bad_request(req, res, 702, err);
+            return;
+        }
+
+    } else {
+        res_h.bad_request(req, res, 704, err);
     }
 
-    var xml_escaped = require('../helpers/filters').escape_xml(req.body, req, res);
-
-    if (!filter.check_xml(xml_escaped, req, res)) return;
-    console.log('AAA')
-    try {
-        data_request['arguments']['file'] = require('../helpers/files').tmp_file_creator(xml_escaped, req.headers['content-type']);
-    } catch(err) {
-        res_h.bad_request(req, res, 702, err)
-        return;
-    }
-    console.log('llega')
     data_request['arguments']['path'] = req.query.path;
     data_request['arguments']['content_type'] = req.headers['content-type'];
 
