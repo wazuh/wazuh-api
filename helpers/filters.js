@@ -81,11 +81,11 @@ exports.check_path = function(path, req, res) {
         return false
     }
 
-    if (path == '/etc/ossec.conf') {
+    if (path == 'etc/ossec.conf') {
         return true
     }
 
-    re = new RegExp(/(\/etc\/rules\/|\/etc\/decoders\/|\/etc\/lists\/)[A-Za-z_\-\.\/]+/)
+    re = new RegExp(/(^etc\/rules\/|^etc\/decoders\/|^etc\/lists\/)[A-Za-z_\-\.\/]+/)
     if (!re.test(path)) {
         res_h.bad_request(req, res, 704);
         return false

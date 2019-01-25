@@ -282,11 +282,13 @@ router.get('/stats/remoted', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /manager/files Get file
+ * @api {get} /manager/files Get local file
  * @apiName GetFile
  * @apiGroup Files
  *
- * @apiDescription Returns all rules.
+ * @apiParam {String} path Relative path of file.
+ *
+ * @apiDescription Returns the content of a local file (rules, decoders and lists).
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/files?path=/etc/rules/local_rules.xml&pretty"
@@ -318,14 +320,14 @@ router.get('/files', cache(), function(req, res) {
 
 
 /**
- * @api {post} /manager/rules Update local rules
+ * @api {post} /manager/files Update local file
  * @apiName PostUpdateFile
- * @apiGroup Groups
+ * @apiGroup Files
  *
- * @apiParam {String} xml_file File with rules.
- * @apiParam {String} file_name File name.
+ * @apiParam {String} file Input file.
+ * @apiParam {String} path Relative path were input file will be placed.
  *
- * @apiDescription Upload a local rule file.
+ * @apiDescription Upload a local file (rules, decoders and lists).
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -X POST -H 'Content-type: application/xml' -d @rules.xml "https://127.0.0.1:55000/manager/files?path=/etc/rules&pretty"
