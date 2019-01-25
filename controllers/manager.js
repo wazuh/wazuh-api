@@ -295,18 +295,22 @@ router.get('/stats/remoted', cache(), function(req, res) {
 router.get('/files', cache(), function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /manager/files");
 
-    //req.apicacheGroup = "rules";
-
     var data_request = {'function': '/manager/files', 'arguments': {}};
     // check path parameter
     if (!filter.check_path(req.query.path, req, res)) return;
 
     data_request['arguments']['path'] = req.query.path;
     // filtrar valores
-    if ('format' in req.query)
-        data_request['arguments']['output_format'] = req.query.format;
-    else {
-        data_request['arguments']['output_format'] = 'xml'
+    if ('format' in req.query) {
+        if (req.query.format == 'xml') {
+            data_request['arguments']['output_format'] = req.query.format;
+        } else if (req.query.format == 'text') {
+            data_request['arguments']['output_format'] = req.query.format;
+        } else {
+            res_h.bad_request(req, res, 623);
+        }
+    } else {
+        res_h.bad_request(req, res, 622);
     }
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
@@ -334,10 +338,22 @@ router.post('/files', cache(), function(req, res) {
 
     var data_request = {'function': 'POST/manager/files', 'arguments': {}};
     //var filters = {'file_name': 'names'};
-
     //if (!filter.check(req.query, filters, req, res))  // Filter with error
     //    return;
-    // limitar los paths
+    // check path parameter
+    if (!filter.check_path(req.query.path, req, res)) return;
+
+    if (req.body instanceof Object) {
+        try {
+            data_request['arguments']['file'] = require('../helpers/files').tmp_file_creator(req.body);
+        } catch(err) {
+            res_h.bad_request(req, res, 702, err)
+            return;
+        }
+        data_request['arguments']['path'] = req.query.path;
+        execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+        return;
+    }
 
     var xml_escaped = require('../helpers/filters').escape_xml(req.body, req, res);
 

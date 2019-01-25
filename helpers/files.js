@@ -18,8 +18,7 @@ var moment = require('moment');
 */
 exports.tmp_file_creator = function(file_contents) {
     random_file_name = config.ossec_path + '/tmp/api_group_conf_' + moment().unix() + '_' + Math.floor(Math.random() * Math.floor(1000)).toString();
-
-    fs.writeFileSync(random_file_name, file_contents);
+    fs.writeFileSync(random_file_name, JSON.stringify(file_contents)); //// no vale para XML
 
     return random_file_name;
 }

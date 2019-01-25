@@ -58,6 +58,8 @@ errors['yes_no_boolean'] = 620;
 errors['620'] = "Param not valid. Valid values: yes or no";
 errors['array_names'] = 621;
 errors['621'] = "Invalid character in parameters";
+errors['622'] = "'format' parameter are required";
+errors['623'] = "'format' parameter should be 'xml' or 'text'";
 
 errors['700'] = "File not found";
 errors['701'] = "Size of XML file is too long";
