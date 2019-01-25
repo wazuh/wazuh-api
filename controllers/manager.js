@@ -301,6 +301,10 @@ router.get('/files', cache(), function(req, res) {
     // check path parameter
     if (!filter.check_path(req.query.path, req, res)) return;
 
+    console.log('headers -> ', req.headers)
+    console.log('content-type -> ', req.headers['content-type'])
+    console.log('tipo -> ', typeof(req.headers['content-type']))
+
     data_request['arguments']['path'] = req.query.path;
     // filtrar valores
     if ('format' in req.query) {
@@ -345,14 +349,16 @@ router.post('/files', cache(), function(req, res) {
     // check path parameter
     if (!filter.check_path(req.query.path, req, res)) return;
 
-    if (req.body instanceof Object) {
+    if (req.headers['content-type'] == 'application/json') {
         try {
-            data_request['arguments']['file'] = require('../helpers/files').tmp_file_creator(req.body);
+            data_request['arguments']['file'] = require('../helpers/files').tmp_file_creator(req.body, req.headers['content-type']);
         } catch(err) {
             res_h.bad_request(req, res, 702, err)
             return;
         }
         data_request['arguments']['path'] = req.query.path;
+        data_request['arguments']['content_type'] = req.headers['content-type'];
+
         execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
         return;
     }
@@ -360,15 +366,16 @@ router.post('/files', cache(), function(req, res) {
     var xml_escaped = require('../helpers/filters').escape_xml(req.body, req, res);
 
     if (!filter.check_xml(xml_escaped, req, res)) return;
-
+    console.log('AAA')
     try {
-        data_request['arguments']['file'] = require('../helpers/files').tmp_file_creator(xml_escaped);
+        data_request['arguments']['file'] = require('../helpers/files').tmp_file_creator(xml_escaped, req.headers['content-type']);
     } catch(err) {
         res_h.bad_request(req, res, 702, err)
         return;
     }
-
+    console.log('llega')
     data_request['arguments']['path'] = req.query.path;
+    data_request['arguments']['content_type'] = req.headers['content-type'];
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
