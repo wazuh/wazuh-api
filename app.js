@@ -1,6 +1,6 @@
 /**
  * Wazuh API RESTful
- * Copyright (C) 2015-2016 Wazuh, Inc.All rights reserved.
+ * Copyright (C) 2015-2019 Wazuh, Inc.  All rights reserved.
  * Wazuh.com
  *
  * This program is a free software; you can redistribute it
@@ -208,14 +208,11 @@ app.use (function (err, req, res, next){
     else if ('status' in err && err.status == 400){
         var msg = "";
         if ('body' in err)
-            msg = "Body: " + err.body;
+            msg = "Body is not correct.";
         res_h.bad_request(req, res, "614", msg);
     }
     else if (err == "PayloadTooLargeError: request entity too large"){
-        var msg = "";
-        if ('body' in err)
-            msg = "Body: " + err.body;
-        res_h.bad_request(req, res, "701", msg);
+        res_h.bad_request(req, res, "701");
     }
     else{
         logger.log("Internal Error");

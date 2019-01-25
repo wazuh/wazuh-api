@@ -1,6 +1,6 @@
 /**
- * API RESTful for OSSEC
- * Copyright (C) 2015-2016 Wazuh, Inc.All rights reserved.
+ * Wazuh RESTful API
+ * Copyright (C) 2015-2019 Wazuh, Inc. All rights reserved.
  * Wazuh.com
  *
  * This program is a free software; you can redistribute it
@@ -115,8 +115,16 @@ exports.exec = function(cmd, args, stdin, callback) {
                         if ( json_cmd.hasOwnProperty('data') )
                             json_result.data = json_cmd.data;
 
-                        if ( json_cmd.hasOwnProperty('message') )
-                            json_result.message = json_cmd.message;
+                        if ( json_cmd.hasOwnProperty('message') ){
+                            logger.error(json_cmd.message);
+                            if ( json_result.error === 1000)
+                                json_result.message = "Internal error";
+                            else{
+                                if (typeof json_cmd.message === 'string')
+                                    json_result.message = json_cmd.message.split(":", 1)[0];
+                            }
+                            
+			}
                     }
                     else{
                         json_result = {"error": 1, "message": errors.description(1) + ". Wrong keys"}; // JSON Wrong keys
