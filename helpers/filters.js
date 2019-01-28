@@ -57,24 +57,6 @@ exports.check_xml = function(xml_string, req, res) {
     };
 }
 
-exports.escape_xml = function(xml_string, req, res) {
-    var xmlescape = require('xml-escape')
-    var xml_splitted = xml_string.split('<command>')
-    var to_replace = {}
-    for (x=1; x<xml_splitted.length; x++) {
-        command = xml_splitted[x].split('</command>')[0]
-        to_replace[command] = xmlescape(command)
-    }
-
-    var xml_escaped = xml_string
-    for (key in to_replace) {
-        var str_splitted = xml_escaped.split(key)
-        xml_escaped = str_splitted[0].concat(to_replace[key], str_splitted[1])
-    }
-
-    return xml_escaped
-}
-
 exports.check_path = function(path, req, res) {
     if (path.includes('./') || path.includes('../')) {
         res_h.bad_request(req, res, 704);
@@ -93,6 +75,21 @@ exports.check_path = function(path, req, res) {
 
     return true
 }
+
+exports.check_cdb_list = function(cdb_list, req, res) {
+    // for each line
+    var cdb_list_splitted = cdb_list.split('\n')
+    for (i=0; i<cdb_list_splitted.length-1; i++) {
+        re = new RegExp(/^[\d\w\s-]+:{1}[\d\w\s-]+/)
+        if (!re.test(cdb_list_splitted[i])) {
+            var line_error = 'Line ' + (i+1) + ': ' + cdb_list_splitted[i]
+            res_h.bad_request(req, res, 705, line_error);
+            return false
+        }
+    }
+    return true
+}
+
 
 /*
  * filters = "-field1,field2"

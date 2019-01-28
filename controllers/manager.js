@@ -339,6 +339,9 @@ router.post('/files', cache(), function(req, res) {
     if (!filter.check_path(req.query.path, req, res)) return;
 
     if (req.headers['content-type'] == 'application/octet-stream') {
+        // check cdb list
+        if (!filter.check_cdb_list(req.body.toString('utf8'), req, res)) return;
+
         try {
             data_request['arguments']['file'] = require('../helpers/files').tmp_file_creator(req.body);
         } catch(err) {
@@ -348,12 +351,10 @@ router.post('/files', cache(), function(req, res) {
 
     } else if (req.headers['content-type'] == 'application/xml') {
 
-        var xml_escaped = require('../helpers/filters').escape_xml(req.body, req, res);
-
-        if (!filter.check_xml(xml_escaped, req, res)) return;
+        if (!filter.check_xml(req.body, req, res)) return;
 
         try {
-            data_request['arguments']['file'] = require('../helpers/files').tmp_file_creator(xml_escaped);
+            data_request['arguments']['file'] = require('../helpers/files').tmp_file_creator(req.body);
         } catch(err) {
             res_h.bad_request(req, res, 702, err);
             return;
