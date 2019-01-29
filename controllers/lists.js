@@ -37,27 +37,22 @@ router.get('/', cache(), function(req, res) {
     req.apicacheGroup = "decoders";
 
     var data_request = {'function': '/lists', 'arguments': {}};
-    //var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'path':'paths', 'file':'alphanumeric_param'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param',
+        'path': 'paths'};
 
-    //if (!filter.check(req.query, filters, req, res))  // Filter with error
-    //    return;
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
 
-    if ('path' in req.query)
-        data_request['arguments']['path'] = req.query.path;
-    /*
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = Number(req.query.offset);
     if ('limit' in req.query)
         data_request['arguments']['limit'] = Number(req.query.limit);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('status' in req.query)
-        data_request['arguments']['status'] = req.query.status;
-    if ('file' in req.query)
-        data_request['arguments']['file'] = req.query.file;
     if ('path' in req.query)
         data_request['arguments']['path'] = req.query.path;
-    */
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
