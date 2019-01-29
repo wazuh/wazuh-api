@@ -10,7 +10,7 @@
  */
 
 exports.configuration_file = function() {
-    var config_fields = ['ossec_path', 'host', 'port', 'https', 'basic_auth', 'BehindProxyServer', 'logs', 'cors', 'cache_enabled', 'cache_debug', 'cache_time', 'log_path', 'ld_library_path', 'python'];
+    var config_fields = ['ossec_path', 'host', 'port', 'https', 'basic_auth', 'BehindProxyServer', 'logs', 'cors', 'cache_enabled', 'cache_debug', 'cache_time', 'log_path'];
 
     for (i = 0; i < config_fields.length; i++) {
 
