@@ -58,22 +58,22 @@ router.get('/', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /lists/paths Get paths from all lists
+ * @api {get} /lists/files Get paths from all lists
  * @apiName GetListPath
  * @apiGroup Info
  *
  * @apiDescription Returns the path from all lists.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/lists/paths?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/lists/files?pretty"
  *
  */
-router.get('/paths', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /lists/paths");
+router.get('/files', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /lists/files");
 
     req.apicacheGroup = "decoders";
 
-    var data_request = {'function': '/lists/paths', 'arguments': {}};
+    var data_request = {'function': '/lists/files', 'arguments': {}};
     //var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'path':'paths', 'file':'alphanumeric_param'};
 
     //if (!filter.check(req.query, filters, req, res))  // Filter with error
