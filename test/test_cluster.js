@@ -237,7 +237,7 @@ describe('Cluster', function () {
 
                     res.body.should.have.properties(['error', 'message']);
 
-                    res.body.error.should.equal(3018);
+                    res.body.error.should.equal(3022);
                     res.body.message.should.be.instanceof(String)
                     done();
                 });
