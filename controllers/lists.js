@@ -33,7 +33,7 @@ var router = require('express').Router();
 router.get('/', cache(), function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /lists");
 
-    req.apicacheGroup = "decoders";
+    req.apicacheGroup = "lists";
 
     var data_request = {'function': '/lists', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param',
@@ -70,7 +70,7 @@ router.get('/', cache(), function(req, res) {
 router.get('/files', cache(), function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /lists/files");
 
-    req.apicacheGroup = "decoders";
+    req.apicacheGroup = "lists";
 
     var data_request = {'function': '/lists/files', 'arguments': {}};
 
