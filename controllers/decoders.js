@@ -34,7 +34,7 @@ var router = require('express').Router();
 router.get('/', cache(), function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /decoders");
 
-    //req.apicacheGroup = "lists";
+    req.apicacheGroup = "decoders";
 
     var data_request = {'function': '/decoders', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'path':'paths', 'file':'alphanumeric_param'};
