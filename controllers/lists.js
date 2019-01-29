@@ -14,18 +14,17 @@ var router = require('express').Router();
 
 /**
  * @api {get} /lists Get all lists
- * @apiName GetList
+ * @apiName GetLists
  * @apiGroup Info
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [file] Filters by filename.
  * @apiParam {String} [path] Filters by path.
  * @apiParam {String="enabled","disabled", "all"} [status] Filters the decoders by status.
  *
- * @apiDescription Returns all decoders included in ossec.conf.
+ * @apiDescription Returns the content of all CDB lists
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/lists?pretty&path=etc/lists/audit-keys"
@@ -74,28 +73,6 @@ router.get('/files', cache(), function(req, res) {
     req.apicacheGroup = "decoders";
 
     var data_request = {'function': '/lists/files', 'arguments': {}};
-    //var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'path':'paths', 'file':'alphanumeric_param'};
-
-    //if (!filter.check(req.query, filters, req, res))  // Filter with error
-    //    return;
-
-    /*
-    if ('path' in req.query)
-        data_request['arguments']['path'] = req.query.path;
-    
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('status' in req.query)
-        data_request['arguments']['status'] = req.query.status;
-    if ('file' in req.query)
-        data_request['arguments']['file'] = req.query.file;
-    if ('path' in req.query)
-        data_request['arguments']['path'] = req.query.path;
-    */
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
