@@ -326,7 +326,7 @@ router.get('/files', cache(), function(req, res) {
  *     curl -u foo:bar -X POST -H 'Content-type: application/xml' -d @rules.xml "https://127.0.0.1:55000/manager/files?path=/etc/rules&pretty"
  *
  */
-router.post('/files', cache(), function(req, res) {
+router.post('/files', function(req, res) {
     logger.debug(req.connection.remoteAddress + " POST /manager/files");
 
     var data_request = {'function': 'POST/manager/files', 'arguments': {}};
