@@ -680,6 +680,86 @@ describe('Manager', function() {
               });
         });
 
+        it('Upload malformed list', function(done) {
+            request(common.url)
+            .post("/manager/files?path=" + path_list)
+            .set("Content-Type", "application/octet-stream")
+            .send("test&%-wazuh-w:write\ntest-wazuh-r:read\ntest-wazuh-a:attribute\ntest-wazuh-x:execute\ntest-wazuh-c:command\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err, res) {
+                if (err) throw err;
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(705);
+                res.body.message.should.be.an.string;
+
+                done();
+              });
+        });
+
+        it('Upload malformed rule', function(done) {
+            request(common.url)
+            .post("/manager/files?path=" + path_rule)
+            .set("Content-Type", "application/xml")
+            .send("<!--   NEW RULE    -->\n    <rule id=\"100001111\" level=\"5\">\n      <if_sid>5716</if_sid>\n      <srcip>1.1.1.1</srcip>\n      <description>sshd: authentication failed from IP 1.1.1.1.</description>\n      <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>\n    </rule>\n  </group>\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err, res) {
+                if (err) throw err;
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(703);
+                res.body.message.should.be.an.string;
+
+                done();
+              });
+        });
+
+        it('Upload malformed decoder', function(done) {
+            request(common.url)
+            .post("/manager/files?path=" + path_decoder)
+            .set("Content-Type", "application/xml")
+            .send("<!-- NEW Local Decoders -->\n  <!-- Modify it at your will. -->\n  <decoder name=\"local_decoder_example\">\n    <program_name>NEW <DECODER</program_name>\n  </decoder>\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err, res) {
+                if (err) throw err;
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(703);
+                res.body.message.should.be.an.string;
+
+                done();
+              });
+        });
+
+        it('Upload malformed list', function(done) {
+            request(common.url)
+            .post("/manager/files?path=" + path_list)
+            .set("Content-Type", "application/octet-stream")
+            .send("test&%-wazuh-w:write\ntest-wazuh-r:read\ntest-wazuh-a:attribute\ntest-wazuh-x:execute\ntest-wazuh-c:command\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err, res) {
+                if (err) throw err;
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(705);
+                res.body.message.should.be.an.string;
+
+                done();
+              });
+        });
+
     });  // POST/manager/files
 
     describe('/manager/files', function() {
@@ -797,6 +877,23 @@ describe('Manager', function() {
                 res.body.should.have.properties(['error', 'message']);
 
                 res.body.error.should.equal(704);
+
+                done();
+            });
+        });
+
+        it('Request unexisting file', function(done) {
+            request(common.url)
+            .get("/manager/files?path=etc/rules/wrong_file.xml")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(1005);
 
                 done();
             });
