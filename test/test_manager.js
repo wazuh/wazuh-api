@@ -16,6 +16,10 @@ var common = require('./common.js');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
+var path_rule = 'etc/rules/test_rules.xml'
+var path_decoder = 'etc/decoders/test_decoder.xml'
+var path_list = 'etc/lists/test_list'
+
 describe('Manager', function() {
 
     describe('GET/manager/status', function() {
@@ -615,5 +619,189 @@ describe('Manager', function() {
         });
 
     });  // PUT/manager/logs/summary
+
+    describe('POST/manager/files', function() {
+
+        it('Upload rules', function(done) {
+            request(common.url)
+            .post("/manager/files?path=" + path_rule)
+            .set("Content-Type", "application/xml")
+            .send("<!-- Local rules -->\n  <!-- Modify it at your will. -->\n  <!-- Example -->\n  <group name=\"local,\">\n    <!--   NEW RULE    -->\n    <rule id=\"100001111\" level=\"5\">\n      <if_sid>5716</if_sid>\n      <srcip>1.1.1.1</srcip>\n      <description>sshd: authentication failed from IP 1.1.1.1.</description>\n      <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>\n    </rule>\n  </group>\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+              });
+        });
+
+        it('Upload decoder', function(done) {
+            request(common.url)
+            .post("/manager/files?path=" + path_decoder)
+            .set("Content-Type", "application/xml")
+            .send("<!-- NEW Local Decoders -->\n  <!-- Modify it at your will. -->\n  <decoder name=\"local_decoder_example\">\n    <program_name>NEW DECODER</program_name>\n  </decoder>\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+              });
+        });
+
+        it('Upload list', function(done) {
+            request(common.url)
+            .post("/manager/files?path=" + path_list)
+            .set("Content-Type", "application/octet-stream")
+            .send("test-wazuh-w:write\ntest-wazuh-r:read\ntest-wazuh-a:attribute\ntest-wazuh-x:execute\ntest-wazuh-c:command\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+              });
+        });
+
+    });  // POST/manager/files
+
+    describe('/manager/files', function() {
+
+        after(function(done) {
+            var config = require('../configuration/config')
+            var path = require('path')
+            var fs = require('fs')
+            
+            // delete test files
+            fs.unlinkSync(path.join(config.ossec_path, path_rule));
+            fs.unlinkSync(path.join(config.ossec_path, path_decoder));
+            fs.unlinkSync(path.join(config.ossec_path, path_list));
+
+            done();
+        });
+
+        it('Request rules', function(done) {
+            request(common.url)
+            .get("/manager/files?path=etc/rules/test_rules.xml")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+            });
+        });
+
+        it('Request decoders', function(done) {
+            request(common.url)
+            .get("/manager/files?path=etc/decoders/test_decoder.xml")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+            });
+        });
+
+        it('Request lists', function(done) {
+            request(common.url)
+            .get("/manager/files?path=etc/lists/test_list")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+            });
+        });
+
+        it('Request wrong path 1', function(done) {
+            request(common.url)
+            .get("/manager/files?path=etc/internal_options.conf")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(704);
+
+                done();
+            });
+        });
+
+        it('Request wrong path 2', function(done) {
+            request(common.url)
+            .get("/manager/files?path=../tmp")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(704);
+
+                done();
+            });
+        });
+
+        it('Request wrong path 3', function(done) {
+            request(common.url)
+            .get("/manager/files?path=./framework/wazuh/agent.py")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(704);
+
+                done();
+            });
+        });
+
+    });  // GET/manager/files
 
 });  // Manager
