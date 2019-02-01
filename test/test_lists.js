@@ -183,6 +183,78 @@ describe('Lists', function() {
             });
         });
 
+        it('Pagination', function(done) {
+            request(common.url)
+            .get("/lists/files?offset=0&limit=1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
+                res.body.data.items[0].should.be.instanceof(Object);
+                done();
+            });
+        });
+
+        it('Retrieve all elements with limit=0', function(done) {
+            request(common.url)
+            .get("/lists?limit=0")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1406);
+                done();
+            });
+        });
+
+        it('Sort', function(done) {
+            request(common.url)
+            .get("/lists/files?sort=-path")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.be.instanceof(Object);
+                done();
+            });
+        });
+
+        it('Search', function(done) {
+            request(common.url)
+            .get("/lists/files?search=audit-keys")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.be.instanceof(Object);
+                res.body.data.items[0].should.have.properties(['path', 'name']);
+                done();
+            });
+        });
+
     });  // GET/lists/files
 
 
