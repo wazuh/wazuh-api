@@ -84,6 +84,7 @@ router.use('/cluster', require('./cluster'));
 router.use('/syscollector', require('./syscollector'));
 router.use('/ciscat', require('./ciscat'));
 router.use('/active-response', require('./active_response'));
+router.use('/lists', require('./lists'));
 
 if (config.experimental_features){
     router.use('/experimental', require('./experimental'));
