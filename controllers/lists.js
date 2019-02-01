@@ -74,6 +74,11 @@ router.get('/files', cache(), function(req, res) {
 
     var data_request = {'function': '/lists/files', 'arguments': {}};
 
+    var filters = {};
+
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
+
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
