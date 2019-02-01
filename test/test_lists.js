@@ -148,7 +148,7 @@ describe('Lists', function() {
 
         it('Filters: Invalid filter - Extra field', function(done) {
             request(common.url)
-                .get("/decoders?file=apache_decoders.xml&random=yes")
+                .get("/lists?path=etc/lists/audit-keys&random=yes")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(400)
@@ -251,6 +251,38 @@ describe('Lists', function() {
                 res.body.data.items.should.be.instanceof(Array);
                 res.body.data.items[0].should.be.instanceof(Object);
                 res.body.data.items[0].should.have.properties(['path', 'name']);
+                done();
+            });
+        });
+
+        it('Filters: Invalid filter', function(done) {
+            request(common.url)
+                .get("/lists/files?random=yes")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(604);
+                res.body.message.should.be.type('string');
+                done();
+            });
+        });
+
+        it('Filters: Invalid filter - Extra field', function(done) {
+            request(common.url)
+                .get("/lists/files?limit=1&random=yes")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(604);
+                res.body.message.should.be.type('string');
                 done();
             });
         });
