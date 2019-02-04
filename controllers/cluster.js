@@ -486,8 +486,8 @@ router.get('/:node_id/logs/summary', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /manager/files Get local file
- * @apiName GetFile
+ * @api {get} /cluster/:node_id/files Get local file
+ * @apiName GetFileCluster
  * @apiGroup Files
  *
  * @apiParam {String} path Relative path of file.
