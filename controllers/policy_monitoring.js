@@ -20,12 +20,13 @@ var router = require('express').Router();
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {String} [name] Filters by policy name.
  * @apiParam {String} [description] Filters by policy description
- * @apiParam {String} [os_required] Filters by required OS
+ * @apiParam {String} [references] Filters by references
+ * @apiParam {String} [hash] Filters by hash
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [q] Query to filter results by. This is specially useful to filter by total checks passed, failed or total score (fields pass, failed, score)
+ * @apiParam {String} [q] Query to filter results by. This is specially useful to filter by total checks passed, failed or total score (fields pass, fail, score).
  *
  * @apiDescription Returns the policy monitoring database of an agent.
  *
@@ -34,17 +35,18 @@ var router = require('express').Router();
  *
  */
 router.get('/:agent_id', cache(), function(req, res) {
-    query_checks = {'name':'alphanumeric_param', 'description':'alphanumeric_param', 'os_required':'alphanumeric_param'};
+    query_checks = {'name':'alphanumeric_param', 'description':'alphanumeric_param', 'references':'alphanumeric_param', 'hash':'alphanumeric_param'};
     templates.array_request("/policy_monitoring/:agent_id", req, res, "policymonitoring", {'agent_id':'numbers'}, query_checks);
 })
 
 
 /**
- * @api {get} /policy_monitoring/:agent_id/checks Get policy monitoring checks database
+ * @api {get} /policy_monitoring/:agent_id/checks/:id Get policy monitoring checks database
  * @apiName GetPMAgentChecks
  * @apiGroup Info
  *
- * @apiParam {String} [name] Filters by policy name.
+ * @apiParam {Number} [agent_id] Agent ID.
+ * @apiParam {String} [id] Filters by policy id
  * @apiParam {String} [cis] Filters by CIS.
  * @apiParam {String} [title] Filters by title
  * @apiParam {String} [description] Filters by policy description
@@ -54,7 +56,7 @@ router.get('/:agent_id', cache(), function(req, res) {
  * @apiParam {String} [process] Filters by process
  * @apiParam {String} [directory] Filters by directory
  * @apiParam {String} [registry] Filters by registry
- * @apiParam {String} [reference] Filters by reference
+ * @apiParam {String} [references] Filters by references
  * @apiParam {String} [result] Filters by result
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
@@ -67,12 +69,14 @@ router.get('/:agent_id', cache(), function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/policy_monitoring/000/CIS%20Checks%20for%20Apache%20Https%20Server?name=&pretty"
  *
  */
-router.get('/:agent_id/checks', cache(), function(req, res) {
-    query_checks = {'name':'alphanumeric_param', 'cis': 'alphanumeric_param', 'title': 'alphanumeric_param', 'description': 'alphanumeric_param',
+router.get('/:agent_id/checks/:id', cache(), function(req, res) {
+    query_checks = {'cis': 'alphanumeric_param', 'title': 'alphanumeric_param', 'description': 'alphanumeric_param',
         'rationale': 'alphanumeric_param', 'remediation': 'alphanumeric_param', 'file': 'paths', 'process': 'alphanumeric_param', 'directory': 'paths',
-        'registry': 'alphanumeric_param', 'reference': 'alphanumeric_param', 'result': 'alphanumeric_param'
+        'registry': 'alphanumeric_param', 'references': 'alphanumeric_param', 'result': 'alphanumeric_param'
     };
-    templates.array_request("/policy_monitoring/:agent_id/checks", req, res, "policymonitoring", {}, query_checks);
+    templates.array_request("/policy_monitoring/:agent_id/checks/:id", req, res,
+               "policymonitoring",
+               {'agent_id': 'numbers', 'id': 'alphanumeric_param'}, query_checks);
 })
 
 module.exports = router;
