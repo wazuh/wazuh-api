@@ -39,7 +39,7 @@ router.post("*", function(req, res, next) {
     var content_type = req.get('Content-Type');
 
     if (!content_type || !(content_type == 'application/json' || content_type == 'application/x-www-form-urlencoded'
-        || content_type == 'application/xml')){
+        || content_type == 'application/xml' || content_type == 'application/octet-stream')){
         logger.debug(req.connection.remoteAddress + " POST " + req.path);
         res_h.bad_request(req, res, "607");
     }
@@ -85,6 +85,7 @@ router.use('/cluster', require('./cluster'));
 router.use('/syscollector', require('./syscollector'));
 router.use('/ciscat', require('./ciscat'));
 router.use('/active-response', require('./active_response'));
+router.use('/lists', require('./lists'));
 
 if (config.experimental_features){
     router.use('/experimental', require('./experimental'));
