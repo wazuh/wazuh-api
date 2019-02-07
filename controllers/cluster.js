@@ -495,7 +495,7 @@ router.get('/:node_id/logs/summary', cache(), function(req, res) {
  * @apiDescription Returns the content of a local file (rules, decoders and lists).
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/:node_id/files?path=/etc/rules/local_rules.xml&pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/files?path=/etc/rules/local_rules.xml&pretty"
  *
  */
 router.get('/:node_id/files', cache(), function(req, res) {
@@ -532,7 +532,7 @@ router.get('/:node_id/files', cache(), function(req, res) {
  * @apiDescription Upload a local file (rules, decoders and lists) in a cluster node
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -X POST -H 'Content-type: application/xml' -d @rules.xml "https://127.0.0.1:55000/cluster/:node_id/files?path=/etc/rules&pretty"
+ *     curl -u foo:bar -X POST -H 'Content-type: application/xml' -d @rules.xml "https://127.0.0.1:55000/cluster/node02/files?path=/etc/rules&pretty"
  *
  */
 router.post('/:node_id/files', function(req, res) {
@@ -556,7 +556,7 @@ router.post('/:node_id/files', function(req, res) {
         if (!filter.check_cdb_list(req.body.toString('utf8'), req, res)) return;
 
         try {
-            data_request['arguments']['file'] = require('../helpers/files').tmp_file_creator(req.body);
+            data_request['arguments']['tmp_file'] = require('../helpers/files').tmp_file_creator(req.body);
         } catch(err) {
             res_h.bad_request(req, res, 702, err);
             return;
@@ -567,7 +567,7 @@ router.post('/:node_id/files', function(req, res) {
         if (!filter.check_xml(req.body, req, res)) return;
 
         try {
-            data_request['arguments']['file'] = require('../helpers/files').tmp_file_creator(req.body);
+            data_request['arguments']['tmp_file'] = require('../helpers/files').tmp_file_creator(req.body);
         } catch(err) {
             res_h.bad_request(req, res, 702, err);
             return;
@@ -611,7 +611,7 @@ router.get('/configuration/validation', cache(), function(req, res) {
  * @apiDescription Returns if Wazuh configuration is OK.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/:node_id/configuration/validation?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node01/configuration/validation?pretty"
  *
  */
 router.get('/:node_id/configuration/validation', cache(), function(req, res) {

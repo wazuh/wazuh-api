@@ -223,7 +223,6 @@ router.get('/logs', cache(), function(req, res) {
  * @apiName GetManagerLogsSummary
  * @apiGroup Logs
  *
- *
  * @apiDescription Returns a summary of the last three months of the ``ossec.log`` file.
  *
  * @apiExample {curl} Example usage:
@@ -264,7 +263,6 @@ router.get('/stats/analysisd', cache(), function(req, res) {
  * @api {get} /manager/stats/remoted Get remoted stats
  * @apiName GetRemotedStats
  * @apiGroup Stats
- *
  *
  * @apiDescription Returns a summary of the current remoted stats.
  *
@@ -343,7 +341,7 @@ router.post('/files', function(req, res) {
         if (!filter.check_cdb_list(req.body.toString('utf8'), req, res)) return;
 
         try {
-            data_request['arguments']['file'] = require('../helpers/files').tmp_file_creator(req.body);
+            data_request['arguments']['tmp_file'] = require('../helpers/files').tmp_file_creator(req.body);
         } catch(err) {
             res_h.bad_request(req, res, 702, err);
             return;
@@ -354,7 +352,7 @@ router.post('/files', function(req, res) {
         if (!filter.check_xml(req.body, req, res)) return;
 
         try {
-            data_request['arguments']['file'] = require('../helpers/files').tmp_file_creator(req.body);
+            data_request['arguments']['tmp_file'] = require('../helpers/files').tmp_file_creator(req.body);
         } catch(err) {
             res_h.bad_request(req, res, 702, err);
             return;
