@@ -584,5 +584,49 @@ router.post('/:node_id/files', function(req, res) {
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
+/**
+ * @api {get} /cluster/configuration/validation Check Wazuh configuration in all cluster nodes
+ * @apiName GetClusterConfiguration
+ * @apiGroup Files
+ *
+ * @apiDescription Returns if Wazuh configuration is OK.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/configuration/validation?pretty"
+ *
+ */
+router.get('/configuration/validation', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/configuration/validation");
+
+    var data_request = {'function': '/cluster/configuration/validation', 'arguments': {}};
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {get} /cluster/:node_id/configuration/validation Check Wazuh configuration in a cluster nodes
+ * @apiName GetClusterNodeConfiguration
+ * @apiGroup Files
+ *
+ * @apiDescription Returns if Wazuh configuration is OK.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/:node_id/configuration/validation?pretty"
+ *
+ */
+router.get('/:node_id/configuration/validation', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /cluster/configuration/validation");
+
+    var data_request = {'function': '/cluster/:node_id/configuration/validation', 'arguments': {}};
+    var filters_param = {'node_id': 'names'};
+
+    if (!filter.check(req.params, filters_param, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['node_id'] = req.params.node_id;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
 
 module.exports = router;

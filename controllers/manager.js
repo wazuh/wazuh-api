@@ -370,4 +370,23 @@ router.post('/files', function(req, res) {
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
+/**
+ * @api {get} /manager/configuration/validation Check Wazuh configuration
+ * @apiName GetManagerConfiguration
+ * @apiGroup Files
+ *
+ * @apiDescription Returns if Wazuh configuration is OK.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/configuration/validation?pretty"
+ *
+ */
+router.get('/configuration/validation', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /manager/configuration/validation");
+
+    var data_request = {'function': '/manager/configuration/validation', 'arguments': {}};
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
 module.exports = router;
