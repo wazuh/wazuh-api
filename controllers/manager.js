@@ -298,7 +298,7 @@ router.get('/files', cache(), function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /manager/files");
 
     var data_request = {'function': '/manager/files', 'arguments': {}};
-    var filters = {'path': 'paths'};
+    var filters = {'path': 'paths', 'offset': 'numbers', 'limit': 'numbers'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;

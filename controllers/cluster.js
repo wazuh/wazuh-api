@@ -503,7 +503,7 @@ router.get('/:node_id/files', cache(), function(req, res) {
 
     var data_request = {'function': '/cluster/:node_id/files', 'arguments': {}};
     var filters_param = {'node_id': 'names'};
-    var filters_query = {'path': 'paths'};
+    var filters_query = {'path': 'paths', 'offset': 'numbers', 'limit': 'numbers',};
 
     if (!filter.check(req.params, filters_param, req, res))  // Filter with error (param)
         return;
