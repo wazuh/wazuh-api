@@ -347,7 +347,7 @@ describe('Cluster', function () {
                 });
         });
 
-    });
+    }); // GET/cluster/nodes/:node_name
 
 
     describe('GET/cluster/status', function () {
@@ -374,7 +374,7 @@ describe('Cluster', function () {
                 });
         });
 
-    });
+    }); // GET/cluster/status
 
 
     describe('GET/cluster/config', function () {
@@ -396,7 +396,7 @@ describe('Cluster', function () {
                 });
         });
 
-    });
+    }); // GET/cluster/config
 
 
     describe('GET/cluster/healthcheck', function () {
@@ -527,7 +527,29 @@ describe('Cluster', function () {
                 });
         });
 
-    });
+    }); // GET/cluster/healthcheck
+
+    describe('PUT/cluster/:node_id/restart', function() {
+
+        it('Request', function(done) {
+            request(common.url)
+            .put("/cluster/node01/restart")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+            });
+        });
+
+    });  // PUT/cluster/:node_id/restart
 
 
 }); // Cluster
