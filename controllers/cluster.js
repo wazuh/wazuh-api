@@ -604,7 +604,7 @@ router.get('/configuration/validation', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /cluster/:node_id/configuration/validation Check Wazuh configuration in a cluster nodes
+ * @api {get} /cluster/:node_id/configuration/validation Check Wazuh configuration in a cluster node
  * @apiName GetClusterNodeConfiguration
  * @apiGroup Files
  *
