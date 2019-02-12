@@ -11,9 +11,9 @@
     "body-parser": "^1.15.2",
     "cors": "^2.7.1",
     "express": "^4.14.0",
+    "fast-xml-parser": "^3.12.11",
     "htpasswd": "^2.3.4",
     "http-auth": "^3.0.1",
-    "fast-xml-parser": "^3.12.11",
     "moment": "^2.23.0",
     "rotating-file-stream": "^1.3.6",
     "uid-number": "^0.0.6"
