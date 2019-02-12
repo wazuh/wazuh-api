@@ -21,8 +21,8 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 describe('ConfigurationAssessment', function() {
 
-    ca_fields = ['hash', 'score', 'policy_id', 'references', 'id', 'name',
-                 'description', 'pass', 'fail', 'start_scan', 'end_scan']
+    ca_fields = ['score', 'policy_id', 'references', 'id', 'name',
+                 'description', 'pass', 'fail', 'start_scan', 'end_scan'];
 
     describe('GET/configuration_assessment/:agent_id', function() {
 
@@ -38,7 +38,7 @@ describe('ConfigurationAssessment', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
-                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items.should.be.instanceof(Array);
                 res.body.data.items[0].should.have.properties(ca_fields);
                 done();
             });
@@ -90,7 +90,7 @@ describe('ConfigurationAssessment', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
-                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items.should.be.instanceof(Array);
                 res.body.data.items[0].should.have.properties(ca_fields);
                 done();
             });
@@ -109,7 +109,7 @@ describe('ConfigurationAssessment', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
-                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items.should.be.instanceof(Array);
                 res.body.data.items[0].should.have.properties(ca_fields);
                 done();
             });
@@ -190,7 +190,7 @@ describe('ConfigurationAssessment', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
-                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items.should.be.instanceof(Array);
                 res.body.data.items[0].should.have.properties(ca_fields);
                 done();
             });
@@ -215,11 +215,11 @@ describe('ConfigurationAssessment', function() {
         });
     });  // GET/configuration_assessment/:agent_id
 
-    describe('GET/configuration_assessment/:agent_id/pci', function() {
+    describe('GET/configuration_assessment/:agent_id/checks/:policy_id', function() {
 
         it('Request', function(done) {
             request(common.url)
-            .get("/configuration_assessment/000/pci")
+            .get("/configuration_assessment/000/checks/cis_debian")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -238,7 +238,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Pagination', function(done) {
             request(common.url)
-            .get("/configuration_assessment/000/pci?offset=0&limit=1")
+            .get("/configuration_assessment/000/checks/cis_debian?offset=0&limit=1")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -257,7 +257,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Retrieve all elements with limit=0', function(done) {
             request(common.url)
-            .get("/configuration_assessment/000/pci?limit=0")
+            .get("/configuration_assessment/000/checks/cis_debian?limit=0")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -272,7 +272,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Sort', function(done) {
             request(common.url)
-            .get("/configuration_assessment/000/pci?sort=-")
+            .get("/configuration_assessment/000/checks/cis_debian?sort=-")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -291,7 +291,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Search', function(done) {
             request(common.url)
-            .get("/configuration_assessment/000/pci?search=2")
+            .get("/configuration_assessment/000/checks/cis_debian?search=2")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -310,7 +310,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Params: Bad agent id', function(done) {
             request(common.url)
-            .get("/configuration_assessment/abc/pci")
+            .get("/configuration_assessment/abc/checks/cis_debian")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(400)
@@ -325,7 +325,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Errors: No agent', function(done) {
             request(common.url)
-            .get("/configuration_assessment/9999999/pci")
+            .get("/configuration_assessment/9999999/checks/cis_debian")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -338,6 +338,25 @@ describe('ConfigurationAssessment', function() {
             });
         });
 
+        it('Check not found', function(done) {
+            request(common.url)
+            .get("/configuration_assessment/000/checks/not_exists")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.be.string;
+                done();
+            });
+        });
+
     });  // GET/configuration_assessment/:agent_id/pci
 
-});  // Rootcheck
+});  // Configuraton assessment
