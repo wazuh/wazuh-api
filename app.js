@@ -163,10 +163,12 @@ if (config.python) {
     logger.warning("Python configuration is deprecated. Using " + python_bin);
 }
 
+
 // Body
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.text({type:"application/xml", limit:"1mb"}));
+app.use(bodyParser.raw({type:"application/octet-stream", limit:"1mb"}));
 
 
 /**
