@@ -289,7 +289,7 @@ router.get('/stats/remoted', cache(), function(req, res) {
  * @apiDescription Returns the content of a local file (rules, decoders and lists).
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/files?path=/etc/rules/local_rules.xml&pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/files?path=etc/rules/local_rules.xml&pretty"
  *
  */
 router.get('/files', cache(), function(req, res) {
@@ -309,7 +309,6 @@ router.get('/files', cache(), function(req, res) {
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
-
 /**
  * @api {post} /manager/files Update local file
  * @apiName PostUpdateFile
@@ -321,7 +320,7 @@ router.get('/files', cache(), function(req, res) {
  * @apiDescription Upload a local file (rules, decoders and lists).
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -X POST -H 'Content-type: application/xml' -d @rules.xml "https://127.0.0.1:55000/manager/files?path=/etc/rules/new_rule.xml&pretty"
+ *     curl -u foo:bar -X POST -H 'Content-type: application/xml' -d @rules.xml "https://127.0.0.1:55000/manager/files?path=etc/rules/new_rule.xml&pretty"
  *
  */
 router.post('/files', function(req, res) {
@@ -365,6 +364,24 @@ router.post('/files', function(req, res) {
     data_request['arguments']['path'] = req.query.path;
     data_request['arguments']['content_type'] = req.headers['content-type'];
 
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {put} /manager/restart Restart Wazuh manager
+ * @apiName PutRestartManager
+ * @apiGroup Restart
+ *
+ * @apiDescription Restarts Wazuh Manager.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/manager/restart?pretty"
+ *
+ */
+router.put('/restart', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " PUT /manager/restart");
+
+    var data_request = {'function': 'PUT/manager/restart', 'arguments': {}};
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 

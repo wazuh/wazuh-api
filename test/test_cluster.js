@@ -365,7 +365,7 @@ describe('Cluster', function () {
                 });
         });
 
-    });  // GET/cluster/nodes/:node_name
+    }); // GET/cluster/nodes/:node_name
 
 
     describe('GET/cluster/status', function () {
@@ -392,7 +392,7 @@ describe('Cluster', function () {
                 });
         });
 
-    });  // GET/cluster/status
+    }); // GET/cluster/status
 
 
     describe('GET/cluster/config', function () {
@@ -414,7 +414,7 @@ describe('Cluster', function () {
                 });
         });
 
-    });  // GET/cluster/config
+    }); // GET/cluster/config
 
 
     describe('GET/cluster/healthcheck', function () {
@@ -545,7 +545,8 @@ describe('Cluster', function () {
                 });
         });
 
-    });  // GET/cluster/healthcheck
+    }); // GET/cluster/healthcheck
+
 
     describe('POST/cluster/:node_id/files', function() {
 
@@ -732,7 +733,7 @@ describe('Cluster', function () {
 
     describe('/cluster/:node_id/files', function() {
 
-        after(function(done) {
+        after(function (done) {
             var config = require('../configuration/config')
             var path = require('path')
             var fs = require('fs')
@@ -745,22 +746,22 @@ describe('Cluster', function () {
             done();
         });
 
-        it('Request rules', function(done) {
+        it('Request rules', function (done) {
             request(common.url)
-            .get("/cluster/node01/files?path=etc/rules/test_rules.xml")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
+                .get("/cluster/node01/files?path=etc/rules/test_rules.xml")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
 
-                res.body.should.have.properties(['error', 'data']);
+                    res.body.should.have.properties(['error', 'data']);
 
-                res.body.error.should.equal(0);
-                res.body.data.should.be.an.string;
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.string;
 
-                done();
-            });
+                    done();
+                });
         });
 
         it('Request decoders', function(done) {
@@ -885,6 +886,27 @@ describe('Cluster', function () {
         });
 
     });  // GET/cluster/:node_id/files
+
+    describe('PUT/cluster/:node_id/restart', function() {
+
+        it('Request', function(done) {
+            request(common.url)
+            .put("/cluster/node01/restart")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+            });
+        });
+    });  // PUT/cluster/:node_id/restart
 
 
 }); // Cluster
