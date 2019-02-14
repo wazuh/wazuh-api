@@ -223,7 +223,6 @@ router.get('/logs', cache(), function(req, res) {
  * @apiName GetManagerLogsSummary
  * @apiGroup Logs
  *
- *
  * @apiDescription Returns a summary of the last three months of the ``ossec.log`` file.
  *
  * @apiExample {curl} Example usage:
@@ -265,7 +264,6 @@ router.get('/stats/analysisd', cache(), function(req, res) {
  * @apiName GetRemotedStats
  * @apiGroup Stats
  *
- *
  * @apiDescription Returns a summary of the current remoted stats.
  *
  * @apiExample {curl} Example usage:
@@ -291,14 +289,14 @@ router.get('/stats/remoted', cache(), function(req, res) {
  * @apiDescription Returns the content of a local file (rules, decoders and lists).
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/files?path=/etc/rules/local_rules.xml&pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/files?path=etc/rules/local_rules.xml&pretty"
  *
  */
 router.get('/files', cache(), function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /manager/files");
 
     var data_request = {'function': '/manager/files', 'arguments': {}};
-    var filters = {'path': 'paths'};
+    var filters = {'path': 'paths', 'offset': 'numbers', 'limit': 'numbers'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -311,7 +309,6 @@ router.get('/files', cache(), function(req, res) {
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
-
 /**
  * @api {post} /manager/files Update local file
  * @apiName PostUpdateFile
@@ -323,7 +320,7 @@ router.get('/files', cache(), function(req, res) {
  * @apiDescription Upload a local file (rules, decoders and lists).
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -X POST -H 'Content-type: application/xml' -d @rules.xml "https://127.0.0.1:55000/manager/files?path=/etc/rules&pretty"
+ *     curl -u foo:bar -X POST -H 'Content-type: application/xml' -d @rules.xml "https://127.0.0.1:55000/manager/files?path=etc/rules/new_rule.xml&pretty"
  *
  */
 router.post('/files', function(req, res) {
@@ -343,7 +340,7 @@ router.post('/files', function(req, res) {
         if (!filter.check_cdb_list(req.body.toString('utf8'), req, res)) return;
 
         try {
-            data_request['arguments']['file'] = require('../helpers/files').tmp_file_creator(req.body);
+            data_request['arguments']['tmp_file'] = require('../helpers/files').tmp_file_creator(req.body);
         } catch(err) {
             res_h.bad_request(req, res, 702, err);
             return;
@@ -354,7 +351,7 @@ router.post('/files', function(req, res) {
         if (!filter.check_xml(req.body, req, res)) return;
 
         try {
-            data_request['arguments']['file'] = require('../helpers/files').tmp_file_creator(req.body);
+            data_request['arguments']['tmp_file'] = require('../helpers/files').tmp_file_creator(req.body);
         } catch(err) {
             res_h.bad_request(req, res, 702, err);
             return;
@@ -366,6 +363,43 @@ router.post('/files', function(req, res) {
 
     data_request['arguments']['path'] = req.query.path;
     data_request['arguments']['content_type'] = req.headers['content-type'];
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {put} /manager/restart Restart Wazuh manager
+ * @apiName PutRestartManager
+ * @apiGroup Restart
+ *
+ * @apiDescription Restarts Wazuh Manager.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/manager/restart?pretty"
+ *
+ */
+router.put('/restart', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " PUT /manager/restart");
+
+    var data_request = {'function': 'PUT/manager/restart', 'arguments': {}};
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
+ * @api {get} /manager/configuration/validation Check Wazuh configuration
+ * @apiName GetManagerConfiguration
+ * @apiGroup Files
+ *
+ * @apiDescription Returns if Wazuh configuration is OK.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/configuration/validation?pretty"
+ *
+ */
+router.get('/configuration/validation', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /manager/configuration/validation");
+
+    var data_request = {'function': '/manager/configuration/validation', 'arguments': {}};
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
