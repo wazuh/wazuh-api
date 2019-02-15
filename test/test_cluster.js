@@ -20,6 +20,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 var path_rules = 'etc/rules/test_rules.xml'
 var path_decoders = 'etc/decoders/test_decoder.xml'
 var path_lists = 'etc/lists/test_list'
+var ossec_conf_content = null
 
 describe('Cluster', function () {
 
@@ -550,8 +551,6 @@ describe('Cluster', function () {
 
     describe('POST/cluster/:node_id/files', function() {
 
-        var ossec_conf
-
         // save current ossec.conf
         before(function (done) {
             request(common.url)
@@ -567,7 +566,7 @@ describe('Cluster', function () {
                     res.body.error.should.equal(0);
                     res.body.data.should.be.an.string;
                     
-                    ossec_conf = res.body.data
+                    ossec_conf_content = res.body.data
 
                     done();
                 });
@@ -782,6 +781,7 @@ describe('Cluster', function () {
                     res.body.should.have.properties(['error', 'data']);
 
                     res.body.error.should.equal(0);
+                    res.body.shoud.equal(ossec_conf_content)
                     res.body.data.should.be.an.string;
 
                     done();
