@@ -20,6 +20,9 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 var path_rules = 'etc/rules/test_rules.xml'
 var path_decoders = 'etc/decoders/test_decoder.xml'
 var path_lists = 'etc/lists/test_list'
+var path_ossec_conf = 'etc/ossec.conf'
+var ossec_conf_content_master = null
+var ossec_conf_content_worker = null
 
 describe('Cluster', function () {
 
@@ -449,7 +452,7 @@ describe('Cluster', function () {
                     res.body.error.should.equal(0);
                     res.body.data.should.have.properties(['nodes', 'n_connected_nodes']);
 
-                    res.body.data.n_connected_nodes.should.be.above(1)
+                    res.body.data.n_connected_nodes.should.be.above(0)
 
                     res.body.data.nodes.should.have.properties([expected_name_worker, expected_name_master]);
 
@@ -508,7 +511,7 @@ describe('Cluster', function () {
                     res.body.error.should.equal(0);
                     res.body.data.should.have.properties(['nodes', 'n_connected_nodes']);
 
-                    res.body.data.n_connected_nodes.should.be.above(1)
+                    res.body.data.n_connected_nodes.should.be.above(0)
 
                     res.body.data.nodes.should.have.properties([expected_name_worker]);
 
@@ -550,9 +553,89 @@ describe('Cluster', function () {
 
     describe('POST/cluster/:node_id/files', function() {
 
+        // save master ossec.conf
+        before(function (done) {
+            request(common.url)
+                .get("/cluster/master/files?path=" + path_ossec_conf)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.string;
+
+                    ossec_conf_content_master = res.body.data
+
+                    done();
+                });
+        });
+
+        // save worker ossec.conf
+        before(function (done) {
+            request(common.url)
+            .get("/cluster/worker/files?path=" + path_ossec_conf)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.string;
+
+                    ossec_conf_content_worker = res.body.data
+
+                    done();
+                });
+        });
+
+        it('Upload ossec.conf (master)', function(done) {
+            request(common.url)
+            .post("/cluster/master/files?path=" + path_ossec_conf)
+            .set("Content-Type", "application/xml")
+            .send(ossec_conf_content_master)
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+              });
+        });
+
+        it('Upload ossec.conf (worker)', function(done) {
+            request(common.url)
+            .post("/cluster/worker/files?path=" + path_ossec_conf)
+            .set("Content-Type", "application/xml")
+            .send(ossec_conf_content_worker)
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+              });
+        });
+
         it('Upload rules', function(done) {
             request(common.url)
-            .post("/cluster/node01/files?path=" + path_rules)
+            .post("/cluster/master/files?path=" + path_rules)
             .set("Content-Type", "application/xml")
             .send("<!-- Local rules -->\n  <!-- Modify it at your will. -->\n  <!-- Example -->\n  <group name=\"local,\">\n    <!--   NEW RULE    -->\n    <rule id=\"100001111\" level=\"5\">\n      <if_sid>5716</if_sid>\n      <srcip>1.1.1.1</srcip>\n      <description>sshd: authentication failed from IP 1.1.1.1.</description>\n      <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>\n    </rule>\n  </group>\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -571,7 +654,7 @@ describe('Cluster', function () {
 
         it('Upload decoder', function(done) {
             request(common.url)
-            .post("/cluster/node01/files?path=" + path_decoders)
+            .post("/cluster/master/files?path=" + path_decoders)
             .set("Content-Type", "application/xml")
             .send("<!-- NEW Local Decoders -->\n  <!-- Modify it at your will. -->\n  <decoder name=\"local_decoder_example\">\n    <program_name>NEW DECODER</program_name>\n  </decoder>\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -590,7 +673,7 @@ describe('Cluster', function () {
 
         it('Upload list', function(done) {
             request(common.url)
-            .post("/cluster/node01/files?path=" + path_lists)
+            .post("/cluster/master/files?path=" + path_lists)
             .set("Content-Type", "application/octet-stream")
             .send("test-wazuh-w:write\ntest-wazuh-r:read\ntest-wazuh-a:attribute\ntest-wazuh-x:execute\ntest-wazuh-c:command\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -608,9 +691,49 @@ describe('Cluster', function () {
               });
         });
 
+        it('Upload corrupted ossec.conf (master)', function(done) {
+            request(common.url)
+            .post("/cluster/master/files?path=" + path_ossec_conf)
+            .set("Content-Type", "application/xml")
+            .send("<!--  Wazuh - Manager -->\n  <ossec_config>\n    <global>\n      <jsonout_output><<<<yes</jsonout_output>\n      <alerts_log>yes</alerts_log>\n      <logall>no</logall>\n      <logall_json>no</logall_json>\n      <email_notification>no</email_notification>\n      <smtp_server>smtp.example.wazuh.com</smtp_server>\n      <email_from>ossecm@example.wazuh.com</email_from>\n      <email_to>recipient@example.wazuh.com</email_to>\n      <email_maxperhour>12</email_maxperhour>\n      <email_log_source>alerts.log</email_log_source>\n      <queue_size>131072</queue_size>\n    </global>\n  </ossec_config>\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err, res) {
+                if (err) throw err;
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(703);
+                res.body.message.should.be.an.string;
+
+                done();
+              });
+        });
+
+        it('Upload corrupted ossec.conf (worker)', function(done) {
+            request(common.url)
+            .post("/cluster/worker/files?path=" + path_ossec_conf)
+            .set("Content-Type", "application/xml")
+            .send("<!--  Wazuh - Manager -->\n  <ossec_config>\n    <global>\n      <jsonout_output><<<<yes</jsonout_output>\n      <alerts_log>yes</alerts_log>\n      <logall>no</logall>\n      <logall_json>no</logall_json>\n      <email_notification>no</email_notification>\n      <smtp_server>smtp.example.wazuh.com</smtp_server>\n      <email_from>ossecm@example.wazuh.com</email_from>\n      <email_to>recipient@example.wazuh.com</email_to>\n      <email_maxperhour>12</email_maxperhour>\n      <email_log_source>alerts.log</email_log_source>\n      <queue_size>131072</queue_size>\n    </global>\n  </ossec_config>\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err, res) {
+                if (err) throw err;
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(703);
+                res.body.message.should.be.an.string;
+
+                done();
+              });
+        });
+
         it('Upload malformed rules', function(done) {
             request(common.url)
-            .post("/cluster/node01/files?path=" + path_rules)
+            .post("/cluster/master/files?path=" + path_rules)
             .set("Content-Type", "application/xml")
             .send("<!--   NEW RULE    -->\n    <rule id=\"100001111\" level=\"5\">\n      <if_sid>5716</if_sid>\n      <srcip>1.1.1.1</srcip>\n      <description>sshd: authentication failed from IP 1.1.1.1.</description>\n      <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>\n    </rule>\n  </group>\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -651,7 +774,7 @@ describe('Cluster', function () {
 
         it('Upload malformed decoder', function(done) {
             request(common.url)
-            .post("/cluster/node01/files?path=" + path_decoders)
+            .post("/cluster/master/files?path=" + path_decoders)
             .set("Content-Type", "application/xml")
             .send("<!-- NEW Local Decoders -->\n  <!-- Modify it at your will. -->\n  <decoder name=\"local_decoder_example\">\n    <program_name>NEW <DECODER</program_name>\n  </decoder>\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -691,7 +814,7 @@ describe('Cluster', function () {
 
         it('Upload malformed list', function(done) {
             request(common.url)
-            .post("/cluster/node01/files?path=" + path_lists)
+            .post("/cluster/master/files?path=" + path_lists)
             .set("Content-Type", "application/octet-stream")
             .send("test&%-wazuh-w:write\ntest-wazuh-r:read\ntest-wazuh-a:attribute\ntest-wazuh-x:execute\ntest-wazuh-c:command\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -731,6 +854,7 @@ describe('Cluster', function () {
 
     });  // POST/cluster/:node_id/files
 
+
     describe('/cluster/:node_id/files', function() {
 
         after(function (done) {
@@ -746,9 +870,47 @@ describe('Cluster', function () {
             done();
         });
 
+        it('Request ossec.conf (master)', function (done) {
+            request(common.url)
+                .get("/cluster/master/files?path=" + path_ossec_conf)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.string;
+                    res.body.data.should.equal(ossec_conf_content_master)
+
+                    done();
+                });
+        });
+
+        it('Request ossec.conf (worker)', function (done) {
+            request(common.url)
+                .get("/cluster/worker/files?path=" + path_ossec_conf)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.string;
+                    res.body.data.should.equal(ossec_conf_content_worker)
+
+                    done();
+                });
+        });
+
         it('Request rules', function (done) {
             request(common.url)
-                .get("/cluster/node01/files?path=etc/rules/test_rules.xml")
+                .get("/cluster/master/files?path=" + path_rules)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -766,7 +928,7 @@ describe('Cluster', function () {
 
         it('Request decoders', function(done) {
             request(common.url)
-            .get("/cluster/node01/files?path=etc/decoders/test_decoder.xml")
+            .get("/cluster/master/files?path=" + path_decoders)
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -784,7 +946,7 @@ describe('Cluster', function () {
 
         it('Request lists', function(done) {
             request(common.url)
-            .get("/cluster/node01/files?path=etc/lists/test_list")
+            .get("/cluster/master/files?path=" + path_lists)
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -802,7 +964,7 @@ describe('Cluster', function () {
 
         it('Request wrong path 1', function(done) {
             request(common.url)
-            .get("/cluster/node01/files?path=etc/internal_options.conf")
+            .get("/cluster/master/files?path=etc/internal_options.conf")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(400)
@@ -819,7 +981,7 @@ describe('Cluster', function () {
 
         it('Request wrong path 2', function(done) {
             request(common.url)
-            .get("/cluster/node01/files?path=../tmp")
+            .get("/cluster/master/files?path=../tmp")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(400)
@@ -836,7 +998,7 @@ describe('Cluster', function () {
 
         it('Request wrong path 3', function(done) {
             request(common.url)
-            .get("/cluster/node01/files?path=./framework/wazuh/agent.py")
+            .get("/cluster/master/files?path=./framework/wazuh/agent.py")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(400)
@@ -853,7 +1015,7 @@ describe('Cluster', function () {
 
         it('Request unexisting file', function(done) {
             request(common.url)
-            .get("/cluster/node01/files?path=etc/rules/wrong_file.xml")
+            .get("/cluster/master/files?path=etc/rules/wrong_file.xml")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -887,11 +1049,155 @@ describe('Cluster', function () {
 
     });  // GET/cluster/:node_id/files
 
+    describe('/cluster/:node_id/configuration/validation (OK)', function() {
+
+        it('Request validation (master)', function (done) {
+            request(common.url)
+                .get("/cluster/master/configuration/validation")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['status']);
+                    res.body.data.status.should.equal('OK');
+
+                    done();
+                });
+        });
+
+        it('Request validation (worker)', function (done) {
+            request(common.url)
+                .get("/cluster/worker/configuration/validation")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['status']);
+                    res.body.data.status.should.equal('OK');
+                    done();
+                });
+        });
+
+    });  // GET/cluster/:node_id/configuration/validation (OK)
+
+    describe('/cluster/:node_id/configuration/validation (KO)', function() {
+
+        // upload corrupted ossec.conf in worker (semantic)
+        before(function (done) {
+            request(common.url)
+            .post("/cluster/worker/files?path=" + path_ossec_conf)
+            .set("Content-Type", "application/xml")
+            .send("<!--  Wazuh - Manager -->\n  <ossec_config>\n    <global>\n      <jsonout_output>WRONG_VALUE</jsonout_output>\n      <alerts_log>yes</alerts_log>\n      <logall>no</logall>\n      <logall_json>no</logall_json>\n      <email_notification>no</email_notification>\n      <smtp_server>smtp.example.wazuh.com</smtp_server>\n      <email_from>ossecm@example.wazuh.com</email_from>\n      <email_to>recipient@example.wazuh.com</email_to>\n      <email_maxperhour>12</email_maxperhour>\n      <email_log_source>alerts.log</email_log_source>\n      <queue_size>131072</queue_size>\n    </global>\n  </ossec_config>\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+            });
+        });
+
+        // restore ossec.conf (worker)
+        after(function(done) {
+            request(common.url)
+            .post("/cluster/worker/files?path=" + path_ossec_conf)
+            .set("Content-Type", "application/xml")
+            .send(ossec_conf_content_worker)
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+              });
+        });
+
+        it('Request validation (worker)', function (done) {
+            request(common.url)
+                .get("/cluster/worker/configuration/validation")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['status', 'details']);
+                    res.body.data.status.should.equal('KO');
+                    res.body.data.details.should.be.instanceof(Array);
+
+                    done();
+                });
+        });
+
+        it('Request validation (all nodes)', function (done) {
+            request(common.url)
+                .get("/cluster/configuration/validation")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['status', 'details']);
+                    res.body.data.status.should.equal('KO');
+                    res.body.data.details.should.be.instanceof(Array);
+
+                    done();
+                });
+        });
+
+    });  // GET/cluster/:node_id/configuration/validation
+
     describe('PUT/cluster/:node_id/restart', function() {
 
-        it('Request', function(done) {
+        it('Request (master)', function(done) {
             request(common.url)
-            .put("/cluster/node01/restart")
+            .put("/cluster/master/restart")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+            });
+        });
+
+        it('Request (worker)', function(done) {
+            request(common.url)
+            .put("/cluster/worker/restart")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
