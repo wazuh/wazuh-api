@@ -24,11 +24,11 @@ describe('ConfigurationAssessment', function() {
     ca_fields = ['score', 'policy_id', 'references', 'id', 'name',
                  'description', 'pass', 'fail', 'start_scan', 'end_scan'];
 
-    describe('GET/configuration_assessment/:agent_id', function() {
+    describe('GET/configuration-assessment/:agent_id', function() {
 
         it('Request', function(done) {
             request(common.url)
-            .get("/configuration_assessment/000")
+            .get("/configuration-assessment/000")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -46,7 +46,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Pagination', function(done) {
             request(common.url)
-            .get("/configuration_assessment/000?offset=0&limit=1")
+            .get("/configuration-assessment/000?offset=0&limit=1")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -64,7 +64,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Retrieve all elements with limit=0', function(done) {
             request(common.url)
-            .get("/configuration_assessment/000?limit=0")
+            .get("/configuration-assessment/000?limit=0")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -79,7 +79,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Sort', function(done) {
             request(common.url)
-            .get("/configuration_assessment/000?sort=-score")
+            .get("/configuration-assessment/000?sort=-score")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -98,7 +98,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Search', function(done) {
             request(common.url)
-            .get("/configuration_assessment/000?search=tmp")
+            .get("/configuration-assessment/000?search=tmp")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -117,7 +117,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Params: Bad agent id', function(done) {
             request(common.url)
-            .get("/configuration_assessment/abc")
+            .get("/configuration-assessment/abc")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(400)
@@ -132,7 +132,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Errors: No agent', function(done) {
             request(common.url)
-            .get("/configuration_assessment/9999999")
+            .get("/configuration-assessment/9999999")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -147,7 +147,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Filters: Invalid filter', function(done) {
             request(common.url)
-            .get("/configuration_assessment/000?random")
+            .get("/configuration-assessment/000?random")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(400)
@@ -163,7 +163,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Filters: Invalid filter - Extra field', function(done) {
             request(common.url)
-            .get("/configuration_assessment/000?policy_id=cis_debian&random")
+            .get("/configuration-assessment/000?policy_id=cis_debian&random")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(400)
@@ -179,7 +179,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Filters: status', function(done) {
             request(common.url)
-            .get("/configuration_assessment/000?policy_id=cis_debian&offset=0&limit=10")
+            .get("/configuration-assessment/000?policy_id=cis_debian&offset=0&limit=10")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -198,7 +198,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Filters: query', function(done) {
             request(common.url)
-            .get("/configuration_assessment/000?q=pass>0;fail<1000")
+            .get("/configuration-assessment/000?q=pass>0;fail<1000")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -213,13 +213,13 @@ describe('ConfigurationAssessment', function() {
                 done();
             });
         });
-    });  // GET/configuration_assessment/:agent_id
+    });  // GET/configuration-assessment/:agent_id
 
-    describe('GET/configuration_assessment/:agent_id/checks/:policy_id', function() {
+    describe('GET/configuration-assessment/:agent_id/checks/:policy_id', function() {
 
         it('Request', function(done) {
             request(common.url)
-            .get("/configuration_assessment/000/checks/cis_debian")
+            .get("/configuration-assessment/000/checks/cis_debian")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -238,7 +238,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Pagination', function(done) {
             request(common.url)
-            .get("/configuration_assessment/000/checks/cis_debian?offset=0&limit=1")
+            .get("/configuration-assessment/000/checks/cis_debian?offset=0&limit=1")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -257,7 +257,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Retrieve all elements with limit=0', function(done) {
             request(common.url)
-            .get("/configuration_assessment/000/checks/cis_debian?limit=0")
+            .get("/configuration-assessment/000/checks/cis_debian?limit=0")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -272,7 +272,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Sort', function(done) {
             request(common.url)
-            .get("/configuration_assessment/000/checks/cis_debian?sort=-")
+            .get("/configuration-assessment/000/checks/cis_debian?sort=-")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -291,7 +291,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Search', function(done) {
             request(common.url)
-            .get("/configuration_assessment/000/checks/cis_debian?search=2")
+            .get("/configuration-assessment/000/checks/cis_debian?search=2")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -310,7 +310,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Params: Bad agent id', function(done) {
             request(common.url)
-            .get("/configuration_assessment/abc/checks/cis_debian")
+            .get("/configuration-assessment/abc/checks/cis_debian")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(400)
@@ -325,7 +325,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Errors: No agent', function(done) {
             request(common.url)
-            .get("/configuration_assessment/9999999/checks/cis_debian")
+            .get("/configuration-assessment/9999999/checks/cis_debian")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -340,7 +340,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Check not found', function(done) {
             request(common.url)
-            .get("/configuration_assessment/000/checks/not_exists")
+            .get("/configuration-assessment/000/checks/not_exists")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -357,6 +357,6 @@ describe('ConfigurationAssessment', function() {
             });
         });
 
-    });  // GET/configuration_assessment/:agent_id/pci
+    });  // GET/configuration-assessment/:agent_id/pci
 
 });  // Configuraton assessment
