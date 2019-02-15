@@ -866,7 +866,6 @@ router.post('/group/:group_id', function(req, res) {
     data_request['arguments']['agent_id_list'] = req.body.ids;
 
     if ('ids' in req.body){
-        console.log('arguments ', data_request['arguments'])
         execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
     }else
         res_h.bad_request(req, res, 604, "Missing field: 'ids'");
@@ -1011,7 +1010,6 @@ router.delete('/group/:group_id', function(req, res) {
     data_request['arguments']['agent_id_list'] = req.body.ids;
 
     if ('ids' in req.body){
-        console.log('arguments ', data_request['arguments'])
         execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
     }else
         res_h.bad_request(req, res, 604, "Missing field: 'ids'");
