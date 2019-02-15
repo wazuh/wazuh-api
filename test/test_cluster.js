@@ -20,7 +20,8 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 var path_rules = 'etc/rules/test_rules.xml'
 var path_decoders = 'etc/decoders/test_decoder.xml'
 var path_lists = 'etc/lists/test_list'
-var ossec_conf_content = null
+var ossec_conf_content_master = null
+var ossec_conf_content_worker = null
 
 describe('Cluster', function () {
 
@@ -551,7 +552,7 @@ describe('Cluster', function () {
 
     describe('POST/cluster/:node_id/files', function() {
 
-        // save current ossec.conf
+        // save master ossec.conf
         before(function (done) {
             request(common.url)
                 .get("/cluster/master/files?path=etc/ossec.conf")
@@ -565,11 +566,51 @@ describe('Cluster', function () {
 
                     res.body.error.should.equal(0);
                     res.body.data.should.be.an.string;
-                    
-                    ossec_conf_content = res.body.data
+
+                    ossec_conf_content_master = res.body.data
 
                     done();
                 });
+        });
+
+        // save worker ossec.conf
+        before(function (done) {
+            request(common.url)
+                .get("/cluster/worker/files?path=etc/ossec.conf")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.string;
+
+                    ossec_conf_content_worker = res.body.data
+
+                    done();
+                });
+        });
+
+        it('Upload ossec.conf', function(done) {
+            request(common.url)
+            .post("/cluster/master/files?path=etc/ossec.conf")
+            .set("Content-Type", "application/xml")
+            .send(ossec_conf_content_master)
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+              });
         });
 
         it('Upload rules', function(done) {
@@ -780,9 +821,9 @@ describe('Cluster', function () {
 
                     res.body.should.have.properties(['error', 'data']);
 
-                    res.body.error.should.equal(0);
-                    res.body.data.should.equal(ossec_conf_content)
+                    es.body.error.should.equal(0);
                     res.body.data.should.be.an.string;
+                    res.body.data.should.equal(ossec_conf_content_master)
 
                     done();
                 });
@@ -799,8 +840,9 @@ describe('Cluster', function () {
 
                     res.body.should.have.properties(['error', 'data']);
 
-                    res.body.error.should.equal(0);
+                    es.body.error.should.equal(0);
                     res.body.data.should.be.an.string;
+                    res.body.data.should.equal(ossec_conf_content_worker)
 
                     done();
                 });
