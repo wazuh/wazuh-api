@@ -781,7 +781,7 @@ describe('Cluster', function () {
                     res.body.should.have.properties(['error', 'data']);
 
                     res.body.error.should.equal(0);
-                    res.body.should.equal(ossec_conf_content)
+                    res.body.data.should.equal(ossec_conf_content)
                     res.body.data.should.be.an.string;
 
                     done();
