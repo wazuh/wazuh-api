@@ -98,7 +98,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Search', function(done) {
             request(common.url)
-            .get("/configuration-assessment/000?search=tmp")
+            .get("/configuration-assessment/000?search=prov")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -163,7 +163,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Filters: Invalid filter - Extra field', function(done) {
             request(common.url)
-            .get("/configuration-assessment/000?policy_id=cis_debian&random")
+            .get("/configuration-assessment/000?random&name=CIS")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(400)
@@ -173,25 +173,6 @@ describe('ConfigurationAssessment', function() {
                 res.body.should.have.properties(['error', 'message']);
 
                 res.body.error.should.equal(604);
-                done();
-            });
-        });
-
-        it('Filters: status', function(done) {
-            request(common.url)
-            .get("/configuration-assessment/000?policy_id=cis_debian&offset=0&limit=10")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.totalItems.should.be.above(0);
-                res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items[0].should.have.properties(ca_fields);
                 done();
             });
         });
@@ -210,6 +191,21 @@ describe('ConfigurationAssessment', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.integer;;
                 res.body.data.items.should.be.instanceof(Array);
+                done();
+            });
+        });
+    
+        it('Retrieve all elements with limit=0', function(done) {
+            request(common.url)
+            .get("/configuration-assessment/000?limit=0")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1406);
                 done();
             });
         });
@@ -352,7 +348,22 @@ describe('ConfigurationAssessment', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.equal(0);
                 res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items[0].should.be.string;
+                res.body.data.items.should.have.length(0);
+                done();
+            });
+        });
+
+        it('Retrieve all elements with limit=0', function(done) {
+            request(common.url)
+            .get("/configuration-assessment/000/checks/cis_debian?limit=0")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1406);
                 done();
             });
         });
