@@ -857,6 +857,7 @@ describe('Cluster', function () {
 
     describe('GET/cluster/:node_id/files', function() {
 
+
         after(function (done) {
             var config = require('../configuration/config')
             var path = require('path')
@@ -1210,6 +1211,7 @@ describe('Cluster', function () {
                     res.body.data.status.should.equal('KO');
                     res.body.data.details.should.be.instanceof(Array);
 
+
                     done();
                 });
         });
@@ -1468,7 +1470,6 @@ describe('Cluster', function () {
         });
 
     });  // GET/cluster/:node_id/configuration/validation (manager and worker KO)
-
 
     describe('PUT/cluster/:node_id/restart', function() {
 
