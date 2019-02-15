@@ -821,7 +821,7 @@ describe('Cluster', function () {
 
                     res.body.should.have.properties(['error', 'data']);
 
-                    es.body.error.should.equal(0);
+                    res.body.error.should.equal(0);
                     res.body.data.should.be.an.string;
                     res.body.data.should.equal(ossec_conf_content_master)
 
@@ -840,7 +840,7 @@ describe('Cluster', function () {
 
                     res.body.should.have.properties(['error', 'data']);
 
-                    es.body.error.should.equal(0);
+                    res.body.error.should.equal(0);
                     res.body.data.should.be.an.string;
                     res.body.data.should.equal(ossec_conf_content_worker)
 
