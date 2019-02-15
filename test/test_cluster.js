@@ -550,28 +550,6 @@ describe('Cluster', function () {
 
     describe('POST/cluster/:node_id/files', function() {
 
-        var ossec_conf
-
-        // save current ossec.conf
-        before(function (done) {
-            request(common.url)
-                .get("/cluster/master/files?path=etc/ossec.conf")
-                .auth(common.credentials.user, common.credentials.password)
-                .expect("Content-type", /json/)
-                .expect(200)
-                .end(function (err, res) {
-                    if (err) return done(err);
-
-                    res.body.should.have.properties(['error', 'data']);
-
-                    res.body.error.should.equal(0);
-                    res.body.data.should.be.an.string;
-                    
-                    ossec_conf = res.body.data
-
-                    done();
-                });
-        });
 
         before(function (done) {
 
@@ -585,6 +563,7 @@ describe('Cluster', function () {
             fs.unlinkSync(path.join(config.ossec_path, path_lists));
 
             done();
+
         });
 
         it('Upload rules', function(done) {
