@@ -855,7 +855,8 @@ describe('Cluster', function () {
     });  // POST/cluster/:node_id/files
 
 
-    describe('/cluster/:node_id/files', function() {
+    describe('GET/cluster/:node_id/files', function() {
+
 
         after(function (done) {
             var config = require('../configuration/config')
@@ -1049,7 +1050,8 @@ describe('Cluster', function () {
 
     });  // GET/cluster/:node_id/files
 
-    describe('/cluster/:node_id/configuration/validation (OK)', function() {
+
+    describe('GET/cluster/:node_id/configuration/validation (manager and worker OK)', function() {
 
         it('Request validation (master)', function (done) {
             request(common.url)
@@ -1084,13 +1086,140 @@ describe('Cluster', function () {
                     res.body.error.should.equal(0);
                     res.body.data.should.have.properties(['status']);
                     res.body.data.status.should.equal('OK');
+
                     done();
                 });
         });
 
-    });  // GET/cluster/:node_id/configuration/validation (OK)
+        it('Request validation (all nodes)', function (done) {
+            request(common.url)
+                .get("/cluster/configuration/validation")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
 
-    describe('/cluster/:node_id/configuration/validation (KO)', function() {
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+
+                    res.body.data.should.have.properties(['status']);
+                    res.body.data.status.should.equal('OK');
+
+                    done();
+                });
+        });
+
+    });  // GET/cluster/:node_id/configuration/validation (manager and worker OK)
+
+
+    describe('GET/cluster/:node_id/configuration/validation (manager KO, worker OK)', function() {
+
+        // upload corrupted ossec.conf in master (semantic)
+        before(function (done) {
+            request(common.url)
+            .post("/cluster/master/files?path=" + path_ossec_conf)
+            .set("Content-Type", "application/xml")
+            .send("<!--  Wazuh - Manager -->\n  <ossec_config>\n    <global>\n      <jsonout_output>WRONG_VALUE</jsonout_output>\n      <alerts_log>yes</alerts_log>\n      <logall>no</logall>\n      <logall_json>no</logall_json>\n      <email_notification>no</email_notification>\n      <smtp_server>smtp.example.wazuh.com</smtp_server>\n      <email_from>ossecm@example.wazuh.com</email_from>\n      <email_to>recipient@example.wazuh.com</email_to>\n      <email_maxperhour>12</email_maxperhour>\n      <email_log_source>alerts.log</email_log_source>\n      <queue_size>131072</queue_size>\n    </global>\n <cluster>\n      <name>wazuh</name>\n      <node_name>master</node_name>\n      <node_type>master</node_type>\n      <key>XXXX</key>\n      <port>1516</port>\n      <bind_addr>192.168.122.111</bind_addr>\n      <nodes>\n        <node>192.168.122.111</node>\n      </nodes>\n      <hidden>no</hidden>\n      <disabled>no</disabled>\n    </cluster>\n  </ossec_config>\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+            });
+        });
+
+        // restore ossec.conf (master)
+        after(function(done) {
+            request(common.url)
+            .post("/cluster/master/files?path=" + path_ossec_conf)
+            .set("Content-Type", "application/xml")
+            .send(ossec_conf_content_master)
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+              });
+        });
+
+        it('Request validation (master)', function (done) {
+            request(common.url)
+                .get("/cluster/master/configuration/validation")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['status', 'details']);
+                    res.body.data.status.should.equal('KO');
+                    res.body.data.details.should.be.instanceof(Array);
+
+                    done();
+                });
+        });
+
+        it('Request validation (worker)', function (done) {
+            request(common.url)
+                .get("/cluster/worker/configuration/validation")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.error.should.equal(0);
+
+                    res.body.data.should.have.properties(['status']);
+                    res.body.data.status.should.equal('OK');
+
+                    done();
+                });
+        });
+
+        it('Request validation (all nodes)', function (done) {
+            request(common.url)
+                .get("/cluster/configuration/validation")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['status', 'details']);
+                    res.body.data.status.should.equal('KO');
+                    res.body.data.details.should.be.instanceof(Array);
+
+
+                    done();
+                });
+        });
+
+    });  // GET/cluster/:node_id/configuration/validation (manager KO, worker KO)
+
+
+    describe('GET/cluster/:node_id/configuration/validation (manager OK, worker KO)', function() {
 
         // upload corrupted ossec.conf in worker (semantic)
         before(function (done) {
@@ -1133,6 +1262,173 @@ describe('Cluster', function () {
               });
         });
 
+        it('Request validation (master)', function (done) {
+            request(common.url)
+                .get("/cluster/master/configuration/validation")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['status']);
+                    res.body.data.status.should.equal('OK');
+
+                    done();
+                });
+        });
+
+        it('Request validation (worker)', function (done) {
+            request(common.url)
+                .get("/cluster/worker/configuration/validation")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.error.should.equal(0);
+
+                    res.body.data.should.have.properties(['status', 'details']);
+                    res.body.data.status.should.equal('KO');
+                    res.body.data.details.should.be.instanceof(Array);
+
+                    done();
+                });
+        });
+
+
+        it('Request validation (all nodes)', function (done) {
+            request(common.url)
+                .get("/cluster/configuration/validation")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+
+                    res.body.data.should.have.properties(['status', 'details']);
+                    res.body.data.status.should.equal('KO');
+                    res.body.data.details.should.be.instanceof(Array);
+
+                    done();
+                });
+        });
+
+    });  // GET/cluster/:node_id/configuration/validation (manager OK, worker KO)
+
+
+    describe('GET/cluster/:node_id/configuration/validation (manager and worker KO)', function() {
+
+        // upload corrupted ossec.conf in master (semantic)
+        before(function (done) {
+            request(common.url)
+            .post("/cluster/master/files?path=" + path_ossec_conf)
+            .set("Content-Type", "application/xml")
+            .send("<!--  Wazuh - Manager -->\n  <ossec_config>\n    <global>\n      <jsonout_output>WRONG_VALUE</jsonout_output>\n      <alerts_log>yes</alerts_log>\n      <logall>no</logall>\n      <logall_json>no</logall_json>\n      <email_notification>no</email_notification>\n      <smtp_server>smtp.example.wazuh.com</smtp_server>\n      <email_from>ossecm@example.wazuh.com</email_from>\n      <email_to>recipient@example.wazuh.com</email_to>\n      <email_maxperhour>12</email_maxperhour>\n      <email_log_source>alerts.log</email_log_source>\n      <queue_size>131072</queue_size>\n    </global>\n <cluster>\n      <name>wazuh</name>\n      <node_name>master</node_name>\n      <node_type>master</node_type>\n      <key>XXXXX</key>\n      <port>1516</port>\n      <bind_addr>192.168.122.111</bind_addr>\n      <nodes>\n        <node>192.168.122.111</node>\n      </nodes>\n      <hidden>no</hidden>\n      <disabled>no</disabled>\n    </cluster>\n  </ossec_config>\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+            });
+        });
+
+        // upload corrupted ossec.conf in worker (semantic)
+        before(function (done) {
+            request(common.url)
+            .post("/cluster/worker/files?path=" + path_ossec_conf)
+            .set("Content-Type", "application/xml")
+            .send("<!--  Wazuh - Manager -->\n  <ossec_config>\n    <global>\n      <jsonout_output>WRONG_VALUE</jsonout_output>\n      <alerts_log>yes</alerts_log>\n      <logall>no</logall>\n      <logall_json>no</logall_json>\n      <email_notification>no</email_notification>\n      <smtp_server>smtp.example.wazuh.com</smtp_server>\n      <email_from>ossecm@example.wazuh.com</email_from>\n      <email_to>recipient@example.wazuh.com</email_to>\n      <email_maxperhour>12</email_maxperhour>\n      <email_log_source>alerts.log</email_log_source>\n      <queue_size>131072</queue_size>\n    </global>\n  </ossec_config>\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+            });
+        });
+
+        // restore ossec.conf (master)
+        after(function(done) {
+            request(common.url)
+            .post("/cluster/master/files?path=" + path_ossec_conf)
+            .set("Content-Type", "application/xml")
+            .send(ossec_conf_content_master)
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+              });
+        });
+
+        // restore ossec.conf (worker)
+        after(function(done) {
+            request(common.url)
+            .post("/cluster/worker/files?path=" + path_ossec_conf)
+            .set("Content-Type", "application/xml")
+            .send(ossec_conf_content_worker)
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+              });
+        });
+
+        it('Request validation (master)', function (done) {
+            request(common.url)
+                .get("/cluster/worker/configuration/validation")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['status', 'details']);
+                    res.body.data.status.should.equal('KO');
+                    res.body.data.details.should.be.instanceof(Array);
+
+                    done();
+                });
+        });
+
         it('Request validation (worker)', function (done) {
             request(common.url)
                 .get("/cluster/worker/configuration/validation")
@@ -1173,7 +1469,7 @@ describe('Cluster', function () {
                 });
         });
 
-    });  // GET/cluster/:node_id/configuration/validation
+    });  // GET/cluster/:node_id/configuration/validation (manager and worker KO)
 
     describe('PUT/cluster/:node_id/restart', function() {
 
