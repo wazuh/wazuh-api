@@ -550,9 +550,46 @@ describe('Cluster', function () {
 
     describe('POST/cluster/:node_id/files', function() {
 
+        var ossec_conf
+
+        // save current ossec.conf
+        before(function (done) {
+            request(common.url)
+                .get("/cluster/master/files?path=etc/ossec.conf")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.string;
+                    
+                    ossec_conf = res.body.data
+
+                    done();
+                });
+        });
+
+        before(function (done) {
+
+            var config = require('../configuration/config')
+            var path = require('path')
+            var fs = require('fs')
+
+            // delete test files
+            fs.unlinkSync(path.join(config.ossec_path, path_rules));
+            fs.unlinkSync(path.join(config.ossec_path, path_decoders));
+            fs.unlinkSync(path.join(config.ossec_path, path_lists));
+
+            done();
+        });
+
         it('Upload rules', function(done) {
             request(common.url)
-            .post("/cluster/node01/files?path=" + path_rules)
+            .post("/cluster/master/files?path=" + path_rules)
             .set("Content-Type", "application/xml")
             .send("<!-- Local rules -->\n  <!-- Modify it at your will. -->\n  <!-- Example -->\n  <group name=\"local,\">\n    <!--   NEW RULE    -->\n    <rule id=\"100001111\" level=\"5\">\n      <if_sid>5716</if_sid>\n      <srcip>1.1.1.1</srcip>\n      <description>sshd: authentication failed from IP 1.1.1.1.</description>\n      <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>\n    </rule>\n  </group>\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -571,7 +608,7 @@ describe('Cluster', function () {
 
         it('Upload decoder', function(done) {
             request(common.url)
-            .post("/cluster/node01/files?path=" + path_decoders)
+            .post("/cluster/master/files?path=" + path_decoders)
             .set("Content-Type", "application/xml")
             .send("<!-- NEW Local Decoders -->\n  <!-- Modify it at your will. -->\n  <decoder name=\"local_decoder_example\">\n    <program_name>NEW DECODER</program_name>\n  </decoder>\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -590,7 +627,7 @@ describe('Cluster', function () {
 
         it('Upload list', function(done) {
             request(common.url)
-            .post("/cluster/node01/files?path=" + path_lists)
+            .post("/cluster/master/files?path=" + path_lists)
             .set("Content-Type", "application/octet-stream")
             .send("test-wazuh-w:write\ntest-wazuh-r:read\ntest-wazuh-a:attribute\ntest-wazuh-x:execute\ntest-wazuh-c:command\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -610,7 +647,7 @@ describe('Cluster', function () {
 
         it('Upload malformed rules', function(done) {
             request(common.url)
-            .post("/cluster/node01/files?path=" + path_rules)
+            .post("/cluster/master/files?path=" + path_rules)
             .set("Content-Type", "application/xml")
             .send("<!--   NEW RULE    -->\n    <rule id=\"100001111\" level=\"5\">\n      <if_sid>5716</if_sid>\n      <srcip>1.1.1.1</srcip>\n      <description>sshd: authentication failed from IP 1.1.1.1.</description>\n      <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>\n    </rule>\n  </group>\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -651,7 +688,7 @@ describe('Cluster', function () {
 
         it('Upload malformed decoder', function(done) {
             request(common.url)
-            .post("/cluster/node01/files?path=" + path_decoders)
+            .post("/cluster/master/files?path=" + path_decoders)
             .set("Content-Type", "application/xml")
             .send("<!-- NEW Local Decoders -->\n  <!-- Modify it at your will. -->\n  <decoder name=\"local_decoder_example\">\n    <program_name>NEW <DECODER</program_name>\n  </decoder>\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -691,7 +728,7 @@ describe('Cluster', function () {
 
         it('Upload malformed list', function(done) {
             request(common.url)
-            .post("/cluster/node01/files?path=" + path_lists)
+            .post("/cluster/master/files?path=" + path_lists)
             .set("Content-Type", "application/octet-stream")
             .send("test&%-wazuh-w:write\ntest-wazuh-r:read\ntest-wazuh-a:attribute\ntest-wazuh-x:execute\ntest-wazuh-c:command\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -731,6 +768,7 @@ describe('Cluster', function () {
 
     });  // POST/cluster/:node_id/files
 
+
     describe('/cluster/:node_id/files', function() {
 
         after(function (done) {
@@ -746,9 +784,45 @@ describe('Cluster', function () {
             done();
         });
 
+        it('Request ossec.conf (master)', function (done) {
+            request(common.url)
+                .get("/cluster/master/files?path=etc/ossec.conf")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.string;
+
+                    done();
+                });
+        });
+
+        it('Request ossec.conf (worker)', function (done) {
+            request(common.url)
+                .get("/cluster/worker/files?path=etc/ossec.conf")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.string;
+
+                    done();
+                });
+        });
+
         it('Request rules', function (done) {
             request(common.url)
-                .get("/cluster/node01/files?path=etc/rules/test_rules.xml")
+                .get("/cluster/master/files?path=etc/rules/test_rules.xml")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -766,7 +840,7 @@ describe('Cluster', function () {
 
         it('Request decoders', function(done) {
             request(common.url)
-            .get("/cluster/node01/files?path=etc/decoders/test_decoder.xml")
+            .get("/cluster/master/files?path=etc/decoders/test_decoder.xml")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -784,7 +858,7 @@ describe('Cluster', function () {
 
         it('Request lists', function(done) {
             request(common.url)
-            .get("/cluster/node01/files?path=etc/lists/test_list")
+            .get("/cluster/master/files?path=etc/lists/test_list")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -802,7 +876,7 @@ describe('Cluster', function () {
 
         it('Request wrong path 1', function(done) {
             request(common.url)
-            .get("/cluster/node01/files?path=etc/internal_options.conf")
+            .get("/cluster/master/files?path=etc/internal_options.conf")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(400)
@@ -819,7 +893,7 @@ describe('Cluster', function () {
 
         it('Request wrong path 2', function(done) {
             request(common.url)
-            .get("/cluster/node01/files?path=../tmp")
+            .get("/cluster/master/files?path=../tmp")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(400)
@@ -836,7 +910,7 @@ describe('Cluster', function () {
 
         it('Request wrong path 3', function(done) {
             request(common.url)
-            .get("/cluster/node01/files?path=./framework/wazuh/agent.py")
+            .get("/cluster/master/files?path=./framework/wazuh/agent.py")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(400)
@@ -853,7 +927,7 @@ describe('Cluster', function () {
 
         it('Request unexisting file', function(done) {
             request(common.url)
-            .get("/cluster/node01/files?path=etc/rules/wrong_file.xml")
+            .get("/cluster/master/files?path=etc/rules/wrong_file.xml")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -891,7 +965,7 @@ describe('Cluster', function () {
 
         it('Request', function(done) {
             request(common.url)
-            .put("/cluster/node01/restart")
+            .put("/cluster/master/restart")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
