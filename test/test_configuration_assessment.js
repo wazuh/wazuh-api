@@ -21,7 +21,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 describe('ConfigurationAssessment', function() {
 
-    ca_fields = ['score', 'policy_id', 'references', 'id', 'name',
+    ca_fields = ['score', 'policy_id', 'references', 'name',
                  'description', 'pass', 'fail', 'start_scan', 'end_scan'];
 
     describe('GET/configuration-assessment/:agent_id', function() {
