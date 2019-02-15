@@ -452,7 +452,7 @@ describe('Cluster', function () {
                     res.body.error.should.equal(0);
                     res.body.data.should.have.properties(['nodes', 'n_connected_nodes']);
 
-                    res.body.data.n_connected_nodes.should.be.above(1)
+                    res.body.data.n_connected_nodes.should.be.above(0)
 
                     res.body.data.nodes.should.have.properties([expected_name_worker, expected_name_master]);
 
@@ -511,7 +511,7 @@ describe('Cluster', function () {
                     res.body.error.should.equal(0);
                     res.body.data.should.have.properties(['nodes', 'n_connected_nodes']);
 
-                    res.body.data.n_connected_nodes.should.be.above(1)
+                    res.body.data.n_connected_nodes.should.be.above(0)
 
                     res.body.data.nodes.should.have.properties([expected_name_worker]);
 
