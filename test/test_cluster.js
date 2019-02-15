@@ -1050,7 +1050,7 @@ describe('Cluster', function () {
     });  // GET/cluster/:node_id/files
 
 
-    describe('GET/cluster/:node_id/configuration/validation (all nodes OK)', function() {
+    describe('GET/cluster/:node_id/configuration/validation (manager and worker OK)', function() {
 
         it('Request validation (master)', function (done) {
             request(common.url)
@@ -1110,7 +1110,7 @@ describe('Cluster', function () {
                 });
         });
 
-    });  // GET/cluster/:node_id/configuration/validation (OK)
+    });  // GET/cluster/:node_id/configuration/validation (manager and worker OK)
 
 
     describe('GET/cluster/:node_id/configuration/validation (manager KO, worker OK)', function() {
