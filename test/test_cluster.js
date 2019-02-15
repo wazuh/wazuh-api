@@ -550,22 +550,6 @@ describe('Cluster', function () {
 
     describe('POST/cluster/:node_id/files', function() {
 
-
-        before(function (done) {
-
-            var config = require('../configuration/config')
-            var path = require('path')
-            var fs = require('fs')
-
-            // delete test files
-            fs.unlinkSync(path.join(config.ossec_path, path_rules));
-            fs.unlinkSync(path.join(config.ossec_path, path_decoders));
-            fs.unlinkSync(path.join(config.ossec_path, path_lists));
-
-            done();
-
-        });
-
         it('Upload rules', function(done) {
             request(common.url)
             .post("/cluster/master/files?path=" + path_rules)
