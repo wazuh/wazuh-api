@@ -19,6 +19,8 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 var path_rules = 'etc/rules/test_rules.xml'
 var path_decoders = 'etc/decoders/test_decoder.xml'
 var path_lists = 'etc/lists/test_list'
+var path_ossec_conf = 'etc/ossec.conf'
+var ossec_conf_content = null
 
 describe('Manager', function() {
 
@@ -644,6 +646,46 @@ describe('Manager', function() {
 
     describe('POST/manager/files', function() {
 
+        // save ossec.conf
+        before(function (done) {
+            request(common.url)
+                .get("/cluster/master/files?path=" + path_ossec_conf)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.string;
+
+                    ossec_conf_content = res.body.data
+
+                    done();
+                });
+        });
+
+        it('Upload ossec.conf', function(done) {
+            request(common.url)
+            .post("/cluster/master/files?path=" + path_ossec_conf)
+            .set("Content-Type", "application/xml")
+            .send(ossec_conf_content)
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+              });
+        });
+
         it('Upload rules', function(done) {
             request(common.url)
             .post("/manager/files?path=" + path_rules)
@@ -779,9 +821,28 @@ describe('Manager', function() {
             done();
         });
 
+        it('Request ossec.conf', function (done) {
+            request(common.url)
+                .get("/manager/files?path=" + path_ossec_conf)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.string;
+                    res.body.data.should.equal(ossec_conf_content)
+
+                    done();
+                });
+        });
+
         it('Request rules', function(done) {
             request(common.url)
-            .get("/manager/files?path=etc/rules/test_rules.xml")
+            .get("/manager/files?path=" + path_rules)
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -799,7 +860,7 @@ describe('Manager', function() {
 
         it('Request decoders', function(done) {
             request(common.url)
-            .get("/manager/files?path=etc/decoders/test_decoder.xml")
+            .get("/manager/files?path=" + path_decoders)
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -817,7 +878,7 @@ describe('Manager', function() {
 
         it('Request lists', function(done) {
             request(common.url)
-            .get("/manager/files?path=etc/lists/test_list")
+            .get("/manager/files?path=" + path_lists)
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)

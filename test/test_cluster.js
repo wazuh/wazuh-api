@@ -1049,7 +1049,48 @@ describe('Cluster', function () {
 
     });  // GET/cluster/:node_id/files
 
-    describe('/cluster/:node_id/configuration/validation', function() {
+    describe('/cluster/:node_id/configuration/validation (OK)', function() {
+
+        it('Request validation (master)', function (done) {
+            request(common.url)
+                .get("/cluster/master/configuration/validation")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['status']);
+                    res.body.data.status.should.equal('OK');
+
+                    done();
+                });
+        });
+
+        it('Request validation (worker)', function (done) {
+            request(common.url)
+                .get("/cluster/worker/configuration/validation")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['status']);
+                    res.body.data.status.should.equal('OK');
+                    done();
+                });
+        });
+
+    });  // GET/cluster/:node_id/configuration/validation (OK)
+
+    describe('/cluster/:node_id/configuration/validation (KO)', function() {
 
         // upload corrupted ossec.conf in worker (semantic)
         before(function (done) {
@@ -1092,9 +1133,9 @@ describe('Cluster', function () {
               });
         });
 
-        it('Request validation (master)', function (done) {
+        it('Request validation (worker)', function (done) {
             request(common.url)
-                .get("/cluster/master/configuration/validation")
+                .get("/cluster/worker/configuration/validation")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1104,16 +1145,17 @@ describe('Cluster', function () {
                     res.body.should.have.properties(['error', 'data']);
 
                     res.body.error.should.equal(0);
-                    res.body.data.should.have.properties(['status']);
-                    res.body.data.status.should.equal('OK');
+                    res.body.data.should.have.properties(['status', 'details']);
+                    res.body.data.status.should.equal('KO');
+                    res.body.data.details.should.be.instanceof(Array);
 
                     done();
                 });
         });
 
-        it('Request validation (worker)', function (done) {
+        it('Request validation (all nodes)', function (done) {
             request(common.url)
-                .get("/cluster/worker/configuration/validation")
+                .get("/cluster/configuration/validation")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
