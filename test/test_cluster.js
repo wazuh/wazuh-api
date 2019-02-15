@@ -20,6 +20,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 var path_rules = 'etc/rules/test_rules.xml'
 var path_decoders = 'etc/decoders/test_decoder.xml'
 var path_lists = 'etc/lists/test_list'
+var path_ossec_conf = 'etc/ossec.conf'
 var ossec_conf_content_master = null
 var ossec_conf_content_worker = null
 
@@ -555,7 +556,7 @@ describe('Cluster', function () {
         // save master ossec.conf
         before(function (done) {
             request(common.url)
-                .get("/cluster/master/files?path=etc/ossec.conf")
+                .get("/cluster/master/files?path=" + path_ossec_conf)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -576,7 +577,7 @@ describe('Cluster', function () {
         // save worker ossec.conf
         before(function (done) {
             request(common.url)
-                .get("/cluster/worker/files?path=etc/ossec.conf")
+            .get("/cluster/worker/files?path=" + path_ossec_conf)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -594,9 +595,28 @@ describe('Cluster', function () {
                 });
         });
 
-        it('Upload ossec.conf', function(done) {
+        it('Upload ossec.conf (master)', function(done) {
             request(common.url)
-            .post("/cluster/master/files?path=etc/ossec.conf")
+            .post("/cluster/master/files?path=" + path_ossec_conf)
+            .set("Content-Type", "application/xml")
+            .send(ossec_conf_content_master)
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+              });
+        });
+
+        it('Upload ossec.conf (worker)', function(done) {
+            request(common.url)
+            .post("/cluster/master/files?path=" + path_ossec_conf)
             .set("Content-Type", "application/xml")
             .send(ossec_conf_content_master)
             .auth(common.credentials.user, common.credentials.password)
@@ -666,6 +686,46 @@ describe('Cluster', function () {
 
                 res.body.error.should.equal(0);
                 res.body.data.should.be.an.string;
+
+                done();
+              });
+        });
+
+        it('Upload corrupted ossec.conf (master)', function(done) {
+            request(common.url)
+            .post("/cluster/master/files?path=" + path_ossec_conf)
+            .set("Content-Type", "application/xml")
+            .send("<!--  Wazuh - Manager -->\n  <ossec_config>\n    <global>\n      <jsonout_output><<<<yes</jsonout_output>\n      <alerts_log>yes</alerts_log>\n      <logall>no</logall>\n      <logall_json>no</logall_json>\n      <email_notification>no</email_notification>\n      <smtp_server>smtp.example.wazuh.com</smtp_server>\n      <email_from>ossecm@example.wazuh.com</email_from>\n      <email_to>recipient@example.wazuh.com</email_to>\n      <email_maxperhour>12</email_maxperhour>\n      <email_log_source>alerts.log</email_log_source>\n      <queue_size>131072</queue_size>\n    </global>\n  </ossec_config>\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err, res) {
+                if (err) throw err;
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(703);
+                res.body.message.should.be.an.string;
+
+                done();
+              });
+        });
+
+        it('Upload corrupted ossec.conf (worker)', function(done) {
+            request(common.url)
+            .post("/cluster/worker/files?path=" + path_ossec_conf)
+            .set("Content-Type", "application/xml")
+            .send("<!--  Wazuh - Manager -->\n  <ossec_config>\n    <global>\n      <jsonout_output><<<<yes</jsonout_output>\n      <alerts_log>yes</alerts_log>\n      <logall>no</logall>\n      <logall_json>no</logall_json>\n      <email_notification>no</email_notification>\n      <smtp_server>smtp.example.wazuh.com</smtp_server>\n      <email_from>ossecm@example.wazuh.com</email_from>\n      <email_to>recipient@example.wazuh.com</email_to>\n      <email_maxperhour>12</email_maxperhour>\n      <email_log_source>alerts.log</email_log_source>\n      <queue_size>131072</queue_size>\n    </global>\n  </ossec_config>\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err, res) {
+                if (err) throw err;
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(703);
+                res.body.message.should.be.an.string;
 
                 done();
               });
@@ -991,9 +1051,27 @@ describe('Cluster', function () {
 
     describe('PUT/cluster/:node_id/restart', function() {
 
-        it('Request', function(done) {
+        it('Request (master)', function(done) {
             request(common.url)
             .put("/cluster/master/restart")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+            });
+        });
+
+        it('Request (worker)', function(done) {
+            request(common.url)
+            .put("/cluster/worker/restart")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
