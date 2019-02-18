@@ -866,7 +866,6 @@ router.post('/group/:group_id', function(req, res) {
     data_request['arguments']['agent_id_list'] = req.body.ids;
 
     if ('ids' in req.body){
-        console.log('arguments ', data_request['arguments'])
         execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
     }else
         res_h.bad_request(req, res, 604, "Missing field: 'ids'");
@@ -1011,7 +1010,6 @@ router.delete('/group/:group_id', function(req, res) {
     data_request['arguments']['agent_id_list'] = req.body.ids;
 
     if ('ids' in req.body){
-        console.log('arguments ', data_request['arguments'])
         execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
     }else
         res_h.bad_request(req, res, 604, "Missing field: 'ids'");
@@ -1050,7 +1048,7 @@ router.delete('/groups/:group_id', function(req, res) {
  * @apiParam {String[]} ids Array of agent ID's.
  * @apiParam {Boolean} purge Delete an agent from the key store.
  * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
- * @apiParam {String} older_than Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date.
+ * @apiParam {String} older_than Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date. Default value: 7d.
  *
  * @apiDescription Removes agents, using a list of them or a criterion based on the status or time of the last connection. The Wazuh API must be restarted after removing an agent.
  *
