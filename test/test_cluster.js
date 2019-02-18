@@ -577,7 +577,7 @@ describe('Cluster', function () {
         // save worker ossec.conf
         before(function (done) {
             request(common.url)
-            .get("/cluster/worker/files?path=" + path_ossec_conf)
+            .get("/cluster/worker-1/files?path=" + path_ossec_conf)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -616,7 +616,7 @@ describe('Cluster', function () {
 
         it('Upload ossec.conf (worker)', function(done) {
             request(common.url)
-            .post("/cluster/worker/files?path=" + path_ossec_conf)
+            .post("/cluster/worker-1/files?path=" + path_ossec_conf)
             .set("Content-Type", "application/xml")
             .send(ossec_conf_content_worker)
             .auth(common.credentials.user, common.credentials.password)
@@ -713,7 +713,7 @@ describe('Cluster', function () {
 
         it('Upload corrupted ossec.conf (worker)', function(done) {
             request(common.url)
-            .post("/cluster/worker/files?path=" + path_ossec_conf)
+            .post("/cluster/worker-1/files?path=" + path_ossec_conf)
             .set("Content-Type", "application/xml")
             .send("<!--  Wazuh - Manager -->\n  <ossec_config>\n    <global>\n      <jsonout_output><<<<yes</jsonout_output>\n      <alerts_log>yes</alerts_log>\n      <logall>no</logall>\n      <logall_json>no</logall_json>\n      <email_notification>no</email_notification>\n      <smtp_server>smtp.example.wazuh.com</smtp_server>\n      <email_from>ossecm@example.wazuh.com</email_from>\n      <email_to>recipient@example.wazuh.com</email_to>\n      <email_maxperhour>12</email_maxperhour>\n      <email_log_source>alerts.log</email_log_source>\n      <queue_size>131072</queue_size>\n    </global>\n  </ossec_config>\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -892,7 +892,7 @@ describe('Cluster', function () {
 
         it('Request ossec.conf (worker)', function (done) {
             request(common.url)
-                .get("/cluster/worker/files?path=" + path_ossec_conf)
+                .get("/cluster/worker-1/files?path=" + path_ossec_conf)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1074,7 +1074,7 @@ describe('Cluster', function () {
 
         it('Request validation (worker)', function (done) {
             request(common.url)
-                .get("/cluster/worker/configuration/validation")
+                .get("/cluster/worker-1/configuration/validation")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1179,7 +1179,7 @@ describe('Cluster', function () {
 
         it('Request validation (worker)', function (done) {
             request(common.url)
-                .get("/cluster/worker/configuration/validation")
+                .get("/cluster/worker-1/configuration/validation")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1224,7 +1224,7 @@ describe('Cluster', function () {
         // upload corrupted ossec.conf in worker (semantic)
         before(function (done) {
             request(common.url)
-            .post("/cluster/worker/files?path=" + path_ossec_conf)
+            .post("/cluster/worker-1/files?path=" + path_ossec_conf)
             .set("Content-Type", "application/xml")
             .send("<!--  Wazuh - Manager -->\n  <ossec_config>\n    <global>\n      <jsonout_output>WRONG_VALUE</jsonout_output>\n      <alerts_log>yes</alerts_log>\n      <logall>no</logall>\n      <logall_json>no</logall_json>\n      <email_notification>no</email_notification>\n      <smtp_server>smtp.example.wazuh.com</smtp_server>\n      <email_from>ossecm@example.wazuh.com</email_from>\n      <email_to>recipient@example.wazuh.com</email_to>\n      <email_maxperhour>12</email_maxperhour>\n      <email_log_source>alerts.log</email_log_source>\n      <queue_size>131072</queue_size>\n    </global>\n  </ossec_config>\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -1245,7 +1245,7 @@ describe('Cluster', function () {
         // restore ossec.conf (worker)
         after(function(done) {
             request(common.url)
-            .post("/cluster/worker/files?path=" + path_ossec_conf)
+            .post("/cluster/worker-1/files?path=" + path_ossec_conf)
             .set("Content-Type", "application/xml")
             .send(ossec_conf_content_worker)
             .auth(common.credentials.user, common.credentials.password)
@@ -1283,7 +1283,7 @@ describe('Cluster', function () {
 
         it('Request validation (worker)', function (done) {
             request(common.url)
-                .get("/cluster/worker/configuration/validation")
+                .get("/cluster/worker-1/configuration/validation")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1351,7 +1351,7 @@ describe('Cluster', function () {
         // upload corrupted ossec.conf in worker (semantic)
         before(function (done) {
             request(common.url)
-            .post("/cluster/worker/files?path=" + path_ossec_conf)
+            .post("/cluster/worker-1/files?path=" + path_ossec_conf)
             .set("Content-Type", "application/xml")
             .send("<!--  Wazuh - Manager -->\n  <ossec_config>\n    <global>\n      <jsonout_output>WRONG_VALUE</jsonout_output>\n      <alerts_log>yes</alerts_log>\n      <logall>no</logall>\n      <logall_json>no</logall_json>\n      <email_notification>no</email_notification>\n      <smtp_server>smtp.example.wazuh.com</smtp_server>\n      <email_from>ossecm@example.wazuh.com</email_from>\n      <email_to>recipient@example.wazuh.com</email_to>\n      <email_maxperhour>12</email_maxperhour>\n      <email_log_source>alerts.log</email_log_source>\n      <queue_size>131072</queue_size>\n    </global>\n  </ossec_config>\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -1392,7 +1392,7 @@ describe('Cluster', function () {
         // restore ossec.conf (worker)
         after(function(done) {
             request(common.url)
-            .post("/cluster/worker/files?path=" + path_ossec_conf)
+            .post("/cluster/worker-1/files?path=" + path_ossec_conf)
             .set("Content-Type", "application/xml")
             .send(ossec_conf_content_worker)
             .auth(common.credentials.user, common.credentials.password)
@@ -1411,7 +1411,7 @@ describe('Cluster', function () {
 
         it('Request validation (master)', function (done) {
             request(common.url)
-                .get("/cluster/worker/configuration/validation")
+                .get("/cluster/worker-1/configuration/validation")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1431,7 +1431,7 @@ describe('Cluster', function () {
 
         it('Request validation (worker)', function (done) {
             request(common.url)
-                .get("/cluster/worker/configuration/validation")
+                .get("/cluster/worker-1/configuration/validation")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1473,9 +1473,9 @@ describe('Cluster', function () {
 
     describe('PUT/cluster/:node_id/restart', function() {
 
-        it('Request (master)', function(done) {
+        it('Request (worker)', function(done) {
             request(common.url)
-            .put("/cluster/master/restart")
+            .put("/cluster/worker-1/restart")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -1491,9 +1491,10 @@ describe('Cluster', function () {
             });
         });
 
-        it('Request (worker)', function(done) {
+
+        it('Request (master)', function(done) {
             request(common.url)
-            .put("/cluster/worker/restart")
+            .put("/cluster/master/restart")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
