@@ -13,43 +13,43 @@ apt-get update
 apt-get install wazuh-manager -y
 apt-get install python python-cryptography -y
 
+curl -sL https://deb.nodesource.com/setup_8.x | bash -
+apt-get install nodejs gcc -y
+npm install mocha -g
+npm install glob supertest mocha should moment
+npm config set user 0
+cd ${wazuh_api_folder}
+${wazuh_api_folder}/install_api.sh
+API_CONF_FOLDER=/var/ossec/api/configuration
+PRECONF_FILE=${API_CONF_FOLDER}/preloaded_vars.conf
+cat <<EOT >> ${PRECONF_FILE}
+HTTPS=Y
+AUTH=Y
+COUNTRY="US"
+STATE="State"
+LOCALITY="Locality"
+ORG_NAME="Org Name"
+ORG_UNIT="Org Unit Name"
+COMMON_NAME="Common Name"
+PASSWORD="password"
+USER=foo
+PASS=bar
+PORT=55000
+PROXY=N
+EOT
+/var/ossec/api/scripts/configure_api.sh
+
+sed -i "s:config.experimental_features  = false;:config.experimental_features = true;:g" /var/ossec/api/configuration/config.js
+sed -i "s:config.cache_enabled = \"yes\";:config.cache_enabled = \"no\";:g" /var/ossec/api/configuration/config.js
+
+systemctl restart wazuh-api
+
+/var/ossec/bin/ossec-control enable agentless
+/var/ossec/bin/ossec-control enable client-syslog
+/var/ossec/bin/ossec-control enable integrator
+
 if [ "X${manager_type}" = "Xmaster" ]
 then
-    curl -sL https://deb.nodesource.com/setup_8.x | bash -
-    apt-get install nodejs gcc -y
-    npm install mocha -g
-    npm install glob supertest mocha should moment
-    npm config set user 0
-    cd ${wazuh_api_folder}
-    ${wazuh_api_folder}/install_api.sh
-    API_CONF_FOLDER=/var/ossec/api/configuration
-    PRECONF_FILE=${API_CONF_FOLDER}/preloaded_vars.conf
-    cat <<EOT >> ${PRECONF_FILE}
-    HTTPS=Y
-    AUTH=Y
-    COUNTRY="US"
-    STATE="State"
-    LOCALITY="Locality"
-    ORG_NAME="Org Name"
-    ORG_UNIT="Org Unit Name"
-    COMMON_NAME="Common Name"
-    PASSWORD="password"
-    USER=foo
-    PASS=bar
-    PORT=55000
-    PROXY=N
-EOT
-    /var/ossec/api/scripts/configure_api.sh
-
-    sed -i "s:config.experimental_features  = false;:config.experimental_features = true;:g" /var/ossec/api/configuration/config.js
-    sed -i "s:config.cache_enabled = \"yes\";:config.cache_enabled = \"no\";:g" /var/ossec/api/configuration/config.js
-
-    systemctl restart wazuh-api
-
-    /var/ossec/bin/ossec-control enable agentless
-    /var/ossec/bin/ossec-control enable client-syslog
-    /var/ossec/bin/ossec-control enable integrator
-
     cat << EOT >> /var/ossec/etc/local_internal_options.conf
     wazuh_database.sync_syscheck=1
 EOT
