@@ -203,10 +203,10 @@ def prepare_environment():
     ]
     for a_id, g_id in agents_groups:
         requests.put("https://127.0.0.1:55000/agents/{}/group/{}".format(a_id, g_id), auth=('foo','bar'), verify=False)
-    
-    with open("/var/ossec/etc/shared/dmz/agent.conf","w") as f:
-        f.write('<agent_config os="Linux">\n<localfile>\n<location>/var/log/linux.log</location>\n<log_format>syslog</log_format>\n</localfile>\n</agent_config>\n')
-    
+
+    dmz_conf = '<agent_config os="Linux">\n<localfile>\n<location>/var/log/linux.log</location>\n<log_format>syslog</log_format>\n</localfile>\n</agent_config>\n'
+    files = {'file': ('agent.conf', dmz_conf, 'application/xml', {'Expires': '0'})}
+    requests.post("https://127.0.0.1:55000/agents/groups/dmz/configuration", auth=('foo', 'bar'), files=files, verify=False)
 
 def clean_environment():
     """
