@@ -1,6 +1,6 @@
 /**
- * API RESTful for OSSEC
- * Copyright (C) 2015-2018 Wazuh, Inc.All rights reserved.
+ * Wazuh RESTful API
+ * Copyright (C) 2015-2018 Wazuh, Inc. All rights reserved.
  * Wazuh.com
  *
  * This program is a free software; you can redistribute it

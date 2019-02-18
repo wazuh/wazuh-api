@@ -1,6 +1,6 @@
 /**
  * Wazuh API RESTful
- * Copyright (C) 2015-2016 Wazuh, Inc.All rights reserved.
+ * Copyright (C) 2015-2019 Wazuh, Inc.  All rights reserved.
  * Wazuh.com
  *
  * This program is a free software; you can redistribute it
@@ -109,7 +109,7 @@ try {
 }
 
 api_path = __dirname;
-python_bin = '';
+python_bin = config.ossec_path + '/framework/python/bin/python3';
 
 /********************************************/
 /* Config APP
@@ -121,7 +121,7 @@ var current_mm_version = version_mmp[0] + '.' + version_mmp[1]; // major.minor
 if (process.argv.length == 3 && process.argv[2] == "-f")
     logger.set_foreground();
 
-if (check.wazuh(logger) < 0 || check.python(logger) < 0) {
+if (check.wazuh(logger) < 0) {
     setTimeout(function(){ process.exit(1); }, 500);
     return;
 }
@@ -156,14 +156,19 @@ if (config.basic_auth.toLowerCase() == "yes"){
 }
 
 // temporary
-if (config.ld_library_path.indexOf('api') != -1) {
-    logger.warning("Using a deprecated API configuration. The value config.ld_library_path must be config.ossec_path + \"/framework/lib\" instead of config.ossec_path + \"/api/framework/lib\"");
+if (config.ld_library_path) {
+    logger.warning("LD library path configuration is deprecated.");
 }
+if (config.python) {
+    logger.warning("Python configuration is deprecated. Using " + python_bin);
+}
+
 
 // Body
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.text({type:"application/xml", limit:"1mb"}));
+app.use(bodyParser.raw({type:"application/octet-stream", limit:"1mb"}));
 
 
 /**
@@ -208,14 +213,11 @@ app.use (function (err, req, res, next){
     else if ('status' in err && err.status == 400){
         var msg = "";
         if ('body' in err)
-            msg = "Body: " + err.body;
+            msg = "Body is not correct.";
         res_h.bad_request(req, res, "614", msg);
     }
     else if (err == "PayloadTooLargeError: request entity too large"){
-        var msg = "";
-        if ('body' in err)
-            msg = "Body: " + err.body;
-        res_h.bad_request(req, res, "701", msg);
+        res_h.bad_request(req, res, "701");
     }
     else{
         logger.log("Internal Error");
