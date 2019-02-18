@@ -3,6 +3,16 @@
 ## Environment
 Build vagrant envinroment using files available under `build_environment` directory.
 
+Environment variable `WAZUH_GIT_PATH` needs to be set before deploying Vagrant environment:
+* In windows:
+    ```powershell
+    > Set-Item -path env:WAZUH_GIT_PATH -value C:\Users\Marta\Documents\GitHub
+    ```
+* In linux:
+    ```shellsession
+    # export WAZUH_GIT_PATH=/home/marta/documents/github
+    ```
+
 ## Generate documentation:
 
 ```shellsession
