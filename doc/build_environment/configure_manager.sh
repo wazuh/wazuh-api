@@ -8,7 +8,7 @@ apt update
 curl -s https://s3-us-west-1.amazonaws.com/packages-dev.wazuh.com/key/GPG-KEY-WAZUH | apt-key add -
 echo "deb https://s3-us-west-1.amazonaws.com/packages-dev.wazuh.com/pre-release/apt/ unstable main" | tee -a /etc/apt/sources.list.d/wazuh_pre_release.list
 apt update
-apt install wazuh-manager python-cryptography python-pip -y
+apt install wazuh-manager -y
 curl -sL https://deb.nodesource.com/setup_8.x | bash -
 apt-get install nodejs -y
 apt-get install wazuh-api -y
@@ -47,7 +47,7 @@ sed -i "s:wazuh_database.sync_syscheck=0:wazuh_database.sync_syscheck=1:g" /var/
 sed -i "s:config.experimental_features  = false;:config.experimental_features = true;:g" /var/ossec/api/configuration/config.js
 
 npm install apidoc -g
-apt-get install python-pip
+apt-get install python-pip -y
 pip install requests Sphinx==1.6.5 sphinx-rtd-theme==0.2.4 sphinxcontrib-images==0.7.0
 
 systemctl restart wazuh-api
