@@ -110,7 +110,13 @@ hardcoded_items = {
         'PostAgentGroupFile': {"error":0,"data":"Agent configuration was updated successfully"},
 
         # POST /agents/group/:group_id/configuration
-        'PostAgentGroupConfiguration': {"error":0,"data":"Agent configuration was updated successfully"}
+        'PostAgentGroupConfiguration': {"error":0,"data":"Agent configuration was updated successfully"},
+
+        # POST /cluster/:node_id/files
+        'PostUpdateFileCluster': {"error":0,"data":"File updated successfully"},
+
+        # POST /manager/files
+        'PostUpdateFile': {"error":0,"data":"File updated successfully"}
     }
 ### ### ###
 

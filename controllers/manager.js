@@ -319,8 +319,8 @@ router.get('/files', cache(), function(req, res) {
  *
  * @apiDescription Upload a local file (rules, decoders and lists).
  *
- * @apiExample {curl} Example usage:
- *     curl -u foo:bar -X POST -H 'Content-type: application/xml' -d @rules.xml "https://127.0.0.1:55000/manager/files?path=etc/rules/new_rule.xml&pretty"
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X POST -H 'Content-type: application/xml' -d @rules.xml "https://127.0.0.1:55000/manager/files?path=etc/rules/new_rule.xml&pretty"
  *
  */
 router.post('/files', function(req, res) {
