@@ -21,7 +21,6 @@ var router = require('express').Router();
  * @apiParam {String} [name] Filters by policy name.
  * @apiParam {String} [description] Filters by policy description
  * @apiParam {String} [references] Filters by references
- * @apiParam {String} [hash] Filters by hash
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
@@ -35,7 +34,7 @@ var router = require('express').Router();
  *
  */
 router.get('/:agent_id', cache(), function(req, res) {
-    query_checks = {'name':'alphanumeric_param', 'description':'alphanumeric_param', 'references':'alphanumeric_param', 'hash':'alphanumeric_param'};
+    query_checks = {'name':'alphanumeric_param', 'description':'alphanumeric_param', 'references':'alphanumeric_param'};
     templates.array_request("/configuration-assessment/:agent_id", req, res, "configuration_assessment", {'agent_id':'numbers'}, query_checks);
 })
 
