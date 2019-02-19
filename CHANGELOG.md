@@ -1,6 +1,16 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.9.0]
+
+### Added
+- Added API calls to edit configuration files (ossec.conf, rules, lists and decodes) ([#308](https://github.com/wazuh/wazuh-api/pull/308) and [#299](https://github.com/wazuh/wazuh-api/pull/299))
+- Added API calls to restart manager nodes in the cluster and validate configuration ([#307](https://github.com/wazuh/wazuh-api/pull/307))
+- Added API calls to get CDB lists ([#301](https://github.com/wazuh/wazuh-api/pull/301))
+- Added API calls to get configuration assessment policies and checks ([#321](https://github.com/wazuh/wazuh-api/pull/321))
+
+### Fixed
+- Fixed documentation regarding DELETE /agents API call and older_than default value ([#319](https://github.com/wazuh/wazuh-api/pull/319))
 
 ## [v3.8.2]
 
