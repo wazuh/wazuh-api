@@ -332,7 +332,7 @@ if __name__ == "__main__":
                     rows = []
                     f.write('\n{0}\n\n'.format(str_parameter))
                     params = item['parameter']['fields']['Parameter']
-                    table = create_table(['Param', 'Type', 'Description'], params, [30, 15, 200])
+                    table = create_table(['Param', 'Type', 'Description'], params, [30, 15, 230])
                     f.write(table)
                 f.write('\n')
 
