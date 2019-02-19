@@ -30,7 +30,7 @@ var router = require('express').Router();
  * @apiDescription Returns the configuration assessment database of an agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/configuration-assessment/000?offset=0&limit=2&q=pass>30;score<100&pretty"
+ *     curl -u foo:bar -k -X GET "curl -u foo:bar -k -X GET "https://127.0.0.1:55000/configuration-assessment/000?pretty&q=pass>50;score<150"
  *
  */
 router.get('/:agent_id', cache(), function(req, res) {
@@ -64,7 +64,7 @@ router.get('/:agent_id', cache(), function(req, res) {
  * @apiDescription Returns the configuration assessment checks of an agent
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/configuration-assessment/000/checks/1907428094?name=&pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/configuration-assessment/000/checks/system_audit?pretty"
  *
  */
 router.get('/:agent_id/checks/:policy_id', cache(), function(req, res) {
