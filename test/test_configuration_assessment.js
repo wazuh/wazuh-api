@@ -98,7 +98,7 @@ describe('ConfigurationAssessment', function() {
 
         it('Search', function(done) {
             request(common.url)
-            .get("/configuration-assessment/000?search=prov")
+            .get("/configuration-assessment/000?search=ssh")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
