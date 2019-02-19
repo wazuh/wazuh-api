@@ -374,7 +374,7 @@ router.post('/files', function(req, res) {
  *
  * @apiDescription Restarts Wazuh Manager.
  *
- * @apiExample {curl} Example usage:
+ * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/manager/restart?pretty"
  *
  */

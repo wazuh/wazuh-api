@@ -116,7 +116,16 @@ hardcoded_items = {
         'PostUpdateFileCluster': {"error":0,"data":"File updated successfully"},
 
         # POST /manager/files
-        'PostUpdateFile': {"error":0,"data":"File updated successfully"}
+        'PostUpdateFile': {"error":0,"data":"File updated successfully"},
+
+        # PUT /cluster/restart
+        'PutRestartCluster': {"error":0,"data":"Restarting manager"},
+
+        # PUT /cluster/:node_id/restart
+        'PutRestartClusterNode': {"error":0,"data":"Restarting manager"},
+
+        # PUT /manager/restart
+        'PutRestartManager': {"error":0,"data":"Restarting manager"}
     }
 ### ### ###
 
