@@ -250,7 +250,7 @@ if __name__ == "__main__":
         if ss.startswith('_'):
             continue
 
-        s = req['filename'].split('/')[-1][:-3]  # section
+        s = req['filename'].split('/')[-1][:-3].replace('_', ' ')  # section
 
         if s not in sections:
             sections[s] = {}
