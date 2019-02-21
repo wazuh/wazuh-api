@@ -418,7 +418,7 @@ router.get('/syscollector/netaddr', function (req, res) {
     var data_request = { 'function': '/experimental/syscollector/netaddr', 'arguments': {} };
     var filters = {
         'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
-        'search': 'search_param', 'select': 'select_param',
+        'search': 'search_param', 'select': 'select_param', 'iface': 'alphanumeric_param',
         'proto': 'alphanumeric_param', 'address': 'alphanumeric_param',
         'broadcast': 'alphanumeric_param', 'netmask': 'alphanumeric_param',
     };
@@ -437,6 +437,8 @@ router.get('/syscollector/netaddr', function (req, res) {
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+    if ('iface' in req.query)
+        data_request['arguments']['filters']['iface'] = req.query.iface;
     if ('proto' in req.query)
         data_request['arguments']['filters']['proto'] = req.query.proto;
     if ('address' in req.query)
