@@ -14,6 +14,7 @@ Wazuh API capabilities:
 - Agents management
 - Manager overview
 - Rootcheck control & search
+- Security configuration assessment (SCA)
 - Syscheck control & search
 - Ruleset information
 - Statistical Information

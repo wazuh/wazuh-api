@@ -13,8 +13,8 @@
 var router = require('express').Router();
 
 /**
- * @api {get} /configuration-assessment/:agent_id Get configuration assessment database
- * @apiName GetPMAgent
+ * @api {get} /sca/:agent_id Get security configuration assessment (SCA) database
+ * @apiName GetSCAAgent
  * @apiGroup Info
  *
  * @apiParam {Number} agent_id Agent ID.
@@ -27,21 +27,21 @@ var router = require('express').Router();
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [q] Query to filter results by. This is specially useful to filter by total checks passed, failed or total score (fields pass, fail, score).
  *
- * @apiDescription Returns the configuration assessment database of an agent.
+ * @apiDescription Returns the security sca database of an agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/configuration-assessment/000?offset=0&limit=2&q=pass>30;score<100&pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/sca/000?offset=0&limit=2&q=pass>30;score<100&pretty"
  *
  */
 router.get('/:agent_id', cache(), function(req, res) {
     query_checks = {'name':'alphanumeric_param', 'description':'alphanumeric_param', 'references':'alphanumeric_param'};
-    templates.array_request("/configuration-assessment/:agent_id", req, res, "configuration_assessment", {'agent_id':'numbers'}, query_checks);
+    templates.array_request("/sca/:agent_id", req, res, "sca", {'agent_id':'numbers'}, query_checks);
 })
 
 
 /**
- * @api {get} /configuration-assessment/:agent_id/checks/:id Get configuration assessment checks database
- * @apiName GetPMAgentChecks
+ * @api {get} /sca/:agent_id/checks/:id Get security configuration assessment (SCA) checks database
+ * @apiName GetSCAAgentChecks
  * @apiGroup Info
  *
  * @apiParam {Number} [agent_id] Agent ID.
@@ -61,10 +61,10 @@ router.get('/:agent_id', cache(), function(req, res) {
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  *
- * @apiDescription Returns the configuration assessment checks of an agent
+ * @apiDescription Returns the sca checks of an agent
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/configuration-assessment/000/checks/1907428094?name=&pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/sca/000/checks/1907428094?name=&pretty"
  *
  */
 router.get('/:agent_id/checks/:policy_id', cache(), function(req, res) {
@@ -72,8 +72,8 @@ router.get('/:agent_id/checks/:policy_id', cache(), function(req, res) {
         'rationale': 'alphanumeric_param', 'remediation': 'alphanumeric_param', 'file': 'paths', 'process': 'alphanumeric_param',
         'directory': 'paths', 'registry': 'alphanumeric_param', 'references': 'alphanumeric_param', 'result': 'alphanumeric_param'
     };
-    templates.array_request("/configuration-assessment/:agent_id/checks/:policy_id", req, res,
-               "configuration_assessment",
+    templates.array_request("/sca/:agent_id/checks/:policy_id", req, res,
+               "sca",
                {'agent_id': 'numbers', 'policy_id': 'alphanumeric_param'}, query_checks);
 })
 
