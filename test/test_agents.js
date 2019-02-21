@@ -2863,7 +2863,7 @@ describe('Agents', function() {
                 res.body.should.have.properties(['error', 'data']);
                 res.body.data.should.have.properties(['syscheck']);
                 res.body.data.syscheck.should.have.properties(['ignore', 'skip_nfs', 'directories',
-                'scan_on_start', 'disabled', 'frequency', 'restart_audit', 'nodiff']);
+                'scan_on_start', 'disabled', 'frequency', 'whodata', 'nodiff']);
 
                 res.body.error.should.equal(0);
                 done();
