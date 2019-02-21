@@ -98,7 +98,7 @@ describe('SecurityConfigurationAssessment', function() {
 
         it('Search', function(done) {
             request(common.url)
-            .get("/sca/000?search=prov")
+            .get("/sca/000?search=ssh")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -215,7 +215,7 @@ describe('SecurityConfigurationAssessment', function() {
 
         it('Request', function(done) {
             request(common.url)
-            .get("/sca/000/checks/cis_debian")
+            .get("/sca/000/checks/system_audit_ssh")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -234,7 +234,7 @@ describe('SecurityConfigurationAssessment', function() {
 
         it('Pagination', function(done) {
             request(common.url)
-            .get("/sca/000/checks/cis_debian?offset=0&limit=1")
+            .get("/sca/000/checks/system_audit_ssh?offset=0&limit=1")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -253,7 +253,7 @@ describe('SecurityConfigurationAssessment', function() {
 
         it('Retrieve all elements with limit=0', function(done) {
             request(common.url)
-            .get("/sca/000/checks/cis_debian?limit=0")
+            .get("/sca/000/checks/system_audit_ssh?limit=0")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -268,7 +268,7 @@ describe('SecurityConfigurationAssessment', function() {
 
         it('Sort', function(done) {
             request(common.url)
-            .get("/sca/000/checks/cis_debian?sort=-")
+            .get("/sca/000/checks/system_audit_ssh?sort=-")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -287,7 +287,7 @@ describe('SecurityConfigurationAssessment', function() {
 
         it('Search', function(done) {
             request(common.url)
-            .get("/sca/000/checks/cis_debian?search=2")
+            .get("/sca/000/checks/system_audit_ssh?search=2")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -306,7 +306,7 @@ describe('SecurityConfigurationAssessment', function() {
 
         it('Params: Bad agent id', function(done) {
             request(common.url)
-            .get("/sca/abc/checks/cis_debian")
+            .get("/sca/abc/checks/system_audit_ssh")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(400)
@@ -321,7 +321,7 @@ describe('SecurityConfigurationAssessment', function() {
 
         it('Errors: No agent', function(done) {
             request(common.url)
-            .get("/sca/9999999/checks/cis_debian")
+            .get("/sca/9999999/checks/system_audit_ssh")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -355,7 +355,7 @@ describe('SecurityConfigurationAssessment', function() {
 
         it('Retrieve all elements with limit=0', function(done) {
             request(common.url)
-            .get("/sca/000/checks/cis_debian?limit=0")
+            .get("/sca/000/checks/system_audit_ssh?limit=0")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
