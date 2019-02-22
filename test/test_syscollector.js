@@ -2154,6 +2154,7 @@ describe('Syscollector', function () {
                     res.body.should.have.properties(['error', 'data']);
                     res.body.error.should.equal(0);
                     res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
+                    expected_iface = res.body.data.items[0].iface;
                     expected_proto = res.body.data.items[0].proto;
                     expected_address = res.body.data.items[0].address;
                     expected_broadcast = res.body.data.items[0].broadcast;

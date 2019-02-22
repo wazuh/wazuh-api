@@ -30,7 +30,7 @@ var router = require('express').Router();
  * @apiDescription Returns the security sca database of an agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/sca/000?offset=0&limit=2&q=pass>30;score<100&pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/sca/000?q=pass>50;score<150&pretty"
  *
  */
 router.get('/:agent_id', cache(), function(req, res) {
@@ -64,7 +64,7 @@ router.get('/:agent_id', cache(), function(req, res) {
  * @apiDescription Returns the sca checks of an agent
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/sca/000/checks/1907428094?name=&pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/sca/000/checks/system_audit?name=&pretty"
  *
  */
 router.get('/:agent_id/checks/:policy_id', cache(), function(req, res) {
