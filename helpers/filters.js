@@ -67,7 +67,7 @@ exports.check_path = function(path, req, res) {
         return true
     }
 
-    re = new RegExp(/((^etc\/rules\/|^etc\/decoders\/)[\w_\-\/]+\.{1}xml|(^etc\/lists\/)[|w_\-\.\/]+)/)
+    re = new RegExp(/((^etc\/rules\/|^etc\/decoders\/)[\w_\-\/]+\.{1}xml|(^etc\/lists\/)[\w_\-\.\/]+)/)
     if (!re.test(path)) {
         res_h.bad_request(req, res, 704);
         return false
