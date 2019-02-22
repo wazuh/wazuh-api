@@ -367,7 +367,7 @@ router.get('/:node_id/stats/weekly', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /cluster/:node_id/stats/analysisd Get node node_id's stats
+ * @api {get} /cluster/:node_id/stats/analysisd Get node node_id's analysisd stats
  * @apiName GetManagerStatsCluster
  * @apiGroup Stats
  * 
@@ -389,7 +389,7 @@ router.get('/:node_id/stats/analysisd', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /cluster/:node_id/stats/remoted Get node node_id's stats
+ * @api {get} /cluster/:node_id/stats/remoted Get node node_id's remoted stats
  * @apiName GetManagerStatsCluster
  * @apiGroup Stats
  *
@@ -486,28 +486,7 @@ router.get('/:node_id/logs/summary', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /manager/stats/remoted Get remoted stats
- * @apiName GetRemotedStats
- * @apiGroup Stats
- *
- *
- * @apiDescription Returns a summary of the current remoted stats.
- *
- * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/stats/remoted?pretty"
- *
- */
-router.get('/stats/remoted', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /manager/stats/remoted");
-
-    req.apicacheGroup = "manager";
-
-    var data_request = {'function': '/manager/stats/remoted', 'arguments': {}};
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
-})
-
-/**
- * @api {get} /cluster/:node_id/files Get local file
+ * @api {get} /cluster/:node_id/files Get local file from any cluster node
  * @apiName GetFileCluster
  * @apiGroup Files
  *
@@ -516,7 +495,7 @@ router.get('/stats/remoted', cache(), function(req, res) {
  * @apiDescription Returns the content of a local file (rules, decoders and lists).
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/files?path=/etc/rules/local_rules.xml&pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/files?path=etc/rules/local_rules.xml&pretty"
  *
  */
 router.get('/:node_id/files', cache(), function(req, res) {
@@ -543,7 +522,7 @@ router.get('/:node_id/files', cache(), function(req, res) {
 
 
 /**
- * @api {post} /cluster/:node_id/files Update local file
+ * @api {post} /cluster/:node_id/files Update local file at any cluster node
  * @apiName PostUpdateFileCluster
  * @apiGroup Files
  *
@@ -552,8 +531,8 @@ router.get('/:node_id/files', cache(), function(req, res) {
  *
  * @apiDescription Upload a local file (rules, decoders and lists) in a cluster node
  *
- * @apiExample {curl} Example usage:
- *     curl -u foo:bar -X POST -H 'Content-type: application/xml' -d @rules.xml "https://127.0.0.1:55000/cluster/node02/files?path=/etc/rules&pretty"
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X POST -H 'Content-type: application/xml' -d @rules.xml "https://127.0.0.1:55000/cluster/node02/files?path=etc/rules/local_rules.xml&pretty"
  *
  */
 router.post('/:node_id/files', function(req, res) {
@@ -612,7 +591,7 @@ router.post('/:node_id/files', function(req, res) {
  *
  * @apiDescription Restarts all nodes in cluster.
  *
- * @apiExample {curl} Example usage:
+ * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/cluster/restart?pretty"
  *
  */
@@ -650,7 +629,7 @@ router.get('/configuration/validation', cache(), function(req, res) {
  *
  * @apiDescription Restarts a specific node in cluster.
  *
- * @apiExample {curl} Example usage:
+ * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/cluster/node02/restart?pretty"
  *
  */
