@@ -64,7 +64,7 @@ router.get('/:agent_id', cache(), function(req, res) {
  * @apiDescription Returns the sca checks of an agent
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/sca/000/checks/system_audit?name=&pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/sca/000/checks/system_audit?pretty"
  *
  */
 router.get('/:agent_id/checks/:policy_id', cache(), function(req, res) {
