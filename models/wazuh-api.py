@@ -3,10 +3,8 @@
 # Created by Wazuh, Inc. <info@wazuh.com>.
 # This program is a free software; you can redistribute it and/or modify it under the terms of GPLv2
 
-
-from sys import argv, exit, path
+from sys import argv, exit
 from getopt import getopt, GetoptError
-from os import path as os_path
 import json
 import signal
 import logging
@@ -16,17 +14,9 @@ import asyncio
 error_wazuh_package = 0
 exception_error = None
 try:
-    new_path = '/var/ossec'
-    if not os_path.exists(new_path):
-        current_path = path[0].split('/')
-        new_path = "/{0}/{1}".format(current_path[1], current_path[2])
-    new_framework_path = "{}/framework".format(new_path)
-    path.append(new_framework_path)
     from wazuh import Wazuh
-    wazuh = Wazuh(ossec_path=new_path)
     from wazuh.exception import WazuhException
     from wazuh.cluster.dapi import dapi
-    from wazuh.cluster.cluster import read_config
 except (ImportError, SyntaxError) as e:
     error = str(e)
     error_wazuh_package = -1
@@ -153,12 +143,6 @@ if __name__ == "__main__":
     # Main
     try:
         wazuh = Wazuh(ossec_path=request['ossec_path'])
-
-        cluster_config = read_config()
-        executable_name = "Wazuh API"
-        master_ip = cluster_config['nodes'][0]
-        if cluster_config['node_type'] != 'master' and cluster_config['disabled'] == 'no':
-            raise WazuhException(3019, {"EXECUTABLE_NAME": executable_name, "MASTER_IP": master_ip})
 
         before = time.time()
 
