@@ -929,28 +929,6 @@ describe('Manager', function() {
 
     });  // GET/manager/files
 
-    describe('GET/manager/configuration/validation (OK)', function() {
-
-        it('Request validation ', function (done) {
-            request(common.url)
-                .get("/manager/configuration/validation")
-                .auth(common.credentials.user, common.credentials.password)
-                .expect("Content-type", /json/)
-                .expect(200)
-                .end(function (err, res) {
-                    if (err) return done(err);
-
-                    res.body.should.have.properties(['error', 'data']);
-
-                    res.body.error.should.equal(0);
-                    res.body.data.status.should.equal('OK');
-
-                    done();
-                });
-        });
-
-    });  // GET/manager/configuration/validation (OK)
-
     describe('GET/manager/configuration/validation (KO)', function() {
 
         // upload corrupted ossec.conf
@@ -1015,6 +993,28 @@ describe('Manager', function() {
         });
 
     });  // GET/manager/configuration/validation (KO)
+
+    describe('GET/manager/configuration/validation (OK)', function() {
+
+        it('Request validation ', function (done) {
+            request(common.url)
+                .get("/manager/configuration/validation")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.status.should.equal('OK');
+
+                    done();
+                });
+        });
+
+    });  // GET/manager/configuration/validation (OK)
 
     describe('DELETE/manager/files', function() {
 
