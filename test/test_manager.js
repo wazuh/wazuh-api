@@ -628,7 +628,28 @@ describe('Manager', function() {
         // save ossec.conf
         before(function (done) {
             request(common.url)
-                .get("/cluster/master/files?path=" + path_ossec_conf)
+                .get("/manager/files?path=" + path_ossec_conf)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.string;
+
+                    ossec_conf_content = res.body.data
+
+                    done();
+                });
+        });
+
+        // upload rule file for testing overwrite parameter
+        before(function (done) {
+            request(common.url)
+                .get("/manager/files?path=" + overwrite_rule)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -648,7 +669,7 @@ describe('Manager', function() {
 
         it('Upload ossec.conf', function(done) {
             request(common.url)
-            .post("/cluster/master/files?path=" + path_ossec_conf)
+            .post("/manager/files?path=" + path_ossec_conf)
             .set("Content-Type", "application/xml")
             .send(ossec_conf_content)
             .auth(common.credentials.user, common.credentials.password)
@@ -665,9 +686,47 @@ describe('Manager', function() {
               });
         });
 
-        it('Upload rules', function(done) {
+        it('Upload rules (new rule)', function(done) {
             request(common.url)
             .post("/manager/files?path=" + path_rules)
+            .set("Content-Type", "application/xml")
+            .send("<!-- Local rules -->\n  <!-- Modify it at your will. -->\n  <!-- Example -->\n  <group name=\"local,\">\n    <!--   NEW RULE    -->\n    <rule id=\"100001111\" level=\"5\">\n      <if_sid>5716</if_sid>\n      <srcip>1.1.1.1</srcip>\n      <description>sshd: authentication failed from IP 1.1.1.1.</description>\n      <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>\n    </rule>\n  </group>\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+              });
+        });
+
+        it('Upload rules (overwrite parameter = true)', function(done) {
+            request(common.url)
+            .post("/manager/files?path=" + path_rules + '&overwrite=true')
+            .set("Content-Type", "application/xml")
+            .send("<!-- Local rules -->\n  <!-- Modify it at your will. -->\n  <!-- Example -->\n  <group name=\"local,\">\n    <!--   NEW RULE    -->\n    <rule id=\"100001111\" level=\"5\">\n      <if_sid>5716</if_sid>\n      <srcip>1.1.1.1</srcip>\n      <description>sshd: authentication failed from IP 1.1.1.1.</description>\n      <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>\n    </rule>\n  </group>\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+              });
+        });
+
+        it('Upload rules (overwrite parameter = false)', function(done) {
+            request(common.url)
+            .post("/manager/files?path=" + path_rules + '&overwrite=False')
             .set("Content-Type", "application/xml")
             .send("<!-- Local rules -->\n  <!-- Modify it at your will. -->\n  <!-- Example -->\n  <group name=\"local,\">\n    <!--   NEW RULE    -->\n    <rule id=\"100001111\" level=\"5\">\n      <if_sid>5716</if_sid>\n      <srcip>1.1.1.1</srcip>\n      <description>sshd: authentication failed from IP 1.1.1.1.</description>\n      <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>\n    </rule>\n  </group>\n")
             .auth(common.credentials.user, common.credentials.password)

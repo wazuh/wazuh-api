@@ -528,6 +528,7 @@ router.get('/:node_id/files', cache(), function(req, res) {
  *
  * @apiParam {String} file Input file.
  * @apiParam {String} path Relative path were input file will be placed.
+ * @apiParam {String} overwrite Relative path were input file will be placed.
  *
  * @apiDescription Upload a local file (rules, decoders and lists) in a cluster node
  *
@@ -540,7 +541,7 @@ router.post('/:node_id/files', function(req, res) {
 
     var data_request = {'function': 'POST/cluster/:node_id/files', 'arguments': {}};
     var filters_param = {'node_id': 'names'};
-    var filters_query = {'path': 'paths'};
+    var filters_query = {'path': 'paths', 'overwrite': 'boolean'};
 
     if (!filter.check(req.params, filters_param, req, res))  // Filter with error (params)
         return;
@@ -580,6 +581,10 @@ router.post('/:node_id/files', function(req, res) {
     data_request['arguments']['node_id'] = req.params.node_id;
     data_request['arguments']['path'] = req.query.path;
     data_request['arguments']['content_type'] = req.headers['content-type'];
+
+    // optional parameters
+    if ('overwrite' in req.query)
+        data_request['arguments']['overwrite'] = req.query.overwrite;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
