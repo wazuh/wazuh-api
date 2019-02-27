@@ -622,13 +622,12 @@ describe('Manager', function() {
 
     });  // GET/manager/logs/summary
 
-
     describe('POST/manager/files', function() {
 
         // save ossec.conf
         before(function (done) {
             request(common.url)
-                .get("/cluster/master/files?path=" + path_ossec_conf)
+                .get("/manager/files?path=" + path_ossec_conf)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -648,7 +647,7 @@ describe('Manager', function() {
 
         it('Upload ossec.conf', function(done) {
             request(common.url)
-            .post("/cluster/master/files?path=" + path_ossec_conf)
+            .post("/manager/files?path=" + path_ossec_conf)
             .set("Content-Type", "application/xml")
             .send(ossec_conf_content)
             .auth(common.credentials.user, common.credentials.password)
@@ -784,7 +783,6 @@ describe('Manager', function() {
         });
 
     });  // POST/manager/files
-
 
     describe('GET/manager/files', function() {
 
@@ -931,7 +929,6 @@ describe('Manager', function() {
 
     });  // GET/manager/files
 
-
     describe('GET/manager/configuration/validation (OK)', function() {
 
         it('Request validation ', function (done) {
@@ -956,12 +953,12 @@ describe('Manager', function() {
 
     describe('GET/manager/configuration/validation (KO)', function() {
 
-        // upload corrupted ossec.conf in master (semantic)
+        // upload corrupted ossec.conf
         before(function (done) {
             request(common.url)
             .post("/manager/files?path=" + path_ossec_conf)
             .set("Content-Type", "application/xml")
-            .send("<!--  Wazuh - Manager -->\n  <ossec_config>\n    <global>\n      <jsonout_output>WRONG_VALUE</jsonout_output>\n      <alerts_log>yes</alerts_log>\n      <logall>no</logall>\n      <logall_json>no</logall_json>\n      <email_notification>no</email_notification>\n      <smtp_server>smtp.example.wazuh.com</smtp_server>\n      <email_from>ossecm@example.wazuh.com</email_from>\n      <email_to>recipient@example.wazuh.com</email_to>\n      <email_maxperhour>12</email_maxperhour>\n      <email_log_source>alerts.log</email_log_source>\n      <queue_size>131072</queue_size>\n    </global>\n <cluster>\n      <name>wazuh</name>\n      <node_name>master</node_name>\n      <node_type>master</node_type>\n      <key>XXXX</key>\n      <port>1516</port>\n      <bind_addr>192.168.122.111</bind_addr>\n      <nodes>\n        <node>192.168.122.111</node>\n      </nodes>\n      <hidden>no</hidden>\n      <disabled>no</disabled>\n    </cluster>\n  </ossec_config>\n")
+            .send("<!--  Wazuh - Manager -->\n  <ossec_config>\n    <global>\n      <jsonout_output>WRONG_VALUE</jsonout_output>\n      <alerts_log>&yes</alerts_log>\n      <logall>no</logall>\n      <logall_json>no</logall_json>\n      <email_notification>no</email_notification>\n      <smtp_server>smtp.example.wazuh.com</smtp_server>\n      <email_from>ossecm@example.wazuh.com</email_from>\n      <email_to>recipient@example.wazuh.com</email_to>\n      <email_maxperhour>12</email_maxperhour>\n      <email_log_source>alerts.log</email_log_source>\n      <queue_size>131072</queue_size>\n    </global>\n <cluster>\n      <name>wazuh</name>\n      <node_name>master</node_name>\n      <node_type>master</node_type>\n      <key>XXXX</key>\n      <port>1516</port>\n      <bind_addr>192.168.122.111</bind_addr>\n      <nodes>\n        <node>192.168.122.111</node>\n      </nodes>\n      <hidden>no</hidden>\n      <disabled>no</disabled>\n    </cluster>\n  </ossec_config>\n")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -977,7 +974,7 @@ describe('Manager', function() {
             });
         });
 
-        // restore ossec.conf (master)
+        // restore ossec.conf
         after(function(done) {
             request(common.url)
             .post("/manager/files?path=" + path_ossec_conf)
@@ -997,9 +994,9 @@ describe('Manager', function() {
               });
         });
 
-        it('Request validation (master)', function (done) {
+        it('Request validation', function (done) {
             request(common.url)
-                .get("/cluster/master/configuration/validation")
+                .get("/manager/configuration/validation")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
