@@ -367,7 +367,7 @@ router.post('/files', function(req, res) {
 
     // optional parameters
     if ('overwrite' in req.query)
-        data_request['arguments']['overwrite'] = req.query.overwrite;
+        data_request['arguments']['overwrite'] = req.query.overwrite == 'true' ? true : false;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
