@@ -585,6 +585,36 @@ router.post('/:node_id/files', function(req, res) {
 })
 
 /**
+ * @api {delete} /cluster/:node_id/files Delete local file
+ * @apiName DeleteClusterFiles
+ * @apiGroup Files
+ *
+ * @apiParam {String} path Relative path of file.
+ * 
+ * @apiDescription Confirmation message.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/:node_id/files?etc/rules/local_rules.xml&pretty"
+ *
+ */
+router.delete('/:node_id/files', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " DELETE /cluster/:node_id/files");
+
+    var data_request = {'function': 'DELETE/cluster/:node_id/files', 'arguments': {}};
+    var filters = {'path': 'paths'};
+
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
+
+    // check path parameter
+    if (!filter.check_path(req.query.path, req, res)) return;
+
+    data_request['arguments']['path'] = req.query.path;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
  * @api {put} /cluster/restart Restart all nodes in cluster
  * @apiName PutRestartCluster
  * @apiGroup Restart
