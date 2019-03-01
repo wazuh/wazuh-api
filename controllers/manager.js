@@ -310,7 +310,7 @@ router.get('/files', cache(), function(req, res) {
 })
 
 /**
- * @api {delete} /manager/files Delete local file
+ * @api {delete} /manager/files Delete a local file
  * @apiName DeleteManagerFiles
  * @apiGroup Files
  *
@@ -319,7 +319,7 @@ router.get('/files', cache(), function(req, res) {
  * @apiDescription Confirmation message.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/files?etc/rules/local_rules.xml&pretty"
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/manager/files?path=etc/rules/local_rules.xml&pretty"
  *
  */
 router.delete('/files', cache(), function(req, res) {
