@@ -528,7 +528,7 @@ router.get('/:node_id/files', cache(), function(req, res) {
  *
  * @apiParam {String} file Input file.
  * @apiParam {String} path Relative path were input file will be placed.
- * @apiParam {String} overwrite Relative path were input file will be placed.
+ * @apiParam {String} overwrite false to fail if file already exists (default). true to replace the existing file
  *
  * @apiDescription Upload a local file (rules, decoders and lists) in a cluster node
  *
@@ -584,7 +584,7 @@ router.post('/:node_id/files', function(req, res) {
 
     // optional parameters
     if ('overwrite' in req.query)
-        data_request['arguments']['overwrite'] = req.query.overwrite;
+        data_request['arguments']['overwrite'] = req.query.overwrite == 'true' ? true : false;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })

@@ -316,7 +316,7 @@ router.get('/files', cache(), function(req, res) {
  *
  * @apiParam {String} file Input file.
  * @apiParam {String} path Relative path were input file will be placed.
- * @apiParam {String} overwrite Relative path were input file will be placed.
+ * @apiParam {String} overwrite false to fail if file already exists (default). true to replace the existing file
  *
  * @apiDescription Upload a local file (rules, decoders and lists).
  *
