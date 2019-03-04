@@ -1114,7 +1114,6 @@ describe('Manager', function() {
 
     });  // GET/manager/configuration/validation (KO)
 
-<<<<<<< HEAD
     describe('DELETE/manager/files', function() {
 
         it('Delete rules', function(done) {
@@ -1170,8 +1169,6 @@ describe('Manager', function() {
 
     });  // DELETE/manager/files
 
-=======
->>>>>>> 3.9
     describe('PUT/manager/restart', function() {
 
         it('Request', function(done) {
