@@ -39,7 +39,9 @@ describe('Manager', function() {
 
                 res.body.error.should.equal(0);
 
-                res.body.data.should.have.properties(['wazuh-modulesd', 'ossec-authd', 'ossec-monitord', 'ossec-logcollector', 'ossec-execd', 'ossec-remoted', 'ossec-syscheckd', 'ossec-analysisd', 'ossec-maild']);
+                res.body.data.should.have.properties(['ossec-agentlessd', 'ossec-analysisd', 'ossec-authd', 'ossec-csyslogd', 'ossec-dbd', 'ossec-monitord',
+                                                      'ossec-execd', 'ossec-integratord', 'ossec-logcollector', 'ossec-maild', 'ossec-remoted',
+                                                      'ossec-reportd', 'ossec-syscheckd', 'wazuh-clusterd', 'wazuh-modulesd']);
                 done();
             });
         });
