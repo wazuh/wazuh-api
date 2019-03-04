@@ -597,7 +597,7 @@ describe('Cluster', function () {
 
         it('Upload ossec.conf (master)', function(done) {
             request(common.url)
-            .post("/cluster/master/files?path=" + path_ossec_conf)
+            .post("/cluster/master/files?path=" + path_ossec_conf + "&overwrite=true")
             .set("Content-Type", "application/xml")
             .send(ossec_conf_content_master)
             .auth(common.credentials.user, common.credentials.password)
@@ -616,7 +616,7 @@ describe('Cluster', function () {
 
         it('Upload ossec.conf (worker)', function(done) {
             request(common.url)
-            .post("/cluster/worker-1/files?path=" + path_ossec_conf)
+            .post("/cluster/worker-1/files?path=" + path_ossec_conf + "&overwrite=true")
             .set("Content-Type", "application/xml")
             .send(ossec_conf_content_worker)
             .auth(common.credentials.user, common.credentials.password)
@@ -633,7 +633,7 @@ describe('Cluster', function () {
               });
         });
 
-        it('Upload rules', function(done) {
+        it('Upload new rules', function(done) {
             request(common.url)
             .post("/cluster/master/files?path=" + path_rules)
             .set("Content-Type", "application/xml")
@@ -652,7 +652,45 @@ describe('Cluster', function () {
               });
         });
 
-        it('Upload decoder', function(done) {
+        it('Upload rules (overwrite=true)', function(done) {
+            request(common.url)
+            .post("/cluster/master/files?path=" + path_rules + "&overwrite=true")
+            .set("Content-Type", "application/xml")
+            .send("<!-- Local rules -->\n  <!-- Modify it at your will. -->\n  <!-- Example -->\n  <group name=\"local,\">\n    <!--   NEW RULE    -->\n    <rule id=\"100001111\" level=\"5\">\n      <if_sid>5716</if_sid>\n      <srcip>1.1.1.1</srcip>\n      <description>sshd: authentication failed from IP 1.1.1.1.</description>\n      <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>\n    </rule>\n  </group>\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+              });
+        });
+
+        it('Upload rules (overwrite=false)', function(done) {
+            request(common.url)
+            .post("/cluster/master/files?path=" + path_rules + "&overwrite=false")
+            .set("Content-Type", "application/xml")
+            .send("<!-- Local rules -->\n  <!-- Modify it at your will. -->\n  <!-- Example -->\n  <group name=\"local,\">\n    <!--   NEW RULE    -->\n    <rule id=\"100001111\" level=\"5\">\n      <if_sid>5716</if_sid>\n      <srcip>1.1.1.1</srcip>\n      <description>sshd: authentication failed from IP 1.1.1.1.</description>\n      <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>\n    </rule>\n  </group>\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(1905);
+                res.body.message.should.be.an.string;
+
+                done();
+              });
+        });
+
+        it('Upload new decoder', function(done) {
             request(common.url)
             .post("/cluster/master/files?path=" + path_decoders)
             .set("Content-Type", "application/xml")
@@ -671,7 +709,45 @@ describe('Cluster', function () {
               });
         });
 
-        it('Upload list', function(done) {
+        it('Upload decoder (overwrite=true)', function(done) {
+            request(common.url)
+            .post("/cluster/master/files?path=" + path_decoders + "&overwrite=true")
+            .set("Content-Type", "application/xml")
+            .send("<!-- NEW Local Decoders -->\n  <!-- Modify it at your will. -->\n  <decoder name=\"local_decoder_example\">\n    <program_name>NEW DECODER</program_name>\n  </decoder>\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+              });
+        });
+
+        it('Upload decoder (without overwrite parameter)', function(done) {
+            request(common.url)
+            .post("/cluster/master/files?path=" + path_decoders)
+            .set("Content-Type", "application/xml")
+            .send("<!-- NEW Local Decoders -->\n  <!-- Modify it at your will. -->\n  <decoder name=\"local_decoder_example\">\n    <program_name>NEW DECODER</program_name>\n  </decoder>\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(1905);
+                res.body.message.should.be.an.string;
+
+                done();
+              });
+        });
+
+        it('Upload new list', function(done) {
             request(common.url)
             .post("/cluster/master/files?path=" + path_lists)
             .set("Content-Type", "application/octet-stream")
@@ -691,9 +767,49 @@ describe('Cluster', function () {
               });
         });
 
+        it('Upload list (overwrite=true)', function(done) {
+            request(common.url)
+            .post("/cluster/master/files?path=" + path_lists + "&overwrite=true")
+            .set("Content-Type", "application/octet-stream")
+            .send("test-wazuh-w:write\ntest-wazuh-r:read\ntest-wazuh-a:attribute\ntest-wazuh-x:execute\ntest-wazuh-c:command\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+              });
+        });
+
+        it('Upload list (overwrite=false)', function(done) {
+            request(common.url)
+            .post("/cluster/master/files?path=" + path_lists + "&overwrite=false")
+            .set("Content-Type", "application/octet-stream")
+            .send("test-wazuh-w:write\ntest-wazuh-r:read\ntest-wazuh-a:attribute\ntest-wazuh-x:execute\ntest-wazuh-c:command\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw err;
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(1905);
+                res.body.message.should.be.an.string;
+
+                done();
+              });
+        });
+
         it('Upload corrupted ossec.conf (master)', function(done) {
             request(common.url)
-            .post("/cluster/master/files?path=" + path_ossec_conf)
+            .post("/cluster/master/files?path=" + path_ossec_conf + "&overwrite=true")
             .set("Content-Type", "application/xml")
             .send("<!--  Wazuh - Manager -->\n  <ossec_config>\n    <global>\n      <jsonout_output><<<<yes</jsonout_output>\n      <alerts_log>yes</alerts_log>\n      <logall>no</logall>\n      <logall_json>no</logall_json>\n      <email_notification>no</email_notification>\n      <smtp_server>smtp.example.wazuh.com</smtp_server>\n      <email_from>ossecm@example.wazuh.com</email_from>\n      <email_to>recipient@example.wazuh.com</email_to>\n      <email_maxperhour>12</email_maxperhour>\n      <email_log_source>alerts.log</email_log_source>\n      <queue_size>131072</queue_size>\n    </global>\n  </ossec_config>\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -713,7 +829,7 @@ describe('Cluster', function () {
 
         it('Upload corrupted ossec.conf (worker)', function(done) {
             request(common.url)
-            .post("/cluster/worker-1/files?path=" + path_ossec_conf)
+            .post("/cluster/worker-1/files?path=" + path_ossec_conf + "&overwrite=true")
             .set("Content-Type", "application/xml")
             .send("<!--  Wazuh - Manager -->\n  <ossec_config>\n    <global>\n      <jsonout_output><<<<yes</jsonout_output>\n      <alerts_log>yes</alerts_log>\n      <logall>no</logall>\n      <logall_json>no</logall_json>\n      <email_notification>no</email_notification>\n      <smtp_server>smtp.example.wazuh.com</smtp_server>\n      <email_from>ossecm@example.wazuh.com</email_from>\n      <email_to>recipient@example.wazuh.com</email_to>\n      <email_maxperhour>12</email_maxperhour>\n      <email_log_source>alerts.log</email_log_source>\n      <queue_size>131072</queue_size>\n    </global>\n  </ossec_config>\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -733,7 +849,7 @@ describe('Cluster', function () {
 
         it('Upload malformed rules', function(done) {
             request(common.url)
-            .post("/cluster/master/files?path=" + path_rules)
+            .post("/cluster/master/files?path=" + path_rules + "&overwrite=true")
             .set("Content-Type", "application/xml")
             .send("<!--   NEW RULE    -->\n    <rule id=\"100001111\" level=\"5\">\n      <if_sid>5716</if_sid>\n      <srcip>1.1.1.1</srcip>\n      <description>sshd: authentication failed from IP 1.1.1.1.</description>\n      <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>\n    </rule>\n  </group>\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -774,7 +890,7 @@ describe('Cluster', function () {
 
         it('Upload malformed decoder', function(done) {
             request(common.url)
-            .post("/cluster/master/files?path=" + path_decoders)
+            .post("/cluster/master/files?path=" + path_decoders + "&overwrite=true")
             .set("Content-Type", "application/xml")
             .send("<!-- NEW Local Decoders -->\n  <!-- Modify it at your will. -->\n  <decoder name=\"local_decoder_example\">\n    <program_name>NEW <DECODER</program_name>\n  </decoder>\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -814,7 +930,7 @@ describe('Cluster', function () {
 
         it('Upload malformed list', function(done) {
             request(common.url)
-            .post("/cluster/master/files?path=" + path_lists)
+            .post("/cluster/master/files?path=" + path_lists + "&overwrite=true")
             .set("Content-Type", "application/octet-stream")
             .send("test&%-wazuh-w:write\ntest-wazuh-r:read\ntest-wazuh-a:attribute\ntest-wazuh-x:execute\ntest-wazuh-c:command\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -1119,7 +1235,7 @@ describe('Cluster', function () {
         // upload corrupted ossec.conf in master (semantic)
         before(function (done) {
             request(common.url)
-            .post("/cluster/master/files?path=" + path_ossec_conf)
+            .post("/cluster/master/files?path=" + path_ossec_conf + "&overwrite=true")
             .set("Content-Type", "application/xml")
             .send("<!--  Wazuh - Manager -->\n  <ossec_config>\n    <global>\n      <jsonout_output>WRONG_VALUE</jsonout_output>\n      <alerts_log>yes</alerts_log>\n      <logall>no</logall>\n      <logall_json>no</logall_json>\n      <email_notification>no</email_notification>\n      <smtp_server>smtp.example.wazuh.com</smtp_server>\n      <email_from>ossecm@example.wazuh.com</email_from>\n      <email_to>recipient@example.wazuh.com</email_to>\n      <email_maxperhour>12</email_maxperhour>\n      <email_log_source>alerts.log</email_log_source>\n      <queue_size>131072</queue_size>\n    </global>\n <cluster>\n      <name>wazuh</name>\n      <node_name>master</node_name>\n      <node_type>master</node_type>\n      <key>XXXX</key>\n      <port>1516</port>\n      <bind_addr>192.168.122.111</bind_addr>\n      <nodes>\n        <node>192.168.122.111</node>\n      </nodes>\n      <hidden>no</hidden>\n      <disabled>no</disabled>\n    </cluster>\n  </ossec_config>\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -1140,7 +1256,7 @@ describe('Cluster', function () {
         // restore ossec.conf (master)
         after(function(done) {
             request(common.url)
-            .post("/cluster/master/files?path=" + path_ossec_conf)
+            .post("/cluster/master/files?path=" + path_ossec_conf + "&overwrite=true")
             .set("Content-Type", "application/xml")
             .send(ossec_conf_content_master)
             .auth(common.credentials.user, common.credentials.password)
@@ -1224,7 +1340,7 @@ describe('Cluster', function () {
         // upload corrupted ossec.conf in worker (semantic)
         before(function (done) {
             request(common.url)
-            .post("/cluster/worker-1/files?path=" + path_ossec_conf)
+            .post("/cluster/worker-1/files?path=" + path_ossec_conf + "&overwrite=true")
             .set("Content-Type", "application/xml")
             .send("<!--  Wazuh - Manager -->\n  <ossec_config>\n    <global>\n      <jsonout_output>WRONG_VALUE</jsonout_output>\n      <alerts_log>yes</alerts_log>\n      <logall>no</logall>\n      <logall_json>no</logall_json>\n      <email_notification>no</email_notification>\n      <smtp_server>smtp.example.wazuh.com</smtp_server>\n      <email_from>ossecm@example.wazuh.com</email_from>\n      <email_to>recipient@example.wazuh.com</email_to>\n      <email_maxperhour>12</email_maxperhour>\n      <email_log_source>alerts.log</email_log_source>\n      <queue_size>131072</queue_size>\n    </global>\n  </ossec_config>\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -1245,7 +1361,7 @@ describe('Cluster', function () {
         // restore ossec.conf (worker)
         after(function(done) {
             request(common.url)
-            .post("/cluster/worker-1/files?path=" + path_ossec_conf)
+            .post("/cluster/worker-1/files?path=" + path_ossec_conf + "&overwrite=true")
             .set("Content-Type", "application/xml")
             .send(ossec_conf_content_worker)
             .auth(common.credentials.user, common.credentials.password)
@@ -1330,7 +1446,7 @@ describe('Cluster', function () {
         // upload corrupted ossec.conf in master (semantic)
         before(function (done) {
             request(common.url)
-            .post("/cluster/master/files?path=" + path_ossec_conf)
+            .post("/cluster/master/files?path=" + path_ossec_conf + "&overwrite=true")
             .set("Content-Type", "application/xml")
             .send("<!--  Wazuh - Manager -->\n  <ossec_config>\n    <global>\n      <jsonout_output>WRONG_VALUE</jsonout_output>\n      <alerts_log>yes</alerts_log>\n      <logall>no</logall>\n      <logall_json>no</logall_json>\n      <email_notification>no</email_notification>\n      <smtp_server>smtp.example.wazuh.com</smtp_server>\n      <email_from>ossecm@example.wazuh.com</email_from>\n      <email_to>recipient@example.wazuh.com</email_to>\n      <email_maxperhour>12</email_maxperhour>\n      <email_log_source>alerts.log</email_log_source>\n      <queue_size>131072</queue_size>\n    </global>\n <cluster>\n      <name>wazuh</name>\n      <node_name>master</node_name>\n      <node_type>master</node_type>\n      <key>XXXXX</key>\n      <port>1516</port>\n      <bind_addr>192.168.122.111</bind_addr>\n      <nodes>\n        <node>192.168.122.111</node>\n      </nodes>\n      <hidden>no</hidden>\n      <disabled>no</disabled>\n    </cluster>\n  </ossec_config>\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -1351,7 +1467,7 @@ describe('Cluster', function () {
         // upload corrupted ossec.conf in worker (semantic)
         before(function (done) {
             request(common.url)
-            .post("/cluster/worker-1/files?path=" + path_ossec_conf)
+            .post("/cluster/worker-1/files?path=" + path_ossec_conf + "&overwrite=true")
             .set("Content-Type", "application/xml")
             .send("<!--  Wazuh - Manager -->\n  <ossec_config>\n    <global>\n      <jsonout_output>WRONG_VALUE</jsonout_output>\n      <alerts_log>yes</alerts_log>\n      <logall>no</logall>\n      <logall_json>no</logall_json>\n      <email_notification>no</email_notification>\n      <smtp_server>smtp.example.wazuh.com</smtp_server>\n      <email_from>ossecm@example.wazuh.com</email_from>\n      <email_to>recipient@example.wazuh.com</email_to>\n      <email_maxperhour>12</email_maxperhour>\n      <email_log_source>alerts.log</email_log_source>\n      <queue_size>131072</queue_size>\n    </global>\n  </ossec_config>\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -1372,7 +1488,7 @@ describe('Cluster', function () {
         // restore ossec.conf (master)
         after(function(done) {
             request(common.url)
-            .post("/cluster/master/files?path=" + path_ossec_conf)
+            .post("/cluster/master/files?path=" + path_ossec_conf + "&overwrite=true")
             .set("Content-Type", "application/xml")
             .send(ossec_conf_content_master)
             .auth(common.credentials.user, common.credentials.password)
@@ -1392,7 +1508,7 @@ describe('Cluster', function () {
         // restore ossec.conf (worker)
         after(function(done) {
             request(common.url)
-            .post("/cluster/worker-1/files?path=" + path_ossec_conf)
+            .post("/cluster/worker-1/files?path=" + path_ossec_conf + "&overwrite=true")
             .set("Content-Type", "application/xml")
             .send(ossec_conf_content_worker)
             .auth(common.credentials.user, common.credentials.password)
@@ -1490,7 +1606,6 @@ describe('Cluster', function () {
                 done();
             });
         });
-
 
         it('Request (master)', function(done) {
             request(common.url)

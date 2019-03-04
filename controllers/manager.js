@@ -316,6 +316,7 @@ router.get('/files', cache(), function(req, res) {
  *
  * @apiParam {String} file Input file.
  * @apiParam {String} path Relative path were input file will be placed.
+ * @apiParam {String} overwrite false to fail if file already exists (default). true to replace the existing file
  *
  * @apiDescription Upload a local file (rules, decoders and lists).
  *
@@ -327,7 +328,7 @@ router.post('/files', function(req, res) {
     logger.debug(req.connection.remoteAddress + " POST /manager/files");
 
     var data_request = {'function': 'POST/manager/files', 'arguments': {}};
-    var filters = {'path': 'paths'};
+    var filters = {'path': 'paths', 'overwrite': 'boolean'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -363,6 +364,10 @@ router.post('/files', function(req, res) {
 
     data_request['arguments']['path'] = req.query.path;
     data_request['arguments']['content_type'] = req.headers['content-type'];
+
+    // optional parameters
+    if ('overwrite' in req.query)
+        data_request['arguments']['overwrite'] = req.query.overwrite == 'true' ? true : false;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
