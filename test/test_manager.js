@@ -1027,6 +1027,61 @@ describe('Manager', function() {
 
     });  // GET/manager/files
 
+    describe('DELETE/manager/files', function() {
+
+        it('Delete rules', function(done) {
+            request(common.url)
+            .delete("/manager/files?path=" + path_rules)
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+                done();
+            });
+        });
+
+        it('Delete decoders', function(done) {
+            request(common.url)
+            .delete("/manager/files?path=" + path_decoders)
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+                done();
+            });
+        });
+
+        it('Delete CDB list', function(done) {
+            request(common.url)
+            .delete("/manager/files?path=" + path_lists)
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+                done();
+            });
+        });
+
+    });  // DELETE/manager/files
+
     describe('GET/manager/configuration/validation (OK)', function() {
 
         it('Request validation ', function (done) {
@@ -1113,61 +1168,6 @@ describe('Manager', function() {
         });
 
     });  // GET/manager/configuration/validation (KO)
-
-    describe('DELETE/manager/files', function() {
-
-        it('Delete rules', function(done) {
-            request(common.url)
-            .delete("/manager/files?path=" + path_rules)
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.should.be.an.string;
-                done();
-            });
-        });
-
-        it('Delete decoders', function(done) {
-            request(common.url)
-            .delete("/manager/files?path=" + path_decoders)
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.should.be.an.string;
-                done();
-            });
-        });
-
-        it('Delete CDB list', function(done) {
-            request(common.url)
-            .delete("/manager/files?path=" + path_lists)
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.should.be.an.string;
-                done();
-            });
-        });
-
-    });  // DELETE/manager/files
 
     describe('PUT/manager/restart', function() {
 
