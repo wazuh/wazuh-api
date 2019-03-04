@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - Added API calls to restart manager nodes in the cluster and validate configuration ([#307](https://github.com/wazuh/wazuh-api/pull/307))
 - Added API calls to get CDB lists ([#301](https://github.com/wazuh/wazuh-api/pull/301))
 - Added API calls to get security configuration assessment policies and checks ([#321](https://github.com/wazuh/wazuh-api/pull/321))
+- Added filtering by `version` field in `GET/experimental/syscollector/packages` API call ([#340](https://github.com/wazuh/wazuh-api/pull/340)).
 
 ### Fixed
 - Fixed documentation regarding DELETE /agents API call and older_than default value ([#319](https://github.com/wazuh/wazuh-api/pull/319))
