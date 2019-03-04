@@ -635,9 +635,9 @@ describe('Cluster', function () {
 
         it('Upload new rules', function(done) {
             request(common.url)
-            .post("/cluster/master/files?path=" + path_rules)
+            .post("/cluster/master/files?path=" + path_rules + "&overwrite=true")
             .set("Content-Type", "application/xml")
-            .send("<!-- Local rules -->\n  <!-- Modify it at your will. -->\n  <!-- Example -->\n  <group name=\"local,\">\n    <!--   NEW RULE    -->\n    <rule id=\"100001111\" level=\"5\">\n      <if_sid>5716</if_sid>\n      <srcip>1.1.1.1</srcip>\n      <description>sshd: authentication failed from IP 1.1.1.1.</description>\n      <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>\n    </rule>\n  </group>\n")
+            .send("<!-- Local rules -->\n  <!-- Modify it at your will. -->\n  <!-- Example -->\n  <group name=\"local,\">\n    <!--   NEW RULE    -->\n    <rule id=\"111111\" level=\"5\">\n      <if_sid>5716</if_sid>\n      <srcip>1.1.1.1</srcip>\n      <description>sshd: authentication failed from IP 1.1.1.1.</description>\n      <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>\n    </rule>\n  </group>\n")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -656,7 +656,7 @@ describe('Cluster', function () {
             request(common.url)
             .post("/cluster/master/files?path=" + path_rules + "&overwrite=true")
             .set("Content-Type", "application/xml")
-            .send("<!-- Local rules -->\n  <!-- Modify it at your will. -->\n  <!-- Example -->\n  <group name=\"local,\">\n    <!--   NEW RULE    -->\n    <rule id=\"100001111\" level=\"5\">\n      <if_sid>5716</if_sid>\n      <srcip>1.1.1.1</srcip>\n      <description>sshd: authentication failed from IP 1.1.1.1.</description>\n      <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>\n    </rule>\n  </group>\n")
+            .send("<!-- Local rules -->\n  <!-- Modify it at your will. -->\n  <!-- Example -->\n  <group name=\"local,\">\n    <!--   NEW RULE    -->\n    <rule id=\"111111\" level=\"5\">\n      <if_sid>5716</if_sid>\n      <srcip>1.1.1.1</srcip>\n      <description>sshd: authentication failed from IP 1.1.1.1.</description>\n      <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>\n    </rule>\n  </group>\n")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -675,7 +675,7 @@ describe('Cluster', function () {
             request(common.url)
             .post("/cluster/master/files?path=" + path_rules + "&overwrite=false")
             .set("Content-Type", "application/xml")
-            .send("<!-- Local rules -->\n  <!-- Modify it at your will. -->\n  <!-- Example -->\n  <group name=\"local,\">\n    <!--   NEW RULE    -->\n    <rule id=\"100001111\" level=\"5\">\n      <if_sid>5716</if_sid>\n      <srcip>1.1.1.1</srcip>\n      <description>sshd: authentication failed from IP 1.1.1.1.</description>\n      <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>\n    </rule>\n  </group>\n")
+            .send("<!-- Local rules -->\n  <!-- Modify it at your will. -->\n  <!-- Example -->\n  <group name=\"local,\">\n    <!--   NEW RULE    -->\n    <rule id=\"111111\" level=\"5\">\n      <if_sid>5716</if_sid>\n      <srcip>1.1.1.1</srcip>\n      <description>sshd: authentication failed from IP 1.1.1.1.</description>\n      <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>\n    </rule>\n  </group>\n")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -692,7 +692,7 @@ describe('Cluster', function () {
 
         it('Upload new decoder', function(done) {
             request(common.url)
-            .post("/cluster/master/files?path=" + path_decoders)
+            .post("/cluster/master/files?path=" + path_decoders + "&overwrite=true")
             .set("Content-Type", "application/xml")
             .send("<!-- NEW Local Decoders -->\n  <!-- Modify it at your will. -->\n  <decoder name=\"local_decoder_example\">\n    <program_name>NEW DECODER</program_name>\n  </decoder>\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -749,7 +749,7 @@ describe('Cluster', function () {
 
         it('Upload new list', function(done) {
             request(common.url)
-            .post("/cluster/master/files?path=" + path_lists)
+            .post("/cluster/master/files?path=" + path_lists + "&overwrite=true")
             .set("Content-Type", "application/octet-stream")
             .send("test-wazuh-w:write\ntest-wazuh-r:read\ntest-wazuh-a:attribute\ntest-wazuh-x:execute\ntest-wazuh-c:command\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -1575,27 +1575,6 @@ describe('Cluster', function () {
 
     describe('DELETE/cluster/:node_id/files', function() {
 
-        // upload a file in worker
-        before(function (done) {
-            request(common.url)
-            .post("/cluster/worker-1/files?path=" + path_rules)
-            .set("Content-Type", "application/xml")
-            .send("<!-- Local rules -->\n  <!-- Modify it at your will. -->\n  <!-- Example -->\n  <group name=\"local,\">\n    <!--   NEW RULE    -->\n    <rule id=\"100001111\" level=\"5\">\n      <if_sid>5716</if_sid>\n      <srcip>1.1.1.1</srcip>\n      <description>sshd: authentication failed from IP 1.1.1.1.</description>\n      <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>\n    </rule>\n  </group>\n")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err, res) {
-                if (err) throw err;
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.should.be.an.string;
-
-                done();
-            });
-        });
-
         it('Delete rules (master)', function(done) {
             request(common.url)
             .delete("/cluster/master/files?path=" + path_rules)
@@ -1633,23 +1612,6 @@ describe('Cluster', function () {
         it('Delete CDB list (master)', function(done) {
             request(common.url)
             .delete("/cluster/master/files?path=" + path_lists)
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.should.be.an.string;
-                done();
-            });
-        });
-
-        it('Delete rules (worker)', function(done) {
-            request(common.url)
-            .delete("/cluster/worker-1/files?path=" + path_rules)
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
