@@ -44,7 +44,7 @@ router.get('/syscollector/packages', function (req, res) {
         'search': 'search_param', 'select': 'select_param',
         'vendor': 'alphanumeric_param', 'name': 'alphanumeric_param',
         'architecture': 'alphanumeric_param', 'format': 'alphanumeric_param',
-        'version': 'alphanumeric_param'
+        'version': 'search_param'
     };
 
 
