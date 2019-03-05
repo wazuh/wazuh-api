@@ -27,6 +27,7 @@ var router = require('express').Router();
  * @apiParam {String} [architecture] Filters by architecture.
  * @apiParam {String} [format] Filters by format.
  * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [version] Filter by version name.
  *
  * @apiDescription Returns the agent's packages info
  *
@@ -42,7 +43,8 @@ router.get('/syscollector/packages', function (req, res) {
         'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
         'search': 'search_param', 'select': 'select_param',
         'vendor': 'alphanumeric_param', 'name': 'alphanumeric_param',
-        'architecture': 'alphanumeric_param', 'format': 'alphanumeric_param'
+        'architecture': 'alphanumeric_param', 'format': 'alphanumeric_param',
+        'version': 'search_param'
     };
 
 
@@ -73,6 +75,8 @@ router.get('/syscollector/packages', function (req, res) {
         data_request['arguments']['filters']['architecture'] = req.query.architecture
     if ('format' in req.query)
         data_request['arguments']['filters']['format'] = req.query.format
+    if ('version' in req.query)
+        data_request['arguments']['filters']['version'] = req.query.version;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
