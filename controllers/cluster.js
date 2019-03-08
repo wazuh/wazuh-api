@@ -512,7 +512,11 @@ router.get('/:node_id/files', cache(), function(req, res) {
         return;
 
     // check path parameter
-    if (!filter.check_path(req.query.path, req, res)) return;
+    if (req.query.path) {
+        if (!filter.check_path(req.query.path, req, res)) return;
+    } else {
+        res_h.bad_request(req, res, 706, err);
+    }
 
     data_request['arguments']['node_id'] = req.params.node_id;
     data_request['arguments']['path'] = req.query.path;
@@ -550,7 +554,11 @@ router.post('/:node_id/files', function(req, res) {
         return;
 
     // check path parameter
-    if (!filter.check_path(req.query.path, req, res)) return;
+    if (req.query.path) {
+        if (!filter.check_path(req.query.path, req, res)) return;
+    } else {
+        res_h.bad_request(req, res, 706, err);
+    }
 
     if (req.headers['content-type'] == 'application/octet-stream') {
         // check cdb list
@@ -616,7 +624,11 @@ router.delete('/:node_id/files', cache(), function(req, res) {
         return;
 
     // check path parameter
-    if (!filter.check_path(req.query.path, req, res)) return;
+    if (req.query.path) {
+        if (!filter.check_path(req.query.path, req, res)) return;
+    } else {
+        res_h.bad_request(req, res, 706, err);
+    }
 
     data_request['arguments']['path'] = req.query.path;
     data_request['arguments']['node_id'] = req.params.node_id;
