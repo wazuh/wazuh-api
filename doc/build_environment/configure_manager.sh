@@ -45,6 +45,7 @@ EOT
 
 sed -i "s:wazuh_database.sync_syscheck=0:wazuh_database.sync_syscheck=1:g" /var/ossec/etc/internal_options.conf
 sed -i "s:config.experimental_features  = false;:config.experimental_features = true;:g" /var/ossec/api/configuration/config.js
+sed -i "s:config.cache_enabled = \"yes\";:config.cache_enabled = \"no\";:g" /var/ossec/api/configuration/config.js
 
 npm install apidoc -g
 apt-get install python-pip -y
