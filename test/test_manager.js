@@ -880,6 +880,26 @@ describe('Manager', function() {
               });
         });
 
+        it('Upload list with empty path', function(done) {
+            request(common.url)
+            .post("/manager/files")
+            .set("Content-Type", "application/octet-stream")
+            .send("test&%-wazuh-w:write\ntest-wazuh-r:read\ntest-wazuh-a:attribute\ntest-wazuh-x:execute\ntest-wazuh-c:command\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err, res) {
+                if (err) throw err;
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(706);
+                res.body.message.should.be.an.string;
+
+                done();
+              });
+        });
+
     });  // POST/manager/files
 
     describe('GET/manager/files', function() {
@@ -1025,6 +1045,24 @@ describe('Manager', function() {
             });
         });
 
+        it('Request file with empty path', function(done) {
+            request(common.url)
+            .get("/manager/files")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(706);
+                res.body.message.should.be.an.string;
+
+                done();
+            });
+        });
+
     });  // GET/manager/files
 
     describe('DELETE/manager/files', function() {
@@ -1076,6 +1114,24 @@ describe('Manager', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.should.be.an.string;
+                done();
+            });
+        });
+
+        it('Delete file with empty path', function(done) {
+            request(common.url)
+            .delete("/manager/files")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(706);
+                res.body.message.should.be.an.string;
+
                 done();
             });
         });

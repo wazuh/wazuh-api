@@ -490,7 +490,7 @@ router.get('/:node_id/logs/summary', cache(), function(req, res) {
  * @apiName GetFileCluster
  * @apiGroup Files
  *
- * @apiParam {String} path Relative path of file.
+ * @apiParam {String} path Relative path of file. This parameter is mandatory.
  *
  * @apiDescription Returns the content of a local file (rules, decoders and lists).
  *
@@ -512,7 +512,11 @@ router.get('/:node_id/files', cache(), function(req, res) {
         return;
 
     // check path parameter
-    if (!filter.check_path(req.query.path, req, res)) return;
+    if (req.query.path) {
+        if (!filter.check_path(req.query.path, req, res)) return;
+    } else {
+        res_h.bad_request(req, res, 706);
+    }
 
     data_request['arguments']['node_id'] = req.params.node_id;
     data_request['arguments']['path'] = req.query.path;
@@ -527,7 +531,7 @@ router.get('/:node_id/files', cache(), function(req, res) {
  * @apiGroup Files
  *
  * @apiParam {String} file Input file.
- * @apiParam {String} path Relative path were input file will be placed.
+ * @apiParam {String} path Relative path were input file will be placed. This parameter is mandatory.
  * @apiParam {String} overwrite false to fail if file already exists (default). true to replace the existing file
  *
  * @apiDescription Upload a local file (rules, decoders and lists) in a cluster node
@@ -550,7 +554,11 @@ router.post('/:node_id/files', function(req, res) {
         return;
 
     // check path parameter
-    if (!filter.check_path(req.query.path, req, res)) return;
+    if (req.query.path) {
+        if (!filter.check_path(req.query.path, req, res)) return;
+    } else {
+        res_h.bad_request(req, res, 706);
+    }
 
     if (req.headers['content-type'] == 'application/octet-stream') {
         // check cdb list
@@ -594,7 +602,7 @@ router.post('/:node_id/files', function(req, res) {
  * @apiName DeleteClusterFiles
  * @apiGroup Files
  *
- * @apiParam {String} path Relative path of file.
+ * @apiParam {String} path Relative path of file. This parameter is mandatory.
  * 
  * @apiDescription Confirmation message.
  *
@@ -616,7 +624,11 @@ router.delete('/:node_id/files', cache(), function(req, res) {
         return;
 
     // check path parameter
-    if (!filter.check_path(req.query.path, req, res)) return;
+    if (req.query.path) {
+        if (!filter.check_path(req.query.path, req, res)) return;
+    } else {
+        res_h.bad_request(req, res, 706);
+    }
 
     data_request['arguments']['path'] = req.query.path;
     data_request['arguments']['node_id'] = req.params.node_id;
