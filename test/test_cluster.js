@@ -968,6 +968,26 @@ describe('Cluster', function () {
               });
         });
 
+        it('Upload list with empty path', function(done) {
+            request(common.url)
+            .post("/cluster/master/files")
+            .set("Content-Type", "application/octet-stream")
+            .send("test&%-wazuh-w:write\ntest-wazuh-r:read\ntest-wazuh-a:attribute\ntest-wazuh-x:execute\ntest-wazuh-c:command\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err, res) {
+                if (err) throw err;
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(706);
+                res.body.message.should.be.an.string;
+
+                done();
+              });
+        });
+
     });  // POST/cluster/:node_id/files
 
 
@@ -1145,6 +1165,24 @@ describe('Cluster', function () {
                 res.body.should.have.properties(['error', 'message']);
 
                 res.body.error.should.equal(3022);
+
+                done();
+            });
+        });
+
+        it('Request file with empty path', function(done) {
+            request(common.url)
+            .get("/cluster/master/files")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(706);
+                res.body.message.should.be.an.string;
 
                 done();
             });
@@ -1622,6 +1660,24 @@ describe('Cluster', function () {
 
                 res.body.error.should.equal(0);
                 res.body.data.should.be.an.string;
+                done();
+            });
+        });
+
+        it('Delete file with empty path', function(done) {
+            request(common.url)
+            .delete("/cluster/master/files")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(706);
+                res.body.message.should.be.an.string;
+
                 done();
             });
         });
