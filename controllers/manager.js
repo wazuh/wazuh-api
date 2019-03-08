@@ -305,7 +305,7 @@ router.get('/files', cache(), function(req, res) {
     if (req.query.path) {
         if (!filter.check_path(req.query.path, req, res)) return;
     } else {
-        res_h.bad_request(req, res, 706, err);
+        res_h.bad_request(req, res, 706);
     }
 
     data_request['arguments']['path'] = req.query.path;
@@ -339,7 +339,7 @@ router.delete('/files', cache(), function(req, res) {
     if (req.query.path) {
         if (!filter.check_path(req.query.path, req, res)) return;
     } else {
-        res_h.bad_request(req, res, 706, err);
+        res_h.bad_request(req, res, 706);
     }
 
     data_request['arguments']['path'] = req.query.path;
@@ -375,7 +375,7 @@ router.post('/files', function(req, res) {
     if (req.query.path) {
         if (!filter.check_path(req.query.path, req, res)) return;
     } else {
-        res_h.bad_request(req, res, 706, err);
+        res_h.bad_request(req, res, 706);
     }
 
     if (req.headers['content-type'] == 'application/octet-stream') {
