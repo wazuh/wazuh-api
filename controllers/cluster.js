@@ -495,7 +495,7 @@ router.get('/:node_id/logs/summary', cache(), function(req, res) {
  * @apiDescription Returns the content of a local file (rules, decoders and lists).
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/files?path=etc/rules/local_rules.xml&pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node01/files?path=etc/decoders/local_decoder.xml&pretty"
  *
  */
 router.get('/:node_id/files', cache(), function(req, res) {
@@ -533,7 +533,7 @@ router.get('/:node_id/files', cache(), function(req, res) {
  * @apiDescription Upload a local file (rules, decoders and lists) in a cluster node
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X POST -H 'Content-type: application/xml' -d @rules.xml "https://127.0.0.1:55000/cluster/node02/files?path=etc/rules/local_rules.xml&pretty"
+ *     curl -u foo:bar -k -X POST -H 'Content-type: application/xml' -d @rules.xml "https://127.0.0.1:55000/cluster/node01/files?path=etc/rules/local_rules.xml&pretty"
  *
  */
 router.post('/:node_id/files', function(req, res) {
@@ -599,7 +599,7 @@ router.post('/:node_id/files', function(req, res) {
  * @apiDescription Confirmation message.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/cluster/node02/files?path=etc/rules/local_rules.xml&pretty"
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/cluster/node01/files?path=etc/rules/local_rules.xml&pretty"
  *
  */
 router.delete('/:node_id/files', cache(), function(req, res) {

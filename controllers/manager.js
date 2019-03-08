@@ -289,7 +289,7 @@ router.get('/stats/remoted', cache(), function(req, res) {
  * @apiDescription Returns the content of a local file (rules, decoders and lists).
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/files?path=etc/rules/local_rules.xml&pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/files?path=etc/decoders/local_decoder.xml&pretty"
  *
  */
 router.get('/files', cache(), function(req, res) {
