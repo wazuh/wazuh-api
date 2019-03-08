@@ -490,7 +490,7 @@ router.get('/:node_id/logs/summary', cache(), function(req, res) {
  * @apiName GetFileCluster
  * @apiGroup Files
  *
- * @apiParam {String} path Relative path of file.
+ * @apiParam {String} path Relative path of file. This parameter is mandatory.
  *
  * @apiDescription Returns the content of a local file (rules, decoders and lists).
  *
@@ -531,7 +531,7 @@ router.get('/:node_id/files', cache(), function(req, res) {
  * @apiGroup Files
  *
  * @apiParam {String} file Input file.
- * @apiParam {String} path Relative path were input file will be placed.
+ * @apiParam {String} path Relative path were input file will be placed. This parameter is mandatory.
  * @apiParam {String} overwrite false to fail if file already exists (default). true to replace the existing file
  *
  * @apiDescription Upload a local file (rules, decoders and lists) in a cluster node
@@ -602,7 +602,7 @@ router.post('/:node_id/files', function(req, res) {
  * @apiName DeleteClusterFiles
  * @apiGroup Files
  *
- * @apiParam {String} path Relative path of file.
+ * @apiParam {String} path Relative path of file. This parameter is mandatory.
  * 
  * @apiDescription Confirmation message.
  *
