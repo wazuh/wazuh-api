@@ -116,14 +116,14 @@ exports.send_file = function(req, res, file_name, type){
                     send_aux(req, res, json_res, 404);
                     return;
                 }
-                var stat = fileSystem.statSync(filepath);
+                var stat = fileSystem.statSync(conf.ossec_path + '/' + filepath);
 
                 res.writeHead(200, {
                 'Content-Type': 'text/xml',
                 'Content-Length': stat.size
                 });
 
-                var readStream = fileSystem.createReadStream(filepath);
+                var readStream = fileSystem.createReadStream(conf.ossec_path + '/' + filepath);
 
                 readStream.pipe(res)
 
