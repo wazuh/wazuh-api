@@ -130,7 +130,7 @@ describe('Decoders', function() {
 
         it('Filters: Path', function(done) {
             request(common.url)
-            .get("/decoders?path=/var/ossec/etc/decoders")
+            .get("/decoders?path=etc/decoders")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)

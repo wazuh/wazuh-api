@@ -222,7 +222,7 @@ describe('Rules', function() {
 
         it('Filters: path', function(done) {
             request(common.url)
-            .get("/rules?path=/var/ossec/ruleset/rules")
+            .get("/rules?path=ruleset/rules")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
