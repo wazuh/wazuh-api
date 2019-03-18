@@ -89,7 +89,7 @@ exports.boolean = function(b) {
 }
 
 exports.query_param = function(q) {
-    return input_val(q, /[\w \d]+/);
+    return input_val(q, /^(?:[\w\.\-]+(?:=|!=|<|>|~)[\w\.\- ]+)(?:(?:;|,)[\w\.\-]+(?:=|!=|<|>|~)[\w\.\- ]+)*$/);
 }
 
 exports.format = function(q) {
