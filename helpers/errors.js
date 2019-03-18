@@ -58,6 +58,8 @@ errors['yes_no_boolean'] = 620;
 errors['620'] = "Param not valid. Valid values: yes or no";
 errors['array_names'] = 621;
 errors['621'] = "Invalid character in parameters";
+errors['query_param'] = 622;
+errors['622'] = 'Param not valid. Review queries documentation: https://documentation.wazuh.com/current/user-manual/api/queries.html'
 
 errors['700'] = "File not found";
 errors['701'] = "Size of XML file is too long";
