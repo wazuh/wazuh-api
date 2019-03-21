@@ -79,7 +79,7 @@ exports.check_path = function(path, req, res) {
 exports.check_cdb_list = function(cdb_list, req, res) {
     // for each line
     re = new RegExp(/^(?!\s*:)([^:]*):([^:]*)$/)
-    var cdb_list_splitted = cdb_list.split('\n')
+    var cdb_list_splitted = cdb_list.split(/\r\n|\n/)
 
     for (i=0; i<cdb_list_splitted.length-1; i++) {
 
