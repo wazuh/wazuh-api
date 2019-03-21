@@ -78,7 +78,7 @@ exports.check_path = function(path, req, res) {
 
 exports.check_cdb_list = function(cdb_list, req, res) {
     // for each line
-    re = new RegExp(/^#?[\d\w\s-]+:{1}(#?[\d\w\s-]+|)/)
+    re = new RegExp(/^([^:]*\s*)+:([^:]*)$/)
     var cdb_list_splitted = cdb_list.split('\n')
     for (i=0; i<cdb_list_splitted.length-1; i++) {
         if (!re.test(cdb_list_splitted[i])) {
