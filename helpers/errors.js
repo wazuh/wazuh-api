@@ -64,10 +64,10 @@ errors['622'] = 'Param not valid. Review queries documentation: https://document
 errors['700'] = "File not found";
 errors['701'] = "Size of XML file is too long";
 errors['702'] = "Could not write XML temporary file";
-errors['703'] = 'Invalid XML file';
-errors['704'] = 'Invalid path';
-errors['705'] = 'Invalid CDB list';
-errors['706'] = '\'path\' parameter is mandatory';
+errors['703'] = "Invalid XML file";
+errors['704'] = "Invalid path";
+errors['705'] = "Invalid CDB list. Format for CDB list is 'key:value'";
+errors['706'] = "'path' parameter is mandatory";
 
 // Headers
 errors['800'] = "Error adding agent due to header 'x-forwarded-for' is not present";

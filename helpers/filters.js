@@ -78,9 +78,15 @@ exports.check_path = function(path, req, res) {
 
 exports.check_cdb_list = function(cdb_list, req, res) {
     // for each line
-    re = new RegExp(/^#?[\d\w\s-]+:{1}(#?[\d\w\s-]+|)/)
-    var cdb_list_splitted = cdb_list.split('\n')
+    re = new RegExp(/^[^:]+:[^:]*$/)
+    var cdb_list_splitted = cdb_list.split(/\r?\n/)
+
     for (i=0; i<cdb_list_splitted.length-1; i++) {
+
+        if (cdb_list_splitted[i] == '') {
+            continue;
+        }
+
         if (!re.test(cdb_list_splitted[i])) {
             var line_error = 'Line ' + (i+1) + ': ' + cdb_list_splitted[i]
             res_h.bad_request(req, res, 705, line_error);
