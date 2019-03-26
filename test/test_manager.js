@@ -1068,7 +1068,7 @@ describe('Manager', function() {
             .get("/manager/files?path=" + path_lists + "&validation=true")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
-            .expect(400)
+            .expect(200)
             .end(function(err,res){
                 if (err) return done(err);
 
