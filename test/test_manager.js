@@ -1063,6 +1063,24 @@ describe('Manager', function() {
             });
         });
 
+        it('Request file with validation parameter (true)', function(done) {
+            request(common.url)
+            .get("/manager/files?path=" + path_lists + "&validation=true")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+            });
+        });
+
     });  // GET/manager/files
 
     describe('DELETE/manager/files', function() {
