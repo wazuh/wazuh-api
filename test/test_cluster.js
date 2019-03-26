@@ -932,7 +932,7 @@ describe('Cluster', function () {
             request(common.url)
             .post("/cluster/master/files?path=" + path_lists + "&overwrite=true")
             .set("Content-Type", "application/octet-stream")
-            .send("test&%-wazuh-w:write\ntest-wazuh-r:read\ntest-wazuh-a:attribute\ntest-wazuh-x:execute\ntest-wazuh-c:command\n")
+            .send(":write\ntest-wazuh-r:read\ntest-wazuh-a:attribute\ntest-wazuh-x:execute\ntest-wazuh-c:command\n")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(400)
