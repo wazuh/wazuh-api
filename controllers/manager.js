@@ -312,7 +312,7 @@ router.get('/files', cache(), function(req, res) {
     data_request['arguments']['path'] = req.query.path;
 
     if ('validation' in req.query)
-        data_request['arguments']['validation'] = req.query.validation == 'true' ? true : null;
+        data_request['arguments']['validation'] = req.query.validation == 'true' ? true : false;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
