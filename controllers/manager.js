@@ -285,6 +285,7 @@ router.get('/stats/remoted', cache(), function(req, res) {
  * @apiGroup Files
  *
  * @apiParam {String} path Relative path of file. This parameter is mandatory.
+ * @apiParam {String} validation True for validating the content of the file.
  *
  * @apiDescription Returns the content of a local file (rules, decoders and lists).
  *
@@ -296,7 +297,7 @@ router.get('/files', cache(), function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /manager/files");
 
     var data_request = {'function': '/manager/files', 'arguments': {}};
-    var filters = {'path': 'paths', 'offset': 'numbers', 'limit': 'numbers'};
+    var filters = {'path': 'paths', 'offset': 'numbers', 'limit': 'numbers', 'validation': 'boolean'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -309,6 +310,9 @@ router.get('/files', cache(), function(req, res) {
     }
 
     data_request['arguments']['path'] = req.query.path;
+
+    if ('validation' in req.query)
+        data_request['arguments']['validation'] = req.query.validation == 'true' ? true : false;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -366,7 +370,7 @@ router.post('/files', function(req, res) {
     logger.debug(req.connection.remoteAddress + " POST /manager/files");
 
     var data_request = {'function': 'POST/manager/files', 'arguments': {}};
-    var filters = {'path': 'paths', 'overwrite': 'boolean', 'validation': 'boolean'};
+    var filters = {'path': 'paths', 'overwrite': 'boolean'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -410,9 +414,6 @@ router.post('/files', function(req, res) {
     // optional parameters
     if ('overwrite' in req.query)
         data_request['arguments']['overwrite'] = req.query.overwrite == 'true' ? true : false;
-
-    if ('validation' in req.query)
-        data_request['arguments']['validation'] = req.query.validation == 'true' ? true : false;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
