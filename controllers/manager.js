@@ -285,7 +285,7 @@ router.get('/stats/remoted', cache(), function(req, res) {
  * @apiGroup Files
  *
  * @apiParam {String} path Relative path of file. This parameter is mandatory.
- * @apiParam {String} validation True for validating the content of the file.
+ * @apiParam {String} validation Default false. true for validating the content of the file. An error will be returned file content is not strictly correct.
  *
  * @apiDescription Returns the content of a local file (rules, decoders and lists).
  *
