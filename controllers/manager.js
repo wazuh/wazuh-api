@@ -366,7 +366,7 @@ router.post('/files', function(req, res) {
     logger.debug(req.connection.remoteAddress + " POST /manager/files");
 
     var data_request = {'function': 'POST/manager/files', 'arguments': {}};
-    var filters = {'path': 'paths', 'overwrite': 'boolean'};
+    var filters = {'path': 'paths', 'overwrite': 'boolean', 'validation': 'boolean'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -410,6 +410,9 @@ router.post('/files', function(req, res) {
     // optional parameters
     if ('overwrite' in req.query)
         data_request['arguments']['overwrite'] = req.query.overwrite == 'true' ? true : false;
+
+    if ('validation' in req.query)
+        data_request['arguments']['validation'] = req.query.validation == 'true' ? true : false;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
