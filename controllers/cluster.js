@@ -491,6 +491,7 @@ router.get('/:node_id/logs/summary', cache(), function(req, res) {
  * @apiGroup Files
  *
  * @apiParam {String} path Relative path of file. This parameter is mandatory.
+ * @apiParam {String} validation Default false. true for validating the content of the file. An error will be returned file content is not strictly correct.
  *
  * @apiDescription Returns the content of a local file (rules, decoders and lists).
  *
@@ -503,7 +504,7 @@ router.get('/:node_id/files', cache(), function(req, res) {
 
     var data_request = {'function': '/cluster/:node_id/files', 'arguments': {}};
     var filters_param = {'node_id': 'names'};
-    var filters_query = {'path': 'paths', 'offset': 'numbers', 'limit': 'numbers',};
+    var filters_query = {'path': 'paths', 'offset': 'numbers', 'limit': 'numbers', 'validation': 'boolean'};
 
     if (!filter.check(req.params, filters_param, req, res))  // Filter with error (param)
         return;
@@ -520,6 +521,9 @@ router.get('/:node_id/files', cache(), function(req, res) {
 
     data_request['arguments']['node_id'] = req.params.node_id;
     data_request['arguments']['path'] = req.query.path;
+
+    if ('validation' in req.query)
+        data_request['arguments']['validation'] = req.query.validation == 'true' ? true : false;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
