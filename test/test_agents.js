@@ -2121,6 +2121,69 @@ describe('Agents', function() {
 
     });  // PUT/agents/:agent_id/restart
 
+    describe('POST/agents/restart', function() {
+
+        it('Request', function(done) {
+            this.timeout(common.timeout);
+
+            request(common.url)
+            .post("/agents/restart")
+            .auth(common.credentials.user, common.credentials.password)
+            .send({ 'ids': ['001']})
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.type('object');
+                res.body.data.should.have.properties(['msg', 'affected_agents']);
+                res.body.data.affected_agents[0].should.equal('001');
+                res.body.data.msg.should.equal('All selected agents were restarted');
+                done();
+            });
+        });
+
+        it('Params: Bad agent id', function(done) {
+            request(common.url)
+            .post("/agents/restart")
+            .auth(common.credentials.user, common.credentials.password)
+            .send({ 'ids': ['abc']})
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(616);
+                done();
+            });
+        });
+
+        it('Request', function(done) {
+            this.timeout(common.timeout);
+
+            request(common.url)
+            .post("/agents/restart")
+            .auth(common.credentials.user, common.credentials.password)
+            .send({ 'ids': ['000']})
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['msg', 'failed_ids', 'affected_agents']);
+
+                res.body.data.failed_ids[0].error.code.should.equal(1703);
+                done();
+            });
+        });
+
+    });  // POST/agents/restart
+
     agent1_id = "";
     agent2_id = "";
     describe('DELETE/agents', function () {
