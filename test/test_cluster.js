@@ -932,7 +932,7 @@ describe('Cluster', function () {
             request(common.url)
             .post("/cluster/master/files?path=" + path_lists + "&overwrite=true")
             .set("Content-Type", "application/octet-stream")
-            .send("test&%-wazuh-w:write\ntest-wazuh-r:read\ntest-wazuh-a:attribute\ntest-wazuh-x:execute\ntest-wazuh-c:command\n")
+            .send(":write\ntest-wazuh-r:read\ntest-wazuh-a:attribute\ntest-wazuh-x:execute\ntest-wazuh-c:command\n")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(400)
@@ -1183,6 +1183,24 @@ describe('Cluster', function () {
 
                 res.body.error.should.equal(706);
                 res.body.message.should.be.an.string;
+
+                done();
+            });
+        });
+
+        it('Request file with validation parameter (true)', function(done) {
+            request(common.url)
+            .get("/cluster/master/files?path=" + path_lists + "&validation=true")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
 
                 done();
             });
