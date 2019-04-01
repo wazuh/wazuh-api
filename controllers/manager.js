@@ -55,6 +55,37 @@ router.get('/info', cache(), function(req, res) {
 })
 
 /**
+ * @api {get} /manager/config/:component/:configuration Get manager active configuration
+ * @apiName GetManagerActiveConfiguration
+ * @apiGroup Configuration
+ *
+ * @apiParam {String="agent","agentless","analysis","auth","com","csyslog","integrator","logcollector","mail","monitor","request","syscheck","wmodules"} [component] Indicates the wazuh component to check.
+ * @apiParam {String="client","buffer","labels","internal","agentless","global","active_response","alerts","command","rules","decoders","internal","auth","active-response","internal","cluster","csyslog","integration","localfile","socket","remote","syscheck","rootcheck","wmodules"} [configuration] Indicates a configuration to check in the component.
+ *
+ * @apiDescription Returns the requested configuration in JSON format.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/config/logcollector/internal?pretty"
+ *
+ */
+router.get('/config/:component/:configuration', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /manager/config/:component/:configuration");
+
+    req.apicacheGroup = "manager";
+
+    var data_request = {'function': '/manager/config/:component/:configuration', 'arguments': {}};
+    var filters = {'component':'names', 'configuration': 'names'};
+
+    if (!filter.check(req.params, filters, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['component'] = req.params.component;
+    data_request['arguments']['config'] = req.params.configuration;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
  * @api {get} /manager/configuration Get manager configuration
  * @apiName GetManagerConfiguration
  * @apiGroup Configuration
