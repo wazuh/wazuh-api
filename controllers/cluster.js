@@ -744,7 +744,7 @@ router.get('/:node_id/configuration/validation', cache(), function(req, res) {
 router.get('/:node_id/config/:component/:configuration', cache(), function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /cluster/:node_id/config/:component/:configuration");
 
-    req.apicacheGroup = "manager";
+    req.apicacheGroup = "cluster";
 
     var data_request = {'function': '/cluster/:node_id/config/:component/:configuration', 'arguments': {}};
     var filters = {'component':'names', 'configuration': 'names', 'node_id': 'names'};
