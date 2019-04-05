@@ -900,6 +900,25 @@ describe('Manager', function() {
               });
         });
 
+        it('Upload a file with a wrong content type', function(done) {
+            request(common.url)
+            .post("/manager/files?path=" + path_lists)
+            .set("Content-Type", "application/x-www-form-urlencoded")
+            .send("test-wazuh-w:write\ntest-wazuh-r:read\ntest-wazuh-a:attribute\ntest-wazuh-x:execute\ntest-wazuh-c:command\n")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err, res) {
+                if (err) throw err;
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(804);
+                res.body.message.should.be.an.string;
+
+                done();
+              });
+        });
+
     });  // POST/manager/files
 
     describe('GET/manager/files', function() {
