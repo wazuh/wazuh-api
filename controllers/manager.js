@@ -411,6 +411,7 @@ router.post('/files', function(req, res) {
         if (!filter.check_path(req.query.path, req, res)) return;
     } else {
         res_h.bad_request(req, res, 706);
+        return;
     }
 
     if (req.headers['content-type'] == 'application/octet-stream' || req.headers['content-type'] == 'application/xml') {
@@ -426,6 +427,7 @@ router.post('/files', function(req, res) {
         }
     } else {
         res_h.bad_request(req, res, 804, req.headers['content-type']);
+        return;
     }
 
     data_request['arguments']['path'] = req.query.path;
