@@ -411,11 +411,13 @@ router.post('/files', function(req, res) {
         if (!filter.check_path(req.query.path, req, res)) return;
     } else {
         res_h.bad_request(req, res, 706);
+        return;
     }
 
-    if (req.headers['content-type'] == 'application/octet-stream') {
-        // check cdb list
-        if (!filter.check_cdb_list(req.body.toString('utf8'), req, res)) return;
+    if (req.headers['content-type'] == 'application/octet-stream' || req.headers['content-type'] == 'application/xml') {
+        if ((req.headers['content-type'] == 'application/octet-stream' && !filter.check_cdb_list(req.body.toString('utf8'), req, res)) ||
+            (req.headers['content-type'] == 'application/xml' && !filter.check_xml(req.body, req, res)))
+            return;
 
         try {
             data_request['arguments']['tmp_file'] = require('../helpers/files').tmp_file_creator(req.body);
@@ -423,20 +425,9 @@ router.post('/files', function(req, res) {
             res_h.bad_request(req, res, 702, err);
             return;
         }
-
-    } else if (req.headers['content-type'] == 'application/xml') {
-
-        if (!filter.check_xml(req.body, req, res)) return;
-
-        try {
-            data_request['arguments']['tmp_file'] = require('../helpers/files').tmp_file_creator(req.body);
-        } catch(err) {
-            res_h.bad_request(req, res, 702, err);
-            return;
-        }
-
     } else {
-        res_h.bad_request(req, res, 704, err);
+        res_h.bad_request(req, res, 804, req.headers['content-type']);
+        return;
     }
 
     data_request['arguments']['path'] = req.query.path;
