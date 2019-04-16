@@ -38,20 +38,20 @@ var LEVEL_DEBUG = 4;
 var user = "";
 
 var logger_level = LEVEL_INFO;
-switch (config.logs) {
-    case "INFO", "info":
+switch (config.logs.toLowerCase()) {
+    case "info":
         logger_level = LEVEL_INFO;
         break;
-    case "WARNING", "warning":
+    case "warning":
         logger_level = LEVEL_WARNING;
         break;
-    case "ERROR", "error":
+    case "error":
         logger_level = LEVEL_ERROR;
         break;
-    case "DEBUG", "debug":
+    case "debug":
         logger_level = LEVEL_DEBUG;
         break;
-    case "DISABLED", "disabled":
+    case "disabled":
         logger_level = LEVEL_DISABLED;
         break;
     default:
