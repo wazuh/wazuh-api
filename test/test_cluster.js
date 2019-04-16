@@ -990,7 +990,7 @@ describe('Cluster', function () {
 
         it('Upload a file with a wrong content type', function(done) {
             request(common.url)
-            .post("/cluster/master/files")
+            .post("/cluster/master/files?path=etc/lists/new-list")
             .set("Content-Type", "application/x-www-form-urlencoded")
             .send("test&%-wazuh-w:write\ntest-wazuh-r:read\ntest-wazuh-a:attribute\ntest-wazuh-x:execute\ntest-wazuh-c:command\n")
             .auth(common.credentials.user, common.credentials.password)
