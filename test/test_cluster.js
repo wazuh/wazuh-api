@@ -432,8 +432,8 @@ describe('Cluster', function () {
                 .expect(200)
                 .end(function (err, res) {
                     if (err) return done(err);
-                    expected_name_master = res.body.data.items[1].name;
-                    expected_name_worker = res.body.data.items[0].name;
+                    expected_name_master = res.body.data.items[0].name;
+                    expected_name_worker = res.body.data.items[1].name;
                     done();
                 });
         });
