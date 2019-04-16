@@ -432,8 +432,8 @@ describe('Cluster', function () {
                 .expect(200)
                 .end(function (err, res) {
                     if (err) return done(err);
-                    expected_name_master = res.body.data.items[1].name;
-                    expected_name_worker = res.body.data.items[0].name;
+                    expected_name_master = res.body.data.items[0].name;
+                    expected_name_worker = res.body.data.items[1].name;
                     done();
                 });
         });
@@ -990,7 +990,7 @@ describe('Cluster', function () {
 
         it('Upload a file with a wrong content type', function(done) {
             request(common.url)
-            .post("/cluster/master/files")
+            .post("/cluster/master/files?path=etc/lists/new-list")
             .set("Content-Type", "application/x-www-form-urlencoded")
             .send("test&%-wazuh-w:write\ntest-wazuh-r:read\ntest-wazuh-a:attribute\ntest-wazuh-x:execute\ntest-wazuh-c:command\n")
             .auth(common.credentials.user, common.credentials.password)
@@ -1051,7 +1051,7 @@ describe('Cluster', function () {
                 });
         });
 
-        it('Request rules', function (done) {
+        it('Request rules (local)', function (done) {
             request(common.url)
                 .get("/cluster/master/files?path=" + path_rules)
                 .auth(common.credentials.user, common.credentials.password)
@@ -1069,9 +1069,45 @@ describe('Cluster', function () {
                 });
         });
 
-        it('Request decoders', function(done) {
+        it('Request rules (global)', function (done) {
+            request(common.url)
+                .get("/cluster/master/files?path=ruleset/rules/0095-sshd_rules.xml")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.should.be.an.string;
+
+                    done();
+                });
+        });
+
+        it('Request decoders (local)', function(done) {
             request(common.url)
             .get("/cluster/master/files?path=" + path_decoders)
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+            });
+        });
+
+        it('Request decoders (global)', function(done) {
+            request(common.url)
+            .get("/cluster/master/files?path=ruleset/decoders/0025-apache_decoders.xml")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
