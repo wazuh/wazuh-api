@@ -942,7 +942,7 @@ describe('Manager', function() {
                 });
         });
 
-        it('Request rules', function(done) {
+        it('Request rules (local)', function(done) {
             request(common.url)
             .get("/manager/files?path=" + path_rules)
             .auth(common.credentials.user, common.credentials.password)
@@ -960,9 +960,45 @@ describe('Manager', function() {
             });
         });
 
-        it('Request decoders', function(done) {
+        it('Request rules (global)', function(done) {
             request(common.url)
-            .get("/manager/files?path=" + path_decoders)
+            .get("/manager/files?path=ruleset/rules/0350-amazon_rules.xml")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+            });
+        });
+
+        it('Request decoders (local)', function(done) {
+            request(common.url)
+            .get("/manager/files?path=/ruleset/decoders/0005-wazuh_decoders.xml" + path_decoders)
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+            });
+        });
+
+        it('Request decoders (global)', function(done) {
+            request(common.url)
+            .get("/manager/files?path=")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
