@@ -69,11 +69,13 @@ exports.check_path = function(path, req, res, get_request=false) {
         if (!re_get.test(path)) {
             res_h.bad_request(req, res, 704);
             return false
+        }
     } else {
         var re_post = new RegExp(/^((etc\/ossec.conf)|(etc\/rules\/|etc\/decoders\/)[\w\-\/]+\.{1}xml|(etc\/lists\/)[\w\-\.\/]+)$/)
         if (!re_post.test(path)) {
             res_h.bad_request(req, res, 704);
             return false
+        }
     }
 
     return true
