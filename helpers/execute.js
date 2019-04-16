@@ -27,8 +27,15 @@ var disable_timeout = false;
 exports.exec = function(cmd, args, stdin, callback) {
     const child_process  = require('child_process');
 
-    if (stdin != null)
-        stdin['ossec_path'] = config.ossec_path;
+    if (!(stdin instanceof Object)) {
+        err = "Error executing command: stdin value must be an object: " + stdin
+        logger.error("CMD - " + err);
+        error = true;
+        callback({"error": 1, "message": err});
+        return;
+    }
+
+    stdin['ossec_path'] = config.ossec_path;
 
     // log
     stdin['arguments']['wait_for_complete'] = disable_timeout;
