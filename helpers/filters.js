@@ -156,9 +156,7 @@ exports.select_param_to_json = function (select_param){
     var select = {"fields": []};
 
     if (typeof select_param == 'string') {
-        select_param.split(',').map(function(x) {
-            select['fields'].push(x);
-        });
+        select['fields'] = select_param.split(',');
     } else {
         select['fields'] = select_param;
     }
