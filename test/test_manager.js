@@ -980,7 +980,7 @@ describe('Manager', function() {
 
         it('Request decoders (local)', function(done) {
             request(common.url)
-            .get("/manager/files?path=/ruleset/decoders/0005-wazuh_decoders.xml" + path_decoders)
+            .get("/manager/files?path=" + path_decoders)
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -998,7 +998,7 @@ describe('Manager', function() {
 
         it('Request decoders (global)', function(done) {
             request(common.url)
-            .get("/manager/files?path=")
+            .get("/manager/files?path=ruleset/decoders/0005-wazuh_decoders.xml")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
