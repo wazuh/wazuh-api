@@ -27,7 +27,7 @@ var router = require('express').Router();
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [q] Query to filter results by. This is specially useful to filter by total checks passed, failed or total score (fields pass, fail, score).
  *
- * @apiDescription Returns the security sca database of an agent.
+ * @apiDescription Returns the sca database of an agent.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/sca/000?q=pass>50;score<150&pretty"
