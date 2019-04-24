@@ -31,6 +31,7 @@ var router = require('express').Router();
  * @apiParam {String} [sha1] Returns the files with the specified sha1 hash.
  * @apiParam {String} [sha256] Returns the files with the specified sha256 hash.
  * @apiParam {String} [hash] Returns the files with the specified hash (md5, sha1 or sha256).
+ * @apiParam {string} [q] Advanced query filtering
  *
  * @apiDescription Returns the syscheck files of an agent.
  *
@@ -39,53 +40,11 @@ var router = require('express').Router();
  *
  */
 router.get('/:agent_id', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /syscheck/:agent_id");
-
-    req.apicacheGroup = "syscheck";
-
-    var data_request = {'function': '/syscheck/:agent_id', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
-		'search':'search_param', 'file':'paths', 'type':'names',
-		'summary':'yes_no_boolean', 'select': 'alphanumeric_param','md5':'hashes', 'sha1':'hashes',
-		'sha256': 'hashes', 'hash':'hashes'};
-		
-	data_request.arguments['filters'] = {}
-	
-
-    if (!filter.check(req.query, filters, req, res))  // Filter with error
-        return;
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('file' in req.query)
-        data_request['arguments']['filters']['file'] = req.query.file;
-    if ('type' in req.query)
-        data_request['arguments']['filters']['type'] = req.query.type;
-    if ('summary' in req.query && req.query.summary == "yes")
-        data_request['arguments']['summary'] = req.query.summary;
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select);
-    if ('md5' in req.query)
-        data_request.arguments.filters['md5'] = req.query.md5.toLowerCase();
-    if ('sha1' in req.query)
-        data_request.arguments.filters['sha1'] = req.query.sha1.toLowerCase();
-    if ('sha256' in req.query)
-        data_request.arguments.filters['sha256'] = req.query.sha256.toLowerCase();
-    if ('hash' in req.query)
-        data_request.arguments.filters['hash'] = req.query.hash.toLowerCase();
-
-
-    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
-        return;
-    data_request['arguments']['agent_id'] = req.params.agent_id;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
-})
+    var filters = {'file':'paths', 'type':'names', 'summary':'yes_no_boolean',
+                   'select': 'alphanumeric_param','md5':'hashes', 'sha1':'hashes',
+		           'sha256': 'hashes', 'hash':'hashes'};
+    templates.array_request("/syscheck/:agent_id", req, res, "syscheck", {'agent_id': 'numbers'}, filters);
+});
 
 
 /**
