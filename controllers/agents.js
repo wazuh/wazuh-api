@@ -251,7 +251,7 @@ router.post('/groups/:group_id/configuration', cache(), function(req, res) {
 
     if (!filter.check(req.params, filters, req, res))  // Filter with error
         return;
-    
+
     if (!filter.check_xml(req.body, req, res)) return;
 
     data_request['arguments']['group_id'] = req.params.group_id;
@@ -261,7 +261,7 @@ router.post('/groups/:group_id/configuration', cache(), function(req, res) {
         res_h.bad_request(req, res, 702, err);
         return;
     }
-    
+
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -313,7 +313,7 @@ router.post('/groups/:group_id/files/:file_name', cache(), function(req, res) {
  * @apiParam {String} [file_name] Filename
  * @apiParam {String="conf","rootkit_files", "rootkit_trojans", "rcl"} [type] Type of file.
  * @apiParam {String="json","xml"} [format] Optional. Output format (JSON, XML).
- * 
+ *
  * @apiDescription Returns the specified file belonging to the group parsed to JSON.
  *
  * @apiExample {curl} Example usage*:
@@ -340,9 +340,9 @@ router.get('/groups/:group_id/files/:filename', cache(), function(req, res) {
     if ('type' in req.query)
         data_request['arguments']['type_conf'] = req.query.type;
 
-    if ('format' in req.query) 
+    if ('format' in req.query)
         data_request['arguments']['return_format'] = req.query.format;
-            
+
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -557,7 +557,7 @@ router.get('/:agent_id/upgrade_result', function(req, res) {
  *
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {String="agent","agentless","analysis","auth","com","csyslog","integrator","logcollector","mail","monitor","request","syscheck","wmodules"} component Selected component.
- * @apiParam {String="client","buffer","labels","internal","agentless","global","active_response","alerts","command","rules","decoders","internal","auth","active-response","internal","cluster","csyslog","integration","localfile","socket","remote","syscheck","rootcheck","wmodules"} configuration Configuration to read.
+ * @apiParam {String="client","buffer","labels","internal","logging","agentless","global","active_response","alerts","command","rules","decoders","internal","auth","active-response","internal","cluster","csyslog","integration","localfile","socket","remote","syscheck","rootcheck","wmodules"} configuration Configuration to read.
  *
  * @apiDescription Returns the active configuration in JSON format.
  *
@@ -565,7 +565,7 @@ router.get('/:agent_id/upgrade_result', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/001/config/logcollector/localfile?pretty"
  *
  */
- router.get('/:agent_id/config/:component/:configuration', function(req, res) {     
+ router.get('/:agent_id/config/:component/:configuration', function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /agents/:agent_id/config/:component/:configuration");
 
     var data_request = {'function': '/agents/:agent_id/config/:component/:configuration', 'arguments': {}};
@@ -593,8 +593,8 @@ router.get('/:agent_id/upgrade_result', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/001/group/is_sync?pretty"
  *
  */
-router.get('/:agent_id/group/is_sync', function(req, res) {     
-    param_checks = {'agent_id': 'numbers'};     
+router.get('/:agent_id/group/is_sync', function(req, res) {
+    param_checks = {'agent_id': 'numbers'};
     templates.array_request('/agents/:agent_id/group/is_sync', req, res, "agents", param_checks);
 })
 
