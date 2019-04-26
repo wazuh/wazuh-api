@@ -730,7 +730,7 @@ router.get('/:node_id/configuration/validation', cache(), function(req, res) {
  * @apiDescription Returns the requested configuration in JSON format.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/:node_id/config/logcollector/internal?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node01/config/logcollector/internal?pretty"
  *
  */
 router.get('/:node_id/config/:component/:configuration', cache(), function(req, res) {
