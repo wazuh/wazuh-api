@@ -334,8 +334,9 @@ router.get('/files', cache(), function(req, res) {
         return;
 
     // check path parameter
+    var local_paths = false;
     if (req.query.path) {
-        if (!filter.check_path(req.query.path, req, res, get_request=true)) return;
+        if (!filter.check_path(req.query.path, req, res, local_paths)) return;
     } else {
         res_h.bad_request(req, res, 706);
     }
@@ -371,8 +372,9 @@ router.delete('/files', cache(), function(req, res) {
         return;
 
     // check path parameter
+    var local_paths = true;
     if (req.query.path) {
-        if (!filter.check_path(req.query.path, req, res)) return;
+        if (!filter.check_path(req.query.path, req, res, local_paths)) return;
     } else {
         res_h.bad_request(req, res, 706);
     }
@@ -407,8 +409,9 @@ router.post('/files', function(req, res) {
         return;
 
     // check path parameter
+    var local_paths = true;
     if (req.query.path) {
-        if (!filter.check_path(req.query.path, req, res)) return;
+        if (!filter.check_path(req.query.path, req, res, local_paths)) return;
     } else {
         res_h.bad_request(req, res, 706);
         return;
