@@ -57,13 +57,13 @@ exports.check_xml = function(xml_string, req, res) {
     };
 }
 
-exports.check_path = function(path, req, res) {
+exports.check_path_get = function(path, req, res) {
     if (path.includes('./') || path.includes('../')) {
         res_h.bad_request(req, res, 704);
         return false
     }
 
-    // allow global rules and decoders for GET and POST requests
+    // allow global rules and decoders for GET requests
     var re = new RegExp(/^((etc\/ossec.conf)|(etc\/rules\/|etc\/decoders\/|ruleset\/rules\/|ruleset\/decoders\/)[\w\-\/]+\.{1}xml|(etc\/lists\/)[\w\-\.\/]+)$/)
     if (!re.test(path)) {
         res_h.bad_request(req, res, 704);
@@ -73,7 +73,7 @@ exports.check_path = function(path, req, res) {
     return true
 }
 
-exports.check_path_post = function(path, req, res) {
+exports.check_path = function(path, req, res) {
     if (path.includes('./') || path.includes('../')) {
         res_h.bad_request(req, res, 704);
         return false
