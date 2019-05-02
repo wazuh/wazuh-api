@@ -514,7 +514,7 @@ router.get('/:node_id/files', cache(), function(req, res) {
 
     // check path parameter
     if (req.query.path) {
-        if (!filter.check_path(req.query.path, req, res, get_request=true)) return;
+        if (!filter.check_path_get(req.query.path, req, res)) return;
     } else {
         res_h.bad_request(req, res, 706);
     }
@@ -559,7 +559,7 @@ router.post('/:node_id/files', function(req, res) {
 
     // check path parameter
     if (req.query.path) {
-        if (!filter.check_path(req.query.path, req, res)) return;
+        if (!filter.check_path_post(req.query.path, req, res)) return;
     } else {
         res_h.bad_request(req, res, 706);
         return;

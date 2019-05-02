@@ -57,25 +57,32 @@ exports.check_xml = function(xml_string, req, res) {
     };
 }
 
-exports.check_path = function(path, req, res, get_request=false) {
+exports.check_path = function(path, req, res) {
     if (path.includes('./') || path.includes('../')) {
         res_h.bad_request(req, res, 704);
         return false
     }
 
-    // allow global rules and decoders for GET requests
-    if (get_request) {
-        var re_get = new RegExp(/^((etc\/ossec.conf)|(etc\/rules\/|etc\/decoders\/|ruleset\/rules\/|ruleset\/decoders\/)[\w\-\/]+\.{1}xml|(etc\/lists\/)[\w\-\.\/]+)$/)
-        if (!re_get.test(path)) {
-            res_h.bad_request(req, res, 704);
-            return false
-        }
-    } else {
-        var re_post = new RegExp(/^((etc\/ossec.conf)|(etc\/rules\/|etc\/decoders\/)[\w\-\/]+\.{1}xml|(etc\/lists\/)[\w\-\.\/]+)$/)
-        if (!re_post.test(path)) {
-            res_h.bad_request(req, res, 704);
-            return false
-        }
+    // allow global rules and decoders for GET and POST requests
+    var re = new RegExp(/^((etc\/ossec.conf)|(etc\/rules\/|etc\/decoders\/|ruleset\/rules\/|ruleset\/decoders\/)[\w\-\/]+\.{1}xml|(etc\/lists\/)[\w\-\.\/]+)$/)
+    if (!re.test(path)) {
+        res_h.bad_request(req, res, 704);
+        return false
+    }
+
+    return true
+}
+
+exports.check_path_post = function(path, req, res) {
+    if (path.includes('./') || path.includes('../')) {
+        res_h.bad_request(req, res, 704);
+        return false
+    }
+
+    var re_post = new RegExp(/^((etc\/ossec.conf)|(etc\/rules\/|etc\/decoders\/)[\w\-\/]+\.{1}xml|(etc\/lists\/)[\w\-\.\/]+)$/)
+    if (!re_post.test(path)) {
+        res_h.bad_request(req, res, 704);
+        return false
     }
 
     return true
