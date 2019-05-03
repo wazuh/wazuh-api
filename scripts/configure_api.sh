@@ -178,7 +178,7 @@ change_auth () {
         case $AUTH in
             [yY] ) edit_configuration "basic_auth" "yes"
 
-                   exec_cmd_bash "cd $API_PATH/configuration/auth && $API_PATH/node_modules/htpasswd/bin/htpasswd -bc user $USER $PASS";;
+                   exec_cmd_bash "cd $API_PATH/configuration/auth && $API_PATH/node_modules/htpasswd/bin/htpasswd -Bc user $USER $PASS";;
 
             [nN] ) auth="n"
                    print "Disabling authentication (not secure)."
