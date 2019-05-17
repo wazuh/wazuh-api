@@ -1,6 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.10.0]
+
+- New API requests:
+    * `GET/rules/hipaa` ([#386](https://github.com/wazuh/wazuh-api/issues/386)).
+    * `GET/rules/nist-800-53` ([#386](https://github.com/wazuh/wazuh-api/issues/386)).
+- New filters in request `GET/rules`:
+    - `hipaa`: Filters the rules by hipaa requirement ([#386](https://github.com/wazuh/wazuh-api/issues/386)).
+    - `nist-800-53`: Filters the rules by nist-800-53 requirement ([#386](https://github.com/wazuh/wazuh-api/issues/386)).
+
 ## [v3.9.0]
 
 ### Added
