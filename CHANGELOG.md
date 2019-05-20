@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.10.0]
+
+### Fixed
+- Fixed bug inserting duplicated agent without any errors ([#318](https://github.com/wazuh/wazuh-api/issues/318))
+
 ## [v3.9.0]
 
 ### Added
