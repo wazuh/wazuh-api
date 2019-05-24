@@ -2255,8 +2255,7 @@ describe('Agents', function() {
         it('Filter: older_than, status and ids', function (done) {
             setTimeout(function(){
                 request(common.url)
-                    .delete("/agents?purge&older_than=1s&status=neverconnected")
-                    .send({ 'ids': [agent1_id]})
+                    .delete("/agents?purge&ids=" + agent1_id + "older_than=1s&status=neverconnected")
                     .auth(common.credentials.user, common.credentials.password)
                     .expect("Content-type", /json/)
                     .expect(200)
