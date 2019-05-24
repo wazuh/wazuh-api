@@ -894,7 +894,7 @@ router.delete('/groups', function(req, res) {
         return;
 
     if ('ids' in req.query){
-        data_request['arguments']['group_id'] = req.query.ids;
+        data_request['arguments']['group_id'] = req.query.ids.split(',');
         execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
     }else
         res_h.bad_request(req, res, 604, "Missing field: 'ids'");
@@ -1010,7 +1010,7 @@ router.delete('/group/:group_id', function(req, res) {
         return;
 
     data_request['arguments']['group_id'] = req.params.group_id;
-    data_request['arguments']['agent_id_list'] = req.query.ids;
+    data_request['arguments']['agent_id_list'] = req.query.ids.split(',');
 
     if ('ids' in req.query){
         execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
@@ -1080,7 +1080,7 @@ router.delete('/', function(req, res) {
         data_request['arguments']['purge'] = false;
 
     if ('ids' in req.query)
-        data_request['arguments']['list_agent_ids'] = req.query.ids;
+        data_request['arguments']['list_agent_ids'] = req.query.ids.split(',');
 
     if ('older_than' in req.query)
         data_request['arguments']['older_than'] = req.query.older_than;
