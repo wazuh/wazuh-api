@@ -20,7 +20,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 var disconnected_agent_properties = ['status', 'ip', 'id', 'name', 'dateAdd'];
 var manager_properties = disconnected_agent_properties.concat(['version', 'manager', 'lastKeepAlive', 'os']);
 var agent_properties = manager_properties.concat(['configSum', 'mergedSum', 'group']);
-var agent_os_properties = ['major', 'name', 'uname', 'platform', 'version', 'codename', 'arch'];
+var agent_os_properties = ['major', 'name', 'uname', 'platform', 'version', 'arch'];
 
 describe('Agents', function() {
 
