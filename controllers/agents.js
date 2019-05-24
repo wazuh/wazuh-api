@@ -882,7 +882,7 @@ router.post('/group/:group_id', function(req, res) {
  * @apiDescription Removes a list of groups.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE -H "Content-Type:application/json" -d '{"ids":["webserver","database"]}' "https://127.0.0.1:55000/agents/groups?pretty"
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/groups?ids=webserver,database&pretty"
  *
  */
 router.delete('/groups', function(req, res) {
@@ -890,11 +890,11 @@ router.delete('/groups', function(req, res) {
 
     var data_request = {'function': 'DELETE/agents/groups', 'arguments': {}};
 
-    if (!filter.check(req.body, {'ids':'array_names'}, req, res))  // Filter with error
+    if (!filter.check(req.query, {'ids':'array_names'}, req, res))  // Filter with error
         return;
 
-    if ('ids' in req.body){
-        data_request['arguments']['group_id'] = req.body.ids;
+    if ('ids' in req.query){
+        data_request['arguments']['group_id'] = req.query.ids;
         execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
     }else
         res_h.bad_request(req, res, 604, "Missing field: 'ids'");
@@ -994,22 +994,25 @@ router.delete('/:agent_id/group/:group_id', function(req, res) {
  * @apiDescription Remove a list of agents of a group
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -X DELETE -H "Content-Type:application/json" -d '{"ids":["001","002"]}' "https://localhost:55000/agents/group/dmz?pretty" -k
+ *     curl -u foo:bar -k -X DELETE "https://localhost:55000/agents/group/dmz?ids=001,002&pretty"
  *
  */
 router.delete('/group/:group_id', function(req, res) {
     logger.debug(req.connection.remoteAddress + " DELETE /agents/group/:group_id");
 
     var data_request = {'function': 'DELETE/agents/group/:group_id', 'arguments': {}};
-    var filters = {'group_id':'names', 'ids':'array_numbers'}
+    var filters_param = {'group_id': 'names'}
+    var filters_query = {'ids': 'array_numbers'}
 
-    if (!filter.check(req.params, filters, req, res))  // Filter with error
+    if (!filter.check(req.params, filters_param, req, res))  // Filter with error (path params)
+        return;
+    if (!filter.check(req.params, filters_query, req, res))  // Filter with error (query params)
         return;
 
     data_request['arguments']['group_id'] = req.params.group_id;
-    data_request['arguments']['agent_id_list'] = req.body.ids;
+    data_request['arguments']['agent_id_list'] = req.query.ids;
 
-    if ('ids' in req.body){
+    if ('ids' in req.query){
         execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
     }else
         res_h.bad_request(req, res, 604, "Missing field: 'ids'");
@@ -1053,36 +1056,31 @@ router.delete('/groups/:group_id', function(req, res) {
  * @apiDescription Removes agents, using a list of them or a criterion based on the status or time of the last connection. The Wazuh API must be restarted after removing an agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE -H "Content-Type:application/json" -d '{"ids":["003","005"]}' "https://127.0.0.1:55000/agents?pretty&older_than=10s&purge"
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents?pretty&older_than=10s&purge&ids=003,005"
  *
  */
 router.delete('/', function(req, res) {
     logger.debug(req.connection.remoteAddress + " DELETE /agents");
 
-    var data_request = { 'function': 'DELETE/agents/', 'arguments': {}};
-    var filter_body = { 'ids': 'array_numbers', 'purge': 'boolean'};
-    var filter_query = { 'older_than': 'timeframe_type', 'status': 'alphanumeric_param', 'purge': 'empty_boolean' };
+    var data_request = {'function': 'DELETE/agents/', 'arguments': {}};
+    var filters_query = {'older_than': 'timeframe_type', 'status': 'alphanumeric_param', 'purge': 'empty_boolean',
+                         'ids': 'array_numbers'};
 
-    if (!filter.check(req.body, filter_body, req, res))  // Filter with error
+    if (!filter.check(req.query, filters_query, req, res))  // Filter with error
         return;
 
-    if (!filter.check(req.query, filter_query, req, res))  // Filter with error
-        return;
-
-    if (!('ids' in req.body) && !('status' in req.query)){
+    if (!('ids' in req.query) && !('status' in req.query)){
         res_h.bad_request(req, res, 604, "Missing field: You have to specified 'ids' or status.");
         return;
     }
 
-    if ('purge' in req.body && 'purge' in req.query) // the most restrictive wins
-        data_request['arguments']['purge'] = (req.query.purge == 'true' || req.query.purge == '') && (req.body.purge == 'true' || req.body.purge == true);
-    else if ('purge' in req.body)
-        data_request['arguments']['purge'] = (req.body.purge == 'true' || req.body.purge == true);
-    else if ('purge' in req.query)
-        data_request['arguments']['purge'] = (req.query.purge == 'true' || req.query.purge == '');
+    if ('purge' in req.query && req.query.pruge == true)
+        data_request['arguments']['purge'] = true;
+    else
+        data_request['arguments']['purge'] = false;
 
-    if ('ids' in req.body)
-        data_request['arguments']['list_agent_ids'] = req.body.ids;
+    if ('ids' in req.query)
+        data_request['arguments']['list_agent_ids'] = req.query.ids;
 
     if ('older_than' in req.query)
         data_request['arguments']['older_than'] = req.query.older_than;
