@@ -1006,7 +1006,7 @@ router.delete('/group/:group_id', function(req, res) {
 
     if (!filter.check(req.params, filters_param, req, res))  // Filter with error (path params)
         return;
-    if (!filter.check(req.params, filters_query, req, res))  // Filter with error (query params)
+    if (!filter.check(req.query, filters_query, req, res))  // Filter with error (query params)
         return;
 
     data_request['arguments']['group_id'] = req.params.group_id;
