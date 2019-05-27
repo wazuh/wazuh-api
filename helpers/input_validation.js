@@ -31,10 +31,6 @@ exports.array_names = function(names) {
     return input_val(names, /^[a-zA-Z0-9_\-\.]+(,[a-zA-Z0-9_\-\.]+)*$/);
 }
 
-exports.ar_arguments = function(arguments) {
-    return input_val(arguments, /^[a-zA-Z0-9_\-\.()]+(,[a-zA-Z0-9_\-\.()]+)*$/);
-}
-
 exports.paths = function(path) {
     return input_val(path, /^[a-zA-Z0-9\-\_\.\\\/:]+$/);
 }
