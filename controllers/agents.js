@@ -1074,7 +1074,7 @@ router.delete('/', function(req, res) {
         return;
     }
 
-    if ('purge' in req.query && req.query.purge == true)
+    if ('purge' in req.query && req.query.purge != 'false')
         data_request['arguments']['purge'] = true;
     else
         data_request['arguments']['purge'] = false;
