@@ -34,13 +34,13 @@ router.put('/:agent_id', function(req, res) {
     var data_request = {'function': '/PUT/active-response/:agent_id', 'arguments': {}};
 
     filters_param = {'agent_id': 'numbers'}
-    filters_body = {'command': 'alphanumeric_param', 'custom': 'boolean', 'arguments': 'ar_arguments'}
+    //filters_body = {'command': 'alphanumeric_param', 'custom': 'boolean', 'arguments': 'ar_arguments'}
 
     if (!filter.check(req.params, filters_param, req, res))  // Filter with error (path parameters)
         return;
 
-    if (!filter.check(req.body, filters_body, req, res))  // Filter with error (body parameters)
-        return;
+    //if (!filter.check(req.body, filters_body, req, res))  // Filter with error (body parameters)
+    //    return;
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
     data_request['arguments']['command'] = req.body.command;
