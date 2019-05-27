@@ -19,9 +19,9 @@ var router = require('express').Router();
  * @apiGroup Command
  *
  * @apiParam {Number} agent_id Agent ID.
- * @apiParam {String} command Command.
- * @apiParam {Boolean} Custom Custom.
- * @apiParam {Arguments} Arguments Command arguments.
+ * @apiParam {String} command Command running in the agent. If this value starts by !, then it refers to a script name instead of a command name.
+ * @apiParam {Boolean} custom Whether the specified command is a custom command or not.
+ * @apiParam {String[]} arguments Array with command arguments.
  *
  * @apiDescription Runs an Active Response command on a specified agent
  *
@@ -33,8 +33,13 @@ router.put('/:agent_id', function(req, res) {
 
     var data_request = {'function': '/PUT/active-response/:agent_id', 'arguments': {}};
 
-    // ToDo: Add argments
-    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
+    filters_param = {'agent_id': 'numbers'}
+    filters_body = {'command': 'alphanumeric_param', 'custom': 'boolean', 'arguments': 'ar_arguments'}
+
+    if (!filter.check(req.params, filters_param, req, res))  // Filter with error (path parameters)
+        return;
+
+    if (!filter.check(req.body, filters_body, req, res))  // Filter with error (body parameters)
         return;
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
@@ -44,7 +49,5 @@ router.put('/:agent_id', function(req, res) {
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
-
-
 
 module.exports = router;
