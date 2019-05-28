@@ -45,7 +45,7 @@ router.get('/', cache(), function(req, res) {
                    'search':'search_param', 'status':'alphanumeric_param',
                    'group':'alphanumeric_param', 'level':'ranges', 'path':'paths',
                    'file':'alphanumeric_param', 'pci':'alphanumeric_param',
-                   'gdpr': 'alphanumeric_param'};
+                   'gdpr': 'alphanumeric_param', 'gpg13': 'alphanumeric_param'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -72,6 +72,8 @@ router.get('/', cache(), function(req, res) {
         data_request['arguments']['pci'] = req.query.pci;
     if ('gdpr' in req.query)
         data_request['arguments']['gdpr'] = req.query.gdpr;
+    if ('gpg13' in req.query)
+        data_request['arguments']['gpg13'] = req.query.gpg13;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
