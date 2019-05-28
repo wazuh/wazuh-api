@@ -20,7 +20,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 var disconnected_agent_properties = ['status', 'ip', 'id', 'name', 'dateAdd'];
 var manager_properties = disconnected_agent_properties.concat(['version', 'manager', 'lastKeepAlive', 'os']);
 var agent_properties = manager_properties.concat(['configSum', 'mergedSum', 'group']);
-var agent_os_properties = ['major', 'name', 'uname', 'platform', 'version', 'codename', 'arch'];
+var agent_os_properties = ['major', 'name', 'uname', 'platform', 'version', 'arch'];
 
 describe('Agents', function() {
 
@@ -2255,8 +2255,7 @@ describe('Agents', function() {
         it('Filter: older_than, status and ids', function (done) {
             setTimeout(function(){
                 request(common.url)
-                    .delete("/agents?purge&older_than=1s&status=neverconnected")
-                    .send({ 'ids': [agent1_id]})
+                    .delete("/agents?purge&ids=" + agent1_id + "&older_than=1s&status=neverconnected")
                     .auth(common.credentials.user, common.credentials.password)
                     .expect("Content-type", /json/)
                     .expect(200)

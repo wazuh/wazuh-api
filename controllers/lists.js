@@ -22,7 +22,6 @@ var router = require('express').Router();
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [path] Filters by path.
- * @apiParam {String="enabled","disabled", "all"} [status] Filters the decoders by status.
  *
  * @apiDescription Returns the content of all CDB lists
  *
