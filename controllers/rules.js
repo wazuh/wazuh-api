@@ -77,7 +77,7 @@ router.get('/', cache(), function(req, res) {
     if ('hipaa' in req.query)
         data_request['arguments']['hipaa'] = req.query.hipaa;
     if ('nist-800-53' in req.query)
-        data_request['arguments']['nist-800-53'] = req.query['nist-800-53'];
+        data_request['arguments']['nist_800_53'] = req.query['nist-800-53'];
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
