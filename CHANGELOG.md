@@ -1,6 +1,16 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.10.0]
+
+### Added
+
+- New API requests:
+    * `GET/rules/gpg13` ([#389](https://github.com/wazuh/wazuh-api/pull/389)).
+    
+- New filter in request `GET/rules`:
+    - `gpg13`: Filters the rules by gpg13 requirement ([#389](https://github.com/wazuh/wazuh-api/pull/389)).
+    
 ## [v3.9.0]
 
 ### Added
