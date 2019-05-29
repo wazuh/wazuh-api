@@ -19,9 +19,9 @@ var router = require('express').Router();
  * @apiGroup Command
  *
  * @apiParam {Number} agent_id Agent ID.
- * @apiParam {String} command Command.
- * @apiParam {Boolean} Custom Custom.
- * @apiParam {Arguments} Arguments Command arguments.
+ * @apiParam {String} command Command running in the agent. If this value starts by !, then it refers to a script name instead of a command name.
+ * @apiParam {Boolean} custom Whether the specified command is a custom command or not.
+ * @apiParam {String[]} arguments Array with command arguments.
  *
  * @apiDescription Runs an Active Response command on a specified agent
  *
@@ -44,7 +44,5 @@ router.put('/:agent_id', function(req, res) {
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
-
-
 
 module.exports = router;
