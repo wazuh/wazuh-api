@@ -877,7 +877,7 @@ router.post('/group/:group_id', function(req, res) {
  * @apiName DeleteAgentsGroups
  * @apiGroup Delete
  *
- * @apiParam {String} Name of groups separated by commas.
+ * @apiParam {String} ids Name of groups separated by commas.
  *
  * @apiDescription Removes a list of groups.
  *
@@ -1048,7 +1048,7 @@ router.delete('/groups/:group_id', function(req, res) {
  * @apiName DeleteAgents
  * @apiGroup Delete
  *
- * @apiParam {String} Agent IDs separated by commas.
+ * @apiParam {String} ids Agent IDs separated by commas.
  * @apiParam {Boolean} purge Delete an agent from the key store.
  * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
  * @apiParam {String} older_than Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date. Default value: 7d.
@@ -1221,7 +1221,7 @@ router.post('/insert', function(req, res) {
 
 /**
  * @api {get} /agents/stats/distinct Get distinct fields in agents
- * @apiName GetdistinctAgentsagents
+ * @apiName GetdistinctAgents
  * @apiGroup Stats
  *
  * @apiParam {Number} [offset] First element to return in the collection.
