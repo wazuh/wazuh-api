@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 ## [v3.10.0]
 
+### Added
+
+- Added API calls to list GPG13 rules:
+    - `GET/rules/gpg13` ([#389](https://github.com/wazuh/wazuh-api/pull/389)).
+- New filter in request `GET/rules`:
+    - `gpg13`: Filters the rules by gpg13 requirement ([#389](https://github.com/wazuh/wazuh-api/pull/389)).
+    
 ### Fixed
 - Fixed bug inserting duplicated agent without any errors ([#318](https://github.com/wazuh/wazuh-api/issues/318))
 
