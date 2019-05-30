@@ -30,6 +30,7 @@ var router = require('express').Router();
  * @apiParam {String} [gdpr] Filters the rules by gdpr requirement.
  * @apiParam {String} [hipaa] Filters the rules by hipaa requirement.
  * @apiParam {String} [nist-800-53] Filters the rules by nist-800-53 requirement.
+ * @apiParam {String} [gpg13] Filters the rules by gpg13 requirement.
  * @apiDescription Returns all rules.
  *
  * @apiExample {curl} Example usage:
