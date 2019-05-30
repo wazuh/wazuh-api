@@ -6,12 +6,12 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - New API requests:
-    * `GET/rules/hipaa` ([#386](https://github.com/wazuh/wazuh-api/issues/386)).
-    * `GET/rules/nist-800-53` ([#386](https://github.com/wazuh/wazuh-api/issues/386)).
+    * `GET/rules/hipaa` ([#397](https://github.com/wazuh/wazuh-api/pull/397)).
+    * `GET/rules/nist-800-53` ([#397](https://github.com/wazuh/wazuh-api/pull/397)).
     * `GET/rules/gpg13` ([#389](https://github.com/wazuh/wazuh-api/pull/389)).
 - New filters in request `GET/rules`:
-    - `hipaa`: Filters the rules by hipaa requirement ([#386](https://github.com/wazuh/wazuh-api/issues/386)).
-    - `nist-800-53`: Filters the rules by nist-800-53 requirement ([#386](https://github.com/wazuh/wazuh-api/issues/386)).
+    - `hipaa`: Filters the rules by hipaa requirement ([#397](https://github.com/wazuh/wazuh-api/pull/397)).
+    - `nist-800-53`: Filters the rules by nist-800-53 requirement ([#397](https://github.com/wazuh/wazuh-api/pull/397)).
     - `gpg13`: Filters the rules by gpg13 requirement ([#389](https://github.com/wazuh/wazuh-api/pull/389)).
 
 ### Fixed
