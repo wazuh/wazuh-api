@@ -2229,16 +2229,21 @@ describe('Cluster', function () {
 
                 res.body.should.have.properties(['error', 'data']);
                 res.body.data.should.have.properties(['wmodules']);
-                res.body.data.wmodules[0].should.have.properties(['open-scap']);
-                res.body.data.wmodules[1].should.have.properties(['syscollector']);
-                res.body.data.wmodules[2].should.have.properties(['vulnerability-detector']);
-                res.body.data.wmodules[3].should.have.properties(['cis-cat']);
-                res.body.data.wmodules[4].should.have.properties(['sca']);
-                res.body.data.wmodules[5].should.have.properties(['database']);
-                res.body.data.wmodules[6].should.have.properties(['wazuh_download']);
-
 
                 res.body.error.should.equal(0);
+
+                // get the name of the modules
+                var modules = []
+                for (i in res.body.data.wmodules) {
+                    modules.push(Object.keys(res.body.data.wmodules[i])[0])
+                }
+
+                // list of modules which should be present in the request
+                module_list = ['cis-cat', 'database', 'open-scap', 'osquery', 'sca', 'syscollector', 'vulnerability-detector', 'wazuh_download']
+
+                // check modules
+                should((JSON.stringify(module_list.sort()))).be.eql(JSON.stringify(modules.sort()))
+
                 done();
             });
         });
