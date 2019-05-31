@@ -1758,46 +1758,6 @@ describe('Cluster', function () {
 
     });  // DELETE/cluster/master/files
 
-    describe('PUT/cluster/:node_id/restart', function() {
-
-        it('Request (worker)', function(done) {
-            request(common.url)
-            .put("/cluster/worker-1/restart")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.should.be.an.string;
-
-                done();
-            });
-        });
-
-        it('Request (master)', function(done) {
-            request(common.url)
-            .put("/cluster/master/restart")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.should.be.an.string;
-
-                done();
-            });
-        });
-    });  // PUT/cluster/:node_id/restart
-
-
     describe('GET/cluster/master/config/:component/:configuration', function () {
 
 		// agentless
@@ -2231,8 +2191,8 @@ describe('Cluster', function () {
                 res.body.data.should.have.properties(['rootcheck']);
                 res.body.data.rootcheck.should.have.properties(['check_unixaudit', 'check_sys', 'rootkit_trojans',
                 'skip_nfs', 'check_if', 'check_pids', 'check_dev', 'check_ports', 'disabled', 'rootkit_files',
-                // 'frequency', 'scanall', 'check_trojans', 'base_directory', 'check_files', 'system_audit']); // base directory value is empty, this cause an error
-                'frequency', 'scanall', 'check_trojans', 'check_files', 'system_audit']);
+                // 'frequency', 'scanall', 'check_trojans', 'base_directory', 'check_files', 'system_audit']); // base directory value is empty, this cause an error, system_audit is optional
+                'frequency', 'scanall', 'check_trojans', 'check_files']);
 
                 res.body.error.should.equal(0);
                 done();
@@ -2283,7 +2243,45 @@ describe('Cluster', function () {
             });
         });
 
-
     }); // GET/cluster/master/config/:component/:configuration
+
+    describe('PUT/cluster/:node_id/restart', function() {
+
+        it('Request (worker)', function(done) {
+            request(common.url)
+            .put("/cluster/worker-1/restart")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+            });
+        });
+
+        it('Request (master)', function(done) {
+            request(common.url)
+            .put("/cluster/master/restart")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.an.string;
+
+                done();
+            });
+        });
+    });  // PUT/cluster/:node_id/restart
 
 }); // Cluster
