@@ -1734,8 +1734,8 @@ describe('Manager', function() {
                 res.body.data.should.have.properties(['rootcheck']);
                 res.body.data.rootcheck.should.have.properties(['check_unixaudit', 'check_sys', 'rootkit_trojans',
                 'skip_nfs', 'check_if', 'check_pids', 'check_dev', 'check_ports', 'disabled', 'rootkit_files',
-                // 'frequency', 'scanall', 'check_trojans', 'base_directory', 'check_files', 'system_audit']); // base directory value is empty, this cause an error
-                'frequency', 'scanall', 'check_trojans', 'check_files', 'system_audit']);
+                // 'frequency', 'scanall', 'check_trojans', 'base_directory', 'check_files', 'system_audit']); // base directory value is empty, this cause an error, system_audit is optional
+                'frequency', 'scanall', 'check_trojans', 'check_files']);
 
                 res.body.error.should.equal(0);
                 done();
