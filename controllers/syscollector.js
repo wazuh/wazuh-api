@@ -117,7 +117,6 @@ router.get('/:agent_id/packages', function(req, res) {
                    'vendor': 'encoded_uri', 'name': 'alphanumeric_param',
                    'architecture': 'alphanumeric_param', 'format': 'alphanumeric_param', 'version' : 'alphanumeric_param'};
 
-
     if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
         return;
     if (!filter.check(req.query, filters, req, res))

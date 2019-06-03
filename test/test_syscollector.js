@@ -1406,7 +1406,6 @@ describe('Syscollector', function () {
     });  // GET experimental/syscollector/hardware
 
 
-
     describe('GET/experimental/syscollector/processes', function () {
         processes_properties = ['tty', 'rgroup', 'sgroup', 'resident', 'share',
         'session', 'scan_time', 'size', 'scan_id', 'egroup', 'tgid', 'priority',
