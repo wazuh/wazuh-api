@@ -360,7 +360,7 @@ describe('Syscollector', function () {
 
         it('Filter: vendor', function (done) {
             request(common.url)
-                .get("/syscollector/" + agent_id + "/packages?vendor=" + expected_vendor)
+                .get("/syscollector/" + agent_id + "/packages?vendor=" + encodeURI(expected_vendor))
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -707,7 +707,7 @@ describe('Syscollector', function () {
 
         it('Filter: vendor', function (done) {
             request(common.url)
-                .get("/experimental/syscollector/packages?vendor=" + expected_vendor)
+                .get("/experimental/syscollector/packages?vendor=" + encodeURI(expected_vendor))
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)

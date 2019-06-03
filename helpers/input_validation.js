@@ -93,5 +93,9 @@ exports.query_param = function(q) {
 }
 
 exports.format = function(q) {
-    return input_val(q,/^xml|json$/)
+    return input_val(q, /^xml|json$/)
+}
+
+exports.encoded_uri = function(e) {
+    return input_val(e, /^[a-zA-Z0-9_,\-\.\+\s\:@<>]+$/)
 }
