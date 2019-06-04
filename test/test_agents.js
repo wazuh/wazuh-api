@@ -2942,7 +2942,7 @@ describe('Agents', function() {
             request(common.url)
             .post("/agents/restart")
             .auth(common.credentials.user, common.credentials.password)
-            .send({ 'ids': ['001']})
+            .send({ 'ids': ['002']})
             .expect("Content-type",/json/)
             .expect(200)
             .end(function(err,res){
@@ -2953,7 +2953,7 @@ describe('Agents', function() {
                 res.body.error.should.equal(0);
                 res.body.data.should.be.type('object');
                 res.body.data.should.have.properties(['msg', 'affected_agents']);
-                res.body.data.affected_agents[0].should.equal('001');
+                res.body.data.affected_agents[0].should.equal('002');
                 res.body.data.msg.should.equal('All selected agents were restarted');
                 done();
             });
@@ -2965,7 +2965,7 @@ describe('Agents', function() {
             request(common.url)
             .post("/agents/restart")
             .auth(common.credentials.user, common.credentials.password)
-            .send({ 'ids': ['001', '005']})
+            .send({ 'ids': ['002', '005']})
             .expect("Content-type",/json/)
             .expect(200)
             .end(function(err,res){
@@ -2976,7 +2976,7 @@ describe('Agents', function() {
                 res.body.error.should.equal(0);
                 res.body.data.should.be.type('object');
                 res.body.data.should.have.properties(['msg', 'affected_agents', 'failed_ids']);
-                res.body.data.affected_agents[0].should.equal('001');
+                res.body.data.affected_agents[0].should.equal('002');
                 res.body.data.failed_ids[0].id.should.equal('005');
                 res.body.data.failed_ids[0].error.code.should.equal(1701);
                 res.body.data.msg.should.equal('Some agents were not restarted');
