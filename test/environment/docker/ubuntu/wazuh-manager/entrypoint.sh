@@ -2,6 +2,8 @@
 
 if [ "X$3" == "Xmaster" ]; then
     cp /scripts/master-ossec.conf /var/ossec/etc/ossec.conf
+elif [ "X$3" == "Xworker" ]; then
+    cp /scripts/worker-ossec.conf /var/ossec/etc/ossec.conf
 fi
 
 # add cluster configuration

@@ -28,6 +28,7 @@ EXPOSE 22
 
 COPY entrypoint.sh /scripts/entrypoint.sh
 COPY master-ossec.conf /scripts/master-ossec.conf
+COPY worker-ossec.conf /scripts/worker-ossec.conf
 
 # install dependencies
 RUN apt-get update && apt-get install python git gnupg2 gcc make vim libc6-dev curl policycoreutils automake autoconf libtool apt-transport-https lsb-release python-cryptography sqlite3 -y && curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | apt-key add - && echo "deb https://packages.wazuh.com/3.x/apt/ stable main" | tee -a /etc/apt/sources.list.d/wazuh.list

@@ -17,7 +17,7 @@ services:
     entrypoint:
       - /scripts/entrypoint.sh
       - wazuh-master
-      - master-node
+      - master
       - master
   wazuh-worker1:
     build:
