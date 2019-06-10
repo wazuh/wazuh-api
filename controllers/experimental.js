@@ -42,7 +42,7 @@ router.get('/syscollector/packages', function (req, res) {
     var filters = {
         'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
         'search': 'search_param', 'select': 'select_param',
-        'vendor': 'alphanumeric_param', 'name': 'alphanumeric_param',
+        'vendor': 'encoded_uri', 'name': 'alphanumeric_param',
         'architecture': 'alphanumeric_param', 'format': 'alphanumeric_param',
         'version': 'search_param'
     };

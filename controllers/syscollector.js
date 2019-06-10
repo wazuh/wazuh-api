@@ -114,13 +114,11 @@ router.get('/:agent_id/packages', function(req, res) {
     var data_request = {'function': '/syscollector/:agent_id/packages', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
                    'search':'search_param', 'select':'select_param',
-                    'vendor': 'alphanumeric_param', 'name': 'alphanumeric_param',
-                    'architecture': 'alphanumeric_param', 'format': 'alphanumeric_param', 'version' : 'alphanumeric_param'};
-
+                   'vendor': 'encoded_uri', 'name': 'alphanumeric_param',
+                   'architecture': 'alphanumeric_param', 'format': 'alphanumeric_param', 'version' : 'alphanumeric_param'};
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
         return;
-
     if (!filter.check(req.query, filters, req, res))
         return;
 

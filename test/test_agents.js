@@ -2041,174 +2041,6 @@ describe('Agents', function() {
 
     });  // DELETE/agents/groups/:group_id
 
-    describe('PUT/agents/restart', function() {
-
-        it('Request', function(done) {
-            this.timeout(common.timeout);
-
-            request(common.url)
-            .put("/agents/restart")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.should.be.type('string');
-                done();
-            });
-        });
-
-    });  // PUT/agents/restart
-
-    describe('PUT/agents/:agent_id/restart', function() {
-
-        it('Request', function(done) {
-            this.timeout(common.timeout);
-
-            request(common.url)
-            .put("/agents/001/restart")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.should.be.type('object');
-                done();
-            });
-        });
-
-        it('Params: Bad agent id', function(done) {
-            request(common.url)
-            .put("/agents/abc/restart")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(400)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'message']);
-                res.body.error.should.equal(600);
-                done();
-            });
-        });
-
-        it('Request', function(done) {
-            this.timeout(common.timeout);
-
-            request(common.url)
-            .put("/agents/000/restart")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-                res.body.data.should.have.properties(['msg', 'failed_ids', 'affected_agents']);
-
-                res.body.data.failed_ids[0].error.code.should.equal(1703);
-                done();
-            });
-        });
-
-    });  // PUT/agents/:agent_id/restart
-
-    describe('POST/agents/restart', function() {
-
-        it('Request', function(done) {
-            this.timeout(common.timeout);
-
-            request(common.url)
-            .post("/agents/restart")
-            .auth(common.credentials.user, common.credentials.password)
-            .send({ 'ids': ['001']})
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.should.be.type('object');
-                res.body.data.should.have.properties(['msg', 'affected_agents']);
-                res.body.data.affected_agents[0].should.equal('001');
-                res.body.data.msg.should.equal('All selected agents were restarted');
-                done();
-            });
-        });
-
-        it('Params: A good id and a bad one', function(done) {
-            this.timeout(common.timeout);
-
-            request(common.url)
-            .post("/agents/restart")
-            .auth(common.credentials.user, common.credentials.password)
-            .send({ 'ids': ['001', '005']})
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.should.be.type('object');
-                res.body.data.should.have.properties(['msg', 'affected_agents', 'failed_ids']);
-                res.body.data.affected_agents[0].should.equal('001');
-                res.body.data.failed_ids[0].id.should.equal('005');
-                res.body.data.failed_ids[0].error.code.should.equal(1701);
-                res.body.data.msg.should.equal('Some agents were not restarted');
-                done();
-            });
-        });
-
-        it('Params: Bad agent id', function(done) {
-            request(common.url)
-            .post("/agents/restart")
-            .auth(common.credentials.user, common.credentials.password)
-            .send({ 'ids': ['abc']})
-            .expect("Content-type",/json/)
-            .expect(400)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'message']);
-                res.body.error.should.equal(616);
-                done();
-            });
-        });
-
-        it('Request', function(done) {
-            this.timeout(common.timeout);
-
-            request(common.url)
-            .post("/agents/restart")
-            .auth(common.credentials.user, common.credentials.password)
-            .send({ 'ids': ['000']})
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-                res.body.data.should.have.properties(['msg', 'failed_ids', 'affected_agents']);
-
-                res.body.data.failed_ids[0].error.code.should.equal(1703);
-                done();
-            });
-        });
-
-    });  // POST/agents/restart
-
     agent1_id = "";
     agent2_id = "";
     describe('DELETE/agents', function () {
@@ -2479,7 +2311,7 @@ describe('Agents', function() {
 
         it('Request-Agent-Buffer', function(done) {
             request(common.url)
-            .get("/agents/002/config/agent/buffer")
+            .get("/agents/001/config/agent/buffer")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -2970,8 +2802,8 @@ describe('Agents', function() {
                 res.body.data.should.have.properties(['rootcheck']);
                 res.body.data.rootcheck.should.have.properties(['check_unixaudit', 'check_sys', 'rootkit_trojans',
                 'skip_nfs', 'check_if', 'check_pids', 'check_dev', 'check_ports', 'disabled', 'rootkit_files',
-                // 'frequency', 'scanall', 'check_trojans', 'base_directory', 'check_files', 'system_audit']); // base directory value is empty, this cause an error
-                'frequency', 'scanall', 'check_trojans', 'check_files', 'system_audit']);
+                // 'frequency', 'scanall', 'check_trojans', 'base_directory', 'check_files', 'system_audit']); // base directory value is empty, this cause an error, system_audit is optional
+                'frequency', 'scanall', 'check_trojans', 'check_files']);
 
                 res.body.error.should.equal(0);
                 done();
@@ -3020,7 +2852,174 @@ describe('Agents', function() {
             });
         });
 
-
     }); // GET/agents/:agent/config/:component/:configuration
+
+    describe('PUT/agents/restart', function() {
+
+        it('Request', function(done) {
+            this.timeout(common.timeout);
+
+            request(common.url)
+            .put("/agents/restart")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.type('string');
+                done();
+            });
+        });
+
+    });  // PUT/agents/restart
+
+    describe('PUT/agents/:agent_id/restart', function() {
+
+        it('Request', function(done) {
+            this.timeout(common.timeout);
+
+            request(common.url)
+            .put("/agents/001/restart")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.type('object');
+                done();
+            });
+        });
+
+        it('Params: Bad agent id', function(done) {
+            request(common.url)
+            .put("/agents/abc/restart")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(600);
+                done();
+            });
+        });
+
+        it('Request', function(done) {
+            this.timeout(common.timeout);
+
+            request(common.url)
+            .put("/agents/000/restart")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['msg', 'failed_ids', 'affected_agents']);
+
+                res.body.data.failed_ids[0].error.code.should.equal(1703);
+                done();
+            });
+        });
+
+    });  // PUT/agents/:agent_id/restart
+
+    describe('POST/agents/restart', function() {
+
+        it('Request', function(done) {
+            this.timeout(common.timeout);
+
+            request(common.url)
+            .post("/agents/restart")
+            .auth(common.credentials.user, common.credentials.password)
+            .send({ 'ids': ['002']})
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.type('object');
+                res.body.data.should.have.properties(['msg', 'affected_agents']);
+                res.body.data.affected_agents[0].should.equal('002');
+                res.body.data.msg.should.equal('All selected agents were restarted');
+                done();
+            });
+        });
+
+        it('Params: A good id and a bad one', function(done) {
+            this.timeout(common.timeout);
+
+            request(common.url)
+            .post("/agents/restart")
+            .auth(common.credentials.user, common.credentials.password)
+            .send({ 'ids': ['002', '005']})
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.type('object');
+                res.body.data.should.have.properties(['msg', 'affected_agents', 'failed_ids']);
+                res.body.data.affected_agents[0].should.equal('002');
+                res.body.data.failed_ids[0].id.should.equal('005');
+                res.body.data.failed_ids[0].error.code.should.equal(1701);
+                res.body.data.msg.should.equal('Some agents were not restarted');
+                done();
+            });
+        });
+
+        it('Params: Bad agent id', function(done) {
+            request(common.url)
+            .post("/agents/restart")
+            .auth(common.credentials.user, common.credentials.password)
+            .send({ 'ids': ['abc']})
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(616);
+                done();
+            });
+        });
+
+        it('Request', function(done) {
+            this.timeout(common.timeout);
+
+            request(common.url)
+            .post("/agents/restart")
+            .auth(common.credentials.user, common.credentials.password)
+            .send({ 'ids': ['000']})
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['msg', 'failed_ids', 'affected_agents']);
+
+                res.body.data.failed_ids[0].error.code.should.equal(1703);
+                done();
+            });
+        });
+
+    });  // POST/agents/restart
 
 });  // Agents
