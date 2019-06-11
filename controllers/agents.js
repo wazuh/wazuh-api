@@ -241,10 +241,8 @@ router.get('/groups/:group_id/configuration', cache(), function(req, res) {
  *     curl -u foo:bar -X POST -H 'Content-type: application/xml' -d @agent.conf.xml "https://127.0.0.1:55000/agents/groups/dmz/configuration?pretty" -k
  *
  */
-router.post('/groups/:group_id/configuration', cache(), function(req, res) {
+router.post('/groups/:group_id/configuration', function(req, res) {
     logger.debug(req.connection.remoteAddress + " POST /agents/groups/:group_id/configuration");
-
-    req.apicacheGroup = "agents";
 
     var data_request = {'function': 'POST/agents/groups/:group_id/configuration', 'arguments': {}};
     var filters = {'group_id': 'names'};
@@ -279,10 +277,8 @@ router.post('/groups/:group_id/configuration', cache(), function(req, res) {
  *     curl -u foo:bar -X POST -H 'Content-type: application/xml' -d @agent.conf.xml "https://127.0.0.1:55000/agents/groups/dmz/files/agent.conf?pretty" -k
  *
  */
-router.post('/groups/:group_id/files/:file_name', cache(), function(req, res) {
+router.post('/groups/:group_id/files/:file_name', function(req, res) {
     logger.debug(req.connection.remoteAddress + " POST /agents/groups/:group_id/files/:file_name");
-
-    req.apicacheGroup = "agents";
 
     var data_request = {'function': 'POST/agents/groups/:group_id/files/:file_name', 'arguments': {}};
     var filters = {'group_id': 'names', 'file_name': 'names'};
