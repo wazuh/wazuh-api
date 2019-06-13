@@ -465,7 +465,30 @@ describe('Agents', function() {
                     res.body.data.id.should.match(/^\d+$/);
                     res.body.data.key.should.match(/^[a-zA-Z0-9=]+/);
                     agent_id = res.body.data.id;
-                    setTimeout(function(){ 
+                    setTimeout(function(){
+                        done();
+                    }, 30)
+                });
+            });
+
+            it('Insert agent with force parameter (ID and name already presents)', function(done) {
+
+                request(common.url)
+                .post("/agents/insert")
+                .send({'name':'NewAgentPostInsert', 'ip':'any', 'id':'750', 'key':'1abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi64', 'force': '0'})
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type",/json/)
+                .expect(200)
+                .end(function(err,res){
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.data.should.have.properties(['id','key']);
+                    res.body.error.should.equal(0);
+                    res.body.data.id.should.match(/^\d+$/);
+                    res.body.data.key.should.match(/^[a-zA-Z0-9=]+/);
+                    agent_id = res.body.data.id;
+                    setTimeout(function(){
                         done();
                     }, 30)
                 });
