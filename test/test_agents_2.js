@@ -502,7 +502,7 @@ describe('Agents', function() {
 
                     res.body.should.have.properties(['error', 'message']);
 
-                    if (is_auth_d_running()) res.body.error.should.equal(9008);
+                    if (is_auth_d_running()) res.body.error.should.equal(9012);
                     else                     res.body.error.should.equal(1708);
                     res.body.message.should.be.type('string');
                     done();
