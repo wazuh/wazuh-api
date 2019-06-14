@@ -3,7 +3,6 @@
 sleep 5
 /var/ossec/bin/agent-auth -m $1
 sed -i "s:MANAGER_IP:$2:g" /var/ossec/etc/ossec.conf
-   
 
 /var/ossec/bin/ossec-control stop
 /var/ossec/bin/ossec-control start

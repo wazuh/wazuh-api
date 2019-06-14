@@ -33,4 +33,7 @@ sed -i 's/https/http/g' /wazuh-api/test/common.js
 # start Wazuh API
 node /var/ossec/api/app.js &
 
-/usr/bin/supervisord
+# start SSH server
+/usr/sbin/sshd -D &
+
+tail -f /var/ossec/logs/ossec.log
