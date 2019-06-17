@@ -50,10 +50,10 @@ fi
 
 # Binary name for NodeJS
 
-BIN_DIR=$(which nodejs 2> /dev/null)
+BIN_DIR=$(command -v nodejs 2> /dev/null)
 
 if [ "X$BIN_DIR" = "X" ]; then
-    BIN_DIR=$(which node 2> /dev/null)
+    BIN_DIR=$(command -v node 2> /dev/null)
 
     if [ "X$BIN_DIR" = "X" ]; then
         echo "NodeJS binaries not found. Is NodeJS installed?"
