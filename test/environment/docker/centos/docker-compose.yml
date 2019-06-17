@@ -1,0 +1,81 @@
+version: '3.7'
+
+services:
+  wazuh-master:
+    build:
+      context: ./wazuh-manager
+      args:
+        wazuh_branch: "${WAZUH_BRANCH}"
+        wazuh_api_branch: "${WAZUH_API_BRANCH}"
+    image: wazuh-manager-centos:3.10
+    volumes:
+      - ./share:/share
+    entrypoint:
+      - /scripts/entrypoint.sh
+      - ${MASTER_NAME}
+      - master
+      - master
+  wazuh-worker1:
+    build:
+      context: ./wazuh-manager
+      args:
+        wazuh_branch: "${WAZUH_BRANCH}"
+        wazuh_api_branch: "${WAZUH_API_BRANCH}"
+    image: wazuh-manager-centos:3.10
+    volumes:
+      - ./share:/share
+    depends_on:
+      - wazuh-master
+    entrypoint:
+      - /scripts/entrypoint.sh
+      - ${MASTER_NAME}
+      - ${WORKER1_NAME}
+      - worker
+  wazuh-worker2:
+    build:
+      context: ./wazuh-manager
+      args:
+        wazuh_branch: "${WAZUH_BRANCH}"
+        wazuh_api_branch: "${WAZUH_API_BRANCH}"
+    image: wazuh-manager-centos:3.10
+    depends_on:
+      - wazuh-master
+    entrypoint:
+      - /scripts/entrypoint.sh
+      - ${MASTER_NAME}
+      - ${WORKER2_NAME}
+      - worker
+  wazuh-agent1:
+    build:
+      context: ./wazuh-agent
+    image: wazuh-agent-centos:3.10
+    entrypoint: 
+      - /scripts/entrypoint.sh 
+      - wazuh-master
+      - wazuh-master
+    depends_on:
+      - wazuh-master
+  wazuh-agent2:
+    build:
+      context: ./wazuh-agent
+    image: wazuh-agent-centos:3.10
+    entrypoint: 
+      - /scripts/entrypoint.sh
+      - wazuh-master
+      - wazuh-worker1
+    depends_on:
+      - wazuh-master
+      - wazuh-worker1
+      - wazuh-agent1
+  wazuh-agent3:
+    build:
+      context: ./wazuh-agent-outdated
+    image: wazuh-agent-centos:3.5
+    entrypoint:
+      - /scripts/entrypoint.sh
+      - wazuh-master
+      - wazuh-worker2
+    depends_on:
+      - wazuh-master
+      - wazuh-agent1
+      - wazuh-agent2
