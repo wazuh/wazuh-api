@@ -35,8 +35,6 @@ exports.exec = function(cmd, args, stdin, callback) {
         return;
     }
 
-    stdin['ossec_path'] = config.ossec_path;
-
     // log
     stdin['arguments']['wait_for_complete'] = disable_timeout;
     var full_cmd = "CMD - Command: " + cmd + " args:" + args.join(' ') + " stdin:" + JSON.stringify(stdin);
