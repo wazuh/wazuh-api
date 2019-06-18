@@ -6,7 +6,7 @@ ARG wazuh_api_branch
 # enable SSH
 RUN yum install openssl openssh-server -y
 RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-RUN RUN echo 'root:wazuh_admin' | chpasswd
+RUN echo 'root:wazuh_admin' | chpasswd
 RUN ssh-keygen -A && /usr/sbin/sshd -D &
 
 EXPOSE 22
