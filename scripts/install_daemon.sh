@@ -86,7 +86,7 @@ elif command -v service > /dev/null 2>&1; then
     rm $SCRIPTS_PATH/wazuh-api.tmp
 
     enabled=true
-    if [ -r "/etc/redhat-release" ] || [ -r "/etc/SuSE-release" ]; then
+    if command -v chkconfig > /dev/null 2>&1; then
         /sbin/chkconfig --add wazuh-api > /dev/null 2>&1
     elif [ -f "/usr/sbin/update-rc.d" ] || [ -n "$(ps -e | egrep upstart)" ]; then
         update-rc.d wazuh-api defaults
