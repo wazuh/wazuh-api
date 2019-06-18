@@ -136,14 +136,8 @@ if __name__ == "__main__":
         print_json("Wazuh-Python Internal Error: 'JSON input' must have the 'function' key", 1000)
         exit(1)
 
-    if 'ossec_path' not in request:
-        print_json("Wazuh-Python Internal Error: 'JSON input' must have the 'ossec_path' key", 1000)
-        exit(1)
-
     # Main
     try:
-        wazuh = Wazuh(ossec_path=request['ossec_path'])
-
         before = time.time()
 
         if list_f:
