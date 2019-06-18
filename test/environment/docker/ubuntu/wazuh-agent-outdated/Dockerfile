@@ -7,6 +7,4 @@ RUN apt-get update && apt-get install git curl apt-transport-https lsb-release g
 
 RUN apt-get install wazuh-agent=3.5.0-1 -y
 
-ADD entrypoint.sh /scripts/entrypoint.sh
-
-
+COPY entrypoint.sh /scripts/entrypoint.sh
