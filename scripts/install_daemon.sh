@@ -63,7 +63,7 @@ fi
 
 # Install for systemd
 
-if [ -n "$(ps -e | egrep ^\ *1\ .*systemd$)" ]; then
+if command -v systemctl > /dev/null 2>&1 && systemctl > /dev/null 2>&1; then
     echo "Installing for systemd"
 
     sed "s:^ExecStart=.*:ExecStart=$BIN_DIR $APP_PATH:g" $SCRIPTS_PATH/wazuh-api.service > $SCRIPTS_PATH/wazuh-api.service.tmp
@@ -76,7 +76,7 @@ if [ -n "$(ps -e | egrep ^\ *1\ .*systemd$)" ]; then
 
 # Install for SysVinit / Upstart
 
-elif [ -n "$(ps -e | egrep ^\ *1\ .*init$)" ]; then
+elif command -v service > /dev/null 2>&1; then
     echo "Installing for SysVinit"
 
     sed "s:^BIN_DIR=.*:BIN_DIR=\"$BIN_DIR\":g" $SCRIPTS_PATH/wazuh-api > $SCRIPTS_PATH/wazuh-api.tmp
