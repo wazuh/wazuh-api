@@ -178,7 +178,7 @@ change_auth () {
         case $AUTH in
             [yY] ) edit_configuration "basic_auth" "yes"
 
-                   exec_cmd_bash "cd $API_PATH/configuration/auth && $API_PATH/node_modules/htpasswd/bin/htpasswd -bBc -C 12 user $USER $PASS";;
+                   exec_cmd_bash "cd $API_PATH/configuration/auth && $API_PATH/node_modules/htpasswd/bin/htpasswd -bBc -C 10 user $USER $PASS";;
 
             [nN] ) auth="n"
                    print "Disabling authentication (not secure)."
@@ -217,7 +217,7 @@ change_auth () {
             user=$(echo $user | sed 's/["'"'"']/\\&/g' | sed -e 's/|/\\|/g' | sed -e 's/`/\\`/g' | sed -e 's/(/\\(/g' | sed -e 's/)/\\)/g' | sed -e 's/&/\\&/g' | sed -e 's/;/\\;/g')
             user_pass=$(echo $user_pass | sed 's/["'"'"']/\\&/g' | sed -e 's/|/\\|/g' | sed -e 's/`/\\`/g' | sed -e 's/(/\\(/g' | sed -e 's/)/\\)/g' | sed -e 's/&/\\&/g' | sed -e 's/;/\\;/g')
 
-            exec_cmd_bash "cd $API_PATH/configuration/auth && $API_PATH/node_modules/htpasswd/bin/htpasswd -bBc -C 12 user $user $user_pass"
+            exec_cmd_bash "cd $API_PATH/configuration/auth && $API_PATH/node_modules/htpasswd/bin/htpasswd -bBc -C 10 user $user $user_pass"
         elif [ "X${auth,,}" == "Xn" ]; then
             auth="n"
             print "Disabling authentication (not secure)."
