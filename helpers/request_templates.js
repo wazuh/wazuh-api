@@ -23,7 +23,7 @@
     * param_checks -> Input validation checks for arguments in req.params.
     * query_checks -> Input validation checks for arguments in req.query.
  */
-exports.single_field_array_request = function(entrypoint_name, req, res, apicacheGroup, param_checks, query_checks) {
+exports.single_field_array_request = function(entrypoint_name, req, res, apicacheGroup, param_checks, query_checks, single_object=false) {
     if(!param_checks || typeof param_checks !== 'object'){
         param_checks = {};
     }
@@ -37,8 +37,11 @@ exports.single_field_array_request = function(entrypoint_name, req, res, apicach
     req.apicacheGroup = apicacheGroup;
 
     var data_request = {'function': entrypoint_name, 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
-                   'search':'search_param', 'q':'query_param'};
+    if (single_object)
+        var filters = {}
+    else
+        var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 
+                       'search':'search_param', 'q':'query_param'};
 
     if (!filter.check(req.query, Object.assign({}, filters, query_checks), req, res))  // Filter with error
         return;
@@ -82,7 +85,7 @@ exports.single_field_array_request = function(entrypoint_name, req, res, apicach
         GET/agents
         GET/rootcheck/:agent_id
  */
-exports.array_request = function (entrypoint_name, req, res, apicacheGroup, param_checks, query_checks) {
+exports.array_request = function (entrypoint_name, req, res, apicacheGroup, param_checks, query_checks, single_object=false) {
     if(!param_checks || typeof param_checks !== 'object'){
         param_checks = {};
     }
@@ -91,5 +94,12 @@ exports.array_request = function (entrypoint_name, req, res, apicacheGroup, para
         query_checks = {};
     }
     query_checks['select'] = 'select_param';
-    this.single_field_array_request(entrypoint_name, req, res, apicacheGroup, param_checks, query_checks);
+    this.single_field_array_request(entrypoint_name, req, res, apicacheGroup, param_checks, query_checks, single_object);
+}
+
+/*
+    Function used in API requests that return a single object.
+*/
+exports.object_request = function(entrypoint_name, req, res, apiCacheGroup, param_checks, query_checks) {
+    this.array_request(entrypoint_name, req, res, apiCacheGroup, param_checks, query_checks, true);
 }

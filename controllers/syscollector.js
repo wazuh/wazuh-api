@@ -28,23 +28,7 @@ var router = require('express').Router();
  *
  */
 router.get('/:agent_id/os', function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /syscollector/:agent_id/os");
-
-    var data_request = {'function': '/syscollector/:agent_id/os', 'arguments': {}};
-    var filters = {'select':'select_param'};
-
-    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
-        return;
-
-    if (!filter.check(req.query, filters, req, res))
-        return;
-
-    data_request['arguments']['agent_id'] = req.params.agent_id;
-
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    templates.object_request("/syscollector/:agent_id/os", req, res, "syscollector", {'agent_id': 'numbers'}, {});
 })
 
 /**
@@ -62,27 +46,7 @@ router.get('/:agent_id/os', function(req, res) {
  *
  */
 router.get('/:agent_id/hardware', function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /syscollector/:agent_id/hardware");
-
-    var data_request = {'function': '/syscollector/:agent_id/hardware', 'arguments': {}};
-
-    var filters = {'select':'select_param'};
-
-
-    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
-        return;
-
-    if (!filter.check(req.query, filters, req, res))
-        return;
-
-    data_request['arguments']['agent_id'] = req.params.agent_id;
-    data_request['arguments']['filters']  = {};
-
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
-
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    templates.object_request("/syscollector/:agent_id/hardware", req, res, "syscollector", {'agent_id': 'numbers'}, {});
 })
 
 /**
@@ -109,48 +73,11 @@ router.get('/:agent_id/hardware', function(req, res) {
  *
  */
 router.get('/:agent_id/packages', function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /syscollector/:agent_id/packages");
-
-    var data_request = {'function': '/syscollector/:agent_id/packages', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
-                   'search':'search_param', 'select':'select_param',
-                    'vendor': 'alphanumeric_param', 'name': 'alphanumeric_param',
-                    'architecture': 'alphanumeric_param', 'format': 'alphanumeric_param', 'version' : 'alphanumeric_param'};
-
-
-    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
-        return;
-
-    if (!filter.check(req.query, filters, req, res))
-        return;
-
-    data_request['arguments']['agent_id'] = req.params.agent_id;
-    data_request['arguments']['filters']  = {};
-
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('vendor' in req.query)
-        data_request['arguments']['filters']['vendor'] = req.query.vendor;
-    if ('name' in req.query)
-        data_request['arguments']['filters']['name'] = req.query.name;
-    if ('architecture' in req.query)
-        data_request['arguments']['filters']['architecture'] = req.query.architecture;
-    if ('format' in req.query)
-        data_request['arguments']['filters']['format'] = req.query.format;
-    if ('version' in req.query)
-        data_request['arguments']['filters']['version'] = req.query.version;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    var filters = {'vendor': 'alphanumeric_param', 'name': 'alphanumeric_param',
+                   'architecture': 'alphanumeric_param', 'format': 'alphanumeric_param', 
+                   'version' : 'alphanumeric_param'};
+    templates.array_request("/syscollector/:agent_id/packages", req, res, "syscollector", {'agent_id': 'numbers'}, filters);
 })
-
 
 /**
  * @api {get} /syscollector/:agent_id/processes Get processes info
@@ -185,71 +112,14 @@ router.get('/:agent_id/packages', function(req, res) {
  *
  */
 router.get('/:agent_id/processes', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /syscollector/:agent_id/processes");
-
-    var data_request = { 'function': '/syscollector/:agent_id/processes', 'arguments': {} };
-    var filters = {
-        'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
-        'search': 'search_param', 'select': 'select_param',
-        'pid': 'numbers', 'state': 'alphanumeric_param', 'ppid': 'numbers',
-        'egroup': 'alphanumeric_param',
-        'euser': 'alphanumeric_param', 'fgroup': 'alphanumeric_param',
-        'name': 'alphanumeric_param', 'nlwp': 'numbers',
-        'pgrp': 'numbers', 'priority': 'numbers',
-        'rgroup': 'alphanumeric_param', 'ruser': 'alphanumeric_param',
-        'sgroup': 'alphanumeric_param', 'suser': 'alphanumeric_param'
-    };
-
-
-    if (!filter.check(req.params, { 'agent_id': 'numbers' }, req, res))  // Filter with error
-        return;
-
-    if (!filter.check(req.query, filters, req, res))
-        return;
-
-    data_request['arguments']['agent_id'] = req.params.agent_id;
-    data_request['arguments']['filters'] = {};
-
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('state' in req.query)
-        data_request['arguments']['filters']['state'] = req.query.state;
-    if ('pid' in req.query)
-        data_request['arguments']['filters']['pid'] = req.query.pid;
-    if ('ppid' in req.query)
-        data_request['arguments']['filters']['ppid'] = req.query.ppid;
-    if ('egroup' in req.query)
-        data_request['arguments']['filters']['egroup'] = req.query.egroup;
-    if ('euser' in req.query)
-        data_request['arguments']['filters']['euser'] = req.query.euser;
-    if ('fgroup' in req.query)
-        data_request['arguments']['filters']['fgroup'] = req.query.fgroup;
-    if ('nlwp' in req.query)
-        data_request['arguments']['filters']['nlwp'] = req.query.nlwp;
-    if ('name' in req.query)
-        data_request['arguments']['filters']['name'] = req.query.name;
-    if ('pgrp' in req.query)
-        data_request['arguments']['filters']['pgrp'] = req.query.pgrp;
-    if ('priority' in req.query)
-        data_request['arguments']['filters']['priority'] = req.query.priority;
-    if ('rgroup' in req.query)
-        data_request['arguments']['filters']['rgroup'] = req.query.rgroup;
-    if ('ruser' in req.query)
-        data_request['arguments']['filters']['ruser'] = req.query.ruser;
-    if ('sgroup' in req.query)
-        data_request['arguments']['filters']['sgroup'] = req.query.sgroup;
-    if ('suser' in req.query)
-        data_request['arguments']['filters']['suser'] = req.query.suser;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    var filters = {'pid': 'numbers', 'state': 'alphanumeric_param', 'ppid': 'numbers',
+                   'egroup': 'alphanumeric_param', 'euser': 'alphanumeric_param', 
+                   'fgroup': 'alphanumeric_param', 'name': 'alphanumeric_param', 
+                   'nlwp': 'numbers', 'pgrp': 'numbers', 'priority': 'numbers',
+                   'rgroup': 'alphanumeric_param', 'ruser': 'alphanumeric_param',
+                   'sgroup': 'alphanumeric_param', 'suser': 'alphanumeric_param'
+                };
+    templates.array_request("/syscollector/:agent_id/processes", req, res, "syscollector", {'agent_id': 'numbers'}, filters);
 })
 
 
@@ -279,59 +149,13 @@ router.get('/:agent_id/processes', function (req, res) {
  *
  */
 router.get('/:agent_id/ports', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /syscollector/:agent_id/ports");
-
-    var data_request = { 'function': '/syscollector/:agent_id/ports', 'arguments': {} };
-    var filters = {
-        'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
-        'search': 'search_param', 'select': 'select_param',
-        'protocol': 'alphanumeric_param', 'local_ip': 'alphanumeric_param',
-        'local_port': 'numbers', 'remote_ip': 'alphanumeric_param',
-        'tx_queue': 'numbers', 'state': 'alphanumeric_param',
-        'pid': 'numbers', 'process': 'alphanumeric_param'
-    };
-
-    if (!filter.check(req.params, { 'agent_id': 'numbers' }, req, res))  // Filter with error
-        return;
-
-    if (!filter.check(req.query, filters, req, res))
-        return;
-
-    data_request['arguments']['agent_id'] = req.params.agent_id;
-    data_request['arguments']['filters'] = {};
-
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('protocol' in req.query)
-        data_request['arguments']['filters']['protocol'] = req.query.protocol;
-    if ('local_ip' in req.query)
-        data_request['arguments']['filters']['local_ip'] = req.query.local_ip;
-    if ('local_port' in req.query)
-        data_request['arguments']['filters']['local_port'] = req.query.local_port;
-    if ('remote_ip' in req.query)
-        data_request['arguments']['filters']['remote_ip'] = req.query.remote_ip;
-    if ('remote_port' in req.query)
-        data_request['arguments']['filters']['remote_port'] = req.query.remote_port;
-    if ('tx_queue' in req.query)
-        data_request['arguments']['filters']['tx_queue'] = req.query.tx_queue;
-    if ('state' in req.query)
-        data_request['arguments']['filters']['state'] = req.query.state;
-    if ('pid' in req.query)
-        data_request['arguments']['filters']['pid'] = req.query.pid;
-    if ('process' in req.query)
-        data_request['arguments']['filters']['process'] = req.query.process;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    var filters = {'protocol': 'alphanumeric_param', 'local_ip': 'alphanumeric_param',
+                   'local_port': 'numbers', 'remote_ip': 'alphanumeric_param',
+                   'tx_queue': 'numbers', 'state': 'alphanumeric_param',
+                   'pid': 'numbers', 'process': 'alphanumeric_param'
+                  };
+    templates.array_request("/syscollector/:agent_id/ports", req, res, "syscollector", {'agent_id': 'numbers'}, filters);
 })
-
 
 /**
  * @api {get} /syscollector/:agent_id/netaddr Get network address info of an agent
@@ -356,49 +180,12 @@ router.get('/:agent_id/ports', function (req, res) {
  *
  */
 router.get('/:agent_id/netaddr', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /syscollector/:agent_id/netaddr");
-
-    var data_request = { 'function': '/syscollector/:agent_id/netaddr', 'arguments': {} };
-    var filters = {
-        'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
-        'search': 'search_param', 'select': 'select_param', 'iface': 'alphanumeric_param',
-        'proto': 'alphanumeric_param', 'address': 'alphanumeric_param',
-        'broadcast': 'alphanumeric_param', 'netmask': 'alphanumeric_param',
-    };
-
-    if (!filter.check(req.params, { 'agent_id': 'numbers' }, req, res))  // Filter with error
-        return;
-
-    if (!filter.check(req.query, filters, req, res))
-        return;
-
-    data_request['arguments']['agent_id'] = req.params.agent_id;
-    data_request['arguments']['filters'] = {};
-
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('iface' in req.query)
-        data_request['arguments']['filters']['iface'] = req.query.iface;
-    if ('proto' in req.query)
-        data_request['arguments']['filters']['proto'] = req.query.proto;
-    if ('address' in req.query)
-        data_request['arguments']['filters']['address'] = req.query.address;
-    if ('broadcast' in req.query)
-        data_request['arguments']['filters']['broadcast'] = req.query.broadcast;
-    if ('netmask' in req.query)
-        data_request['arguments']['filters']['netmask'] = req.query.netmask;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+   var filters = {'iface': 'alphanumeric_param', 'proto': 'alphanumeric_param', 
+                  'address': 'alphanumeric_param', 'broadcast': 'alphanumeric_param',
+                  'netmask': 'alphanumeric_param'
+                };
+    templates.array_request("/syscollector/:agent_id/netaddr", req, res, "syscollector", {'agent_id': 'numbers'}, filters);
 })
-
 
 /**
  * @api {get} /syscollector/:agent_id/netproto Get network protocol info of an agent
@@ -422,47 +209,11 @@ router.get('/:agent_id/netaddr', function (req, res) {
  *
  */
 router.get('/:agent_id/netproto', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /syscollector/:agent_id/netproto");
-
-    var data_request = { 'function': '/syscollector/:agent_id/netproto', 'arguments': {} };
-    var filters = {
-        'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
-        'search': 'search_param', 'select': 'select_param',
-        'iface': 'alphanumeric_param', 'type': 'alphanumeric_param',
-        'gateway': 'alphanumeric_param', 'dhcp': 'alphanumeric_param',
-    };
-
-    if (!filter.check(req.params, { 'agent_id': 'numbers' }, req, res))  // Filter with error
-        return;
-
-    if (!filter.check(req.query, filters, req, res))
-        return;
-
-    data_request['arguments']['agent_id'] = req.params.agent_id;
-    data_request['arguments']['filters'] = {};
-
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('iface' in req.query)
-        data_request['arguments']['filters']['iface'] = req.query.iface;
-    if ('type' in req.query)
-        data_request['arguments']['filters']['type'] = req.query.type;
-    if ('gateway' in req.query)
-        data_request['arguments']['filters']['gateway'] = req.query.gateway;
-    if ('dhcp' in req.query)
-        data_request['arguments']['filters']['dhcp'] = req.query.dhcp;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    var filters = {'iface': 'alphanumeric_param', 'type': 'alphanumeric_param',
+                   'gateway': 'alphanumeric_param', 'dhcp': 'alphanumeric_param'
+                  };
+    templates.array_request("/syscollector/:agent_id/netproto", req, res, "syscollector", {'agent_id': 'numbers'}, filters);
 })
-
 
 /**
  * @api {get} /syscollector/:agent_id/netiface Get network interface info of an agent
@@ -495,68 +246,13 @@ router.get('/:agent_id/netproto', function (req, res) {
  *
  */
 router.get('/:agent_id/netiface', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /syscollector/:agent_id/netiface");
-
-    var data_request = { 'function': '/syscollector/:agent_id/netiface', 'arguments': {} };
-    var filters = {
-        'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
-        'search': 'search_param', 'select': 'select_param', 'name': 'alphanumeric_param',
-        'adapter': 'alphanumeric_param', 'type': 'alphanumeric_param',
-        'state': 'alphanumeric_param', 'mtu': 'numbers',
-        'tx_packets': 'numbers', 'rx_packets': 'numbers', 'tx_bytes': 'numbers',
-        'rx_bytes': 'numbers', 'tx_errors': 'numbers',
-        'rx_errors': 'numbers', 'tx_dropped': 'numbers',
-        'rx_dropped': 'numbers'
-    };
-
-    if (!filter.check(req.params, { 'agent_id': 'numbers' }, req, res))  // Filter with error
-        return;
-
-    if (!filter.check(req.query, filters, req, res))
-        return;
-
-    data_request['arguments']['agent_id'] = req.params.agent_id;
-    data_request['arguments']['filters'] = {};
-
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('name' in req.query)
-        data_request['arguments']['filters']['name'] = req.query.name;
-    if ('adapter' in req.query)
-        data_request['arguments']['filters']['adapter'] = req.query.adapter;
-    if ('type' in req.query)
-        data_request['arguments']['filters']['type'] = req.query.type;
-    if ('state' in req.query)
-        data_request['arguments']['filters']['state'] = req.query.state;
-    if ('mtu' in req.query)
-        data_request['arguments']['filters']['mtu'] = req.query.mtu;
-    if ('tx_packets' in req.query)
-        data_request['arguments']['filters']['tx_packets'] = req.query.tx_packets;
-    if ('rx_packets' in req.query)
-        data_request['arguments']['filters']['rx_packets'] = req.query.rx_packets;
-    if ('tx_bytes' in req.query)
-        data_request['arguments']['filters']['tx_bytes'] = req.query.tx_bytes;
-    if ('rx_bytes' in req.query)
-        data_request['arguments']['filters']['rx_bytes'] = req.query.rx_bytes;
-    if ('tx_errors' in req.query)
-        data_request['arguments']['filters']['tx_errors'] = req.query.tx_errors;
-    if ('rx_errors' in req.query)
-        data_request['arguments']['filters']['rx_errors'] = req.query.rx_errors;
-    if ('tx_dropped' in req.query)
-        data_request['arguments']['filters']['tx_dropped'] = req.query.tx_dropped;
-    if ('rx_dropped' in req.query)
-        data_request['arguments']['filters']['rx_dropped'] = req.query.rx_dropped;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    var filters = {'name': 'alphanumeric_param', 'adapter': 'alphanumeric_param',
+                   'type': 'alphanumeric_param', 'state': 'alphanumeric_param', 
+                   'mtu': 'numbers', 'tx_packets': 'numbers', 'rx_packets': 'numbers', 
+                   'tx_bytes': 'numbers', 'rx_bytes': 'numbers', 'tx_errors': 'numbers',
+                   'rx_errors': 'numbers', 'tx_dropped': 'numbers', 'rx_dropped': 'numbers'
+                  };
+    templates.array_request("/syscollector/:agent_id/netiface", req, res, "syscollector", {'agent_id': 'numbers'}, filters);
 })
-
 
 module.exports = router;
