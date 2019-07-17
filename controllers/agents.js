@@ -903,7 +903,7 @@ router.delete('/groups', function(req, res) {
  * @apiGroup Delete
  *
  * @apiParam {Number} agent_id Agent ID.
- * @apiParam {String} purge Delete an agent from the key store.
+ * @apiParam {Boolean} purge Delete an agent from the key store. This parameter is only valid if purge is set to no in the manager's ossec.conf.
  *
  * @apiDescription Removes an agent.
  *
@@ -1045,7 +1045,7 @@ router.delete('/groups/:group_id', function(req, res) {
  * @apiGroup Delete
  *
  * @apiParam {String} ids Agent IDs separated by commas.
- * @apiParam {Boolean} purge Delete an agent from the key store.
+ * @apiParam {Boolean} purge Delete an agent from the key store. This parameter is only valid if purge is set to no in the manager's ossec.conf.
  * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
  * @apiParam {String} older_than Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date. Default value: 7d.
  *
