@@ -5,11 +5,16 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- Added API calls to list GPG13 rules:
-    - `GET/rules/gpg13` ([#389](https://github.com/wazuh/wazuh-api/pull/389)).
-- New filter in request `GET/rules`:
+- New API requests:
+    * `GET/rules/hipaa` ([#397](https://github.com/wazuh/wazuh-api/pull/397)).
+    * `GET/rules/nist-800-53` ([#397](https://github.com/wazuh/wazuh-api/pull/397)).
+    * `GET/rules/gpg13` ([#389](https://github.com/wazuh/wazuh-api/pull/389)).
+- New filters in request `GET/rules`:
+    - `hipaa`: Filters the rules by hipaa requirement ([#397](https://github.com/wazuh/wazuh-api/pull/397)).
+    - `nist-800-53`: Filters the rules by nist-800-53 requirement ([#397](https://github.com/wazuh/wazuh-api/pull/397)).
     - `gpg13`: Filters the rules by gpg13 requirement ([#389](https://github.com/wazuh/wazuh-api/pull/389)).
-    
+- Improvements in the security of passwords stored, changed from MD5 to BCrypt encryption, cost 10 as recommended `scripts/configure_api.sh` [#380](https://github.com/wazuh/wazuh-api/pull/380), thanks @hemedga
+
 ### Fixed
 - Fixed bug inserting duplicated agent without any errors ([#318](https://github.com/wazuh/wazuh-api/issues/318))
 

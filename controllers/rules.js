@@ -27,8 +27,10 @@ var router = require('express').Router();
  * @apiParam {String} [path] Filters the rules by path.
  * @apiParam {String} [file] Filters the rules by file name.
  * @apiParam {String} [pci] Filters the rules by pci requirement.
- * @apiParam {String} [gdpr] Filters the rules by gdpr.
- *
+ * @apiParam {String} [gdpr] Filters the rules by gdpr requirement.
+ * @apiParam {String} [hipaa] Filters the rules by hipaa requirement.
+ * @apiParam {String} [nist-800-53] Filters the rules by nist-800-53 requirement.
+ * @apiParam {String} [gpg13] Filters the rules by gpg13 requirement.
  * @apiDescription Returns all rules.
  *
  * @apiExample {curl} Example usage:
@@ -45,7 +47,8 @@ router.get('/', cache(), function(req, res) {
                    'search':'search_param', 'status':'alphanumeric_param',
                    'group':'alphanumeric_param', 'level':'ranges', 'path':'paths',
                    'file':'alphanumeric_param', 'pci':'alphanumeric_param',
-                   'gdpr': 'alphanumeric_param', 'gpg13': 'alphanumeric_param'};
+                   'gdpr': 'alphanumeric_param', 'hipaa': 'alphanumeric_param',
+                   'nist-800-53': 'alphanumeric_param', 'gpg13': 'alphanumeric_param'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -72,6 +75,10 @@ router.get('/', cache(), function(req, res) {
         data_request['arguments']['pci'] = req.query.pci;
     if ('gdpr' in req.query)
         data_request['arguments']['gdpr'] = req.query.gdpr;
+    if ('hipaa' in req.query)
+        data_request['arguments']['hipaa'] = req.query.hipaa;
+    if ('nist-800-53' in req.query)
+        data_request['arguments']['nist_800_53'] = req.query['nist-800-53'];
     if ('gpg13' in req.query)
         data_request['arguments']['gpg13'] = req.query.gpg13;
 
@@ -219,6 +226,86 @@ router.get('/gdpr', cache(), function(req, res) {
     req.apicacheGroup = "rules";
 
     var data_request = {'function': '/rules/gdpr', 'arguments': {}};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
+
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
+
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = Number(req.query.offset);
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = Number(req.query.limit);
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+
+/**
+ * @api {get} /rules/hipaa Get rule hipaa requirements
+ * @apiName GetRulesHipaa
+ * @apiGroup Info
+ *
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ *
+ * @apiDescription Returns the HIPAA requirements of all rules.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rules/hipaa?offset=0&limit=10&pretty"
+ *
+ */
+router.get('/hipaa', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /rules/hipaa");
+
+    req.apicacheGroup = "rules";
+
+    var data_request = {'function': '/rules/hipaa', 'arguments': {}};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
+
+    if (!filter.check(req.query, filters, req, res))  // Filter with error
+        return;
+
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = Number(req.query.offset);
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = Number(req.query.limit);
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+
+/**
+ * @api {get} /rules/nist-800-53 Get rule nist-800-53 requirements
+ * @apiName GetRulesNist-800-53
+ * @apiGroup Info
+ *
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ *
+ * @apiDescription Returns the NIST-800-53 requirements of all rules.
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/rules/nist-800-53?offset=0&limit=10&pretty"
+ *
+ */
+router.get('/nist-800-53', cache(), function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /rules/nist-800-53");
+
+    req.apicacheGroup = "rules";
+
+    var data_request = {'function': '/rules/nist-800-53', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
