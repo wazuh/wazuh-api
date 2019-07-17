@@ -50,10 +50,10 @@ fi
 
 # Binary name for NodeJS
 
-BIN_DIR=$(which nodejs 2> /dev/null)
+BIN_DIR=$(command -v nodejs 2> /dev/null)
 
 if [ "X$BIN_DIR" = "X" ]; then
-    BIN_DIR=$(which node 2> /dev/null)
+    BIN_DIR=$(command -v node 2> /dev/null)
 
     if [ "X$BIN_DIR" = "X" ]; then
         echo "NodeJS binaries not found. Is NodeJS installed?"
@@ -63,7 +63,7 @@ fi
 
 # Install for systemd
 
-if [ -n "$(ps -e | egrep ^\ *1\ .*systemd$)" ]; then
+if command -v systemctl > /dev/null 2>&1 && systemctl > /dev/null 2>&1; then
     echo "Installing for systemd"
 
     sed "s:^ExecStart=.*:ExecStart=$BIN_DIR $APP_PATH:g" $SCRIPTS_PATH/wazuh-api.service > $SCRIPTS_PATH/wazuh-api.service.tmp
@@ -76,7 +76,7 @@ if [ -n "$(ps -e | egrep ^\ *1\ .*systemd$)" ]; then
 
 # Install for SysVinit / Upstart
 
-elif [ -n "$(ps -e | egrep ^\ *1\ .*init$)" ]; then
+elif command -v service > /dev/null 2>&1; then
     echo "Installing for SysVinit"
 
     sed "s:^BIN_DIR=.*:BIN_DIR=\"$BIN_DIR\":g" $SCRIPTS_PATH/wazuh-api > $SCRIPTS_PATH/wazuh-api.tmp
@@ -86,7 +86,7 @@ elif [ -n "$(ps -e | egrep ^\ *1\ .*init$)" ]; then
     rm $SCRIPTS_PATH/wazuh-api.tmp
 
     enabled=true
-    if [ -r "/etc/redhat-release" ] || [ -r "/etc/SuSE-release" ]; then
+    if command -v chkconfig > /dev/null 2>&1; then
         /sbin/chkconfig --add wazuh-api > /dev/null 2>&1
     elif [ -f "/usr/sbin/update-rc.d" ] || [ -n "$(ps -e | egrep upstart)" ]; then
         update-rc.d wazuh-api defaults
