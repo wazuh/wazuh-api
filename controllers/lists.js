@@ -60,6 +60,11 @@ router.get('/', cache(), function(req, res) {
  * @apiName GetListPath
  * @apiGroup Info
  *
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ *
  * @apiDescription Returns the path from all lists.
  *
  * @apiExample {curl} Example usage:
