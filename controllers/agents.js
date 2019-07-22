@@ -161,7 +161,7 @@ router.get('/groups', cache(), function(req, res) {
  *
  */
 router.get('/groups/:group_id', cache(), function(req, res) {
-    param_checks = {'group_id':'names'};
+    param_checks = {'group_id': 'names'};
     query_checks = {'status': 'alphanumeric_param'}
 
     templates.array_request('/agents/groups/:group_id', req, res, "agents", param_checks, query_checks);
