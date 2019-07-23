@@ -430,7 +430,7 @@ router.get('/:node_id/stats/remoted', cache(), function(req, res) {
  */
 router.get('/:node_id/logs', cache(), function(req, res) {
     param_checks = {'node_id': 'names'};
-    query_checks = {'type_log':'names', 'category': 'search_param'};
+    query_checks = {'type_log': 'names', 'category': 'search_param'};
 
     templates.array_request('/cluster/:node_id/logs', req, res, "cluster", param_checks, query_checks);
 })
