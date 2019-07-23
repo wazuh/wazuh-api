@@ -43,6 +43,7 @@ router.get('/node', cache(), function (req, res) {
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields.
  * @apiParam {String} [type] Filters by node type.
+ * @apiParam {String} [q] Query to filter results by. For example q="name=worker-1"
  * 
  * @apiDescription Returns the nodes info
  *
@@ -51,30 +52,10 @@ router.get('/node', cache(), function (req, res) {
  *
  */
 router.get('/nodes', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /cluster/nodes");
+    param_checks = {}
+    query_checks = {'type': 'alphanumeric_param'};
 
-    req.apicacheGroup = "cluster";
-
-    var data_request = { 'function': '/cluster/nodes', 'arguments': {} };
-    var filters = { 'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
-        'search': 'search_param', 'type': 'alphanumeric_param', 'select': 'select_param' }
-
-    if (!filter.check(req.query, filters, req, res))  // Filter with error
-        return;
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('type' in req.query)
-        data_request['arguments']['filter_type'] = req.query.type
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select);
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    templates.array_request('/cluster/nodes', req, res, "cluster", param_checks, query_checks);
 })
 
 
