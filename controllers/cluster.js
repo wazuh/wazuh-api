@@ -420,6 +420,7 @@ router.get('/:node_id/stats/remoted', cache(), function(req, res) {
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String="all","error", "warning", "info"} [type_log] Filters by type of log.
  * @apiParam {String} [category] Filters by category of log.
+ * @apiParam {String} [q] Query to filter results by. For example q="level=info"
  *
  * @apiDescription Returns the three last months of ossec.log.
  *
@@ -428,34 +429,10 @@ router.get('/:node_id/stats/remoted', cache(), function(req, res) {
  *
  */
 router.get('/:node_id/logs', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /cluster/:node_id/logs");
+    param_checks = {'node_id': 'names'};
+    query_checks = {'type_log':'names', 'category': 'search_param'};
 
-    req.apicacheGroup = "cluster";
-
-    var data_request = {'function': '/cluster/:node_id/logs', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
-                   'search':'search_param', 'type_log':'names',
-                   'category': 'search_param', 'node_id':'names'};
-
-    if (!filter.check(req.query, filters, req, res))  // Filter with error
-        return;
-
-    data_request['arguments']['node_id'] = req.params.node_id;
-
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('type_log' in req.query)
-        data_request['arguments']['type_log'] = req.query.type_log;
-    if ('category' in req.query)
-        data_request['arguments']['category'] = req.query.category;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    templates.array_request('/cluster/:node_id/logs', req, res, "cluster", param_checks, query_checks);
 })
 
 /**
