@@ -375,7 +375,7 @@ router.get('/:node_id/stats/weekly', cache(), function(req, res) {
  * @apiDescription Returns a summary of the current analysisd stats on the node.
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/analysisd/stats?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/stats/analysisd?pretty"
  *
  */
 router.get('/:node_id/stats/analysisd', cache(), function(req, res) {
