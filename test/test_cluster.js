@@ -119,44 +119,6 @@ describe('Cluster', function () {
                 });
         });
 
-        it('Filters: type', function (done) {
-            request(common.url)
-                .get("/cluster/nodes?type=master")
-                .auth(common.credentials.user, common.credentials.password)
-                .expect("Content-type", /json/)
-                .expect(200)
-                .end(function (err, res) {
-                    if (err) return done(err);
-
-                    res.body.should.have.properties(['error', 'data']);
-
-                    res.body.error.should.equal(0);
-                    res.body.data.totalItems.should.be.above(0);
-                    res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                    res.body.data.items[0].should.have.properties(['name', 'ip', 'version', 'type']);
-                    res.body.data.items[0].type.should.be.equal('master');
-                    done();
-                });
-        });
-
-        it('Filters: invalid type', function (done) {
-            request(common.url)
-                .get("/cluster/nodes?type=wrong_type")
-                .auth(common.credentials.user, common.credentials.password)
-                .expect("Content-type", /json/)
-                .expect(200)
-                .end(function (err, res) {
-                    if (err) return done(err);
-
-                    res.body.should.have.properties(['error', 'message']);
-
-                    res.body.error.should.equal(1728);
-                    res.body.message.should.be.instanceof(String)
-                    done();
-                });
-        });
-
         it('Select', function (done) {
             request(common.url)
                 .get("/cluster/nodes?select=name,version")
@@ -207,6 +169,86 @@ describe('Cluster', function () {
                     res.body.should.have.properties(['error', 'message']);
 
                     res.body.error.should.equal(1724);
+                    res.body.message.should.be.instanceof(String)
+                    done();
+                });
+        });
+
+        it('Filters: type', function (done) {
+            request(common.url)
+                .get("/cluster/nodes?type=master")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.totalItems.should.be.above(0);
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
+                    res.body.data.items[0].should.have.properties(['name', 'ip', 'version', 'type']);
+                    res.body.data.items[0].type.should.be.equal('master');
+                    done();
+                });
+        });
+
+        it('Filters: query 1', function (done) {
+            request(common.url)
+                .get("/cluster/nodes?q=name~worker&limit=1")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
+                    res.body.data.items[0].should.have.properties(['name', 'ip', 'version', 'type']);
+                    res.body.data.items[0].type.should.be.equal('worker');
+                    res.body.data.totalItems.should.equal(2)
+                    done();
+                });
+        });
+
+        it('Filters: query 2', function (done) {
+            request(common.url)
+            request(common.url)
+            .get("/cluster/nodes?q=name=worker-1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type", /json/)
+            .expect(200)
+            .end(function (err, res) {
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.error.should.equal(0);
+                res.body.data.should.have.properties(['items', 'totalItems']);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
+                res.body.data.items[0].should.have.properties(['name', 'ip', 'version', 'type']);
+                res.body.data.items[0].type.should.be.equal('worker');
+                res.body.data.items[0].name.should.be.equal('worker-1');
+                res.body.data.totalItems.should.equal(1)
+                done();
+            });
+        });
+
+        it('Filters: invalid type', function (done) {
+            request(common.url)
+                .get("/cluster/nodes?type=wrong_type")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'message']);
+
+                    res.body.error.should.equal(1728);
                     res.body.message.should.be.instanceof(String)
                     done();
                 });
