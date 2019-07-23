@@ -377,10 +377,10 @@ router.get('/:rule_id', cache(), function(req, res) {
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
 
-    if (!filter.check(req.params, {'rule_id':'numbers'}, req, res))  // Filter with error
+    if (!filter.check(req.params, {'rule_id': 'numbers'}, req, res))  // Filter with error
         return;
 
-    data_request['arguments']['id'] = req.params.rule_id;
+    data_request['arguments']['filters']['id'] = req.params.rule_id;
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
