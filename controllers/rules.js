@@ -31,7 +31,7 @@ var router = require('express').Router();
  * @apiParam {String} [hipaa] Filters the rules by hipaa requirement.
  * @apiParam {String} [nist-800-53] Filters the rules by nist-800-53 requirement.
  * @apiParam {String} [gpg13] Filters the rules by gpg13 requirement.
- * @apiParam {String} [q] Query to filter results by. For example q="name=worker-1"
+ * @apiParam {String} [q] Query to filter results by. For example q=id=89055
  *
  * @apiDescription Returns all rules.
  *
@@ -380,7 +380,7 @@ router.get('/:rule_id', cache(), function(req, res) {
     if (!filter.check(req.params, {'rule_id': 'numbers'}, req, res))  // Filter with error
         return;
 
-    data_request['arguments']['filters']['id'] = req.params.rule_id;
+    data_request['arguments']['filters'] = {'id': req.params.rule_id};
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
