@@ -1369,9 +1369,9 @@ describe('Agents', function() {
             });
         });
 
-        it('Filters: query (operator =)', function(done) {
+        it('Filters: query 1', function(done) {
             request(common.url)
-            .get("/agents/groups?q=name=default")
+            .get("/agents/groups?q=name~def,name=dmz")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -1380,106 +1380,16 @@ describe('Agents', function() {
 
                 res.body.data.should.be.an.array;
                 res.body.data.should.have.properties(['totalItems','items']);
+                res.body.data.items.should.be.instanceOf(Array);
                 res.body.data.items[0].should.have.properties(['count','mergedSum','configSum','name']);
-                res.body.data.items.should.be.instanceOf(Array);
-                done();
-                res.body.data.totalItems.should.equal(1);
-            });
-        });
-
-        it('Filters: query (operator !=)', function(done) {
-            request(common.url)
-            .get("/agents/groups?q=name!=default")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.data.should.be.an.array;
-                res.body.data.should.have.properties(['totalItems','items']);
-                res.body.data.items[0].should.have.properties(['count','mergedSum','configSum','name']);
-                res.body.data.items.should.be.instanceOf(Array);
-                res.body.data.totalItems.should.equal(4);
-                done();
-            });
-        });
-
-        it('Filters: query (operator <)', function(done) {
-            request(common.url)
-            .get("/agents/groups?q=count<10")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.data.should.be.an.array;
-                res.body.data.should.have.properties(['totalItems','items']);
-                res.body.data.items[0].should.have.properties(['count','mergedSum','configSum','name']);
-                res.body.data.items.should.be.instanceOf(Array);
-                res.body.data.totalItems.should.equal(5);
-                done();
-            });
-        });
-
-        it('Filters: query (operator >)', function(done) {
-            request(common.url)
-            .get("/agents/groups?q=count>10")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.data.should.be.an.array;
-                res.body.data.should.have.properties(['totalItems','items']);
-                res.body.data.items.should.be.instanceOf(Array);
-                res.body.data.totalItems.should.equal(0);
-                
-                done();
-            });
-        });
-
-        it('Filters: query (operator ~)', function(done) {
-            request(common.url)
-            .get("/agents/groups?q=name~def")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.data.should.be.an.array;
-                res.body.data.should.have.properties(['totalItems','items']);
-                res.body.data.items[0].should.have.properties(['count','mergedSum','configSum','name']);
-                res.body.data.items.should.be.instanceOf(Array);
-                res.body.data.totalItems.should.equal(1);
-                done();
-            });
-        });
-
-        it('Filters: query (AND operations)', function(done) {
-            request(common.url)
-            .get("/agents/groups?q=name~tests;count<2")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.data.should.be.an.array;
-                res.body.data.should.have.properties(['totalItems','items']);
-                res.body.data.items[0].should.have.properties(['count','mergedSum','configSum','name']);
-                res.body.data.items.should.be.instanceOf(Array);
                 res.body.data.totalItems.should.equal(2);
                 done();
             });
         });
 
-        it('Filters: query (OR operations)', function(done) {
+        it('Filters: query 2', function(done) {
             request(common.url)
-            .get("/agents/groups?q=name~aaaa,count<5")
+            .get("/agents/groups?q=name=dmz,name=default")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -1488,16 +1398,16 @@ describe('Agents', function() {
 
                 res.body.data.should.be.an.array;
                 res.body.data.should.have.properties(['totalItems','items']);
-                res.body.data.items[0].should.have.properties(['count','mergedSum','configSum','name']);
                 res.body.data.items.should.be.instanceOf(Array);
-                res.body.data.totalItems.should.equal(5);
+                res.body.data.items[0].should.have.properties(['count','mergedSum','configSum','name']);
+                res.body.data.totalItems.should.equal(2);
                 done();
             });
         });
 
-        it('Filters: query (AND and OR operations)', function(done) {
+        it('Filters: query 3', function(done) {
             request(common.url)
-            .get("/agents/groups?q=name~test3;count=1,name~test")
+            .get("/agents/groups?q=name~def;count>0")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -1506,9 +1416,9 @@ describe('Agents', function() {
 
                 res.body.data.should.be.an.array;
                 res.body.data.should.have.properties(['totalItems','items']);
-                res.body.data.items[0].should.have.properties(['count','mergedSum','configSum','name']);
                 res.body.data.items.should.be.instanceOf(Array);
-                res.body.data.totalItems.should.equal(2);
+                res.body.data.items[0].should.have.properties(['count','mergedSum','configSum','name']);
+                res.body.data.totalItems.should.equal(1);
                 done();
             });
         });
