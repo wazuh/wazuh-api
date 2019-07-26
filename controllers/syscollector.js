@@ -557,4 +557,56 @@ router.get('/:agent_id/netiface', function (req, res) {
 })
 
 
+/**
+ * @api {get} /syscollector/:agent_id/hotfixes Get hotfixes info
+ * @apiName GetHotfixes_agent
+ * @apiGroup Hotfixes
+ *
+ * @apiParam {Number} agent_id Agent ID.
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [hotfix] Filters by hotfix.
+ *
+ * @apiDescription Returns the agent's packages info
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/packages?pretty&limit=2&offset=10&sort=-name"
+ *
+ */
+router.get('/:agent_id/hotfixes', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " GET /syscollector/:agent_id/hotfixes");
+
+    var data_request = {'function': '/syscollector/:agent_id/hotfixes', 'arguments': {}};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
+                   'search':'search_param', 'select':'select_param',
+                   'hotfix': 'alphanumeric_param'};
+
+    if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
+        return;
+    if (!filter.check(req.query, filters, req, res))
+        return;
+
+    data_request['arguments']['agent_id'] = req.params.agent_id;
+    data_request['arguments']['filters']  = {};
+
+    if ('select' in req.query)
+        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
+    if ('offset' in req.query)
+        data_request['arguments']['offset'] = Number(req.query.offset);
+    if ('limit' in req.query)
+        data_request['arguments']['limit'] = Number(req.query.limit);
+    if ('sort' in req.query)
+        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+    if ('hotfix' in req.query)
+        data_request['arguments']['filters']['hotfix'] = req.query.hotfix;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+
 module.exports = router;
