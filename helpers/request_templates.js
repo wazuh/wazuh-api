@@ -94,7 +94,7 @@ exports.array_request = function (entrypoint_name, req, res, apicacheGroup, para
         query_checks = {};
     }
     query_checks['select'] = 'select_param';
-    this.single_field_array_request(entrypoint_name, req, res, apicacheGroup, param_checks, query_checks, single_object);
+    this.single_field_array_request(entrypoint_name, req, res, apicacheGroup, param_checks, query_checks, single_object=single_object);
 }
 
 /*
