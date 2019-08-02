@@ -219,7 +219,7 @@ router.get('/stats/weekly', cache(), function(req, res) {
  * @apiDescription Returns the three last months of ossec.log.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/logs?offset=0 &limit=5&pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/manager/logs?offset=0&limit=5&pretty"
  *
  */
 router.get('/logs', cache(), function(req, res) {
