@@ -17,7 +17,6 @@ var router = require('express').Router();
  * @apiName GetPackages
  * @apiGroup Packages
  *
- * @apiParam {Number} agent_id Agent ID.
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
@@ -36,49 +35,10 @@ var router = require('express').Router();
  *
  */
 router.get('/syscollector/packages', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /experimental/syscollector/packages");
-
-    var data_request = { 'function': '/experimental/syscollector/packages', 'arguments': {} };
-    var filters = {
-        'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
-        'search': 'search_param', 'select': 'select_param',
-        'vendor': 'encoded_uri', 'name': 'alphanumeric_param',
-        'architecture': 'alphanumeric_param', 'format': 'alphanumeric_param',
-        'version': 'search_param'
-    };
-
-
-    if (!filter.check(req.params, { 'agent_id': 'numbers' }, req, res))  // Filter with error
-        return;
-
-    if (!filter.check(req.query, filters, req, res))
-        return;
-
-    data_request['arguments']['agent_id'] = req.params.agent_id;
-    data_request['arguments']['filters'] = {};
-
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('vendor' in req.query)
-        data_request['arguments']['filters']['vendor'] = req.query.vendor
-    if ('name' in req.query)
-        data_request['arguments']['filters']['name'] = req.query.name
-    if ('architecture' in req.query)
-        data_request['arguments']['filters']['architecture'] = req.query.architecture
-    if ('format' in req.query)
-        data_request['arguments']['filters']['format'] = req.query.format
-    if ('version' in req.query)
-        data_request['arguments']['filters']['version'] = req.query.version;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    var filters = {'vendor': 'alphanumeric_param', 'name': 'alphanumeric_param',
+                   'architecture': 'alphanumeric_param', 'format': 'alphanumeric_param', 
+                   'version' : 'alphanumeric_param'};
+    templates.array_request("/experimental/syscollector/packages", req, res, "syscollector", {}, filters);
 })
 
 /**
@@ -86,7 +46,6 @@ router.get('/syscollector/packages', function (req, res) {
  * @apiName GetOS
  * @apiGroup OS
  *
- * @apiParam {Number} agent_id Agent ID.
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
@@ -105,50 +64,11 @@ router.get('/syscollector/packages', function (req, res) {
  *
  */
 router.get('/syscollector/os', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /experimental/syscollector/os");
-
-    var data_request = { 'function': '/experimental/syscollector/os', 'arguments': {} };
-
-    var filters = {
-        'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
-        'search': 'search_param', 'select': 'select_param',
-        'os_name': 'alphanumeric_param', 'architecture': 'alphanumeric_param',
-        'os_version': 'alphanumeric_param', 'version': 'alphanumeric_param', 'release': 'alphanumeric_param'
-    };
-
-
-    if (!filter.check(req.params, { 'agent_id': 'numbers' }, req, res))  // Filter with error
-        return;
-
-    if (!filter.check(req.query, filters, req, res))
-        return;
-
-    data_request['arguments']['agent_id'] = req.params.agent_id;
-    data_request['arguments']['filters'] = {};
-
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('architecture' in req.query)
-        data_request['arguments']['filters']['architecture'] = req.query.architecture
-    if ('os_name' in req.query)
-        data_request['arguments']['filters']['os_name'] = req.query.os_name
-    if ('os_version' in req.query)
-        data_request['arguments']['filters']['os_version'] = req.query.os_version
-    if ('version' in req.query)
-        data_request['arguments']['filters']['version'] = req.query.version
-    if ('release' in req.query)
-        data_request['arguments']['filters']['release'] = req.query.release
-
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    var filters = {'os_name': 'alphanumeric_param', 'architecture': 'alphanumeric_param',
+                   'os_version': 'alphanumeric_param', 'version': 'alphanumeric_param', 
+                   'release': 'alphanumeric_param'
+                  };
+    templates.array_request("/experimental/syscollector/os", req, res, "syscollector", {}, filters);
 })
 
 /**
@@ -156,7 +76,6 @@ router.get('/syscollector/os', function (req, res) {
  * @apiName GetHardware
  * @apiGroup Hardware
  *
- * @apiParam {Number} agent_id Agent ID.
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
@@ -176,53 +95,12 @@ router.get('/syscollector/os', function (req, res) {
  *
  */
 router.get('/syscollector/hardware', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /experimental/syscollector/hardware");
-
-    var data_request = { 'function': '/experimental/syscollector/hardware', 'arguments': {} };
-    var filters = {
-        'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
-        'search': 'search_param', 'select': 'select_param',
-        'ram_free': 'numbers', 'ram_total': 'numbers', 'cpu_cores': 'numbers', 'cpu_mhz': 'alphanumeric_param',
-        'cpu_name': 'alphanumeric_param', 'board_serial': 'alphanumeric_param'
-    };
-
-
-    if (!filter.check(req.params, { 'agent_id': 'numbers' }, req, res))  // Filter with error
-        return;
-
-    if (!filter.check(req.query, filters, req, res))
-        return;
-
-    data_request['arguments']['agent_id'] = req.params.agent_id;
-    data_request['arguments']['filters'] = {};
-
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('ram_free' in req.query)
-        data_request['arguments']['filters']['ram_free'] = req.query.ram_free
-    if ('ram_total' in req.query)
-        data_request['arguments']['filters']['ram_total'] = req.query.ram_total
-    if ('cpu_cores' in req.query)
-        data_request['arguments']['filters']['cpu_cores'] = req.query.cpu_cores
-    if ('cpu_mhz' in req.query)
-        data_request['arguments']['filters']['cpu_mhz'] = req.query.cpu_mhz
-    if ('cpu_name' in req.query)
-        data_request['arguments']['filters']['cpu_name'] = req.query.cpu_name
-    if ('board_serial' in req.query)
-        data_request['arguments']['filters']['board_serial'] = req.query.board_serial
-
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    var filters = {'ram_free': 'numbers', 'ram_total': 'numbers', 'cpu_cores': 'numbers', 
+                   'cpu_mhz': 'alphanumeric_param', 'cpu_name': 'alphanumeric_param',
+                   'board_serial': 'alphanumeric_param'
+                };
+    templates.array_request("/experimental/syscollector/hardware", req, res, "syscollector", {}, filters);
 })
-
 
 /**
  * @api {get} /experimental/syscollector/processes Get processes info of all agents
@@ -256,69 +134,15 @@ router.get('/syscollector/hardware', function (req, res) {
  *
  */
 router.get('/syscollector/processes', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /experimental/syscollector/processes");
-
-    var data_request = { 'function': '/experimental/syscollector/processes', 'arguments': {} };
-    var filters = {
-        'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
-        'search': 'search_param', 'select': 'select_param',
-        'pid': 'numbers', 'state': 'alphanumeric_param', 'ppid': 'numbers',
-        'egroup': 'alphanumeric_param',
-        'euser': 'alphanumeric_param', 'fgroup': 'alphanumeric_param',
-        'name': 'alphanumeric_param', 'nlwp': 'numbers',
-        'pgrp': 'numbers', 'priority': 'numbers',
-        'rgroup': 'alphanumeric_param', 'ruser': 'alphanumeric_param',
-        'sgroup': 'alphanumeric_param', 'suser': 'alphanumeric_param'
-    };
-
-    if (!filter.check(req.query, filters, req, res))
-        return;
-
-    data_request['arguments']['filters'] = {};
-
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('state' in req.query)
-        data_request['arguments']['filters']['state'] = req.query.state;
-    if ('pid' in req.query)
-        data_request['arguments']['filters']['pid'] = req.query.pid;
-    if ('ppid' in req.query)
-        data_request['arguments']['filters']['ppid'] = req.query.ppid;
-    if ('egroup' in req.query)
-        data_request['arguments']['filters']['egroup'] = req.query.egroup;
-    if ('euser' in req.query)
-        data_request['arguments']['filters']['euser'] = req.query.euser;
-    if ('fgroup' in req.query)
-        data_request['arguments']['filters']['fgroup'] = req.query.fgroup;
-    if ('nlwp' in req.query)
-        data_request['arguments']['filters']['nlwp'] = req.query.nlwp;
-    if ('name' in req.query)
-        data_request['arguments']['filters']['name'] = req.query.name;
-    if ('pgrp' in req.query)
-        data_request['arguments']['filters']['pgrp'] = req.query.pgrp;
-    if ('priority' in req.query)
-        data_request['arguments']['filters']['priority'] = req.query.priority;
-    if ('rgroup' in req.query)
-        data_request['arguments']['filters']['rgroup'] = req.query.rgroup;
-    if ('ruser' in req.query)
-        data_request['arguments']['filters']['ruser'] = req.query.ruser;
-    if ('sgroup' in req.query)
-        data_request['arguments']['filters']['sgroup'] = req.query.sgroup;
-    if ('suser' in req.query)
-        data_request['arguments']['filters']['suser'] = req.query.suser;
-
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    var filters = {'pid': 'numbers', 'state': 'alphanumeric_param', 'ppid': 'numbers',
+                   'egroup': 'alphanumeric_param', 'euser': 'alphanumeric_param', 
+                   'fgroup': 'alphanumeric_param', 'name': 'alphanumeric_param', 
+                   'nlwp': 'numbers', 'pgrp': 'numbers', 'priority': 'numbers',
+                   'rgroup': 'alphanumeric_param', 'ruser': 'alphanumeric_param',
+                   'sgroup': 'alphanumeric_param', 'suser': 'alphanumeric_param'
+                };
+    templates.array_request("/experimental/syscollector/processes", req, res, "syscollector", {}, filters);
 })
-
 
 /**
  * @api {get} /experimental/syscollector/ports Get ports info of all agents
@@ -346,54 +170,13 @@ router.get('/syscollector/processes', function (req, res) {
  *
  */
 router.get('/syscollector/ports', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /experimental/syscollector/ports");
-
-    var data_request = { 'function': '/experimental/syscollector/ports', 'arguments': {} };
-    var filters = {
-        'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
-        'search': 'search_param', 'select': 'select_param',
-        'protocol': 'alphanumeric_param', 'local_ip': 'alphanumeric_param',
-        'local_port': 'numbers', 'remote_ip': 'alphanumeric_param',
-        'tx_queue': 'numbers', 'state': 'alphanumeric_param',
-        'pid': 'numbers', 'process': 'alphanumeric_param'
-    };
-
-    if (!filter.check(req.query, filters, req, res))
-        return;
-    data_request['arguments']['filters'] = {};
-
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('protocol' in req.query)
-        data_request['arguments']['filters']['protocol'] = req.query.protocol;
-    if ('local_ip' in req.query)
-        data_request['arguments']['filters']['local_ip'] = req.query.local_ip;
-    if ('local_port' in req.query)
-        data_request['arguments']['filters']['local_port'] = req.query.local_port;
-    if ('remote_ip' in req.query)
-        data_request['arguments']['filters']['remote_ip'] = req.query.remote_ip;
-    if ('remote_port' in req.query)
-        data_request['arguments']['filters']['remote_port'] = req.query.remote_port;
-    if ('tx_queue' in req.query)
-        data_request['arguments']['filters']['tx_queue'] = req.query.tx_queue;
-    if ('state' in req.query)
-        data_request['arguments']['filters']['state'] = req.query.state;
-    if ('pid' in req.query)
-        data_request['arguments']['filters']['pid'] = req.query.pid;
-    if ('process' in req.query)
-        data_request['arguments']['filters']['process'] = req.query.process;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    var filters = {'protocol': 'alphanumeric_param', 'local_ip': 'alphanumeric_param',
+                   'local_port': 'numbers', 'remote_ip': 'alphanumeric_param',
+                   'tx_queue': 'numbers', 'state': 'alphanumeric_param',
+                   'pid': 'numbers', 'process': 'alphanumeric_param'
+                };
+    templates.array_request("/experimental/syscollector/ports", req, res, "syscollector", {}, filters);
 })
-
 
 /**
  * @api {get} /experimental/syscollector/netaddr Get network address info of all agents
@@ -417,44 +200,11 @@ router.get('/syscollector/ports', function (req, res) {
  *
  */
 router.get('/syscollector/netaddr', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /experimental/syscollector/netaddr");
-
-    var data_request = { 'function': '/experimental/syscollector/netaddr', 'arguments': {} };
-    var filters = {
-        'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
-        'search': 'search_param', 'select': 'select_param', 'iface': 'alphanumeric_param',
-        'proto': 'alphanumeric_param', 'address': 'alphanumeric_param',
-        'broadcast': 'alphanumeric_param', 'netmask': 'alphanumeric_param',
-    };
-
-    if (!filter.check(req.query, filters, req, res))
-        return;
-    data_request['arguments']['filters'] = {};
-
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('iface' in req.query)
-        data_request['arguments']['filters']['iface'] = req.query.iface;
-    if ('proto' in req.query)
-        data_request['arguments']['filters']['proto'] = req.query.proto;
-    if ('address' in req.query)
-        data_request['arguments']['filters']['address'] = req.query.address;
-    if ('broadcast' in req.query)
-        data_request['arguments']['filters']['broadcast'] = req.query.broadcast;
-    if ('netmask' in req.query)
-        data_request['arguments']['filters']['netmask'] = req.query.netmask;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    var filters = {'iface': 'alphanumeric_param', 'proto': 'alphanumeric_param', 'address': 'alphanumeric_param',
+                   'broadcast': 'alphanumeric_param', 'netmask': 'alphanumeric_param',
+                };
+    templates.array_request("/experimental/syscollector/netaddr", req, res, "syscollector", {}, filters);
 })
-
 
 /**
  * @api {get} /experimental/syscollector/netproto Get network protocol info of all agents
@@ -478,42 +228,11 @@ router.get('/syscollector/netaddr', function (req, res) {
  *
  */
 router.get('/syscollector/netproto', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /experimental/syscollector/netproto");
-
-    var data_request = { 'function': '/experimental/syscollector/netproto', 'arguments': {} };
-    var filters = {
-        'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
-        'search': 'search_param', 'select': 'select_param',
-        'iface': 'alphanumeric_param', 'type': 'alphanumeric_param',
-        'gateway': 'alphanumeric_param', 'dhcp': 'alphanumeric_param'
-    };
-
-    if (!filter.check(req.query, filters, req, res))
-        return;
-    data_request['arguments']['filters'] = {};
-
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('iface' in req.query)
-        data_request['arguments']['filters']['iface'] = req.query.iface;
-    if ('type' in req.query)
-        data_request['arguments']['filters']['type'] = req.query.type;
-    if ('gateway' in req.query)
-        data_request['arguments']['filters']['gateway'] = req.query.gateway;
-    if ('dhcp' in req.query)
-        data_request['arguments']['filters']['dhcp'] = req.query.dhcp;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    var filters = {'iface': 'alphanumeric_param', 'type': 'alphanumeric_param',
+                   'gateway': 'alphanumeric_param', 'dhcp': 'alphanumeric_param'
+                };
+    templates.array_request("/experimental/syscollector/netproto", req, res, "syscollector", {}, filters);
 })
-
 
 /**
  * @api {get} /experimental/syscollector/netiface Get network interface info of all agents
@@ -549,61 +268,14 @@ router.get('/syscollector/netiface', function (req, res) {
     logger.debug(req.connection.remoteAddress + " GET /experimental/syscollector/netiface");
 
     var data_request = { 'function': '/experimental/syscollector/netiface', 'arguments': {} };
-    var filters = {
-        'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
-        'search': 'search_param', 'select': 'select_param', 'name': 'alphanumeric_param',
-        'adapter': 'alphanumeric_param', 'type': 'alphanumeric_param',
-        'state': 'alphanumeric_param', 'mtu': 'numbers',
-         'tx_packets': 'numbers', 'rx_packets': 'numbers', 'tx_bytes': 'numbers',
-        'rx_bytes': 'numbers', 'tx_errors': 'numbers',
-        'rx_errors': 'numbers', 'tx_dropped': 'numbers',
-        'rx_dropped': 'numbers'
-    };
-
-    if (!filter.check(req.query, filters, req, res))
-        return;
-    data_request['arguments']['filters'] = {};
-
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('name' in req.query)
-        data_request['arguments']['filters']['name'] = req.query.name;
-    if ('adapter' in req.query)
-        data_request['arguments']['filters']['adapter'] = req.query.adapter;
-    if ('type' in req.query)
-        data_request['arguments']['filters']['type'] = req.query.type;
-    if ('state' in req.query)
-        data_request['arguments']['filters']['state'] = req.query.state;
-    if ('mtu' in req.query)
-        data_request['arguments']['filters']['mtu'] = req.query.mtu;
-    if ('tx_packets' in req.query)
-        data_request['arguments']['filters']['tx_packets'] = req.query.tx_packets;
-    if ('rx_packets' in req.query)
-        data_request['arguments']['filters']['rx_packets'] = req.query.rx_packets;
-    if ('tx_bytes' in req.query)
-        data_request['arguments']['filters']['tx_bytes'] = req.query.tx_bytes;
-    if ('rx_bytes' in req.query)
-        data_request['arguments']['filters']['rx_bytes'] = req.query.rx_bytes;
-    if ('tx_errors' in req.query)
-        data_request['arguments']['filters']['tx_errors'] = req.query.tx_errors;
-    if ('rx_errors' in req.query)
-        data_request['arguments']['filters']['rx_errors'] = req.query.rx_errors;
-    if ('tx_dropped' in req.query)
-        data_request['arguments']['filters']['tx_dropped'] = req.query.tx_dropped;
-    if ('rx_dropped' in req.query)
-        data_request['arguments']['filters']['rx_dropped'] = req.query.rx_dropped;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    var filters = {'name': 'alphanumeric_param', 'adapter': 'alphanumeric_param', 
+                   'type': 'alphanumeric_param', 'state': 'alphanumeric_param', 
+                   'mtu': 'numbers', 'tx_packets': 'numbers', 'rx_packets': 'numbers', 
+                   'tx_bytes': 'numbers', 'rx_bytes': 'numbers', 'tx_errors': 'numbers',
+                   'rx_errors': 'numbers', 'tx_dropped': 'numbers', 'rx_dropped': 'numbers'
+                };
+    templates.array_request("/experimental/syscollector/netiface", req, res, "syscollector", {}, filters);
 })
-
 
 /**
  * @api {get} /experimental/ciscat/results Get CIS-CAT results
@@ -632,56 +304,12 @@ router.get('/syscollector/netiface', function (req, res) {
  *
  */
 router.get('/ciscat/results', function (req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /experimental/ciscat/results");
-
-    var data_request = { 'function': '/experimental/ciscat/results', 'arguments': {} };
-    var filters = {
-        'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param',
-        'search': 'search_param', 'select': 'select_param',
-        'benchmark': 'alphanumeric_param', 'profile': 'alphanumeric_param', 'pass': 'alphanumeric_param',
-        'fail': 'alphanumeric_param',
-        'error': 'numbers', 'notchecked': 'numbers',
-        'unknown': 'numbers', 'score': 'numbers'
-    };
-
-
-    if (!filter.check(req.params, { 'agent_id': 'numbers' }, req, res))  // Filter with error
-        return;
-
-    if (!filter.check(req.query, filters, req, res))
-        return;
-
-    data_request['arguments']['agent_id'] = req.params.agent_id;
-    data_request['arguments']['filters'] = {};
-
-    if ('select' in req.query)
-        data_request['arguments']['select'] = filter.select_param_to_json(req.query.select)
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('benchmark' in req.query)
-        data_request['arguments']['filters']['benchmark'] = req.query.benchmark;
-    if ('profile' in req.query)
-        data_request['arguments']['filters']['profile'] = req.query.profile;
-    if ('pass' in req.query)
-        data_request['arguments']['filters']['pass'] = req.query.pass;
-    if ('fail' in req.query)
-        data_request['arguments']['filters']['fail'] = req.query.fail;
-    if ('error' in req.query)
-        data_request['arguments']['filters']['error'] = req.query.error;
-    if ('notchecked' in req.query)
-        data_request['arguments']['filters']['notchecked'] = req.query.notchecked;
-    if ('unknown' in req.query)
-        data_request['arguments']['filters']['unknown'] = req.query.unknown;
-    if ('score' in req.query)
-        data_request['arguments']['filters']['score'] = req.query.score;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    var filters = {'benchmark': 'alphanumeric_param', 'profile': 'alphanumeric_param', 
+                   'pass': 'alphanumeric_param', 'fail': 'alphanumeric_param',
+                   'error': 'numbers', 'notchecked': 'numbers',
+                   'unknown': 'numbers', 'score': 'numbers'
+                };
+    templates.array_request("/experimental/ciscat/results", req, res, "ciscat", {}, filters);
 })
 
 /**

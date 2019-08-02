@@ -127,6 +127,7 @@ router.get('/no_group', cache(), function (req, res) {
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [hash] Select algorithm to generate the sum.
+ * @apiParam {String} [q] Query to filter result. For example q="name=dmz".
  *
  * @apiDescription Returns the list of existing agent groups.
  *
@@ -135,29 +136,8 @@ router.get('/no_group', cache(), function (req, res) {
  *
  */
 router.get('/groups', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /agents/groups");
-
-    req.apicacheGroup = "agents";
-
-    var data_request = {'function': '/agents/groups', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
-                   'search':'search_param', 'hash':'names'};
-
-    if (!filter.check(req.query, filters, req, res))  // Filter with error
-        return;
-
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('hash' in req.query)
-        data_request['arguments']['hash_algorithm'] = req.query.hash
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    query_checks = {'hash': 'names'}
+    templates.array_request('/agents/groups', req, res, "agents", {}, query_checks);
 })
 
 /**
@@ -181,7 +161,7 @@ router.get('/groups', cache(), function(req, res) {
  *
  */
 router.get('/groups/:group_id', cache(), function(req, res) {
-    param_checks = {'group_id':'names'};
+    param_checks = {'group_id': 'names'};
     query_checks = {'status': 'alphanumeric_param'}
 
     templates.array_request('/agents/groups/:group_id', req, res, "agents", param_checks, query_checks);

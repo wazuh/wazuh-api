@@ -1369,6 +1369,60 @@ describe('Agents', function() {
             });
         });
 
+        it('Filters: query 1', function(done) {
+            request(common.url)
+            .get("/agents/groups?q=name~def,name=dmz")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.data.should.be.an.array;
+                res.body.data.should.have.properties(['totalItems','items']);
+                res.body.data.items.should.be.instanceOf(Array);
+                res.body.data.items[0].should.have.properties(['count','mergedSum','configSum','name']);
+                res.body.data.totalItems.should.equal(2);
+                done();
+            });
+        });
+
+        it('Filters: query 2', function(done) {
+            request(common.url)
+            .get("/agents/groups?q=name=dmz,name=default")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.data.should.be.an.array;
+                res.body.data.should.have.properties(['totalItems','items']);
+                res.body.data.items.should.be.instanceOf(Array);
+                res.body.data.items[0].should.have.properties(['count','mergedSum','configSum','name']);
+                res.body.data.totalItems.should.equal(2);
+                done();
+            });
+        });
+
+        it('Filters: query 3', function(done) {
+            request(common.url)
+            .get("/agents/groups?q=name~def;count>0")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.data.should.be.an.array;
+                res.body.data.should.have.properties(['totalItems','items']);
+                res.body.data.items.should.be.instanceOf(Array);
+                res.body.data.items[0].should.have.properties(['count','mergedSum','configSum','name']);
+                res.body.data.totalItems.should.equal(1);
+                done();
+            });
+        });
+
     });  // GET/agents/groups
 
     describe('GET/agents/groups/:group_id', function() {

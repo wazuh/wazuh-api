@@ -119,44 +119,6 @@ describe('Cluster', function () {
                 });
         });
 
-        it('Filters: type', function (done) {
-            request(common.url)
-                .get("/cluster/nodes?type=master")
-                .auth(common.credentials.user, common.credentials.password)
-                .expect("Content-type", /json/)
-                .expect(200)
-                .end(function (err, res) {
-                    if (err) return done(err);
-
-                    res.body.should.have.properties(['error', 'data']);
-
-                    res.body.error.should.equal(0);
-                    res.body.data.totalItems.should.be.above(0);
-                    res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                    res.body.data.items[0].should.have.properties(['name', 'ip', 'version', 'type']);
-                    res.body.data.items[0].type.should.be.equal('master');
-                    done();
-                });
-        });
-
-        it('Filters: invalid type', function (done) {
-            request(common.url)
-                .get("/cluster/nodes?type=wrong_type")
-                .auth(common.credentials.user, common.credentials.password)
-                .expect("Content-type", /json/)
-                .expect(200)
-                .end(function (err, res) {
-                    if (err) return done(err);
-
-                    res.body.should.have.properties(['error', 'message']);
-
-                    res.body.error.should.equal(1728);
-                    res.body.message.should.be.instanceof(String)
-                    done();
-                });
-        });
-
         it('Select', function (done) {
             request(common.url)
                 .get("/cluster/nodes?select=name,version")
@@ -207,6 +169,86 @@ describe('Cluster', function () {
                     res.body.should.have.properties(['error', 'message']);
 
                     res.body.error.should.equal(1724);
+                    res.body.message.should.be.instanceof(String)
+                    done();
+                });
+        });
+
+        it('Filters: type', function (done) {
+            request(common.url)
+                .get("/cluster/nodes?type=master")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+
+                    res.body.error.should.equal(0);
+                    res.body.data.totalItems.should.be.above(0);
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
+                    res.body.data.items[0].should.have.properties(['name', 'ip', 'version', 'type']);
+                    res.body.data.items[0].type.should.be.equal('master');
+                    done();
+                });
+        });
+
+        it('Filters: query 1', function (done) {
+            request(common.url)
+                .get("/cluster/nodes?q=name~worker&limit=1")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
+                    res.body.data.items[0].should.have.properties(['name', 'ip', 'version', 'type']);
+                    res.body.data.items[0].type.should.be.equal('worker');
+                    res.body.data.totalItems.should.equal(2)
+                    done();
+                });
+        });
+
+        it('Filters: query 2', function (done) {
+            request(common.url)
+            request(common.url)
+            .get("/cluster/nodes?q=name=worker-1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type", /json/)
+            .expect(200)
+            .end(function (err, res) {
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.error.should.equal(0);
+                res.body.data.should.have.properties(['items', 'totalItems']);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
+                res.body.data.items[0].should.have.properties(['name', 'ip', 'version', 'type']);
+                res.body.data.items[0].type.should.be.equal('worker');
+                res.body.data.items[0].name.should.be.equal('worker-1');
+                res.body.data.totalItems.should.equal(1)
+                done();
+            });
+        });
+
+        it('Filters: invalid type', function (done) {
+            request(common.url)
+                .get("/cluster/nodes?type=wrong_type")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'message']);
+
+                    res.body.error.should.equal(1728);
                     res.body.message.should.be.instanceof(String)
                     done();
                 });
@@ -316,6 +358,256 @@ describe('Cluster', function () {
 
 
     });  // GET/cluster/stats
+
+
+    describe('GET/cluster/:node_id/logs', function () {
+
+        it('Request (master)', function (done) {
+            request(common.url)
+            .get("/cluster/master/logs")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.items.should.be.instanceof(Array);
+                    res.body.data.totalItems.should.be.instanceof(Number);
+                    res.body.data.items[0].should.have.properties(['timestamp', 'tag', 'level', 'description']);
+
+                    done();
+                });
+        });
+
+        it('Request (worker-1)', function (done) {
+            request(common.url)
+            .get("/cluster/worker-1/logs")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.items.should.be.instanceof(Array);
+                    res.body.data.totalItems.should.be.instanceof(Number);
+                    res.body.data.items[0].should.have.properties(['timestamp', 'tag', 'level', 'description']);
+
+                    done();
+                });
+        });
+
+        it('Request (worker-2)', function (done) {
+            request(common.url)
+            .get("/cluster/worker-2/logs")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.items.should.be.instanceof(Array);
+                    res.body.data.totalItems.should.be.instanceof(Number);
+                    res.body.data.items[0].should.have.properties(['timestamp', 'tag', 'level', 'description']);
+
+                    done();
+                });
+        });
+
+        it('Pagination', function (done) {
+            request(common.url)
+            .get("/cluster/master/logs?offset=1&limit=1")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.items.should.be.instanceof(Array);
+                    res.body.data.totalItems.should.be.instanceof(Number);
+                    res.body.data.items[0].should.have.properties(['timestamp', 'tag', 'level', 'description']);
+
+                    done();
+                });
+        });
+
+        it('Sort', function (done) {
+            request(common.url)
+            .get("/cluster/master/logs?sort=timestamp")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.items.should.be.instanceof(Array);
+                    res.body.data.totalItems.should.be.instanceof(Number);
+                    res.body.data.items[0].should.have.properties(['timestamp', 'tag', 'level', 'description']);
+
+                    done();
+                });
+        });
+
+        it('Search', function (done) {
+            request(common.url)
+            .get("/cluster/master/logs?search=analysisd&limit=1")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.items.should.be.instanceof(Array);
+                    res.body.data.totalItems.should.be.instanceof(Number);
+                    res.body.data.items[0].should.have.properties(['timestamp', 'tag', 'level', 'description']);
+                    res.body.data.items[0].tag.should.be.equal('ossec-analysisd');
+
+                    done();
+                });
+        });
+
+        it('Filters: type_log', function (done) {
+            request(common.url)
+            .get("/cluster/master/logs?type_log=info&limit=1")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.items.should.be.instanceof(Array);
+                    res.body.data.totalItems.should.be.instanceof(Number);
+                    res.body.data.items[0].should.have.properties(['timestamp', 'tag', 'level', 'description']);
+                    res.body.data.items[0].level.should.be.equal('info');
+
+                    done();
+                });
+        });
+
+        it('Filters: category', function (done) {
+            request(common.url)
+            .get("/cluster/master/logs?category=ossec-execd&limit=1")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.items.should.be.instanceof(Array);
+                    res.body.data.totalItems.should.be.instanceof(Number);
+                    res.body.data.items[0].should.have.properties(['timestamp', 'tag', 'level', 'description']);
+                    res.body.data.items[0].tag.should.be.equal('ossec-execd');
+
+                    done();
+                });
+        });
+
+        it('Filters: query 1', function (done) {
+            request(common.url)
+            .get("/cluster/master/logs?q=tag=ossec-analysisd;level=info&limit=1")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.items.should.be.instanceof(Array);
+                    res.body.data.totalItems.should.be.instanceof(Number);
+                    res.body.data.items[0].should.have.properties(['timestamp', 'tag', 'level', 'description']);
+                    res.body.data.items[0].tag.should.be.equal('ossec-analysisd');
+                    res.body.data.items[0].level.should.be.equal('info');
+
+                    done();
+                });
+        });
+
+        it('Filters: query 2', function (done) {
+            request(common.url)
+            .get("/cluster/master/logs?q=tag=ossec-analysisd;level=info&limit=1")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.items.should.be.instanceof(Array);
+                    res.body.data.totalItems.should.be.instanceof(Number);
+                    res.body.data.items[0].should.have.properties(['timestamp', 'tag', 'level', 'description']);
+                    res.body.data.items[0].tag.should.be.equal('ossec-analysisd');
+                    res.body.data.items[0].level.should.be.equal('info');
+
+                    done();
+                });
+        });
+
+        it('Filters: query 3', function (done) {
+            request(common.url)
+            .get("/cluster/master/logs?q=tag~ossec;level=info&limit=1")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.items.should.be.instanceof(Array);
+                    res.body.data.totalItems.should.be.instanceof(Number);
+                    res.body.data.items[0].should.have.properties(['timestamp', 'tag', 'level', 'description']);
+                    res.body.data.items[0].tag.should.startWith('ossec');
+                    res.body.data.items[0].level.should.be.equal('info');
+
+                    done();
+                });
+        });
+
+        it('Filters: wrong query', function (done) {
+            request(common.url)
+            .get("/cluster/master/logs?q=ossec")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(400)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'message']);
+                    res.body.error.should.equal(622);
+
+                    done();
+                });
+        });
+
+    });  // GET/cluster/:node_id/logs
 
 
     describe('GET/cluster/nodes/:node_name', function () {
