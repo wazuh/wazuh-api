@@ -13,6 +13,7 @@ var should = require('should');
 var assert = require('assert');
 var request = require('supertest');
 var common = require('./common.js');
+var sqlite3 = require('sqlite3').verbose();
 
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -4332,7 +4333,220 @@ describe('Syscollector', function () {
                 });
         });
 
-
     });  // GET/syscollector/:agent_id/netiface
+
+    describe('GET/syscollector/:agent_id/hotfixes', function () {
+
+        agent_hotfixes = '001'
+        db = new sqlite3.Database(common.ossec_path + '/queue/db/' + agent_hotfixes + '.db')
+        hotfixes_fields = ['scan', 'hotfix']
+        scan_fields = ['id', 'time']
+
+        // insert test data into DB
+        before(function () {
+            query = "INSERT OR IGNORE INTO sys_hotfixes(scan_id, scan_time, hotfix) VALUES" +
+                "(1408519641, '2019/08/05 12:06:26', 'KB2533552')" +
+                ",(1408519641, '2019/08/05 12:06:26', 'KB2534366')" +
+                ",(1408519641, '2019/08/05 12:06:26', 'KB2562937')" +
+                ",(1408519641, '2019/08/05 12:06:26', 'KB2998812')" +
+                ",(1408519641, '2019/08/05 12:06:26', 'KB3004469')" +
+                ",(1408519641, '2019/08/05 12:06:26', 'KB3015428')"
+            db.run(query)
+        });
+
+        it('Request', function (done) {
+            request(common.url)
+            .get("/syscollector/" + agent_hotfixes + "/hotfixes")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err)
+
+                    res.body.should.have.properties(['error', 'data'])
+                    res.body.error.should.equal(0)
+                    res.body.data.should.have.properties(['items', 'totalItems'])
+                    res.body.data.totalItems.should.be.above(0)
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(hotfixes_fields)
+                    res.body.data.items[0].scan.should.have.properties(scan_fields)
+
+                    done();
+
+                });
+        });
+
+        it('Selector', function (done) {
+            request(common.url)
+            .get("/syscollector/" + agent_hotfixes + "/hotfixes?select=hotfix")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err)
+
+                    res.body.should.have.properties(['error', 'data'])
+                    res.body.error.should.equal(0)
+                    res.body.data.should.have.properties(['items', 'totalItems'])
+                    res.body.data.totalItems.should.be.above(0)
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(['hotfix'])
+
+                    done();
+
+                });run
+        });
+
+        it('Not allowed selector', function (done) {
+            request(common.url)
+            .get("/syscollector/" + agent_hotfixes + "/hotfixes?select=date")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err)
+
+                    res.body.should.have.properties(['error', 'message'])
+                    res.body.error.should.equal(1724)
+
+                    done();
+
+                });
+        });
+
+        it('Pagination', function (done) {
+            request(common.url)
+            .get("/syscollector/" + agent_hotfixes + "/hotfixes?offset=1&limit=1")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err)
+
+                    res.body.should.have.properties(['error', 'data'])
+                    res.body.error.should.equal(0)
+                    res.body.data.should.have.properties(['items', 'totalItems'])
+                    res.body.data.totalItems.should.be.above(0)
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(hotfixes_fields)
+                    res.body.data.items[0].scan.should.have.properties(scan_fields)
+
+                    done();
+
+                });
+        });
+
+        it('Wrong limit', function (done) {
+            request(common.url)
+            .get("/syscollector/" + agent_hotfixes + "/hotfixes?limit=1000000")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err)
+
+                    res.body.should.have.properties(['error', 'message'])
+                    res.body.error.should.equal(1405)
+
+                    done();
+
+                });
+        });
+
+        it('Sort -', function (done) {
+            request(common.url)
+            .get("/syscollector/" + agent_hotfixes + "/hotfixes?sort=-hotfix")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err)
+
+                    res.body.should.have.properties(['error', 'data'])
+                    res.body.error.should.equal(0)
+                    res.body.data.should.have.properties(['items', 'totalItems'])
+                    res.body.data.totalItems.should.be.above(0)
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(hotfixes_fields)
+                    res.body.data.items[0].scan.should.have.properties(scan_fields)
+
+                    done();
+
+                });
+        });
+
+        it('Sort +', function (done) {
+            request(common.url)
+            .get("/syscollector/" + agent_hotfixes + "/hotfixes?sort=+hotfix")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err)
+
+                    res.body.should.have.properties(['error', 'data'])
+                    res.body.error.should.equal(0)
+                    res.body.data.should.have.properties(['items', 'totalItems'])
+                    res.body.data.totalItems.should.be.above(0)
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(hotfixes_fields)
+                    res.body.data.items[0].scan.should.have.properties(scan_fields)
+
+                    done();
+
+                });
+        });
+
+        it('Search', function (done) {
+            request(common.url)
+            .get("/syscollector/" + agent_hotfixes + "/hotfixes?search=KB2562937")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err)
+
+                    res.body.should.have.properties(['error', 'data'])
+                    res.body.error.should.equal(0)
+                    res.body.data.should.have.properties(['items', 'totalItems'])
+                    res.body.data.totalItems.should.be.above(0)
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(hotfixes_fields)
+                    res.body.data.items[0].scan.should.have.properties(scan_fields)
+
+                    done();
+
+                });
+        });
+
+        it('Filter: hotfix', function (done) {
+            request(common.url)
+            .get("/syscollector/" + agent_hotfixes + "/hotfixes?hotfix=KB2562937")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err)
+
+                    res.body.should.have.properties(['error', 'data'])
+                    res.body.error.should.equal(0)
+                    res.body.data.should.have.properties(['items', 'totalItems'])
+                    res.body.data.totalItems.should.be.above(0)
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(hotfixes_fields)
+                    res.body.data.items[0].scan.should.have.properties(scan_fields)
+
+                    done();
+
+                });
+        });
+
+        // delete test data
+        after(function () {
+            query = "DELETE FROM sys_hotfixes WHERE scan_id=1408519641"
+            db.run(query)
+        });
+
+    });  // GET/syscollector/:agent_id/hotfixes
 
 });  // Syscollector
