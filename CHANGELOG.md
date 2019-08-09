@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.11.0]
+
+### Added
+
+- New API requests:
+    * `GET/agents/full_summary` ([#428](https://github.com/wazuh/wazuh-api/pull/428)).
+
 ## [v3.10.0]
 
 ### Added
