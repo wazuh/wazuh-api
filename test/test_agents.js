@@ -3076,4 +3076,60 @@ describe('Agents', function() {
 
     });  // POST/agents/restart
 
+    describe('PUT/agents/groups/:group_id/restart', function() {
+
+        it('Request', function(done) {
+            this.timeout(common.timeout);
+
+            request(common.url)
+            .put("/agents/groups/default/restart")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.should.be.type('object');
+                res.body.data.should.have.properties(['msg', 'affected_agents']);
+                res.body.data.affected_agents.sort().should.be.eql(['001', '002', '003'].sort());
+                res.body.data.msg.should.equal('All selected agents were restarted');
+                done();
+            });
+        });
+
+        it('Params: Bad group id', function(done) {
+            request(common.url)
+            .put("/agents/groups/wrong-group/restart")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1710);
+                done();
+            });
+        });
+
+        it('Group without agents', function(done) {
+            request(common.url)
+            .put("/agents/groups/dmz/restart")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1732);
+                done();
+            });
+        });
+
+    });  // PUT/agents/groups/:group_id/restart
+
 });  // Agents
