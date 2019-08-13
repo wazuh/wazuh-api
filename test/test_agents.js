@@ -498,6 +498,73 @@ describe('Agents', function() {
 
     });  // GET/agents/summary
 
+    describe('GET/agents/full_summary', function() {
+
+        it('Request', function(done) {
+            request(common.url)
+            .get("/agents/full_summary")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err)
+
+                res.body.should.have.properties(['error', 'data'])
+
+                res.body.error.should.equal(0)
+                res.body.data.should.have.properties(['unique_node_names', 'groups', 'unique_agent_os',
+                                                      'unique_agent_version', 'summary', 'last_registered_agent'])
+                // unique_node_names
+                res.body.data.unique_node_names.should.have.properties(['items', 'totalItems'])
+                res.body.data.unique_node_names.should.be.an.integer
+                res.body.data.unique_node_names.items[0].should.have.properties(['count', 'node_name'])
+                res.body.data.unique_node_names.items[0].count.should.be.an.integer
+                res.body.data.unique_node_names.items[0].node_name.should.be.equal('master')
+                res.body.data.unique_node_names.items[1].should.have.properties(['count', 'node_name'])
+                res.body.data.unique_node_names.items[1].count.should.be.an.integer
+                res.body.data.unique_node_names.items[1].node_name.should.be.equal('worker-1')
+                res.body.data.unique_node_names.items[2].should.have.properties(['count', 'node_name'])
+                res.body.data.unique_node_names.items[2].count.should.be.an.integer
+                res.body.data.unique_node_names.items[2].node_name.should.be.equal('worker-2')
+                // groups
+                res.body.data.groups.should.have.properties(['items', 'totalItems'])
+                res.body.data.groups.should.be.an.integer
+                res.body.data.groups.items[0].should.have.properties(['count', 'name', 'mergedSum', 'configSum'])
+                // unique_agent_os
+                res.body.data.unique_agent_os.should.have.properties(['items', 'totalItems'])
+                res.body.data.unique_agent_os.should.be.an.integer
+                res.body.data.unique_agent_os.items[0].should.have.properties(['os', 'count'])
+                res.body.data.unique_agent_os.items[0].os.should.have.properties(['name', 'platform', 'version'])
+                res.body.data.unique_agent_os.items[0].count.should.be.an.integer
+                // unique_agent_version
+                res.body.data.unique_agent_version.should.have.properties(['items', 'totalItems'])
+                res.body.data.unique_agent_version.should.be.an.integer
+                res.body.data.unique_agent_version.items[0].should.have.properties(['count', 'version'])
+                res.body.data.unique_agent_version.items[0].count.should.be.an.integer
+                res.body.data.unique_agent_version.items[0].version.should.be.String
+                // summary
+                res.body.data.summary.should.have.properties(['Total', 'Active', 'Disconnected', 'Never connected', 'Pending'])
+                res.body.data.summary['Active'].should.be.above(0)
+                res.body.data.summary['Total'].should.be.above(0)
+                res.body.data.summary['Disconnected'].should.be.an.integer
+                res.body.data.summary['Never connected'].should.be.an.integer
+                res.body.data.summary['Pending'].should.be.an.integer
+                // last_registered_agent
+                res.body.data.last_registered_agent.should.have.properties(['os', 'ip', 'node_name', 'name', 'dateAdd',
+                                                                           'id', 'manager', 'mergedSum', 'lastKeepAlive',
+                                                                           'group', 'version', 'configSum', 'status',
+                                                                           'registerIP'])
+                res.body.data.last_registered_agent.os.should.have.properties(['arch', 'codename', 'major', 'name',
+                                                                               'platform', 'uname', 'version'])
+                res.body.data.last_registered_agent.group.should.be.an.Array
+
+                done()
+
+            });
+        });
+
+    });  // GET/agents/full_summary
+
     describe('GET/agents/summary/os', function() {
 
         it('Request', function(done) {
