@@ -627,6 +627,32 @@ router.post('/restart', function(req, res) {
 })
 
 /**
+ * @api {put} /agents/groups/:group_id/restart Restart agents which belong to a group
+ * @apiName PutAgentsGroupsRestart
+ * @apiGroup Restart
+ *
+ * @apiParam {String} Name of group
+ *
+ * @apiDescription Restarts agents which belong to a group
+ *
+ * @apiExample {curl} Example usage*:
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/agents/groups/dmz/restart?pretty"
+ *
+ */
+router.put('/groups/:group_id/restart', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " PUT /agents/groups/:group_id/restart");
+
+    var data_request = {'function': 'PUT/agents/groups/:group_id/restart', 'arguments': {}};
+
+    if (!filter.check(req.params, {'group_id': 'names'}, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['group_id'] = req.params.group_id;
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+})
+
+/**
  * @api {put} /agents/:agent_id/restart Restart an agent
  * @apiName PutAgentsRestartId
  * @apiGroup Restart
