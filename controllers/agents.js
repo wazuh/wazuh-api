@@ -74,26 +74,6 @@ router.get('/summary', cache(), function(req, res) {
 })
 
 /**
- * @api {get} /agents/full_summary Get a full summary of agents
- * @apiName GetAgentsFullSummary
- * @apiGroup Info
- *
- * @apiDescription Returns a dictionary with a full summary of agents.
- *
- * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/full_summary?pretty"
- *
- */
-router.get('/full_summary', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /agents/full_summary");
-
-    req.apicacheGroup = "agents";
-
-    var data_request = {'function': '/agents/full_summary', 'arguments': {}};
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
-})
-
-/**
  * @api {get} /agents/summary/os Get OS summary
  * @apiName GetOSSummary
  * @apiGroup Info
