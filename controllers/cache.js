@@ -64,7 +64,7 @@ router.delete('/', function(req, res, next) {
 });
 
 /**
- * @api {delete} /cache Clear group cache
+ * @api {delete} /cache/:group Clear group cache
  * @apiName DeleteCacheGroup
  * @apiGroup Delete
  *
