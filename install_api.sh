@@ -213,10 +213,10 @@ previous_checks() {
     check_program_installed "curl"
     check_program_installed "gcc"
 
-    NODE_DIR=$(which nodejs 2> /dev/null)
+    NODE_DIR=$(command -v nodejs 2> /dev/null)
 
     if [ "X$NODE_DIR" = "X" ]; then
-        NODE_DIR=$(which node 2> /dev/null)
+        NODE_DIR=$(command -v node 2> /dev/null)
 
         if [ "X$NODE_DIR" = "X" ]; then
             echo "NodeJS binaries not found. Is NodeJS installed?"
@@ -444,6 +444,23 @@ setup_api() {
     else
         print "\nSkipping service installation."
     fi
+
+    # enable HTTPS
+    configure_https
+
+}
+
+configure_https() {
+    HTTPS="Y"
+    PASSWORD="wazuh"
+    COUNTRY="XX"
+    STATE="XX"
+    LOCALITY="XX"
+    ORG_NAME="XX"
+    ORG_UNIT="XX"
+    COMMON_NAME="XX"
+    . ./scripts/configure_api.sh
+    change_https
 }
 
 main() {

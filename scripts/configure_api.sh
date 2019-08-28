@@ -61,7 +61,7 @@ get_type_service() {
 check_program_installed() {
     hash $1 > /dev/null 2>&1
     if [ "$?" != "0" ]; then
-        print "command $1 not found. is it installed?."
+        print "Command $1 not found. Is it installed?"
         exit 1
     fi
 }
@@ -120,46 +120,57 @@ change_https () {
 
     if [[ "X${HTTPS}" != "X" ]]; then
         case $HTTPS in
-            [yY] ) edit_configuration "https" "yes"
-                   subject=$(echo "/C=$COUNTRY/ST=$STATE/L=$LOCALITY/O=$ORG_NAME/O=$ORG_UNIT/CN=$COMMON_NAME")
+            [yY] )
+                if command -v openssl > /dev/null 2>&1; then
+                    edit_configuration "https" "yes"
+                    subject=$(echo "/C=$COUNTRY/ST=$STATE/L=$LOCALITY/O=$ORG_NAME/O=$ORG_UNIT/CN=$COMMON_NAME")
 
                     # Step 1
-                   exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl genrsa -des3 -out server.key -passout pass:$PASSWORD 2048 && cp server.key server.key.org && openssl rsa -in server.key.org -out server.key -passin pass:$PASSWORD"
+                    exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl genrsa -des3 -out server.key -passout pass:$PASSWORD 4096 && cp server.key server.key.org && openssl rsa -in server.key.org -out server.key -passin pass:$PASSWORD"
 
-                   # Step 2
-                   exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl req -new -key server.key -out server.csr -subj \"$subject\""
-                   exec_cmd "cd $API_PATH/configuration/ssl && openssl x509 -req -days 2048 -in server.csr -signkey server.key -out server.crt -passin pass:$PASSWORD"
-                   exec_cmd "cd $API_PATH/configuration/ssl && rm -f server.csr && rm -f server.key.org"
-                   exec_cmd "chmod 400 $API_PATH/configuration/ssl/server.*"
+                    # Step 2
+                    exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl req -new -key server.key -out server.csr -subj \"$subject\""
+                    exec_cmd "cd $API_PATH/configuration/ssl && openssl x509 -req -days 2048 -in server.csr -signkey server.key -out server.crt -passin pass:$PASSWORD"
+                    exec_cmd "cd $API_PATH/configuration/ssl && rm -f server.csr && rm -f server.key.org"
+                    exec_cmd "chmod 400 $API_PATH/configuration/ssl/server.*"
 
-                   print "HTTPS enabled."
-                   print "\nKey: $API_PATH/configuration/ssl/server.key.\nCertificate: $API_PATH/configuration/ssl/server.crt\n"
+                    print "HTTPS enabled."
+                    print "\nKey: $API_PATH/configuration/ssl/server.key.\nCertificate: $API_PATH/configuration/ssl/server.crt\n"
 
-                   cd $CURRENT_PATH;;
-
-            [nN] ) edit_configuration "https" "no"
-                   print "Using HTTP (not secure).";;
+                    cd $CURRENT_PATH
+                else
+                    print "OpenSSL is not installed in the system. HTTPS could not be enabled."
+                fi
+                ;;
+            [nN] )
+                edit_configuration "https" "no"
+                print "Using HTTP (not secure)."
+                ;;
         esac
 
     else
         read -p "Enable HTTPS and generate SSL certificate? [Y/n/s]: " https
         if [ "X${https,,}" == "X" ] || [ "X${https,,}" == "Xy" ]; then
-            edit_configuration "https" "yes"
+            if command -v openssl > /dev/null 2>&1; then
+                edit_configuration "https" "yes"
 
-            print ""
-            read -p "Step 1: Create key [Press Enter]" enter
-            exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl genrsa -des3 -out server.key 2048 && cp server.key server.key.org && openssl rsa -in server.key.org -out server.key"
+                print ""
+                read -p "Step 1: Create key [Press Enter]" enter
+                exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl genrsa -des3 -out server.key 4096 && cp server.key server.key.org && openssl rsa -in server.key.org -out server.key"
 
-            print ""
-            read -p "Step 2: Create self-signed certificate [Press Enter]" enter
-            exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl req -new -key server.key -out server.csr"
-            exec_cmd "cd $API_PATH/configuration/ssl && openssl x509 -req -days 2048 -in server.csr -signkey server.key -out server.crt"
-            exec_cmd "cd $API_PATH/configuration/ssl && rm -f server.csr && rm -f server.key.org"
+                print ""
+                read -p "Step 2: Create self-signed certificate [Press Enter]" enter
+                exec_cmd_bash "cd $API_PATH/configuration/ssl && openssl req -new -key server.key -out server.csr"
+                exec_cmd "cd $API_PATH/configuration/ssl && openssl x509 -req -days 2048 -in server.csr -signkey server.key -out server.crt"
+                exec_cmd "cd $API_PATH/configuration/ssl && rm -f server.csr && rm -f server.key.org"
 
-            exec_cmd "chmod 600 $API_PATH/configuration/ssl/server.*"
-            print "\nKey: $API_PATH/configuration/ssl/server.key.\nCertificate: $API_PATH/configuration/ssl/server.crt\n"
+                exec_cmd "chmod 400 $API_PATH/configuration/ssl/server.*"
+                print "\nKey: $API_PATH/configuration/ssl/server.key.\nCertificate: $API_PATH/configuration/ssl/server.crt\n"
 
-            read -p "Continue with next section [Press Enter]" enter
+                read -p "Continue with next section [Press Enter]" enter
+            else
+                print "OpenSSL is not installed in the system. HTTPS could not be enabled."
+            fi
         elif [ "X${https,,}" == "Xn" ]; then
             edit_configuration "https" "no"
             print "Using HTTP (not secure)."
@@ -285,4 +296,8 @@ main () {
     exit 0
 }
 
-main
+# execute main function only when script is directly executed
+if [ "${BASH_SOURCE[0]}" -ef "$0" ]
+then
+    main
+fi
