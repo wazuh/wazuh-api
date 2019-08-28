@@ -1075,8 +1075,13 @@ router.delete('/', function(req, res) {
     else
         data_request['arguments']['purge'] = false;
 
-    if ('ids' in req.query)
-        data_request['arguments']['list_agent_ids'] = req.query.ids.split(',');
+    if ('ids' in req.query) {
+        if (typeof(req.query.ids) == 'string') {
+            data_request['arguments']['list_agent_ids'] = req.query.ids.split(',');
+        } else {
+            data_request['arguments']['list_agent_ids'] = req.query.ids;
+        }
+    }
 
     if ('older_than' in req.query)
         data_request['arguments']['older_than'] = req.query.older_than;
