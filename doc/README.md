@@ -1,31 +1,21 @@
 # Generating Wazuh API Reference documentation
 
 ## Environment
-Build vagrant envinroment using files available under `build_environment` directory.
-
-Environment variable `WAZUH_GIT_PATH` needs to be set before deploying Vagrant environment:
-* In windows:
-    ```powershell
-    > Set-Item -path env:WAZUH_GIT_PATH -value C:\Users\Marta\Documents\GitHub
-    ```
-* In linux:
-    ```shellsession
-    # export WAZUH_GIT_PATH=/home/marta/documents/github
-    ```
+It is necessary to set up a Docker environment for generating the API documentation. There are Docker environments in this repository. Please, follow the next steps for setting up a Docker environment:
+```shellsession
+$ cd {WAZUH_API_PATH}/test/environment/docker/centos
+$ docker-compose up -d
+$ docker exec -it centos_wazuh-master_1 bash
+```
 
 ## Generate documentation:
 
+Inside the container, execute the following commands and the `.rst` file will be generated:
 ```shellsession
-$ WAZUH_REPO=/home/vagrant/GitHub
-$ cd $WAZUH_REPO/wazuh-api/doc
-$ ./generate_rst.py $WAZUH_REPO/wazuh-documentation/source/user-manual/api/reference.rst
-$ cd $WAZUH_REPO/wazuh-documentation/
-$ make html
+# cd /wazuh-api/doc
+# ./generate_api_doc.sh
+# cd /wazuh-documentation
+# make html
 ```
 
-one-line command:
-```shellsession
-$ ./generate_rst.py $WAZUH_REPO/wazuh-documentation/source/user-manual/api/reference.rst && cd $WAZUH_REPO/wazuh-documentation/ && make html && cd -
-```
-
-Review **wazuh-documentation/source/user-manual/api/reference.rst**, specially *Example Response* section.
+Review **/wazuh-documentation/source/user-manual/api/reference.rst**, specially *Example Response* section.

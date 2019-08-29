@@ -10,6 +10,7 @@
 # Auth: foo:bar
 # requests
 
+import datetime
 import json
 import sys
 import requests
@@ -18,7 +19,7 @@ TIMEOUT = 30  # cURL TIMEOUT. 0 to disable "example response"
 
 ### Hardcoded text ###
 rst_header = '.. _api_reference:\n\n'
-warning="\n.. Copyright (C) 2018 Wazuh, Inc.\n.. Do not modify this file manually. It is generated automatically.\n\n"
+warning=f"\n.. Copyright (C) {datetime.datetime.now().year} Wazuh, Inc.\n.. Do not modify this file manually. It is generated automatically.\n\n"
 introduction = "Reference\n======================\nThis API reference is organized by resources:\n\n{0}\nBelow is the `Request List`_ that shows all of the available requests.\n\n.. _request_list:\n"
 str_request_list = 'Request List'
 section_separator = '-'*40
@@ -241,7 +242,7 @@ if __name__ == "__main__":
     # Generate docu with apidoc
     try:
         # wazuh-api: apidoc -i ../ -o ./build/html -c . -f js -e node_modules
-        output = str(check_output(['apidoc', '-i', '../', '-o', './build/html', '-c', '.', '-f', 'js', '-e', 'node_modules']))
+        output = check_output(['apidoc', '-i', '../', '-o', './build/html', '-c', '.', '-f', 'js', '-e', 'node_modules']).decode('utf-8')
         print("\nAPIDOC:")
         print(output)
         with open(docu_file_json) as data_file:
@@ -374,7 +375,7 @@ if __name__ == "__main__":
                                 command.extend(['--connect-timeout', str(TIMEOUT)])
 
                                 # Get request output
-                                output = str(check_output(command))
+                                output = check_output(command).decode('utf-8')
                             except Exception as e:
                                 output = "ToDo - Error output\n"
                                 alerts.append(msg_end + " -> " + output)

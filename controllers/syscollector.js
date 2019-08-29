@@ -21,7 +21,7 @@ var router = require('express').Router();
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {String} [select] List of selected fields separated by commas.
  *
- * @apiDescription Returns the agent's OS info
+ * @apiDescription Returns the agent's OS info.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/os?pretty"
@@ -55,7 +55,7 @@ router.get('/:agent_id/os', function(req, res) {
  * @apiParam {Number} agent_id Agent ID.
  * @apiParam {String} [select] List of selected fields separated by commas.
  *
- * @apiDescription Returns the agent's hardware info
+ * @apiDescription Returns the agent's hardware info.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/hardware?pretty"
@@ -102,7 +102,7 @@ router.get('/:agent_id/hardware', function(req, res) {
  * @apiParam {String} [format] Filters by format.
  * @apiParam {String} [version] Filters by version.
  *
- * @apiDescription Returns the agent's packages info
+ * @apiDescription Returns the agent's packages info.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/packages?pretty&limit=2&offset=10&sort=-name"
@@ -176,7 +176,7 @@ router.get('/:agent_id/packages', function(req, res) {
  * @apiParam {String} [sgroup] Filters by process sgroup.
  * @apiParam {String} [suser] Filters by process suser.
  *
- * @apiDescription Returns the agent's processes info
+ * @apiDescription Returns the agent's processes info.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/processes?pretty&limit=2&offset=10&sort=-name"
@@ -270,7 +270,7 @@ router.get('/:agent_id/processes', function (req, res) {
  * @apiParam {Number} [tx_queue] Filters by tx_queue.
  * @apiParam {String} [state] Filters by state.
  *
- * @apiDescription Returns the agent's ports info
+ * @apiDescription Returns the agent's ports info.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/ports?pretty&sort=-protocol&limit=2"
@@ -347,7 +347,7 @@ router.get('/:agent_id/ports', function (req, res) {
  * @apiParam {String} [broadcast] Filters by broadcast.
  * @apiParam {String} [netmask] Filters by netmask.
  *
- * @apiDescription Returns the agent's network address info
+ * @apiDescription Returns the agent's network address info.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/netaddr?pretty&limit=2&sort=proto"
@@ -413,7 +413,7 @@ router.get('/:agent_id/netaddr', function (req, res) {
  * @apiParam {String} [gateway] Filters by gateway.
  * @apiParam {String} [dhcp] Filters by dhcp.
  *
- * @apiDescription Returns the agent's network protocol info
+ * @apiDescription Returns the agent's network protocol info.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/netproto?pretty&limit=2&sort=type"
@@ -486,7 +486,7 @@ router.get('/:agent_id/netproto', function (req, res) {
  * @apiParam {String} [tx_dropped] Filters by tx_dropped.
  * @apiParam {String} [rx_dropped] Filters by rx_dropped.
  *
- * @apiDescription Returns the agent's network interface info
+ * @apiDescription Returns the agent's network interface info.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/netiface?pretty&limit=2&sort=state"

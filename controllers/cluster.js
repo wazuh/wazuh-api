@@ -44,7 +44,7 @@ router.get('/node', cache(), function (req, res) {
  * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {String} [type] Filters by node type.
  * 
- * @apiDescription Returns the nodes info
+ * @apiDescription Returns the nodes info.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/nodes?pretty"
@@ -115,7 +115,7 @@ router.get('/nodes/:node_name', cache(), function (req, res) {
  *
  * @apiParam {String} [node] Filter information by node name.
  * 
- * @apiDescription Show cluster health
+ * @apiDescription Show cluster health.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/healthcheck?pretty"
@@ -143,7 +143,7 @@ router.get('/healthcheck', cache(), function (req, res) {
  * @apiName GetClusterstatus
  * @apiGroup Info
  *
- * @apiDescription Returns whether the cluster is enabled or disabled
+ * @apiDescription Returns whether the cluster is enabled or disabled.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/status?pretty"

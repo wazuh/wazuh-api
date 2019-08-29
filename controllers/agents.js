@@ -583,7 +583,7 @@ router.get('/:agent_id/upgrade_result', function(req, res) {
  *
  * @apiParam {Number} agent_id Agent ID.
  *
- * @apiDescription Returns the sync status in JSON format
+ * @apiDescription Returns the sync status in JSON format.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/001/group/is_sync?pretty"
@@ -991,7 +991,7 @@ router.delete('/:agent_id/group/:group_id', function(req, res) {
  * @apiParam {String} ids Agent IDs separated by commas.
  * @apiParam {String} group_id Group ID.
  *
- * @apiDescription Remove a list of agents of a group
+ * @apiDescription Remove a list of agents of a group.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X DELETE "https://localhost:55000/agents/group/dmz?ids=001,002&pretty"
