@@ -22,7 +22,7 @@ var router = require('express').Router();
  * @apiParam {String} [select] Select which fields to return (separated by comma).
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
  * @apiParam {String} [q] Query to filter results by. For example q="status=Active"
  * @apiParam {String} [older_than] Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date.
@@ -417,7 +417,7 @@ router.get('/outdated', cache(), function(req, res) {
  * @apiGroup Info
  *
  * @apiParam {String} agent_name Agent name.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  *
  * @apiDescription Returns various information from an agent called :agent_name.
  *
@@ -455,7 +455,7 @@ router.get('/name/:agent_name', cache(), function(req, res) {
  * @apiGroup Info
  *
  * @apiParam {Number} agent_id Agent ID.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  *
  * @apiDescription Returns various information from an agent.
  *
@@ -680,7 +680,7 @@ router.put('/:agent_id/restart', function(req, res) {
  * @apiParam {Number} agent_id Agent unique ID.
  * @apiParam {String} [wpk_repo] WPK repository.
  * @apiParam {String} [version] Wazuh version.
- * @apiParam {Boolean} [use_http] Use protocol http. If it's false use https. By default the value is set to false.
+ * @apiParam {Boolean} [use_http] Use protocol HTTP. If it is false use HTTPS. By default the value is set to false.
  * @apiParam {number="0","1"} [force] Force upgrade.
  *
  * @apiDescription Upgrade the agent using a WPK file from online repository.
@@ -840,7 +840,7 @@ router.put('/:agent_id/group/:group_id', function(req, res) {
  * @apiName PostGroupAgents
  * @apiGroup Groups
  *
- * @apiParam {Number} agent_id_list List of agents ID.
+ * @apiParam {String[]} ids List of agents ID.
  * @apiParam {String} group_id Group ID.
  *
  * @apiDescription Adds a list of agents to the specified group.
@@ -853,7 +853,7 @@ router.post('/group/:group_id', function(req, res) {
     logger.debug(req.connection.remoteAddress + " POST /agents/group/:group_id");
 
     var data_request = {'function': 'POST/agents/group/:group_id', 'arguments': {}};
-    var filters = {'group_id':'names', 'ids':'array_numbers'}
+    var filters = {'group_id': 'names', 'ids': 'array_numbers'}
 
     if (!filter.check(req.params, filters, req, res))  // Filter with error
         return;
@@ -886,11 +886,15 @@ router.delete('/groups', function(req, res) {
 
     var data_request = {'function': 'DELETE/agents/groups', 'arguments': {}};
 
-    if (!filter.check(req.query, {'ids':'array_names'}, req, res))  // Filter with error
+    if (!filter.check(req.query, {'ids': 'array_names'}, req, res))  // Filter with error
         return;
 
     if ('ids' in req.query){
-        data_request['arguments']['group_id'] = req.query.ids.split(',');
+        if (typeof(req.query.ids) == 'string') {
+            data_request['arguments']['group_id'] = req.query.ids.split(',');
+        } else {
+            data_request['arguments']['group_id'] = req.query.ids;
+        }
         execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
     }else
         res_h.bad_request(req, res, 604, "Missing field: 'ids'");
@@ -984,7 +988,7 @@ router.delete('/:agent_id/group/:group_id', function(req, res) {
  * @apiName DeleteGroupAgents
  * @apiGroup Groups
  *
- * @apiParam {String} agent_id Agent IDs separated by commas.
+ * @apiParam {String} ids Agent IDs separated by commas.
  * @apiParam {String} group_id Group ID.
  *
  * @apiDescription Remove a list of agents of a group
@@ -1006,7 +1010,14 @@ router.delete('/group/:group_id', function(req, res) {
         return;
 
     data_request['arguments']['group_id'] = req.params.group_id;
-    data_request['arguments']['agent_id_list'] = req.query.ids.split(',');
+
+    if ('ids' in req.query) {
+        if (typeof(req.query.ids) == 'string') {
+            data_request['arguments']['agent_id_list'] = req.query.ids.split(',');
+        } else {
+            data_request['arguments']['agent_id_list'] = req.query.ids;
+        }
+    }
 
     if ('ids' in req.query){
         execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
@@ -1230,7 +1241,7 @@ router.post('/insert', function(req, res) {
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [fields] List of fields affecting the operation.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {String} [q] Query to filter result. For example q="status=Active"
  *
  * @apiDescription Returns all the different combinations that agents have for the selected fields. It also indicates the total number of agents that have each combination.

@@ -19,7 +19,7 @@ var router = require('express').Router();
  * @apiGroup OS
  *
  * @apiParam {Number} agent_id Agent ID.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  *
  * @apiDescription Returns the agent's OS info
  *
@@ -53,7 +53,7 @@ router.get('/:agent_id/os', function(req, res) {
  * @apiGroup Hardware
  *
  * @apiParam {Number} agent_id Agent ID.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  *
  * @apiDescription Returns the agent's hardware info
  *
@@ -95,7 +95,7 @@ router.get('/:agent_id/hardware', function(req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {String} [vendor] Filters by vendor.
  * @apiParam {String} [name] Filters by name.
  * @apiParam {String} [architecture] Filters by architecture.
@@ -160,7 +160,7 @@ router.get('/:agent_id/packages', function(req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {Number} [pid] Filters by process pid.
  * @apiParam {String} [state] Filters by process state.
  * @apiParam {Number} [ppid] Filters by process parent pid.
@@ -261,7 +261,7 @@ router.get('/:agent_id/processes', function (req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {Number} [pid] Filters by pid.
  * @apiParam {String} [protocol] Filters by protocol.
  * @apiParam {String} [local_ip] Filters by local_ip.
@@ -340,7 +340,7 @@ router.get('/:agent_id/ports', function (req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {String} [iface] Filters by interface name.
  * @apiParam {String} [proto] Filters by proto.
  * @apiParam {String} [address] Filters by address.
@@ -407,7 +407,7 @@ router.get('/:agent_id/netaddr', function (req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {String} [iface] Filters by iface.
  * @apiParam {String} [type] Filters by type.
  * @apiParam {String} [gateway] Filters by gateway.
@@ -471,7 +471,7 @@ router.get('/:agent_id/netproto', function (req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {String} [name] Filters by name.
  * @apiParam {String} [adapter] Filters by adapter.
  * @apiParam {String} [type] Filters by type.

@@ -72,7 +72,7 @@ router.get('/', cache(), function(req, res) {
  * @apiParam {String="enabled","disabled", "all"} [status] Filters the decoders by status.
  * @apiParam {String} [file] Filters by filename.
  * @apiParam {String} [path] Filters by path.
- * @apiParam {String} [download] Downloads the file
+ * @apiParam {String} [download] Name of the decoder file to download.
  *
  * @apiDescription Returns all decoders files included in ossec.conf.
  *
@@ -134,7 +134,7 @@ router.get('/parents', cache(), function(req, res) {
     req.apicacheGroup = "decoders";
 
     var data_request = {'function': '/decoders', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param', 'search': 'search_param'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
