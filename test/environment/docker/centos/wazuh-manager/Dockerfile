@@ -7,7 +7,7 @@ ARG wazuh_api_branch
 RUN yum install openssl openssh-server -y
 RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 RUN echo 'root:wazuh_admin' | chpasswd
-RUN ssh-keygen -A && /usr/sbin/sshd -D &
+RUN ssh-keygen -A
 
 EXPOSE 22
 
@@ -32,7 +32,7 @@ RUN /var/ossec/framework/python/bin/pip3 install pytest defusedxml ptvsd pydevd-
 
 # install and configure Wazuh API
 RUN curl --silent --location https://rpm.nodesource.com/setup_12.x | bash - && yum -y install nodejs && npm config set user 0
-RUN git clone https://github.com/wazuh/wazuh-api && cd /wazuh-api && git checkout ${wazuh_api_branch} && ./install_api.sh && npm install mocha -g && npm install glob supertest mocha should moment mochawesome
+RUN git clone https://github.com/wazuh/wazuh-api && cd /wazuh-api && git checkout ${wazuh_api_branch} && ./install_api.sh && npm install mocha apidoc -g && npm install glob supertest mocha should moment mochawesome
 
 # install ZSH
 RUN yum install zsh -y
