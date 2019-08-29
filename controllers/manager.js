@@ -391,7 +391,7 @@ router.delete('/files', cache(), function(req, res) {
  *
  * @apiParam {String} file Input file.
  * @apiParam {String} path Relative path were input file will be placed. This parameter is mandatory.
- * @apiParam {String} overwrite false to fail if file already exists (default). true to replace the existing file
+ * @apiParam {String} overwrite Replaces the existing file. False by default.
  *
  * @apiDescription Upload a local file (rules, decoders and lists).
  *
