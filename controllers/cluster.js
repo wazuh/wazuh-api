@@ -41,7 +41,7 @@ router.get('/node', cache(), function (req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {String} [type] Filters by node type.
  * 
  * @apiDescription Returns the nodes info
@@ -491,7 +491,7 @@ router.get('/:node_id/logs/summary', cache(), function(req, res) {
  * @apiGroup Files
  *
  * @apiParam {String} path Relative path of file. This parameter is mandatory.
- * @apiParam {String} validation Default false. true for validating the content of the file. An error will be returned file content is not strictly correct.
+ * @apiParam {Boolean} validation Validates the content of the file. An error will be returned if file content is not strictly correct. False by default.
  *
  * @apiDescription Returns the content of a local file (rules, decoders and lists).
  *
@@ -537,7 +537,7 @@ router.get('/:node_id/files', cache(), function(req, res) {
  *
  * @apiParam {String} file Input file.
  * @apiParam {String} path Relative path were input file will be placed. This parameter is mandatory.
- * @apiParam {String} overwrite false to fail if file already exists (default). true to replace the existing file
+ * @apiParam {Bolean} overwrite Replace the existing file. False by default.
  *
  * @apiDescription Upload a local file (rules, decoders and lists) in a cluster node
  *
