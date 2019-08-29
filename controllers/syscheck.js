@@ -26,7 +26,7 @@ var router = require('express').Router();
  * @apiParam {String} [file] Filters file by filename.
  * @apiParam {String="file","registry"} [type] Selects type of file.
  * @apiParam {String="yes", "no"} [summary] Returns a summary grouping by filename.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {String} [md5] Returns the files with the specified md5 hash.
  * @apiParam {String} [sha1] Returns the files with the specified sha1 hash.
  * @apiParam {String} [sha256] Returns the files with the specified sha256 hash.
