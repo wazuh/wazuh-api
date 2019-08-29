@@ -537,7 +537,7 @@ router.get('/:node_id/files', cache(), function(req, res) {
  *
  * @apiParam {String} file Input file.
  * @apiParam {String} path Relative path were input file will be placed. This parameter is mandatory.
- * @apiParam {Bolean} overwrite Replaces the existing file. False by default.
+ * @apiParam {Boolean} overwrite Replaces the existing file. False by default.
  *
  * @apiDescription Upload a local file (rules, decoders and lists) in a cluster node
  *
