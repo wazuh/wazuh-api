@@ -26,7 +26,7 @@ var router = require('express').Router();
  * @apiParam {String} [name] Filters by name.
  * @apiParam {String} [architecture] Filters by architecture.
  * @apiParam {String} [format] Filters by format.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {String} [version] Filter by version name.
  *
  * @apiDescription Returns the agent's packages info
@@ -91,7 +91,7 @@ router.get('/syscollector/packages', function (req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {String} [os_name] Filters by os_name.
  * @apiParam {String} [architecture] Filters by architecture.
  * @apiParam {String} [os_version] Filters by os_version.
@@ -161,7 +161,7 @@ router.get('/syscollector/os', function (req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {String} [ram_free] Filters by ram_free.
  * @apiParam {String} [ram_total] Filters by ram_total.
  * @apiParam {String} [cpu_cores] Filters by cpu_cores.
@@ -233,7 +233,7 @@ router.get('/syscollector/hardware', function (req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {Number} [pid] Filters by process pid.
  * @apiParam {String} [state] Filters by process state.
  * @apiParam {Number} [ppid] Filters by process parent pid.
@@ -329,7 +329,7 @@ router.get('/syscollector/processes', function (req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {Number} [pid] Filters by pid.
  * @apiParam {String} [protocol] Filters by protocol.
  * @apiParam {String} [local_ip] Filters by local_ip.
@@ -404,7 +404,7 @@ router.get('/syscollector/ports', function (req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {String} [proto] Filters by proto.
  * @apiParam {String} [address] Filters by address.
  * @apiParam {String} [broadcast] Filters by broadcast.
@@ -464,7 +464,7 @@ router.get('/syscollector/netaddr', function (req, res) {
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [iface] Filters by iface.
  * @apiParam {String} [type] Filters by type.
@@ -524,7 +524,7 @@ router.get('/syscollector/netproto', function (req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {String} [name] Filters by name.
  * @apiParam {String} [adapter] Filters by adapter.
  * @apiParam {String} [type] Filters by type.
@@ -615,7 +615,7 @@ router.get('/syscollector/netiface', function (req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {String} [benchmark] Filters by benchmark.
  * @apiParam {String} [profile] Filters by evaluated profile.
  * @apiParam {Number} [pass] Filters by passed checks.
