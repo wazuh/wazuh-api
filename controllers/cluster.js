@@ -86,7 +86,7 @@ router.get('/nodes', cache(), function(req, res) {
  * @apiDescription Returns the node info
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/nodes/node01?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/nodes/master?pretty"
  *
  */
 router.get('/nodes/:node_name', cache(), function (req, res) {
@@ -188,7 +188,7 @@ router.get('/config', cache(), function(req, res) {
  * @apiDescription Returns the status of the manager processes.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/status?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/worker-1/status?pretty"
  *
  */
 router.get('/:node_id/status', cache(), function(req, res) {
@@ -214,7 +214,7 @@ router.get('/:node_id/status', cache(), function(req, res) {
  * @apiDescription Returns basic information about manager.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/info?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/worker-1/info?pretty"
  *
  */
 router.get('/:node_id/info', cache(), function(req, res) {
@@ -243,7 +243,7 @@ router.get('/:node_id/info', cache(), function(req, res) {
  * @apiDescription Returns ossec.conf in JSON format.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/configuration?section=global&pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/worker-1/configuration?section=global&pretty"
  *
  */
 router.get('/:node_id/configuration', cache(), function(req, res) {
@@ -280,7 +280,7 @@ router.get('/:node_id/configuration', cache(), function(req, res) {
  * @apiDescription Returns Wazuh statistical information for the current or specified date.
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/stats?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/worker-1/stats?pretty"
  *
  */
 router.get('/:node_id/stats', cache(), function(req, res) {
@@ -321,7 +321,7 @@ router.get('/:node_id/stats', cache(), function(req, res) {
  * @apiDescription Returns Wazuh statistical information per hour. Each number in the averages field represents the average of alerts per hour.
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/stats/hourly?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/worker-1/stats/hourly?pretty"
  *
  */
 router.get('/:node_id/stats/hourly', cache(), function(req, res) {
@@ -348,7 +348,7 @@ router.get('/:node_id/stats/hourly', cache(), function(req, res) {
  * @apiDescription Returns Wazuh statistical information per week. Each number in the hours field represents the average alerts per hour for that specific day.
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/stats/weekly?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/worker-1/stats/weekly?pretty"
  *
  */
 router.get('/:node_id/stats/weekly', cache(), function(req, res) {
@@ -375,7 +375,7 @@ router.get('/:node_id/stats/weekly', cache(), function(req, res) {
  * @apiDescription Returns a summary of the current analysisd stats on the node.
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/stats/analysisd?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/worker-1/stats/analysisd?pretty"
  *
  */
 router.get('/:node_id/stats/analysisd', cache(), function(req, res) {
@@ -397,7 +397,7 @@ router.get('/:node_id/stats/analysisd', cache(), function(req, res) {
  * @apiDescription Returns a summary of the current remoted stats on the node.
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/stats/remoted?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/worker-1/stats/remoted?pretty"
  *
  */
 router.get('/:node_id/stats/remoted', cache(), function(req, res) {
@@ -424,7 +424,7 @@ router.get('/:node_id/stats/remoted', cache(), function(req, res) {
  * @apiDescription Returns the three last months of ossec.log.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/logs?offset=0&limit=5&pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/worker-1/logs?offset=0&limit=5&pretty"
  *
  */
 router.get('/:node_id/logs', cache(), function(req, res) {
@@ -467,7 +467,7 @@ router.get('/:node_id/logs', cache(), function(req, res) {
  * @apiDescription Returns a summary of the last three months of the ``ossec.log`` file.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node02/logs/summary?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/worker-1/logs/summary?pretty"
  *
  */
 router.get('/:node_id/logs/summary', cache(), function(req, res) {
@@ -496,7 +496,7 @@ router.get('/:node_id/logs/summary', cache(), function(req, res) {
  * @apiDescription Returns the content of a local file (rules, decoders and lists).
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node01/files?path=etc/decoders/local_decoder.xml&pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/master/files?path=etc/decoders/local_decoder.xml&pretty"
  *
  */
 router.get('/:node_id/files', cache(), function(req, res) {
@@ -542,7 +542,7 @@ router.get('/:node_id/files', cache(), function(req, res) {
  * @apiDescription Upload a local file (rules, decoders and lists) in a cluster node
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X POST -H 'Content-type: application/xml' -d @rules.xml "https://127.0.0.1:55000/cluster/node01/files?path=etc/rules/local_rules.xml&pretty"
+ *     curl -u foo:bar -k -X POST -H 'Content-type: application/xml' -d @rules.xml "https://127.0.0.1:55000/cluster/master/files?path=etc/rules/local_rules.xml&pretty"
  *
  */
 router.post('/:node_id/files', function(req, res) {
@@ -605,7 +605,7 @@ router.post('/:node_id/files', function(req, res) {
  * @apiDescription Confirmation message.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/cluster/node01/files?path=etc/rules/local_rules.xml&pretty"
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/cluster/master/files?path=etc/rules/local_rules.xml&pretty"
  *
  */
 router.delete('/:node_id/files', cache(), function(req, res) {
@@ -681,7 +681,7 @@ router.get('/configuration/validation', cache(), function(req, res) {
  * @apiDescription Restarts a specific node in cluster.
  *
  * @apiExample {curl} Example usage*:
- *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/cluster/node02/restart?pretty"
+ *     curl -u foo:bar -k -X PUT "https://127.0.0.1:55000/cluster/worker-1/restart?pretty"
  *
  */
 router.put('/:node_id/restart', cache(), function(req, res) {
@@ -705,7 +705,7 @@ router.put('/:node_id/restart', cache(), function(req, res) {
  * @apiDescription Returns if Wazuh configuration is OK.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node01/configuration/validation?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/master/configuration/validation?pretty"
  *
  */
 router.get('/:node_id/configuration/validation', cache(), function(req, res) {
@@ -733,7 +733,7 @@ router.get('/:node_id/configuration/validation', cache(), function(req, res) {
  * @apiDescription Returns the requested configuration in JSON format.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node01/config/logcollector/internal?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/master/config/logcollector/internal?pretty"
  *
  */
 router.get('/:node_id/config/:component/:configuration', cache(), function(req, res) {
