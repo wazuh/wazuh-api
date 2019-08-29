@@ -241,7 +241,7 @@ if __name__ == "__main__":
     # Generate docu with apidoc
     try:
         # wazuh-api: apidoc -i ../ -o ./build/html -c . -f js -e node_modules
-        output = check_output(['apidoc', '-i', '../', '-o', './build/html', '-c', '.', '-f', 'js', '-e', 'node_modules'])
+        output = str(check_output(['apidoc', '-i', '../', '-o', './build/html', '-c', '.', '-f', 'js', '-e', 'node_modules']))
         print("\nAPIDOC:")
         print(output)
         with open(docu_file_json) as data_file:
@@ -374,7 +374,7 @@ if __name__ == "__main__":
                                 command.extend(['--connect-timeout', str(TIMEOUT)])
 
                                 # Get request output
-                                output = check_output(command)
+                                output = str(check_output(command))
                             except Exception as e:
                                 output = "ToDo - Error output\n"
                                 alerts.append(msg_end + " -> " + output)
