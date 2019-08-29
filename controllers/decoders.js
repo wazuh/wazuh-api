@@ -134,7 +134,7 @@ router.get('/parents', cache(), function(req, res) {
     req.apicacheGroup = "decoders";
 
     var data_request = {'function': '/decoders', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search': 'search_param'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param', 'search': 'search_param'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;

@@ -316,7 +316,7 @@ router.get('/stats/remoted', cache(), function(req, res) {
  * @apiGroup Files
  *
  * @apiParam {String} path Relative path of file. This parameter is mandatory.
- * @apiParam {String} validation Validates the content of the file. An error will be returned if file content is not strictly correct. False by default.
+ * @apiParam {Boolean} validation Validates the content of the file. An error will be returned if file content is not strictly correct. False by default.
  *
  * @apiDescription Returns the content of a local file (rules, decoders and lists).
  *
@@ -391,7 +391,7 @@ router.delete('/files', cache(), function(req, res) {
  *
  * @apiParam {String} file Input file.
  * @apiParam {String} path Relative path were input file will be placed. This parameter is mandatory.
- * @apiParam {String} overwrite Replaces the existing file. False by default.
+ * @apiParam {Boolean} overwrite Replaces the existing file. False by default.
  *
  * @apiDescription Upload a local file (rules, decoders and lists).
  *
