@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
     - `nist-800-53`: Filters the rules by nist-800-53 requirement ([#397](https://github.com/wazuh/wazuh-api/pull/397)).
     - `gpg13`: Filters the rules by gpg13 requirement ([#389](https://github.com/wazuh/wazuh-api/pull/389)).
 - Improvements in the security of passwords stored, changed from MD5 to BCrypt encryption, cost 10 as recommended `scripts/configure_api.sh` [#404](https://github.com/wazuh/wazuh-api/pull/404), thanks @hemedga
+- Added Docker environment for Mocha tests ([#400](https://github.com/wazuh/wazuh-api/pull/400)).
 
 ### Fixed
 - Fixed bug inserting duplicated agent without any errors ([#318](https://github.com/wazuh/wazuh-api/issues/318))
