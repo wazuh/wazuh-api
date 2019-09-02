@@ -120,13 +120,13 @@ hardcoded_items = {
         'PostUpdateFile': {"error":0,"data":"File updated successfully"},
 
         # PUT /cluster/restart
-        'PutRestartCluster': {"error":0,"data":"Restarting manager"},
+        'PutRestartCluster': {"error":0,"data":"Restart request sent"},
 
         # PUT /cluster/:node_id/restart
-        'PutRestartClusterNode': {"error":0,"data":"Restarting manager"},
+        'PutRestartClusterNode': {"error":0,"data":"Restart request sent"},
 
         # PUT /manager/restart
-        'PutRestartManager': {"error":0,"data":"Restarting manager"}
+        'PutRestartManager': {"error":0,"data":"Restart request sent"}
     }
 ### ### ###
 
