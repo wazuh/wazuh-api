@@ -846,7 +846,7 @@ router.put('/:agent_id/group/:group_id', function(req, res) {
  * @apiDescription Adds a list of agents to the specified group.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -X POST -H "Content-Type:application/json" -d '{"ids":["001","002"]}' "https://localhost:55000/agents/group/dmz?pretty" -k
+ *     curl -u foo:bar -X POST -H "Content-Type:application/json" -d '{"ids":["001","002"]}' "https://127.0.0.1:55000/agents/group/dmz?pretty" -k
  *
  */
 router.post('/group/:group_id', function(req, res) {
@@ -994,7 +994,7 @@ router.delete('/:agent_id/group/:group_id', function(req, res) {
  * @apiDescription Remove a list of agents of a group
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE "https://localhost:55000/agents/group/dmz?ids=001,002&pretty"
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/group/dmz?ids=001,002&pretty"
  *
  */
 router.delete('/group/:group_id', function(req, res) {
@@ -1060,7 +1060,7 @@ router.delete('/groups/:group_id', function(req, res) {
  * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
  * @apiParam {String} older_than Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date. Default value: 7d.
  *
- * @apiDescription Removes agents, using a list of them or a criterion based on the status or time of the last connection. The Wazuh API must be restarted after removing an agent.
+ * @apiDescription Removes agents, using a list of them or a criterion based on the status or time of the last connection.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents?older_than=10s&purge&ids=003,005&pretty"
