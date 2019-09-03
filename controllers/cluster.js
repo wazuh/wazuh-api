@@ -17,7 +17,7 @@ var router = require('express').Router();
  * @apiName GetLocalNodeInfo
  * @apiGroup Nodes
  *
- * @apiDescription Returns the local node info
+ * @apiDescription Returns the local node info.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/node?pretty"
@@ -83,7 +83,7 @@ router.get('/nodes', cache(), function(req, res) {
  * @apiName GetNodeInfo
  * @apiGroup Nodes
  *
- * @apiDescription Returns the node info
+ * @apiDescription Returns the node info.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/cluster/nodes/master?pretty"
@@ -539,7 +539,7 @@ router.get('/:node_id/files', cache(), function(req, res) {
  * @apiParam {String} path Relative path were input file will be placed. This parameter is mandatory.
  * @apiParam {Boolean} overwrite Replaces the existing file. False by default.
  *
- * @apiDescription Upload a local file (rules, decoders and lists) in a cluster node
+ * @apiDescription Upload a local file (rules, decoders and lists) in a cluster node.
  *
  * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X POST -H 'Content-type: application/xml' -d @rules.xml "https://127.0.0.1:55000/cluster/master/files?path=etc/rules/local_rules.xml&pretty"
