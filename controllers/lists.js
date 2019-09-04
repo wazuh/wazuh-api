@@ -23,7 +23,7 @@ var router = require('express').Router();
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [path] Filters by path.
  *
- * @apiDescription Returns the content of all CDB lists
+ * @apiDescription Returns the content of all CDB lists.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/lists?pretty&path=etc/lists/audit-keys"
