@@ -30,7 +30,7 @@ var router = require('express').Router();
  * @apiDescription Returns the sca database of an agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/sca/000?q=pass>50;score<150&pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/sca/000?q=pass>20;score<150&pretty&limit=2"
  *
  */
 router.get('/:agent_id', cache(), function(req, res) {
@@ -40,12 +40,12 @@ router.get('/:agent_id', cache(), function(req, res) {
 
 
 /**
- * @api {get} /sca/:agent_id/checks/:id Get security configuration assessment (SCA) checks database
+ * @api {get} /sca/:agent_id/checks/:policy_id Get security configuration assessment (SCA) checks database
  * @apiName GetSCAAgentChecks
  * @apiGroup Info
  *
  * @apiParam {Number} [agent_id] Agent ID.
- * @apiParam {String} [policy_id] Filters by scan id
+ * @apiParam {String} [policy_id] Filters by policy id
  * @apiParam {String} [title] Filters by title
  * @apiParam {String} [description] Filters by policy description
  * @apiParam {String} [rationale] Filters by rationale
