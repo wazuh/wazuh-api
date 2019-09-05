@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.11.0]
+
+### Added
+
+- Improvements in the security of the API. `HTTPS` is enabled by default ([#442](https://github.com/wazuh/wazuh-api/pull/442)).
+
 ## [v3.10.0]
 
 ### Added
