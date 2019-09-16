@@ -19,9 +19,9 @@ var router = require('express').Router();
  * @apiGroup OS
  *
  * @apiParam {Number} agent_id Agent ID.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  *
- * @apiDescription Returns the agent's OS info
+ * @apiDescription Returns the agent's OS info.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/os?pretty"
@@ -53,9 +53,9 @@ router.get('/:agent_id/os', function(req, res) {
  * @apiGroup Hardware
  *
  * @apiParam {Number} agent_id Agent ID.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  *
- * @apiDescription Returns the agent's hardware info
+ * @apiDescription Returns the agent's hardware info.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/hardware?pretty"
@@ -95,14 +95,14 @@ router.get('/:agent_id/hardware', function(req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {String} [vendor] Filters by vendor.
  * @apiParam {String} [name] Filters by name.
  * @apiParam {String} [architecture] Filters by architecture.
  * @apiParam {String} [format] Filters by format.
  * @apiParam {String} [version] Filters by version.
  *
- * @apiDescription Returns the agent's packages info
+ * @apiDescription Returns the agent's packages info.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/packages?pretty&limit=2&offset=10&sort=-name"
@@ -114,13 +114,11 @@ router.get('/:agent_id/packages', function(req, res) {
     var data_request = {'function': '/syscollector/:agent_id/packages', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param',
                    'search':'search_param', 'select':'select_param',
-                    'vendor': 'alphanumeric_param', 'name': 'alphanumeric_param',
-                    'architecture': 'alphanumeric_param', 'format': 'alphanumeric_param', 'version' : 'alphanumeric_param'};
-
+                   'vendor': 'encoded_uri', 'name': 'alphanumeric_param',
+                   'architecture': 'alphanumeric_param', 'format': 'alphanumeric_param', 'version' : 'alphanumeric_param'};
 
     if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
         return;
-
     if (!filter.check(req.query, filters, req, res))
         return;
 
@@ -162,7 +160,7 @@ router.get('/:agent_id/packages', function(req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {Number} [pid] Filters by process pid.
  * @apiParam {String} [state] Filters by process state.
  * @apiParam {Number} [ppid] Filters by process parent pid.
@@ -178,7 +176,7 @@ router.get('/:agent_id/packages', function(req, res) {
  * @apiParam {String} [sgroup] Filters by process sgroup.
  * @apiParam {String} [suser] Filters by process suser.
  *
- * @apiDescription Returns the agent's processes info
+ * @apiDescription Returns the agent's processes info.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/processes?pretty&limit=2&offset=10&sort=-name"
@@ -263,7 +261,7 @@ router.get('/:agent_id/processes', function (req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {Number} [pid] Filters by pid.
  * @apiParam {String} [protocol] Filters by protocol.
  * @apiParam {String} [local_ip] Filters by local_ip.
@@ -272,7 +270,7 @@ router.get('/:agent_id/processes', function (req, res) {
  * @apiParam {Number} [tx_queue] Filters by tx_queue.
  * @apiParam {String} [state] Filters by state.
  *
- * @apiDescription Returns the agent's ports info
+ * @apiDescription Returns the agent's ports info.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/ports?pretty&sort=-protocol&limit=2"
@@ -342,14 +340,14 @@ router.get('/:agent_id/ports', function (req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {String} [iface] Filters by interface name.
  * @apiParam {String} [proto] Filters by proto.
  * @apiParam {String} [address] Filters by address.
  * @apiParam {String} [broadcast] Filters by broadcast.
  * @apiParam {String} [netmask] Filters by netmask.
  *
- * @apiDescription Returns the agent's network address info
+ * @apiDescription Returns the agent's network address info.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/netaddr?pretty&limit=2&sort=proto"
@@ -409,13 +407,13 @@ router.get('/:agent_id/netaddr', function (req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {String} [iface] Filters by iface.
  * @apiParam {String} [type] Filters by type.
  * @apiParam {String} [gateway] Filters by gateway.
  * @apiParam {String} [dhcp] Filters by dhcp.
  *
- * @apiDescription Returns the agent's network protocol info
+ * @apiDescription Returns the agent's network protocol info.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/netproto?pretty&limit=2&sort=type"
@@ -473,7 +471,7 @@ router.get('/:agent_id/netproto', function (req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {String} [name] Filters by name.
  * @apiParam {String} [adapter] Filters by adapter.
  * @apiParam {String} [type] Filters by type.
@@ -488,7 +486,7 @@ router.get('/:agent_id/netproto', function (req, res) {
  * @apiParam {String} [tx_dropped] Filters by tx_dropped.
  * @apiParam {String} [rx_dropped] Filters by rx_dropped.
  *
- * @apiDescription Returns the agent's network interface info
+ * @apiDescription Returns the agent's network interface info.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/netiface?pretty&limit=2&sort=state"

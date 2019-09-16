@@ -1,6 +1,28 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.10.0]
+
+### Added
+
+- New API requests:
+    * `GET/rules/hipaa` ([#397](https://github.com/wazuh/wazuh-api/pull/397)).
+    * `GET/rules/nist-800-53` ([#397](https://github.com/wazuh/wazuh-api/pull/397)).
+    * `GET/rules/gpg13` ([#389](https://github.com/wazuh/wazuh-api/pull/389)).
+    * `GET/summary/agents` ([#429](https://github.com/wazuh/wazuh-api/pull/429)).
+- New filters in request `GET/rules`:
+    - `hipaa`: Filters the rules by hipaa requirement ([#397](https://github.com/wazuh/wazuh-api/pull/397)).
+    - `nist-800-53`: Filters the rules by nist-800-53 requirement ([#397](https://github.com/wazuh/wazuh-api/pull/397)).
+    - `gpg13`: Filters the rules by gpg13 requirement ([#389](https://github.com/wazuh/wazuh-api/pull/389)).
+- Improvements in the security of passwords stored, changed from MD5 to BCrypt encryption, cost 10 as recommended `scripts/configure_api.sh` [#404](https://github.com/wazuh/wazuh-api/pull/404), thanks @hemedga
+- Added Docker environment for Mocha tests ([#400](https://github.com/wazuh/wazuh-api/pull/400)).
+
+### Fixed
+- Fixed bug inserting duplicated agent without any errors ([#318](https://github.com/wazuh/wazuh-api/issues/318))
+- Fixed exception handling for `DELETE/agents` ([#441](https://github.com/wazuh/wazuh-api/pull/441)) 
+- Fixed API installation in Docker CentOS 7 containers ([#408](https://github.com/wazuh/wazuh-api/pull/408)) 
+- Deleted cache usage  in `POST/agents` ([#403](https://github.com/wazuh/wazuh-api/pull/403))
+
 ## [v3.9.0]
 
 ### Added
