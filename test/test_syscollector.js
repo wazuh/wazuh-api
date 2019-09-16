@@ -360,7 +360,7 @@ describe('Syscollector', function () {
 
         it('Filter: vendor', function (done) {
             request(common.url)
-                .get("/syscollector/" + agent_id + "/packages?vendor=" + expected_vendor)
+                .get("/syscollector/" + agent_id + "/packages?vendor=" + encodeURI(expected_vendor))
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -707,7 +707,7 @@ describe('Syscollector', function () {
 
         it('Filter: vendor', function (done) {
             request(common.url)
-                .get("/experimental/syscollector/packages?vendor=" + expected_vendor)
+                .get("/experimental/syscollector/packages?vendor=" + encodeURI(expected_vendor))
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1406,7 +1406,6 @@ describe('Syscollector', function () {
     });  // GET experimental/syscollector/hardware
 
 
-
     describe('GET/experimental/syscollector/processes', function () {
         processes_properties = ['tty', 'rgroup', 'sgroup', 'resident', 'share',
         'session', 'scan_time', 'size', 'scan_id', 'egroup', 'tgid', 'priority',
@@ -1591,7 +1590,7 @@ describe('Syscollector', function () {
 
         it('Filter: state', function (done) {
             request(common.url)
-                .get("/experimental/syscollector/processes?limit=2&offset=1&state=" + expected_state)
+                .get("/experimental/syscollector/processes?limit=2&state=" + expected_state)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1606,7 +1605,7 @@ describe('Syscollector', function () {
 
         it('Filter: ppid', function (done) {
             request(common.url)
-                .get("/experimental/syscollector/processes?limit=2&offset=1&ppid=" + expected_ppid)
+                .get("/experimental/syscollector/processes?limit=2&ppid=" + expected_ppid)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1621,7 +1620,7 @@ describe('Syscollector', function () {
 
         it('Filter: egroup', function (done) {
             request(common.url)
-                .get("/experimental/syscollector/processes?limit=2&offset=1&egroup=" + expected_egroup)
+                .get("/experimental/syscollector/processes?limit=2&egroup=" + expected_egroup)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1636,7 +1635,7 @@ describe('Syscollector', function () {
 
         it('Filter: euser', function (done) {
             request(common.url)
-                .get("/experimental/syscollector/processes?limit=2&offset=1&euser=" + expected_euser)
+                .get("/experimental/syscollector/processes?limit=2&euser=" + expected_euser)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1651,7 +1650,7 @@ describe('Syscollector', function () {
 
         it('Filter: fgroup', function (done) {
             request(common.url)
-                .get("/experimental/syscollector/processes?limit=2&offset=1&fgroup=" + expected_fgroup)
+                .get("/experimental/syscollector/processes?limit=2&fgroup=" + expected_fgroup)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1681,7 +1680,7 @@ describe('Syscollector', function () {
 
         it('Filter: nlwp', function (done) {
             request(common.url)
-                .get("/experimental/syscollector/processes?limit=2&offset=1&nlwp=" + expected_nlwp)
+                .get("/experimental/syscollector/processes?limit=2&nlwp=" + expected_nlwp)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1711,7 +1710,7 @@ describe('Syscollector', function () {
 
         it('Filter: priority', function (done) {
             request(common.url)
-                .get("/experimental/syscollector/processes?limit=2&offset=1&priority=" + expected_priority)
+                .get("/experimental/syscollector/processes?limit=2&priority=" + expected_priority)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1726,7 +1725,7 @@ describe('Syscollector', function () {
 
         it('Filter: rgroup', function (done) {
             request(common.url)
-                .get("/experimental/syscollector/processes?limit=2&offset=1&rgroup=" + expected_rgroup)
+                .get("/experimental/syscollector/processes?limit=2&rgroup=" + expected_rgroup)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1741,7 +1740,7 @@ describe('Syscollector', function () {
 
         it('Filter: ruser', function (done) {
             request(common.url)
-                .get("/experimental/syscollector/processes?limit=2&offset=1&ruser=" + expected_ruser)
+                .get("/experimental/syscollector/processes?limit=2&ruser=" + expected_ruser)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1756,7 +1755,7 @@ describe('Syscollector', function () {
 
         it('Filter: sgroup', function (done) {
             request(common.url)
-                .get("/experimental/syscollector/processes?limit=2&offset=1&sgroup=" + expected_sgroup)
+                .get("/experimental/syscollector/processes?limit=2&sgroup=" + expected_sgroup)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1771,7 +1770,7 @@ describe('Syscollector', function () {
 
         it('Filter: suser', function (done) {
             request(common.url)
-                .get("/experimental/syscollector/processes?limit=2&offset=1&suser=" + expected_suser)
+                .get("/experimental/syscollector/processes?limit=2&suser=" + expected_suser)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)

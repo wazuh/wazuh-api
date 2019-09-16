@@ -183,7 +183,7 @@ app.use(function(req, res, next) {
     if (typeof app_version_header != 'undefined'){
         if (!regex_version.test(app_version_header)){
             go_next = false;
-            res_h.bad_request(req, res, "801");
+            res_h.bad_request(req, res, 801);
         }
         else{
             var app_version_mmp = app_version_header.split('.'); // major.minor.patch
@@ -191,7 +191,7 @@ app.use(function(req, res, next) {
 
             if (app_mm_version != current_mm_version){
                 go_next = false;
-                res_h.bad_request(req, res, "802", "Expected version '" + current_mm_version + ".x', and found '" + app_mm_version + ".x'.");
+                res_h.bad_request(req, res, 802, "Expected version '" + current_mm_version + ".x', and found '" + app_mm_version + ".x'.");
             }
         }
     }
@@ -208,16 +208,16 @@ app.use (function (err, req, res, next){
 
     if ( err == "Error: invalid json" ){
         logger.debug(req.connection.remoteAddress + " " + req.method + " " + req.path);
-        res_h.bad_request(req, res, "607");
+        res_h.bad_request(req, res, 607);
     }
     else if ('status' in err && err.status == 400){
         var msg = "";
         if ('body' in err)
             msg = "Body is not correct.";
-        res_h.bad_request(req, res, "614", msg);
+        res_h.bad_request(req, res, 614, msg);
     }
     else if (err == "PayloadTooLargeError: request entity too large"){
-        res_h.bad_request(req, res, "701");
+        res_h.bad_request(req, res, 701);
     }
     else{
         logger.log("Internal Error");
