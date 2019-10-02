@@ -352,6 +352,50 @@ describe('Rules', function() {
                 done();
             });
         });
+
+        it('Filters: query 1', function(done) {
+            request(common.url)
+            .get("/rules?q=file~0010;id=2")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.error.should.equal(0);
+                res.body.data.should.have.properties(['items', 'totalItems']);
+                res.body.data.totalItems.should.equal(1);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.have.properties(rule_fields);
+                res.body.data.items[0].file.should.startWith('0010');
+                res.body.data.items[0].id.should.equal(2);
+
+                done();
+            });
+        });
+
+        it('Filters: query 2', function(done) {
+            request(common.url)
+            .get("/rules?q=description~McAfee;level=12")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.error.should.equal(0);
+                res.body.data.should.have.properties(['items', 'totalItems']);
+                res.body.data.totalItems.should.equal(2);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.have.properties(rule_fields);
+                res.body.data.items[0].level.should.equal(12);
+
+                done();
+            });
+        });
+
     });  // GET/rules
 
     describe('GET/rules/groups', function() {
