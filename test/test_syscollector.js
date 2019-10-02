@@ -19,8 +19,6 @@ var sqlite3 = require('sqlite3').verbose();
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 describe('Syscollector', function () {
-
-
     agent_id = "000"
     os_fields = ["sysname","version","architecture","scan","release","hostname","os"]
     describe('GET/syscollector/:agent_id/os', function () {
@@ -4546,17 +4544,21 @@ describe('Syscollector', function () {
         agent_hotfixes = '001'
         db = new sqlite3.Database(common.ossec_path + '/queue/db/' + agent_hotfixes + '.db')
         hotfixes_fields = ['scan_id', 'scan_time', 'hotfix']
+        // for writing in agent database through Wazuh DB
+        const {spawn} = require('child_process')
+        // path to script which send a query to WazuhDB
+        var wdb_script_path = __dirname + '/utils/send_to_wdb.py'
 
         // insert test data into DB
         before(function () {
-            query = "INSERT OR IGNORE INTO sys_hotfixes(scan_id, scan_time, hotfix) VALUES" +
-                "(1408519641, '2019/08/05 12:06:26', 'KB2533552')" +
-                ",(1408519641, '2019/08/05 12:06:26', 'KB2534366')" +
-                ",(1408519641, '2019/08/05 12:06:26', 'KB2562937')" +
-                ",(1408519641, '2019/08/05 12:06:26', 'KB2998812')" +
-                ",(1408519641, '2019/08/05 12:06:26', 'KB3004469')" +
-                ",(1408519641, '2019/08/05 12:06:26', 'KB3015428')"
-            db.run(query)
+            query = "agent 001 sql insert or ignore into sys_hotfixes(scan_id, scan_time, hotfix) values" +
+                "(1408519641, '2019/08/05 12:06:26', 'KB2533552')," +
+                "(1408519641, '2019/08/05 12:06:26', 'KB2534366')," +
+                "(1408519641, '2019/08/05 12:06:26', 'KB2562937')," +
+                "(1408519641, '2019/08/05 12:06:26', 'KB2998812')," +
+                "(1408519641, '2019/08/05 12:06:26', 'KB3004469')," +
+                "(1408519641, '2019/08/05 12:06:26', 'KB3015428');"
+            spawn('python3', [wdb_script_path, '-q', query])
         });
 
         it('Request', function (done) {
@@ -4740,10 +4742,10 @@ describe('Syscollector', function () {
                 });
         });
 
-        // delete test data
+        // clean test data
         after(function () {
-            query = "DELETE FROM sys_hotfixes WHERE scan_id=1408519641"
-            db.run(query)
+            query = "agent 001 sql delete from sys_hotfixes;"
+            spawn('python3', [wdb_script_path, '-q', query])
         });
 
     });  // GET/syscollector/:agent_id/hotfixes
