@@ -23,7 +23,7 @@ var router = require('express').Router();
  * @apiParam {Boolean} custom Whether the specified command is a custom command or not.
  * @apiParam {String[]} arguments Array with command arguments.
  *
- * @apiDescription Runs an Active Response command on a specified agent
+ * @apiDescription Runs an Active Response command on a specified agent.
  *
  * @apiExample {curl} Example usage*:
  *     curl -u foo:bar -k -X PUT -d '{"command":"restart-ossec0", "arguments": ["-", "null", "(from_the_server)", "(no_rule_id)"]}' -H 'Content-Type:application/json' "https://127.0.0.1:55000/active-response/001?pretty"

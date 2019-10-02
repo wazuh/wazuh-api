@@ -51,7 +51,7 @@ router.get('/', cache(), function(req, res) {
  * @apiParam {String="enabled","disabled", "all"} [status] Filters the decoders by status.
  * @apiParam {String} [file] Filters by filename.
  * @apiParam {String} [path] Filters by path.
- * @apiParam {String} [download] Downloads the file
+ * @apiParam {String} [download] Name of the decoder file to download.
  *
  * @apiDescription Returns all decoders files included in ossec.conf.
  *
@@ -101,7 +101,7 @@ router.get('/files', cache(), function(req, res) {
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  *
- * @apiDescription Returns all parent decoders included in ossec.conf
+ * @apiDescription Returns all parent decoders included in ossec.conf.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/decoders/parents?pretty&offset=0&limit=2&sort=-file"
@@ -113,7 +113,7 @@ router.get('/parents', cache(), function(req, res) {
     req.apicacheGroup = "decoders";
 
     var data_request = {'function': '/decoders', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param'};
+    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort': 'sort_param', 'search': 'search_param'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
