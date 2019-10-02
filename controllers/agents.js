@@ -22,7 +22,7 @@ var router = require('express').Router();
  * @apiParam {String} [select] Select which fields to return (separated by comma).
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
  * @apiParam {String} [q] Query to filter results by. For example q="status=Active"
  * @apiParam {String} [older_than] Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date.
@@ -229,7 +229,7 @@ router.post('/groups/:group_id/configuration', function(req, res) {
 
     if (!filter.check(req.params, filters, req, res))  // Filter with error
         return;
-    
+
     if (!filter.check_xml(req.body, req, res)) return;
 
     data_request['arguments']['group_id'] = req.params.group_id;
@@ -239,7 +239,7 @@ router.post('/groups/:group_id/configuration', function(req, res) {
         res_h.bad_request(req, res, 702, err);
         return;
     }
-    
+
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -289,7 +289,7 @@ router.post('/groups/:group_id/files/:file_name', function(req, res) {
  * @apiParam {String} [file_name] Filename
  * @apiParam {String="conf","rootkit_files", "rootkit_trojans", "rcl"} [type] Type of file.
  * @apiParam {String="json","xml"} [format] Optional. Output format (JSON, XML).
- * 
+ *
  * @apiDescription Returns the specified file belonging to the group parsed to JSON.
  *
  * @apiExample {curl} Example usage*:
@@ -316,9 +316,9 @@ router.get('/groups/:group_id/files/:filename', cache(), function(req, res) {
     if ('type' in req.query)
         data_request['arguments']['type_conf'] = req.query.type;
 
-    if ('format' in req.query) 
+    if ('format' in req.query)
         data_request['arguments']['return_format'] = req.query.format;
-            
+
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
@@ -397,7 +397,7 @@ router.get('/outdated', cache(), function(req, res) {
  * @apiGroup Info
  *
  * @apiParam {String} agent_name Agent name.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  *
  * @apiDescription Returns various information from an agent called :agent_name.
  *
@@ -435,7 +435,7 @@ router.get('/name/:agent_name', cache(), function(req, res) {
  * @apiGroup Info
  *
  * @apiParam {Number} agent_id Agent ID.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  *
  * @apiDescription Returns various information from an agent.
  *
@@ -541,7 +541,7 @@ router.get('/:agent_id/upgrade_result', function(req, res) {
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/001/config/logcollector/localfile?pretty"
  *
  */
- router.get('/:agent_id/config/:component/:configuration', function(req, res) {     
+ router.get('/:agent_id/config/:component/:configuration', function(req, res) {
     logger.debug(req.connection.remoteAddress + " GET /agents/:agent_id/config/:component/:configuration");
 
     var data_request = {'function': '/agents/:agent_id/config/:component/:configuration', 'arguments': {}};
@@ -563,14 +563,14 @@ router.get('/:agent_id/upgrade_result', function(req, res) {
  *
  * @apiParam {Number} agent_id Agent ID.
  *
- * @apiDescription Returns the sync status in JSON format
+ * @apiDescription Returns the sync status in JSON format.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/agents/001/group/is_sync?pretty"
  *
  */
-router.get('/:agent_id/group/is_sync', function(req, res) {     
-    param_checks = {'agent_id': 'numbers'};     
+router.get('/:agent_id/group/is_sync', function(req, res) {
+    param_checks = {'agent_id': 'numbers'};
     templates.array_request('/agents/:agent_id/group/is_sync', req, res, "agents", param_checks);
 })
 
@@ -686,7 +686,7 @@ router.put('/:agent_id/restart', function(req, res) {
  * @apiParam {Number} agent_id Agent unique ID.
  * @apiParam {String} [wpk_repo] WPK repository.
  * @apiParam {String} [version] Wazuh version.
- * @apiParam {Boolean} [use_http] Use protocol http. If it's false use https. By default the value is set to false.
+ * @apiParam {Boolean} [use_http] Use protocol HTTP. If it is false use HTTPS. By default the value is set to false.
  * @apiParam {number="0","1"} [force] Force upgrade.
  *
  * @apiDescription Upgrade the agent using a WPK file from online repository.
@@ -846,20 +846,20 @@ router.put('/:agent_id/group/:group_id', function(req, res) {
  * @apiName PostGroupAgents
  * @apiGroup Groups
  *
- * @apiParam {Number} agent_id_list List of agents ID.
+ * @apiParam {String[]} ids List of agents ID.
  * @apiParam {String} group_id Group ID.
  *
  * @apiDescription Adds a list of agents to the specified group.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -X POST -H "Content-Type:application/json" -d '{"ids":["001","002"]}' "https://localhost:55000/agents/group/dmz?pretty" -k
+ *     curl -u foo:bar -X POST -H "Content-Type:application/json" -d '{"ids":["001","002"]}' "https://127.0.0.1:55000/agents/group/dmz?pretty" -k
  *
  */
 router.post('/group/:group_id', function(req, res) {
     logger.debug(req.connection.remoteAddress + " POST /agents/group/:group_id");
 
     var data_request = {'function': 'POST/agents/group/:group_id', 'arguments': {}};
-    var filters = {'group_id':'names', 'ids':'array_numbers'}
+    var filters = {'group_id': 'names', 'ids': 'array_numbers'}
 
     if (!filter.check(req.params, filters, req, res))  // Filter with error
         return;
@@ -892,11 +892,15 @@ router.delete('/groups', function(req, res) {
 
     var data_request = {'function': 'DELETE/agents/groups', 'arguments': {}};
 
-    if (!filter.check(req.query, {'ids':'array_names'}, req, res))  // Filter with error
+    if (!filter.check(req.query, {'ids': 'array_names'}, req, res))  // Filter with error
         return;
 
     if ('ids' in req.query){
-        data_request['arguments']['group_id'] = req.query.ids.split(',');
+        if (typeof(req.query.ids) == 'string') {
+            data_request['arguments']['group_id'] = req.query.ids.split(',');
+        } else {
+            data_request['arguments']['group_id'] = req.query.ids;
+        }
         execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
     }else
         res_h.bad_request(req, res, 604, "Missing field: 'ids'");
@@ -909,7 +913,7 @@ router.delete('/groups', function(req, res) {
  * @apiGroup Delete
  *
  * @apiParam {Number} agent_id Agent ID.
- * @apiParam {String} purge Delete an agent from the key store.
+ * @apiParam {Boolean} purge Delete an agent from the key store. This parameter is only valid if purge is set to no in the manager's ossec.conf.
  *
  * @apiDescription Removes an agent.
  *
@@ -990,13 +994,13 @@ router.delete('/:agent_id/group/:group_id', function(req, res) {
  * @apiName DeleteGroupAgents
  * @apiGroup Groups
  *
- * @apiParam {String} agent_id Agent IDs separated by commas.
+ * @apiParam {String} ids Agent IDs separated by commas.
  * @apiParam {String} group_id Group ID.
  *
- * @apiDescription Remove a list of agents of a group
+ * @apiDescription Remove a list of agents of a group.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X DELETE "https://localhost:55000/agents/group/dmz?ids=001,002&pretty"
+ *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents/group/dmz?ids=001,002&pretty"
  *
  */
 router.delete('/group/:group_id', function(req, res) {
@@ -1012,7 +1016,14 @@ router.delete('/group/:group_id', function(req, res) {
         return;
 
     data_request['arguments']['group_id'] = req.params.group_id;
-    data_request['arguments']['agent_id_list'] = req.query.ids.split(',');
+
+    if ('ids' in req.query) {
+        if (typeof(req.query.ids) == 'string') {
+            data_request['arguments']['agent_id_list'] = req.query.ids.split(',');
+        } else {
+            data_request['arguments']['agent_id_list'] = req.query.ids;
+        }
+    }
 
     if ('ids' in req.query){
         execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
@@ -1051,11 +1062,11 @@ router.delete('/groups/:group_id', function(req, res) {
  * @apiGroup Delete
  *
  * @apiParam {String} ids Agent IDs separated by commas.
- * @apiParam {Boolean} purge Delete an agent from the key store.
+ * @apiParam {Boolean} purge Delete an agent from the key store. This parameter is only valid if purge is set to no in the manager's ossec.conf.
  * @apiParam {String="active", "pending", "neverconnected", "disconnected"} [status] Filters by agent status. Use commas to enter multiple statuses.
  * @apiParam {String} older_than Filters out disconnected agents for longer than specified. Time in seconds, '[n_days]d', '[n_hours]h', '[n_minutes]m' or '[n_seconds]s'. For never connected agents, uses the register date. Default value: 7d.
  *
- * @apiDescription Removes agents, using a list of them or a criterion based on the status or time of the last connection. The Wazuh API must be restarted after removing an agent.
+ * @apiDescription Removes agents, using a list of them or a criterion based on the status or time of the last connection.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X DELETE "https://127.0.0.1:55000/agents?older_than=10s&purge&ids=003,005&pretty"
@@ -1081,8 +1092,13 @@ router.delete('/', function(req, res) {
     else
         data_request['arguments']['purge'] = false;
 
-    if ('ids' in req.query)
-        data_request['arguments']['list_agent_ids'] = req.query.ids.split(',');
+    if ('ids' in req.query) {
+        if (typeof(req.query.ids) == 'string') {
+            data_request['arguments']['list_agent_ids'] = req.query.ids.split(',');
+        } else {
+            data_request['arguments']['list_agent_ids'] = req.query.ids;
+        }
+    }
 
     if ('older_than' in req.query)
         data_request['arguments']['older_than'] = req.query.older_than;
@@ -1231,7 +1247,7 @@ router.post('/insert', function(req, res) {
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [fields] List of fields affecting the operation.
- * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [select] List of selected fields separated by commas.
  * @apiParam {String} [q] Query to filter result. For example q="status=Active"
  *
  * @apiDescription Returns all the different combinations that agents have for the selected fields. It also indicates the total number of agents that have each combination.

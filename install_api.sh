@@ -213,10 +213,10 @@ previous_checks() {
     check_program_installed "curl"
     check_program_installed "gcc"
 
-    NODE_DIR=$(which nodejs 2> /dev/null)
+    NODE_DIR=$(command -v nodejs 2> /dev/null)
 
     if [ "X$NODE_DIR" = "X" ]; then
-        NODE_DIR=$(which node 2> /dev/null)
+        NODE_DIR=$(command -v node 2> /dev/null)
 
         if [ "X$NODE_DIR" = "X" ]; then
             echo "NodeJS binaries not found. Is NodeJS installed?"
