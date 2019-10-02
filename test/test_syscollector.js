@@ -4545,8 +4545,7 @@ describe('Syscollector', function () {
 
         agent_hotfixes = '001'
         db = new sqlite3.Database(common.ossec_path + '/queue/db/' + agent_hotfixes + '.db')
-        hotfixes_fields = ['scan', 'hotfix']
-        scan_fields = ['id', 'time']
+        hotfixes_fields = ['scan_id', 'scan_time', 'hotfix']
 
         // insert test data into DB
         before(function () {
@@ -4575,7 +4574,6 @@ describe('Syscollector', function () {
                     res.body.data.totalItems.should.be.above(0)
                     res.body.data.items.should.be.instanceof(Array)
                     res.body.data.items[0].should.have.properties(hotfixes_fields)
-                    res.body.data.items[0].scan.should.have.properties(scan_fields)
 
                     done();
 
@@ -4635,7 +4633,6 @@ describe('Syscollector', function () {
                     res.body.data.totalItems.should.be.above(0)
                     res.body.data.items.should.be.instanceof(Array)
                     res.body.data.items[0].should.have.properties(hotfixes_fields)
-                    res.body.data.items[0].scan.should.have.properties(scan_fields)
 
                     done();
 
@@ -4674,7 +4671,6 @@ describe('Syscollector', function () {
                     res.body.data.totalItems.should.be.above(0)
                     res.body.data.items.should.be.instanceof(Array)
                     res.body.data.items[0].should.have.properties(hotfixes_fields)
-                    res.body.data.items[0].scan.should.have.properties(scan_fields)
 
                     done();
 
@@ -4696,7 +4692,6 @@ describe('Syscollector', function () {
                     res.body.data.totalItems.should.be.above(0)
                     res.body.data.items.should.be.instanceof(Array)
                     res.body.data.items[0].should.have.properties(hotfixes_fields)
-                    res.body.data.items[0].scan.should.have.properties(scan_fields)
 
                     done();
 
@@ -4718,7 +4713,6 @@ describe('Syscollector', function () {
                     res.body.data.totalItems.should.be.above(0)
                     res.body.data.items.should.be.instanceof(Array)
                     res.body.data.items[0].should.have.properties(hotfixes_fields)
-                    res.body.data.items[0].scan.should.have.properties(scan_fields)
 
                     done();
 
@@ -4740,7 +4734,6 @@ describe('Syscollector', function () {
                     res.body.data.totalItems.should.be.above(0)
                     res.body.data.items.should.be.instanceof(Array)
                     res.body.data.items[0].should.have.properties(hotfixes_fields)
-                    res.body.data.items[0].scan.should.have.properties(scan_fields)
 
                     done();
 
