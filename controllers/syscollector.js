@@ -279,7 +279,7 @@ router.get('/:agent_id/netiface', function (req, res) {
  * @apiDescription Returns all hotfixes installed by Microsoft(R) in Windows(R) systems (KB... fixes)
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/hotfixes?pretty&limit=2"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/001/hotfixes?pretty&limit=2"
  *
  */
 router.get('/:agent_id/hotfixes', function(req, res) {
