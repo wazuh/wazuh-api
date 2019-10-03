@@ -276,7 +276,7 @@ router.get('/:agent_id/netiface', function (req, res) {
  * @apiParam {String} [q] Query to filter results by.
  * @apiParam {String} [hotfix] Filters by hotfix.
  *
- * @apiDescription Returns the agent's hotfixes info
+ * @apiDescription Returns all hotfixes installed by Microsoft(R) in Windows(R) systems (KB... fixes)
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/000/hotfixes?pretty&limit=2"
