@@ -56,6 +56,7 @@ router.get('/:agent_id', cache(), function(req, res) {
  * @apiParam {String} [registry] Filters by registry
  * @apiParam {String} [references] Filters by references
  * @apiParam {String} [result] Filters by result
+ * @apiParam {String} [condition] Filters by condition
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
@@ -69,8 +70,10 @@ router.get('/:agent_id', cache(), function(req, res) {
  */
 router.get('/:agent_id/checks/:policy_id', cache(), function(req, res) {
     query_checks = {'title': 'alphanumeric_param', 'description': 'alphanumeric_param',
-        'rationale': 'alphanumeric_param', 'remediation': 'alphanumeric_param', 'file': 'paths', 'process': 'alphanumeric_param',
-        'directory': 'paths', 'registry': 'alphanumeric_param', 'references': 'alphanumeric_param', 'result': 'alphanumeric_param'
+        'rationale': 'alphanumeric_param', 'remediation': 'alphanumeric_param',
+        'file': 'paths', 'process': 'alphanumeric_param', 'directory': 'paths',
+        'registry': 'alphanumeric_param', 'references': 'alphanumeric_param',
+        'result': 'alphanumeric_param', 'condition': 'alphanumeric_param'
     };
     templates.array_request("/sca/:agent_id/checks/:policy_id", req, res,
                "sca",
