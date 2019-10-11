@@ -34,8 +34,8 @@ var router = require('express').Router();
  *
  */
 router.get('/:agent_id', cache(), function(req, res) {
-    query_checks = {'name':'alphanumeric_param', 'description':'alphanumeric_param', 'references':'alphanumeric_param'};
-    templates.array_request("/sca/:agent_id", req, res, "sca", {'agent_id':'numbers'}, query_checks);
+    query_checks = {'name':'alphanumeric_param', 'description': 'alphanumeric_param', 'references': 'encoded_uri'};
+    templates.array_request("/sca/:agent_id", req, res, "sca", {'agent_id': 'numbers'}, query_checks);
 })
 
 
@@ -72,7 +72,7 @@ router.get('/:agent_id/checks/:policy_id', cache(), function(req, res) {
     query_checks = {'title': 'alphanumeric_param', 'description': 'alphanumeric_param',
         'rationale': 'alphanumeric_param', 'remediation': 'alphanumeric_param',
         'file': 'paths', 'process': 'alphanumeric_param', 'directory': 'paths',
-        'registry': 'alphanumeric_param', 'references': 'alphanumeric_param',
+        'registry': 'alphanumeric_param', 'references': 'encoded_uri',
         'result': 'alphanumeric_param', 'condition': 'alphanumeric_param'
     };
     templates.array_request("/sca/:agent_id/checks/:policy_id", req, res,
