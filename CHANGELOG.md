@@ -5,7 +5,9 @@ All notable changes to this project will be documented in this file.
 
 ## Added
 - The query parameter (q) now can be used filter rules, decoders or logs ([#248](https://github.com/wazuh/wazuh-api/issues/248))
-- New endpoint `PUT /agents/group/{group_id}/restart` to restart all agents in a group ([#411](https://github.com/wazuh/wazuh-api/issues/411))
+- New API requests:
+    * `PUT /agents/group/{group_id}/restart` to restart all agents in a group ([#411](https://github.com/wazuh/wazuh-api/issues/411))
+    * `GET /syscollector/:agent_id/hotfixes` to get hotfixes info ([#423](https://github.com/wazuh/wazuh-api/pull/423))
 
 ## Changed
 - Improved error descriptions for the `PUT /agents/:agent_id/upgrade_custom` API call ([#3911](https://github.com/wazuh/wazuh/issues/3911))
