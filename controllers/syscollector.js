@@ -60,6 +60,7 @@ router.get('/:agent_id/hardware', function(req, res) {
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields separated by commas.
+ * @apiParam {String} [q] Query to filter results by.
  * @apiParam {String} [vendor] Filters by vendor.
  * @apiParam {String} [name] Filters by name.
  * @apiParam {String} [architecture] Filters by architecture.
@@ -90,6 +91,7 @@ router.get('/:agent_id/packages', function(req, res) {
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields separated by commas.
+ * @apiParam {String} [q] Query to filter results by.
  * @apiParam {Number} [pid] Filters by process pid.
  * @apiParam {String} [state] Filters by process state.
  * @apiParam {Number} [ppid] Filters by process parent pid.
@@ -134,6 +136,7 @@ router.get('/:agent_id/processes', function (req, res) {
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields separated by commas.
+ * @apiParam {String} [q] Query to filter results by.
  * @apiParam {Number} [pid] Filters by pid.
  * @apiParam {String} [protocol] Filters by protocol.
  * @apiParam {String} [local_ip] Filters by local_ip.
@@ -167,6 +170,7 @@ router.get('/:agent_id/ports', function (req, res) {
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields separated by commas.
+ * @apiParam {String} [q] Query to filter results by.
  * @apiParam {String} [iface] Filters by interface name.
  * @apiParam {String} [proto] Filters by proto.
  * @apiParam {String} [address] Filters by address.
@@ -197,6 +201,7 @@ router.get('/:agent_id/netaddr', function (req, res) {
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields separated by commas.
+* @apiParam {String} [q] Query to filter results by.
  * @apiParam {String} [iface] Filters by iface.
  * @apiParam {String} [type] Filters by type.
  * @apiParam {String} [gateway] Filters by gateway.
@@ -225,6 +230,7 @@ router.get('/:agent_id/netproto', function (req, res) {
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [select] List of selected fields separated by commas.
+ * @apiParam {String} [q] Query to filter results by.
  * @apiParam {String} [name] Filters by name.
  * @apiParam {String} [adapter] Filters by adapter.
  * @apiParam {String} [type] Filters by type.
@@ -254,5 +260,32 @@ router.get('/:agent_id/netiface', function (req, res) {
                   };
     templates.array_request("/syscollector/:agent_id/netiface", req, res, "syscollector", {'agent_id': 'numbers'}, filters);
 })
+
+
+/**
+ * @api {get} /syscollector/:agent_id/hotfixes Get hotfixes info
+ * @apiName GetHotfixes_agent
+ * @apiGroup Hotfixes
+ *
+ * @apiParam {Number} agent_id Agent ID.
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String} [select] List of selected fields.
+ * @apiParam {String} [q] Query to filter results by.
+ * @apiParam {String} [hotfix] Filters by hotfix.
+ *
+ * @apiDescription Returns all hotfixes installed by Microsoft(R) in Windows(R) systems (KB... fixes)
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/syscollector/001/hotfixes?pretty&limit=2"
+ *
+ */
+router.get('/:agent_id/hotfixes', function(req, res) {
+    var filters = {'hotfix': 'alphanumeric_param'};
+    templates.array_request("/syscollector/:agent_id/hotfixes", req, res, "syscollector", {'agent_id': 'numbers'}, filters);
+})
+
 
 module.exports = router;

@@ -444,6 +444,28 @@ setup_api() {
     else
         print "\nSkipping service installation."
     fi
+
+    # HTTPS never will be enabled if update=yes
+    if [ "X${update}" = "Xno" ]; then
+        if !([ "X${DISABLE_HTTPS}" = "Xy" ] || [ "X${DISABLE_HTTPS}" = "XY" ]); then
+            # enable HTTPS
+            configure_https
+        fi
+    fi
+
+}
+
+configure_https() {
+    HTTPS="Y"
+    PASSWORD="wazuh"
+    COUNTRY="XX"
+    STATE="XX"
+    LOCALITY="XX"
+    ORG_NAME="XX"
+    ORG_UNIT="XX"
+    COMMON_NAME="XX"
+    . ./scripts/configure_api.sh
+    change_https
 }
 
 main() {

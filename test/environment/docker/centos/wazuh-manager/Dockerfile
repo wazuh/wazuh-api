@@ -34,7 +34,7 @@ RUN /var/ossec/framework/python/bin/pip3 install pytest defusedxml ptvsd pydevd-
 
 # install and configure Wazuh API
 RUN curl --silent --location https://rpm.nodesource.com/setup_12.x | bash - && yum -y install nodejs && npm config set user 0
-RUN git clone https://github.com/wazuh/wazuh-api && cd /wazuh-api && git checkout ${wazuh_api_branch} && ./install_api.sh && npm install mocha apidoc -g && npm install glob supertest mocha should moment mochawesome
+RUN git clone https://github.com/wazuh/wazuh-api && cd /wazuh-api && git checkout ${wazuh_api_branch} && ./install_api.sh && npm install mocha apidoc -g && npm install glob supertest mocha should moment mochawesome sqlite3
 
 # install ZSH
 RUN yum install zsh -y
