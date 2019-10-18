@@ -317,7 +317,7 @@ describe('Rules', function() {
 
         it('Filters: nist-800-53', function(done) {
             request(common.url)
-            .get("/rules?nist-800-53=AU.1")
+            .get("/rules?nist-800-53=AU.14")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)

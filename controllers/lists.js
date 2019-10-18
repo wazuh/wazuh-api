@@ -23,7 +23,7 @@ var router = require('express').Router();
  * @apiParam {String} [search] Looks for elements with the specified string.
  * @apiParam {String} [path] Filters by path.
  *
- * @apiDescription Returns the content of all CDB lists
+ * @apiDescription Returns the content of all CDB lists.
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/lists?pretty&path=etc/lists/audit-keys"
@@ -59,6 +59,11 @@ router.get('/', cache(), function(req, res) {
  * @api {get} /lists/files Get paths from all lists
  * @apiName GetListPath
  * @apiGroup Info
+ *
+ * @apiParam {Number} [offset] First element to return in the collection.
+ * @apiParam {Number} [limit=500] Maximum number of elements to return.
+ * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
+ * @apiParam {String} [search] Looks for elements with the specified string.
  *
  * @apiDescription Returns the path from all lists.
  *

@@ -7,6 +7,23 @@ All notable changes to this project will be documented in this file.
 
 - Improvements in the security of the API. `HTTPS` is enabled by default ([#442](https://github.com/wazuh/wazuh-api/pull/442)).
 
+## [v3.11.0]
+
+## Added
+- The query parameter (q) now can be used filter rules, decoders or logs ([#248](https://github.com/wazuh/wazuh-api/issues/248))
+- New API requests:
+    * `PUT /agents/group/{group_id}/restart` to restart all agents in a group ([#411](https://github.com/wazuh/wazuh-api/issues/411))
+    * `GET /syscollector/:agent_id/hotfixes` to get hotfixes info ([#423](https://github.com/wazuh/wazuh-api/pull/423))
+
+## Changed
+- Improved error descriptions for the `PUT /agents/:agent_id/upgrade_custom` API call ([#3911](https://github.com/wazuh/wazuh/issues/3911))
+
+
+## [v3.10.1]
+
+There are no changes for Wazuh API in this version.
+
+
 ## [v3.10.0]
 
 ### Added
@@ -15,14 +32,19 @@ All notable changes to this project will be documented in this file.
     * `GET/rules/hipaa` ([#397](https://github.com/wazuh/wazuh-api/pull/397)).
     * `GET/rules/nist-800-53` ([#397](https://github.com/wazuh/wazuh-api/pull/397)).
     * `GET/rules/gpg13` ([#389](https://github.com/wazuh/wazuh-api/pull/389)).
+    * `GET/summary/agents` ([#429](https://github.com/wazuh/wazuh-api/pull/429)).
 - New filters in request `GET/rules`:
     - `hipaa`: Filters the rules by hipaa requirement ([#397](https://github.com/wazuh/wazuh-api/pull/397)).
     - `nist-800-53`: Filters the rules by nist-800-53 requirement ([#397](https://github.com/wazuh/wazuh-api/pull/397)).
     - `gpg13`: Filters the rules by gpg13 requirement ([#389](https://github.com/wazuh/wazuh-api/pull/389)).
-- Improvements in the security of passwords stored, changed from MD5 to BCrypt encryption, cost 10 as recommended `scripts/configure_api.sh` [#380](https://github.com/wazuh/wazuh-api/pull/380), thanks @hemedga
+- Improvements in the security of passwords stored, changed from MD5 to BCrypt encryption, cost 10 as recommended `scripts/configure_api.sh` [#404](https://github.com/wazuh/wazuh-api/pull/404), thanks @hemedga
+- Added Docker environment for Mocha tests ([#400](https://github.com/wazuh/wazuh-api/pull/400)).
 
 ### Fixed
 - Fixed bug inserting duplicated agent without any errors ([#318](https://github.com/wazuh/wazuh-api/issues/318))
+- Fixed exception handling for `DELETE/agents` ([#441](https://github.com/wazuh/wazuh-api/pull/441)) 
+- Fixed API installation in Docker CentOS 7 containers ([#408](https://github.com/wazuh/wazuh-api/pull/408)) 
+- Deleted cache usage  in `POST/agents` ([#403](https://github.com/wazuh/wazuh-api/pull/403))
 
 ## [v3.9.0]
 

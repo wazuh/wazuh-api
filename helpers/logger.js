@@ -139,7 +139,7 @@ stream.on('rotated', function(filename) {
             fs.chownSync(absolute_path_log, ossec_uid, ossec_gid);
         }
 
-    // Prevents from crashing the service if the above instructions fail    
+    // Prevents from crashing the service if the above instructions fail
     } catch (error) {
         try {
             logger.error(error.message || error);

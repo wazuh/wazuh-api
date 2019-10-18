@@ -22,10 +22,23 @@ echo 'wazuh_database.sync_syscheck=1' >> /var/ossec/etc/local_internal_options.c
 # configure API for development
 sed -i 's/config.logs = "info";/config.logs = "debug";/g' /var/ossec/api/configuration/config.js
 sed -i 's/config.cache_enabled = "yes";/config.cache_enabled = "no";/g' /var/ossec/api/configuration/config.js
-sed -i 's/config.experimental_features  = false;/config.experimental_features = true;/g' /var/ossec/api/configuration/config.js        
-
-# disable HTTPS for mocha tests
-sed -i 's/https/http/g' /wazuh-api/test/common.js
+sed -i 's/config.experimental_features  = false;/config.experimental_features = true;/g' /var/ossec/api/configuration/config.js
+cat <<EOT >> /var/ossec/api/configuration/preloaded_vars.conf
+COUNTRY="US"
+STATE="State"
+LOCALITY="Locality"
+ORG_NAME="Org Name"
+ORG_UNIT="Org Unit Name"
+COMMON_NAME="Common Name"
+PASSWORD="password"
+USER=foo
+PASS=bar
+PORT=55000
+HTTPS=Y
+AUTH=Y
+PROXY=N
+EOT
+/var/ossec/api/scripts/configure_api.sh
 
 # start Wazuh
 /var/ossec/bin/ossec-control start

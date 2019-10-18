@@ -2,12 +2,13 @@ FROM centos:7
 
 ARG wazuh_branch
 ARG wazuh_api_branch
+ARG wazuh_doc_branch
 
 # enable SSH
 RUN yum install openssl openssh-server -y
 RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 RUN echo 'root:wazuh_admin' | chpasswd
-RUN ssh-keygen -A && /usr/sbin/sshd -D &
+RUN ssh-keygen -A
 
 EXPOSE 22
 
@@ -24,7 +25,8 @@ RUN sed -i 's!--index-url=file://${ROUTE_PATH}/${EXTERNAL_CPYTHON}/Dependencies/
 COPY preloaded-vars.conf /wazuh/etc/preloaded-vars.conf
 RUN /wazuh/install.sh
 
-# wazuh-documentation dependencies
+# wazuh-documentation and dependencies
+RUN git clone https://github.com/wazuh/wazuh-documentation && cd /wazuh-documentation && git checkout ${wazuh_doc_branch}
 RUN pip3 install Sphinx==1.6.5 sphinx-rtd-theme==0.2.4 sphinxcontrib-images==0.7.0 sphinxprettysearchresults==0.3.5
 
 # install pip libraries for development
@@ -32,7 +34,7 @@ RUN /var/ossec/framework/python/bin/pip3 install pytest defusedxml ptvsd pydevd-
 
 # install and configure Wazuh API
 RUN curl --silent --location https://rpm.nodesource.com/setup_12.x | bash - && yum -y install nodejs && npm config set user 0
-RUN git clone https://github.com/wazuh/wazuh-api && cd /wazuh-api && git checkout ${wazuh_api_branch} && ./install_api.sh && npm install mocha -g && npm install glob supertest mocha should moment mochawesome
+RUN git clone https://github.com/wazuh/wazuh-api && cd /wazuh-api && git checkout ${wazuh_api_branch} && ./install_api.sh && npm install mocha apidoc -g && npm install glob supertest mocha should moment mochawesome sqlite3
 
 # install ZSH
 RUN yum install zsh -y
@@ -40,6 +42,9 @@ RUN cd /root && sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrusse
 
 # copy script for running mocha tests
 COPY run_mocha_tests.sh /wazuh-api
+
+# copy script for generating Wazuh API reference
+COPY generate_api_doc.sh /wazuh-api/doc/generate_api_doc.sh
 
 # copy entrypoint and configuration files
 COPY entrypoint.sh /scripts/entrypoint.sh
