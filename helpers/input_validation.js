@@ -97,5 +97,5 @@ exports.format = function(q) {
 }
 
 exports.encoded_uri = function(e) {
-    return input_val(e, /^[a-zA-Z0-9_,\-\.\+\s\:@<>]+$/)
+    return input_val(e, /^[a-zA-Z0-9_,\-\.\+\s\:@<>\/]+$/)
 }
