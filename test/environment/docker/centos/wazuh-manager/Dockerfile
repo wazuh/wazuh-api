@@ -1,4 +1,4 @@
-FROM centos:7
+FROM centos:latest
 
 ARG wazuh_branch
 ARG wazuh_api_branch
@@ -13,10 +13,10 @@ RUN ssh-keygen -A
 EXPOSE 22
 
 # install dependencies
-RUN yum install make gcc policycoreutils-python automake autoconf libtool epel-release git which -y
+RUN dnf install make gcc automake autoconf libtool git which sudo wget sqlite -y
 
 # install Python 3
-RUN yum install python36 python36-pip -y
+RUN dnf install python3 -y
 
 # install Wazuh
 RUN git clone https://github.com/wazuh/wazuh && cd /wazuh && git checkout ${wazuh_branch}
@@ -30,10 +30,10 @@ RUN git clone https://github.com/wazuh/wazuh-documentation && cd /wazuh-document
 RUN pip3 install Sphinx==1.6.5 sphinx-rtd-theme==0.2.4 sphinxcontrib-images==0.7.0 sphinxprettysearchresults==0.3.5
 
 # install pip libraries for development
-RUN /var/ossec/framework/python/bin/pip3 install pytest defusedxml ptvsd pydevd-pycharm~=191.6605.12 freezegun
+RUN /var/ossec/framework/python/bin/pip3 install pytest ipython defusedxml ptvsd pydevd-pycharm~=191.6605.12 freezegun
 
 # install and configure Wazuh API
-RUN curl --silent --location https://rpm.nodesource.com/setup_12.x | bash - && yum -y install nodejs && npm config set user 0
+RUN dnf install nodejs -y && npm config set user 0
 RUN git clone https://github.com/wazuh/wazuh-api && cd /wazuh-api && git checkout ${wazuh_api_branch} && ./install_api.sh && npm install mocha apidoc -g && npm install glob supertest mocha should moment mochawesome sqlite3
 
 # install ZSH
