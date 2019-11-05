@@ -15,7 +15,7 @@ var router = require('express').Router();
 /**
  * @api {get} /mitre Get information from Mitre database
  * @apiName GetMitre
- * @apiGroup Mitre
+ * @apiGroup Info
  *
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=10] Maximum number of elements to return.
