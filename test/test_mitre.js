@@ -128,6 +128,50 @@ describe('Mitre', function() {
             });
         });
 
+        let test_sort_id = 0;
+
+        it('Sort: +id', function(done) {
+            request(common.url)
+            .get("/mitre?sort=+id")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(10);
+                res.body.data.items[0].should.have.properties(keys);
+
+                test_sort_id = res.body.data.items[0].id
+
+                done();
+            });
+        });
+
+        it('Sort: -id', function(done) {
+            request(common.url)
+            .get("/mitre?sort=-id")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(10);
+                res.body.data.items[0].should.have.properties(keys);
+
+                res.body.data.items[0].id.should.be.above(test_sort_id)
+
+                done();
+            });
+        });
+
         it('Filters: attack', function(done) {
             request(common.url)
             .get("/mitre?attack=T1101")
