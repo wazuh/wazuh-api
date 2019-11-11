@@ -3132,4 +3132,26 @@ describe('Agents', function() {
 
     });  // PUT/agents/groups/:group_id/restart
 
+    describe('PUT/agents/configuration/validation', function() {
+
+        it('Request validation ', function (done) {
+            request(common.url)
+                .put("/agents/configuration/validation")
+                .set("Content-Type", "application/xml")
+                .send("<agent_config>  <!-- Shared agent configuration here --></agent_config>")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+
+                    done();
+                });
+        });
+
+    });  // PUT/agents/configuration/validation
+
 });  // Agents

@@ -1236,7 +1236,6 @@ router.post('/insert', function(req, res) {
 })
 
 
-
 /**
  * @api {get} /agents/stats/distinct Get distinct fields in agents
  * @apiName GetdistinctAgents
@@ -1259,6 +1258,40 @@ router.post('/insert', function(req, res) {
 router.get('/stats/distinct', cache(), function (req, res) {
     query_checks = {'fields':'select_param'};
     templates.array_request('/agents/stats/distinct', req, res, "agents", {}, query_checks);
+})
+
+
+/**
+ * @api {get} /agents/configuration/validation Check an agent configuration
+ * @apiName PutAgentConfiguration
+ * @apiGroup Files
+ *
+ * @apiDescription Returns the result of validate an agent configuration
+ *
+ * @apiExample {curl} Example usage:
+ *     curl -u foo:bar -k -X PUT -H 'Content-type: application/xml' -d @agent.conf.xml "https://127.0.0.1:55000/agents/configuration/validation?pretty"
+ *
+ */
+router.put('/configuration/validation', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " PUT /agents/configuration/validation");
+
+    var data_request = {'function': 'PUT/agents/configuration/validation', 'arguments': {}};
+
+    // create temporary file
+    if (req.headers['content-type'] == 'application/xml') {
+        if (!filter.check_xml(req.body, req, res)) return;  // validate XML
+        try {
+            data_request['arguments']['tmp_file'] = require('../helpers/files').tmp_file_creator(req.body);
+        } catch(err) {
+            res_h.bad_request(req, res, 702, err);
+            return;
+        }
+    } else {
+        res_h.bad_request(req, res, 804, req.headers['content-type']);
+        return;
+    }
+
+    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 module.exports = router;
