@@ -15,7 +15,9 @@ var request = require('supertest');
 var common = require('./common.js');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-rule_fields = ['status', 'gdpr', 'pci', 'gpg13', 'hipaa', 'nist-800-53','description', 'path', 'file', 'level', 'groups', 'id', 'details']
+rule_fields = ['status', 'gdpr', 'pci', 'gpg13', 'hipaa', 'nist-800-53',
+               'mitre', 'description', 'path', 'file', 'level', 'groups', 'id',
+               'details']
 
 describe('Rules', function() {
 
@@ -337,6 +339,25 @@ describe('Rules', function() {
         it('Filters: gpg13', function(done) {
             request(common.url)
             .get("/rules?gpg13=10.1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array)
+                res.body.data.items[0].should.have.properties(rule_fields);
+                done();
+            });
+        });
+
+        it('Filters: mitre', function(done) {
+            request(common.url)
+            .get("/rules?mitre=T1110")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -1057,6 +1078,116 @@ describe('Rules', function() {
         });
 
     });  // GET/rules/nist-800-53
+
+    describe('GET/rules/mitre', function() {
+
+        it('Request', function(done) {
+            request(common.url)
+            .get("/rules/mitre")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.be.string;
+                done();
+            });
+        });
+
+        it('Pagination', function(done) {
+            request(common.url)
+            .get("/rules/mitre?offset=0&limit=1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
+                res.body.data.items[0].should.be.string;
+                done();
+            });
+        });
+
+        it('Retrieve all elements with limit=0', function(done) {
+            request(common.url)
+            .get("/rules/mitre?limit=0")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1406);
+                done();
+            });
+        });
+
+        it('Sort', function(done) {
+            request(common.url)
+            .get("/rules/mitre?sort=-")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.be.string;
+                done();
+            });
+        });
+
+        it('Search', function(done) {
+            request(common.url)
+            .get("/rules/mitre?search=T1110")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.be.string;
+                done();
+            });
+        });
+
+        it('Filters: Invalid filter', function(done) {
+            request(common.url)
+            .get("/rules/mitre?random")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(604);
+                done();
+            });
+        });
+
+    });  // GET/rules/mitre
 
     describe('GET/rules/files', function() {
 
