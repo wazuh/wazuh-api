@@ -24,7 +24,7 @@ exports.array_numbers = function(n) {
 }
 
 exports.names = function(name) {
-    return input_val(name, /^[a-zA-Z0-9_\-\.]+$/);
+    return input_val(name, /^[a-zA-Z0-9_\-.%]+$/);
 }
 
 exports.array_names = function(names) {
