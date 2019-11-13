@@ -40,6 +40,9 @@ PROXY=N
 EOT
 /var/ossec/api/scripts/configure_api.sh
 
+# fix for generating Wazuh documentation
+sed -i '26 s/self.errors/'\''ignore'\''/g' /usr/lib/python3.6/encodings/ascii.py
+
 # start Wazuh
 /var/ossec/bin/ossec-control start
 
