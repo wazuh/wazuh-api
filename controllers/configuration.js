@@ -34,7 +34,7 @@ router.put('/validation/:type', function(req, res) {
 
         try {
             data_request['arguments']['configuration_type'] = req.params.type;
-            data_request['arguments']['tmp_file'] = require('../helpers/files').tmp_file_creator(req.body.file);
+            data_request['arguments']['tmp_file'] = require('../helpers/files').tmp_file_creator(req.body);
         } catch(err) {
             res_h.bad_request(req, res, 702, err);
             return;
