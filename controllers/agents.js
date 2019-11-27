@@ -1259,3 +1259,5 @@ router.get('/stats/distinct', cache(), function (req, res) {
     query_checks = {'fields':'select_param'};
     templates.array_request('/agents/stats/distinct', req, res, "agents", {}, query_checks);
 })
+
+module.exports = router;

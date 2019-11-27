@@ -87,6 +87,7 @@ router.use('/ciscat', require('./ciscat'));
 router.use('/active-response', require('./active_response'));
 router.use('/lists', require('./lists'));
 router.use('/summary', require('./summary'));
+router.use('/configuration', require('./configuration'));
 
 if (config.experimental_features){
     router.use('/experimental', require('./experimental'));

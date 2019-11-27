@@ -12,27 +12,28 @@
 
 var router = require('express').Router();
 
+
 /**
- * @api {get} /agents/configuration/validation Check an agent configuration
+ * @api {get} /configuration/validation/:type Check an agent configuration
  * @apiName PutAgentConfiguration
  * @apiGroup Files
  *
  * @apiDescription Returns the result of validate an agent configuration
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X PUT -H 'Content-type: application/xml' -d @agent.conf.xml "https://127.0.0.1:55000/agents/configuration/validation?pretty"
+ *     curl -u foo:bar -H 'Content-type: application/xml' -X PUT -d @/var/ossec/etc/shared/default/agent.conf "https://localhost:55000/configuration/validation/manager?pretty&wait_for_complete" -k
  *
  */
-router.put('/configuration/validation', function(req, res) {
-    logger.debug(req.connection.remoteAddress + " PUT /agents/configuration/validation");
+router.put('/validation/:type', function(req, res) {
+    logger.debug(req.connection.remoteAddress + " PUT /configuration/validation/:type");
 
-    var data_request = {'function': 'PUT/agents/configuration/validation', 'arguments': {}};
+    var data_request = {'function': 'PUT/configuration/validation/:type', 'arguments': {}};
     // create temporary file
-    if (req.headers['content-type'] == 'application/json') {
-        if (!filter.check_xml(req.body, req, res)) return;  // validate XML
+    if (req.headers['content-type'] == 'application/xml') {
+        if (!filter.check_xml(req.body, req, res)) return;
 
         try {
-            data_request['arguments']['configuration_type'] = req.body.type;
+            data_request['arguments']['configuration_type'] = req.params.type;
             data_request['arguments']['tmp_file'] = require('../helpers/files').tmp_file_creator(req.body.file);
         } catch(err) {
             res_h.bad_request(req, res, 702, err);
