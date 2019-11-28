@@ -30,8 +30,6 @@ router.put('/validation/:type', function(req, res) {
     var data_request = {'function': 'PUT/configuration/validation/:type', 'arguments': {}};
     // create temporary file
     if (req.headers['content-type'] == 'application/xml') {
-        if (!filter.check_xml(req.body, req, res)) return;
-
         try {
             data_request['arguments']['configuration_type'] = req.params.type;
             data_request['arguments']['tmp_file'] = require('../helpers/files').tmp_file_creator(req.body);
