@@ -14,11 +14,11 @@ var router = require('express').Router();
 
 
 /**
- * @api {get} /configuration/validation/:type Check an agent configuration
- * @apiName PutAgentConfiguration
+ * @api {put} /configuration/validation/:type Check a specified configuration
+ * @apiName PutConfigurationValidation
  * @apiGroup Files
  *
- * @apiDescription Returns the result of validate an agent configuration
+ * @apiDescription Returns the result of validate a Wazuh configuration
  *
  * @apiExample {curl} Example usage:
  *     curl -u foo:bar -H 'Content-type: application/xml' -X PUT -d @/var/ossec/etc/shared/default/agent.conf "https://localhost:55000/configuration/validation/manager?pretty&wait_for_complete" -k
