@@ -2106,7 +2106,7 @@ describe('Agents', function() {
                 .expect(200)
                 .end(function (err, res) {
                     if (err) throw err;
-                    agent1_id = res.body.data.id
+                    agent1_id = res.body.data.id;
                     done();
                 });
         });
@@ -2120,7 +2120,7 @@ describe('Agents', function() {
                 .expect(200)
                 .end(function (err, res) {
                     if (err) throw err;
-                    agent2_id = res.body.data.id
+                    agent2_id = res.body.data.id;
                     done();
                 });
         });
@@ -2219,7 +2219,7 @@ describe('Agents', function() {
 
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
-                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items.should.be.instanceof(Array);
                     res.body.data.items[0].should.have.properties(fields);
                     res.body.data.items[0].os.should.have.properties(agent_os_properties);
                     done();
@@ -3094,7 +3094,7 @@ describe('Agents', function() {
                 res.body.error.should.equal(0);
                 res.body.data.should.be.type('object');
                 res.body.data.should.have.properties(['msg', 'affected_agents']);
-                res.body.data.affected_agents.sort().should.be.eql(['001', '002', '003'].sort());
+                res.body.data.affected_agents.sort().should.be.eql(['001', '002'].sort());
                 res.body.data.msg.should.equal('All selected agents were restarted');
                 done();
             });
