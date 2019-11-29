@@ -18,6 +18,8 @@ var router = require('express').Router();
  * @apiName PutConfigurationValidation
  * @apiGroup Files
  *
+ * @apiParam {String} type Valid types are manager, agent and remote. Manager validates a manager's ossec.conf, agent validates and agent's ossec.conf and remote validates an agent.conf
+ *
  * @apiDescription Returns the result of validate a Wazuh configuration
  *
  * @apiExample {curl} Example usage:
