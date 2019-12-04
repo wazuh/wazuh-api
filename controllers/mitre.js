@@ -24,6 +24,7 @@ var router = require('express').Router();
  * @apiParam {String} [attack] Filter by attack ID.
  * @apiParam {String} [phase] Filter by phase name.
  * @apiParam {String} [platform] Filter by platform name.
+ * @apiParam {String} [search] Looks for elements with the specified string.
  *
  * @apiDescription Returns information from Mitre database
  *
@@ -39,7 +40,7 @@ router.get('/', cache(), function(req, res) {
     var data_request = {'function': '/mitre', 'arguments': {}};
     var filters = {'offset': 'numbers', 'limit': 'numbers', 'q': 'query_param',
                    'attack': 'search_param', 'phase': 'search_param',
-                   'platform': 'names', 'sort':'sort_param'};
+                   'platform': 'names', 'search': 'search_param', 'sort':'sort_param'};
 
     if (!filter.check(req.query, filters, req, res))  // Filter with error
         return;
@@ -54,6 +55,8 @@ router.get('/', cache(), function(req, res) {
         data_request['arguments']['phase'] = req.query.phase;
     if ('platform' in req.query)
         data_request['arguments']['platform'] = req.query.platform;
+    if ('search' in req.query)
+        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
     if ('sort' in req.query)
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('q' in req.query)
