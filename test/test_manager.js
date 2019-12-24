@@ -597,6 +597,88 @@ describe('Manager', function() {
             });
         });
 
+        it('Filters: query 1', function (done) {
+            request(common.url)
+            .get("/manager/logs?q=tag=ossec-analysisd;level=info&limit=1")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.items.should.be.instanceof(Array);
+                    res.body.data.totalItems.should.be.instanceof(Number);
+                    res.body.data.items[0].should.have.properties(['timestamp', 'tag', 'level', 'description']);
+                    res.body.data.items[0].tag.should.be.equal('ossec-analysisd');
+                    res.body.data.items[0].level.should.be.equal('info');
+
+                    done();
+                });
+        });
+
+        it('Filters: query 2', function (done) {
+            request(common.url)
+            .get("/manager/logs?q=tag=ossec-execd;level=info&limit=1")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.items.should.be.instanceof(Array);
+                    res.body.data.totalItems.should.be.instanceof(Number);
+                    res.body.data.items[0].should.have.properties(['timestamp', 'tag', 'level', 'description']);
+                    res.body.data.items[0].tag.should.be.equal('ossec-execd');
+                    res.body.data.items[0].level.should.be.equal('info');
+
+                    done();
+                });
+        });
+
+        it('Filters: query 3', function (done) {
+            request(common.url)
+            .get("/manager/logs?q=tag~ossec;level=error&limit=1")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.should.have.properties(['items', 'totalItems']);
+                    res.body.data.items.should.be.instanceof(Array);
+                    res.body.data.totalItems.should.be.instanceof(Number);
+                    res.body.data.items[0].should.have.properties(['timestamp', 'tag', 'level', 'description']);
+                    res.body.data.items[0].tag.should.startWith('ossec');
+                    res.body.data.items[0].level.should.be.equal('error');
+
+                    done();
+                });
+        });
+
+        it('Filters: wrong query', function (done) {
+            request(common.url)
+            .get("/manager/logs?q=ossec-analysisd")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(400)
+                .end(function (err, res) {
+                    if (err) return done(err);
+
+                    res.body.should.have.properties(['error', 'message']);
+                    res.body.error.should.equal(622);
+
+                    done();
+                });
+        });
+
     });  // GET/manager/logs
 
     describe('GET/manager/logs/summary', function() {

@@ -13,13 +13,12 @@ var should = require('should');
 var assert = require('assert');
 var request = require('supertest');
 var common = require('./common.js');
+var sqlite3 = require('sqlite3').verbose();
 
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 describe('Syscollector', function () {
-
-
     agent_id = "000"
     os_fields = ["sysname","version","architecture","scan","release","hostname","os"]
     describe('GET/syscollector/:agent_id/os', function () {
@@ -77,7 +76,8 @@ describe('Syscollector', function () {
                     res.body.should.have.properties(['error', 'data']);
 
                     res.body.error.should.equal(0);
-                    res.body.data.should.have.properties(['os_version', 'sysname', 'release']);
+                    res.body.data.should.have.properties(['os', 'sysname', 'release']);
+                    res.body.data.os.should.have.properties(['version']);
                     done();
                 });
         });
@@ -134,8 +134,9 @@ describe('Syscollector', function () {
                     res.body.should.have.properties(['error', 'data']);
 
                     res.body.error.should.equal(0);
-                    res.body.data.should.have.properties(['board_serial', 'ram', 'cpu_name']);
+                    res.body.data.should.have.properties(['board_serial', 'ram', 'cpu']);
                     res.body.data.ram.should.have.properties(['free', 'total']);
+                    res.body.data.cpu.should.have.properties(['name']);
                     done();
                 });
         });
@@ -192,7 +193,8 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['description', 'architecture', 'scan_id']);
+                    res.body.data.items[0].should.have.properties(['description', 'architecture', 'scan']);
+                    res.body.data.items[0].scan.should.have.properties(['id']);
                     done();
                 });
         });
@@ -501,6 +503,23 @@ describe('Syscollector', function () {
                 });
         });
 
+        it('Query', function(done) {
+            request(common.url)
+                .get('/syscollector/' + agent_id + '/packages?q=format=' + expected_format + ',architecture!=' + expected_architecture)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.totalItems.should.be.above(0);
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(['format']);
+                    res.body.data.items[0].format.should.be.equal(expected_format);
+                    done();
+                });
+        });
     });  // GET/syscollector/:agent_id/packages
 
 
@@ -848,6 +867,24 @@ describe('Syscollector', function () {
                 });
         });
 
+        it('Query', function(done) {
+            request(common.url)
+                .get('/experimental/syscollector/packages?q=format=' + expected_format + ',architecture!=' + expected_architecture + ',(size>1000;size<2000)')
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.totalItems.should.be.above(0);
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(['format']);
+                    res.body.data.items[0].format.should.be.equal(expected_format);
+                    done();
+                });
+        });
+
     });  // GET/syscollector/packages
 
 
@@ -887,7 +924,7 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['sysname', 'version', 'release', 'os_version']);
+                    res.body.data.items[0].should.have.properties(['sysname', 'version', 'release', 'os']);
                     done();
                 });
         });
@@ -1121,6 +1158,24 @@ describe('Syscollector', function () {
                 });
         });
 
+        it('Query', function (done) {
+            request(common.url)
+                .get("/experimental/syscollector/os?q=release=" + expected_release + ';os_major>16')
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.totalItems.should.be.above(0);
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(['release']);
+                    res.body.data.items[0].release.should.be.equal(expected_release);
+                    done();
+                });
+        });
+
     });  // GET/experimental/syscollector/os
 
     describe('GET/experimental/syscollector/hardware', function () {
@@ -1146,7 +1201,7 @@ describe('Syscollector', function () {
 
         it('Selector', function (done) {
             request(common.url)
-                .get("/experimental/syscollector/hardware?select=ram_free,board_serial,cpu_name,agent_id,cpu_mhz")
+                .get("/experimental/syscollector/hardware?select=ram_free,board_serial,cpu_name,cpu_mhz")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -1158,7 +1213,7 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['ram_free', 'board_serial', 'cpu', 'agent_id', 'cpu']);
+                    res.body.data.items[0].should.have.properties(['ram', 'board_serial', 'cpu', 'agent_id', 'cpu']);
                     res.body.data.items[0].cpu.should.have.properties(['mhz','name']);
                     done();
                 });
@@ -1403,6 +1458,24 @@ describe('Syscollector', function () {
                 });
         });
 
+        it('Query', function (done) {
+            request(common.url)
+                .get("/experimental/syscollector/hardware?q=cpu_cores>0;ram_usage<1000")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.error.should.equal(0);
+                    res.body.data.totalItems.should.be.above(0);
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].cpu.cores.should.be.above(0);
+                    res.body.data.items[0].cpu.cores.should.be.below(1000);
+                    done();
+                });
+        });
+
     });  // GET experimental/syscollector/hardware
 
 
@@ -1446,7 +1519,7 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['tty', 'sgroup', 'share', 'session', 'scan_id']);
+                    res.body.data.items[0].should.have.properties(['tty', 'sgroup', 'share', 'session', 'scan']);
                     done();
                 });
         });
@@ -1783,9 +1856,21 @@ describe('Syscollector', function () {
                 });
         });
 
-
+        it('Query', function (done) {
+            request(common.url)
+                .get("/experimental/syscollector/processes?limit=2&offset=1&q=suser!=" + expected_suser)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.data.items[0].should.have.properties(processes_properties);
+                    res.body.data.items[0].suser.should.not.be.equal(expected_suser);
+                    done();
+                });
+        });
     });  // GET/syscollector/processes
-
 
 
     ports_properties = ['scan', 'protocol', 'local', 'remote', 'tx_queue',
@@ -1825,7 +1910,7 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['protocol', 'remote_ip', 'tx_queue', 'state']);
+                    res.body.data.items[0].should.have.properties(['protocol', 'remote', 'tx_queue', 'state']);
                     done();
                 });
         });
@@ -2043,13 +2128,24 @@ describe('Syscollector', function () {
                 });
         });
 
-
+        it('Query', function (done) {
+            request(common.url)
+                .get("/experimental/syscollector/ports?q=state!=" + expected_state + ';tx_queue>100')
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+                    res.body.should.have.properties(['error', 'data']);
+                    done();
+                });
+        });
 
     });  // GET/experimental/syscollector/ports
 
 
     describe('GET/syscollector/netaddr', function () {
-        netaddr_properties = ['scan_id', 'iface', 'proto', 'address', 'netmask', 'broadcast', 'agent_id']
+        netaddr_properties = ['scan', 'iface', 'proto', 'address', 'netmask', 'broadcast', 'agent_id']
 
         it('Request', function (done) {
             request(common.url)
@@ -2285,10 +2381,25 @@ describe('Syscollector', function () {
                 });
         });
 
+        it('Query', function (done) {
+            request(common.url)
+                .get("/experimental/syscollector/netaddr?q=netmask=" + expected_netmask)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.data.items[0].should.have.properties(netaddr_properties);
+                    res.body.data.items[0].netmask.should.be.equal(expected_netmask);
+                    done();
+                });
+        });
+
     });  // GET/syscollector/netaddr
 
     describe('GET/experimental/syscollector/netproto', function () {
-        netproto_properties = ['scan_id', 'iface', 'type', 'gateway', 'dhcp']
+        netproto_properties = ['scan', 'iface', 'type', 'gateway', 'dhcp']
 
         it('Request', function (done) {
             request(common.url)
@@ -2449,7 +2560,7 @@ describe('Syscollector', function () {
 
         it('Filter: iface', function (done) {
             request(common.url)
-                .get("/experimental/syscollector/netproto?=" + expected_proto)
+                .get("/experimental/syscollector/netproto?iface=" + expected_iface)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2464,7 +2575,7 @@ describe('Syscollector', function () {
 
         it('Filter: type', function (done) {
             request(common.url)
-                .get("/experimental/syscollector/netproto?=" + expected_proto)
+                .get("/experimental/syscollector/netproto?type=" + expected_type)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2479,7 +2590,7 @@ describe('Syscollector', function () {
 
         it('Filter: gateway', function (done) {
             request(common.url)
-                .get("/experimental/syscollector/netproto?=" + expected_proto)
+                .get("/experimental/syscollector/netproto?gateway=" + expected_gateway)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2494,7 +2605,7 @@ describe('Syscollector', function () {
 
         it('Filter: dhcp', function (done) {
             request(common.url)
-                .get("/experimental/syscollector/netproto?=" + expected_proto)
+                .get("/experimental/syscollector/netproto?dhcp=" + expected_dhcp)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2503,6 +2614,20 @@ describe('Syscollector', function () {
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.items[0].should.have.properties(netproto_properties);
                     res.body.data.items[0].dhcp.should.be.equal(expected_dhcp);
+                    done();
+                });
+        });
+
+        it('Query', function (done) {
+            request(common.url)
+                .get("/experimental/syscollector/netproto?q=type=ipv6,dhcp=enabled")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.data.items[0].should.have.properties(netproto_properties);
                     done();
                 });
         });
@@ -2869,6 +2994,18 @@ describe('Syscollector', function () {
                 });
         });
 
+        it('Query', function (done) {
+            request(common.url)
+                .get("/experimental/syscollector/netiface?q=rx_dropped>" + expected_rx_dropped)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+                    res.body.should.have.properties(['error', 'data']);
+                    done();
+                });
+        });
 
     });  // GET/syscollector/netiface
 
@@ -2913,7 +3050,7 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['tty', 'sgroup', 'share', 'session', 'scan_id']);
+                    res.body.data.items[0].should.have.properties(['tty', 'sgroup', 'share', 'session', 'scan']);
                     done();
                 });
         });
@@ -3250,6 +3387,20 @@ describe('Syscollector', function () {
                 });
         });
 
+        it('Query', function (done) {
+            request(common.url)
+                .get("/syscollector/" + agent_id + "/processes?q=suser!=" + expected_suser)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.data.items[0].should.have.properties(processes_properties);
+                    res.body.data.items[0].suser.should.not.be.equal(expected_suser);
+                    done();
+                });
+        });
 
     });  // GET/syscollector/:agent_id/processes
 
@@ -3288,7 +3439,7 @@ describe('Syscollector', function () {
                     res.body.error.should.equal(0);
                     res.body.data.totalItems.should.be.above(0);
                     res.body.data.items.should.be.instanceof(Array)
-                    res.body.data.items[0].should.have.properties(['protocol', 'remote_ip', 'tx_queue', 'state']);
+                    res.body.data.items[0].should.have.properties(['protocol', 'remote', 'tx_queue', 'state']);
                     done();
                 });
         });
@@ -3506,7 +3657,20 @@ describe('Syscollector', function () {
                 });
         });
 
-
+        it('Query', function (done) {
+            request(common.url)
+                .get("/syscollector/" + agent_id + "/ports?q=state=" + expected_state)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.data.items[0].should.have.properties(ports_properties);
+                    res.body.data.items[0].state.should.be.equal(expected_state);
+                    done();
+                });
+        });
 
     });  // GET/syscollector/:agent_id/ports
 
@@ -3748,10 +3912,25 @@ describe('Syscollector', function () {
                 });
         });
 
+        it('Query', function (done) {
+            request(common.url)
+                .get("/syscollector/" + agent_id + "/netaddr?q=netmask=" + expected_netmask)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+                    res.body.should.have.properties(['error', 'data']);
+                    res.body.data.items[0].should.have.properties(netaddr_properties);
+                    res.body.data.items[0].netmask.should.be.equal(expected_netmask);
+                    done();
+                });
+        });
+
     });  // GET/syscollector/:agent_id/netaddr
 
     describe('GET/syscollector/' + agent_id + '/netproto', function () {
-        netproto_properties = ['scan_id', 'iface', 'type', 'gateway', 'dhcp']
+        netproto_properties = ['scan', 'iface', 'type', 'gateway', 'dhcp']
 
         it('Request', function (done) {
             request(common.url)
@@ -3912,7 +4091,7 @@ describe('Syscollector', function () {
 
         it('Filter: iface', function (done) {
             request(common.url)
-                .get("/syscollector/" + agent_id + "/netproto?=" + expected_proto)
+                .get("/syscollector/" + agent_id + "/netproto?iface=" + expected_iface)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3927,7 +4106,7 @@ describe('Syscollector', function () {
 
         it('Filter: type', function (done) {
             request(common.url)
-                .get("/syscollector/" + agent_id + "/netproto?=" + expected_proto)
+                .get("/syscollector/" + agent_id + "/netproto?type=" + expected_type)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3942,7 +4121,7 @@ describe('Syscollector', function () {
 
         it('Filter: gateway', function (done) {
             request(common.url)
-                .get("/syscollector/" + agent_id + "/netproto?=" + expected_proto)
+                .get("/syscollector/" + agent_id + "/netproto?gateway=" + expected_gateway)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3957,7 +4136,7 @@ describe('Syscollector', function () {
 
         it('Filter: dhcp', function (done) {
             request(common.url)
-                .get("/syscollector/" + agent_id + "/netproto?=" + expected_proto)
+                .get("/syscollector/" + agent_id + "/netproto?dhcp=" + expected_dhcp)
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -3966,6 +4145,19 @@ describe('Syscollector', function () {
                     res.body.should.have.properties(['error', 'data']);
                     res.body.data.items[0].should.have.properties(netproto_properties);
                     res.body.data.items[0].dhcp.should.be.equal(expected_dhcp);
+                    done();
+                });
+        });
+
+        it('Query', function (done) {
+            request(common.url)
+                .get("/syscollector/" + agent_id + "/netproto?q=dhcp!=" + expected_dhcp)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+                    res.body.should.have.properties(['error', 'data']);
                     done();
                 });
         });
@@ -4332,7 +4524,236 @@ describe('Syscollector', function () {
                 });
         });
 
+        it('Query', function (done) {
+            request(common.url)
+                .get("/syscollector/" + agent_id + "/netiface?q=rx_dropped>" + expected_rx_dropped)
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err);
+                    res.body.should.have.properties(['error', 'data']);
+                    done();
+                });
+        });
 
     });  // GET/syscollector/:agent_id/netiface
+
+    describe('GET/syscollector/:agent_id/hotfixes', function () {
+
+        agent_hotfixes = '001'
+        hotfixes_fields = ['scan', 'hotfix']
+        scan_fields = ['id', 'time']
+        // for writing in agent database through Wazuh DB
+        const {spawn} = require('child_process')
+        // path to script which send a query to WazuhDB
+        var wdb_script_path = __dirname + '/utils/send_to_wdb.py'
+
+        // insert test data into DB
+        before(function () {
+            query = "agent 001 sql insert or ignore into sys_hotfixes(scan_id, scan_time, hotfix) values" +
+                "(1408519641, '2019/08/05 12:06:26', 'KB2533552')," +
+                "(1408519641, '2019/08/05 12:06:26', 'KB2534366')," +
+                "(1408519641, '2019/08/05 12:06:26', 'KB2562937')," +
+                "(1408519641, '2019/08/05 12:06:26', 'KB2998812')," +
+                "(1408519641, '2019/08/05 12:06:26', 'KB3004469')," +
+                "(1408519641, '2019/08/05 12:06:26', 'KB3015428');"
+            spawn('python3', [wdb_script_path, '-q', query])
+        });
+
+        it('Request', function (done) {
+            request(common.url)
+            .get("/syscollector/" + agent_hotfixes + "/hotfixes")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err)
+
+                    res.body.should.have.properties(['error', 'data'])
+                    res.body.error.should.equal(0)
+                    res.body.data.should.have.properties(['items', 'totalItems'])
+                    res.body.data.totalItems.should.be.above(0)
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(hotfixes_fields)
+                    res.body.data.items[0].scan.should.have.properties(scan_fields)
+
+                    done();
+
+                });
+        });
+
+        it('Selector', function (done) {
+            request(common.url)
+            .get("/syscollector/" + agent_hotfixes + "/hotfixes?select=hotfix")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err)
+
+                    res.body.should.have.properties(['error', 'data'])
+                    res.body.error.should.equal(0)
+                    res.body.data.should.have.properties(['items', 'totalItems'])
+                    res.body.data.totalItems.should.be.above(0)
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(['hotfix'])
+
+                    done();
+
+                });run
+        });
+
+        it('Not allowed selector', function (done) {
+            request(common.url)
+            .get("/syscollector/" + agent_hotfixes + "/hotfixes?select=date")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err)
+
+                    res.body.should.have.properties(['error', 'message'])
+                    res.body.error.should.equal(1724)
+
+                    done();
+
+                });
+        });
+
+        it('Pagination', function (done) {
+            request(common.url)
+            .get("/syscollector/" + agent_hotfixes + "/hotfixes?offset=1&limit=1")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err)
+
+                    res.body.should.have.properties(['error', 'data'])
+                    res.body.error.should.equal(0)
+                    res.body.data.should.have.properties(['items', 'totalItems'])
+                    res.body.data.totalItems.should.be.above(0)
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(hotfixes_fields)
+                    res.body.data.items[0].scan.should.have.properties(scan_fields)
+
+                    done();
+
+                });
+        });
+
+        it('Wrong limit', function (done) {
+            request(common.url)
+            .get("/syscollector/" + agent_hotfixes + "/hotfixes?limit=1000000")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err)
+
+                    res.body.should.have.properties(['error', 'message'])
+                    res.body.error.should.equal(1405)
+
+                    done();
+
+                });
+        });
+
+        it('Sort -', function (done) {
+            request(common.url)
+            .get("/syscollector/" + agent_hotfixes + "/hotfixes?sort=-hotfix")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err)
+
+                    res.body.should.have.properties(['error', 'data'])
+                    res.body.error.should.equal(0)
+                    res.body.data.should.have.properties(['items', 'totalItems'])
+                    res.body.data.totalItems.should.be.above(0)
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(hotfixes_fields)
+                    res.body.data.items[0].scan.should.have.properties(scan_fields)
+
+                    done();
+
+                });
+        });
+
+        it('Sort +', function (done) {
+            request(common.url)
+            .get("/syscollector/" + agent_hotfixes + "/hotfixes?sort=+hotfix")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err)
+
+                    res.body.should.have.properties(['error', 'data'])
+                    res.body.error.should.equal(0)
+                    res.body.data.should.have.properties(['items', 'totalItems'])
+                    res.body.data.totalItems.should.be.above(0)
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(hotfixes_fields)
+                    res.body.data.items[0].scan.should.have.properties(scan_fields)
+
+                    done();
+
+                });
+        });
+
+        it('Search', function (done) {
+            request(common.url)
+            .get("/syscollector/" + agent_hotfixes + "/hotfixes?search=KB2562937")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err)
+
+                    res.body.should.have.properties(['error', 'data'])
+                    res.body.error.should.equal(0)
+                    res.body.data.should.have.properties(['items', 'totalItems'])
+                    res.body.data.totalItems.should.be.above(0)
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(hotfixes_fields)
+                    res.body.data.items[0].scan.should.have.properties(scan_fields)
+
+                    done();
+
+                });
+        });
+
+        it('Filter: hotfix', function (done) {
+            request(common.url)
+            .get("/syscollector/" + agent_hotfixes + "/hotfixes?hotfix=KB2562937")
+                .auth(common.credentials.user, common.credentials.password)
+                .expect("Content-type", /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) return done(err)
+
+                    res.body.should.have.properties(['error', 'data'])
+                    res.body.error.should.equal(0)
+                    res.body.data.should.have.properties(['items', 'totalItems'])
+                    res.body.data.totalItems.should.be.above(0)
+                    res.body.data.items.should.be.instanceof(Array)
+                    res.body.data.items[0].should.have.properties(hotfixes_fields)
+                    res.body.data.items[0].scan.should.have.properties(scan_fields)
+
+                    done();
+
+                });
+        });
+
+        // clean test data
+        after(function () {
+            query = "agent 001 sql delete from sys_hotfixes;"
+            spawn('python3', [wdb_script_path, '-q', query])
+        });
+
+    });  // GET/syscollector/:agent_id/hotfixes
 
 });  // Syscollector
