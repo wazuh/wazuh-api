@@ -24,6 +24,7 @@ var router = require('express').Router();
  * @apiParam {String} [file] Filters by filename.
  * @apiParam {String} [path] Filters by path.
  * @apiParam {String="enabled","disabled", "all"} [status] Filters the decoders by status.
+ * @apiParam {String} [q] Query to filter results by. For example q=name=wazuh
  *
  * @apiDescription Returns all decoders included in ossec.conf.
  *
@@ -32,32 +33,10 @@ var router = require('express').Router();
  *
  */
 router.get('/', cache(), function(req, res) {
-    logger.debug(req.connection.remoteAddress + " GET /decoders");
+    param_checks = {}
+    query_checks = {'status':'alphanumeric_param', 'path':'paths', 'file':'alphanumeric_param'};
 
-    req.apicacheGroup = "decoders";
-
-    var data_request = {'function': '/decoders', 'arguments': {}};
-    var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 'search':'search_param', 'status':'alphanumeric_param', 'path':'paths', 'file':'alphanumeric_param'};
-
-    if (!filter.check(req.query, filters, req, res))  // Filter with error
-        return;
-
-    if ('offset' in req.query)
-        data_request['arguments']['offset'] = Number(req.query.offset);
-    if ('limit' in req.query)
-        data_request['arguments']['limit'] = Number(req.query.limit);
-    if ('sort' in req.query)
-        data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
-    if ('search' in req.query)
-        data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
-    if ('status' in req.query)
-        data_request['arguments']['status'] = req.query.status;
-    if ('file' in req.query)
-        data_request['arguments']['file'] = req.query.file;
-    if ('path' in req.query)
-        data_request['arguments']['path'] = req.query.path;
-
-    execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
+    templates.array_request('/decoders', req, res, "decoders", param_checks, query_checks);
 })
 
 /**
@@ -148,7 +127,7 @@ router.get('/parents', cache(), function(req, res) {
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
 
-    data_request['arguments']['parents'] = "True";
+    data_request['arguments']['filters'] = {'parents': 'True'};
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
@@ -193,7 +172,7 @@ router.get('/:decoder_name', cache(), function(req, res) {
     if (!filter.check(req.params, {'decoder_name':'names'}, req, res))  // Filter with error
         return;
 
-    data_request['arguments']['name'] = req.params.decoder_name;
+    data_request['arguments']['filters'] = {'name': req.params.decoder_name};
 
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
