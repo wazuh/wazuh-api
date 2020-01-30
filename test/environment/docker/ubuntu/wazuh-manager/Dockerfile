@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:latest
 
 ARG wazuh_branch
 ARG wazuh_api_branch

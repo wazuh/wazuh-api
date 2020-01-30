@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:latest
 
 RUN apt-get update && apt-get install git curl apt-transport-https lsb-release gnupg2 -y && \
     curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | apt-key add - && \

@@ -7,7 +7,7 @@ services:
       args:
         wazuh_branch: "${WAZUH_BRANCH}"
         wazuh_api_branch: "${WAZUH_API_BRANCH}"
-    image: wazuh-manager-centos:3.10
+    image: wazuh-manager-centos:${WAZUH_BRANCH}
     volumes:
       - ./share:/share
     entrypoint:
@@ -21,7 +21,7 @@ services:
       args:
         wazuh_branch: "${WAZUH_BRANCH}"
         wazuh_api_branch: "${WAZUH_API_BRANCH}"
-    image: wazuh-manager-centos:3.10
+    image: wazuh-manager-centos:${WAZUH_BRANCH}
     volumes:
       - ./share:/share
     depends_on:
@@ -37,7 +37,7 @@ services:
       args:
         wazuh_branch: "${WAZUH_BRANCH}"
         wazuh_api_branch: "${WAZUH_API_BRANCH}"
-    image: wazuh-manager-centos:3.10
+    image: wazuh-manager-centos:${WAZUH_BRANCH}
     depends_on:
       - wazuh-master
     entrypoint:
@@ -48,7 +48,7 @@ services:
   wazuh-agent1:
     build:
       context: ./wazuh-agent
-    image: wazuh-agent-centos:3.10
+    image: wazuh-agent-centos:last-stable
     entrypoint: 
       - /scripts/entrypoint.sh 
       - wazuh-master
@@ -58,7 +58,7 @@ services:
   wazuh-agent2:
     build:
       context: ./wazuh-agent
-    image: wazuh-agent-centos:3.10
+    image: wazuh-agent-centos:last-stable
     entrypoint: 
       - /scripts/entrypoint.sh
       - wazuh-master

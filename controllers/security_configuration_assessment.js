@@ -30,12 +30,12 @@ var router = require('express').Router();
  * @apiDescription Returns the sca database of an agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/sca/000?q=pass>20;score<150&pretty&limit=2"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/sca/000?q=pass>2;score<150&pretty&limit=2"
  *
  */
 router.get('/:agent_id', cache(), function(req, res) {
-    query_checks = {'name':'alphanumeric_param', 'description':'alphanumeric_param', 'references':'alphanumeric_param'};
-    templates.array_request("/sca/:agent_id", req, res, "sca", {'agent_id':'numbers'}, query_checks);
+    query_checks = {'name':'alphanumeric_param', 'description': 'alphanumeric_param', 'references': 'encoded_uri'};
+    templates.array_request("/sca/:agent_id", req, res, "sca", {'agent_id': 'numbers'}, query_checks);
 })
 
 
@@ -56,6 +56,7 @@ router.get('/:agent_id', cache(), function(req, res) {
  * @apiParam {String} [registry] Filters by registry
  * @apiParam {String} [references] Filters by references
  * @apiParam {String} [result] Filters by result
+ * @apiParam {String} [condition] Filters by condition
  * @apiParam {Number} [offset] First element to return in the collection.
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
@@ -64,13 +65,15 @@ router.get('/:agent_id', cache(), function(req, res) {
  * @apiDescription Returns the sca checks of an agent.
  *
  * @apiExample {curl} Example usage:
- *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/sca/000/checks/system_audit?pretty"
+ *     curl -u foo:bar -k -X GET "https://127.0.0.1:55000/sca/000/checks/unix_audit?limit=1&pretty"
  *
  */
 router.get('/:agent_id/checks/:policy_id', cache(), function(req, res) {
     query_checks = {'title': 'alphanumeric_param', 'description': 'alphanumeric_param',
-        'rationale': 'alphanumeric_param', 'remediation': 'alphanumeric_param', 'file': 'paths', 'process': 'alphanumeric_param',
-        'directory': 'paths', 'registry': 'alphanumeric_param', 'references': 'alphanumeric_param', 'result': 'alphanumeric_param'
+        'rationale': 'alphanumeric_param', 'remediation': 'alphanumeric_param',
+        'file': 'paths', 'process': 'alphanumeric_param', 'directory': 'paths',
+        'registry': 'alphanumeric_param', 'references': 'encoded_uri',
+        'result': 'alphanumeric_param', 'condition': 'alphanumeric_param'
     };
     templates.array_request("/sca/:agent_id/checks/:policy_id", req, res,
                "sca",

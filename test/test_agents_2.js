@@ -101,7 +101,46 @@ describe('Agents', function() {
             });
         });
 
-    });  // PUT/agents/:agent_name
+        before('Request', function(done) {
+            request(common.url)
+            .put("/agents/testingNewAgent%2520Put")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['id', 'key']);
+
+                res.body.error.should.equal(0);
+                res.body.data.id.should.match(/^\d+$/);
+                res.body.data.key.should.match(/^[a-zA-Z0-9=]+$/);
+                agent_id = res.body.data.id;
+                done();
+            });
+        });
+
+        it('Params: New character (%) in agent name', function(done) {
+            request(common.url)
+            .get("/agents/name/testingNewAgent%2520Put")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+                res.body.data.should.have.properties(['id', 'node_name', 'ip', 'dateAdd', 'status', 'registerIP', 'name']);
+
+                res.body.error.should.equal(0);
+                res.body.data.id.should.match(/^\d+$/);
+                res.body.data.name.should.match(/^[a-zA-Z0-9_\-.%]+$/);
+                agent_id = res.body.data.id;
+                done();
+            });
+        });
+	});  // PUT/agents/:agent_name
 
     describe('DELETE/agents/:agent_id', function() {
         var agent_id = 0;

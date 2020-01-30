@@ -22,7 +22,7 @@ errors['100'] = "Unauthorized request. Cluster privileges required";
 // 600 - 699 Requests
 errors['600'] = "Param not valid. Integer expected";  // Integer
 errors['numbers'] = 600;
-errors['601'] = "Param not valid. Valid characters: a-z, A-Z, 0-9, ., _, -";  // Names
+errors['601'] = "Param not valid. Valid characters: a-z, A-Z, 0-9, ., _, -, %";  // Names
 errors['names'] = 601;
 errors['603'] = "The requested URL was not found on this server";  // Default error
 errors['604'] = "Filter error";  // Filter

@@ -187,8 +187,46 @@ describe('SecurityConfigurationAssessment', function() {
                 res.body.should.have.properties(['error', 'data']);
 
                 res.body.error.should.equal(0);
-                res.body.data.totalItems.should.be.integer;;
+                res.body.data.totalItems.should.be.integer;
                 res.body.data.items.should.be.instanceof(Array);
+                done();
+            });
+        });
+
+        it('Filters: name', function(done) {
+            request(common.url)
+            .get("/sca/000?name=System%20audit%20for%20Unix%20based%20systems&limit=1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.integer;
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.have.properties(ca_fields);
+                done();
+            });
+        });
+
+        it('Filters: references', function(done) {
+            request(common.url)
+            .get("/sca/000?references=https://www.ssh.com/ssh/&limit=1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.integer;
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.have.properties(ca_fields);
                 done();
             });
         });
@@ -210,6 +248,10 @@ describe('SecurityConfigurationAssessment', function() {
     });  // GET/sca/:agent_id
 
     describe('GET/sca/:agent_id/checks/:policy_id', function() {
+
+        sca_check_fields = ['condition', 'status', 'remediation', 'result',
+                            'rationale', 'policy_id', 'title', 'id',
+                            'reason', 'description', 'compliance', 'rules']
 
         it('Request', function(done) {
             request(common.url)
@@ -364,6 +406,132 @@ describe('SecurityConfigurationAssessment', function() {
                 res.body.error.should.equal(1406);
                 done();
             });
+        });
+
+        it('Filters: description', function(done) {
+            request(common.url)
+            .get("/sca/000/checks/unix_audit?description=Turn%20on%20the%20auditd%20daemon%20to%20record%20system%20events.&limit=1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.have.properties(sca_check_fields);
+
+                done();
+            });
+
+        });
+
+        it('Filters: remediation', function(done) {
+            request(common.url)
+            .get("/sca/000/checks/unix_audit?remediation=Change%20the%20Port%20option%20value%20in%20the%20sshd_config%20file.&limit=1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.have.properties(sca_check_fields);
+
+                done();
+            });
+
+        });
+
+        it('Filters: file', function(done) {
+            request(common.url)
+            .get("/sca/000/checks/unix_audit?file=/etc/ssh/sshd_config&limit=1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.have.properties(sca_check_fields);
+
+                done();
+            });
+
+        });
+
+        it('Filters: references', function(done) {
+            request(common.url)
+            .get("/sca/000/checks/unix_audit?references=https://www.thegeekdiary.com/understanding-etclogin-defs-file&limit=1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.have.properties(sca_check_fields);
+
+                done();
+            });
+
+        });
+
+        it('Filters: result', function(done) {
+            request(common.url)
+            .get("/sca/000/checks/unix_audit?result=failed&limit=1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.have.properties(sca_check_fields);
+
+                done();
+            });
+
+        });
+
+        it('Filters: condition', function(done) {
+            request(common.url)
+            .get("/sca/000/checks/unix_audit?condition=all&limit=1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.have.properties(sca_check_fields);
+
+                done();
+            });
+
         });
 
     });  // GET/sca/:agent_id/pci

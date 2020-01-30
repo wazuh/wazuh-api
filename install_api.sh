@@ -434,6 +434,13 @@ setup_api() {
     exec_cmd "chown ossec:ossec $APILOG_DIR"
     exec_cmd "chmod 750 $APILOG_DIR"
 
+    # HTTPS never will be enabled if update=yes
+    if [ "X${update}" = "Xno" ]; then
+        if !([ "X${DISABLE_HTTPS}" = "Xy" ] || [ "X${DISABLE_HTTPS}" = "XY" ]); then
+            # enable HTTPS
+            configure_https
+        fi
+    fi
 
     if [ -z "$NO_SERVICE" ]
     then
@@ -444,6 +451,20 @@ setup_api() {
     else
         print "\nSkipping service installation."
     fi
+
+}
+
+configure_https() {
+    HTTPS="Y"
+    PASSWORD="wazuh"
+    COUNTRY="XX"
+    STATE="XX"
+    LOCALITY="XX"
+    ORG_NAME="XX"
+    ORG_UNIT="XX"
+    COMMON_NAME="XX"
+    . ./scripts/configure_api.sh
+    change_https
 }
 
 main() {
