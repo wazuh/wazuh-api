@@ -126,7 +126,13 @@ hardcoded_items = {
         'PutRestartClusterNode': {"error":0,"data":"Restart request sent"},
 
         # PUT /manager/restart
-        'PutRestartManager': {"error":0,"data":"Restart request sent"}
+        'PutRestartManager': {"error":0,"data":"Restart request sent"},
+
+        # GET /cluster/:node_id/stats/analysisd
+        'GetManagerStatsAnalysisdCluster': {"error": 0, "data": {"total_events_decoded": 10, "syscheck_events_decoded": 0, "syscheck_edps": 0, "syscollector_events_decoded": 0, "syscollector_edps": 0, "rootcheck_events_decoded": 0, "rootcheck_edps": 0, "sca_events_decoded": 0, "sca_edps": 0, "hostinfo_events_decoded": 0, "hostinfo_edps": 0, "winevt_events_decoded": 0, "winevt_edps": 0, "other_events_decoded": 10, "other_events_edps": 2, "events_processed": 10, "events_edps": 2, "events_received": 10, "events_dropped": 0, "alerts_written": 0, "firewall_written": 0, "fts_written": 0, "syscheck_queue_usage": 0, "syscheck_queue_size": 16384, "syscollector_queue_usage": 0, "syscollector_queue_size": 16384, "rootcheck_queue_usage": 0, "rootcheck_queue_size": 16384, "sca_queue_usage": 0, "sca_queue_size": 16384, "hostinfo_queue_usage": 0, "hostinfo_queue_size": 16384, "winevt_queue_usage": 0, "winevt_queue_size": 16384, "event_queue_usage": 0, "event_queue_size": 16384, "rule_matching_queue_usage": 0, "rule_matching_queue_size": 16384, "alerts_queue_usage": 0, "alerts_queue_size": 16384, "firewall_queue_usage": 0, "firewall_queue_size": 16384, "statistical_queue_usage": 0, "statistical_queue_size": 16384, "archives_queue_usage": 0, "archives_queue_size": 16384}},
+
+        # GET /cluster/:node_id/stats/remoted
+        'GetManagerStatsRemotedCluster': {"error": 0, "data": {"queue_size": 0, "total_queue_size": 131072, "tcp_sessions": 0, "evt_count": 3435, "ctrl_msg_count": 81, "discarded_count": 0, "msg_sent": 1087, "recv_bytes": 1004678, "dequeued_after_close": 0}}
     }
 ### ### ###
 
