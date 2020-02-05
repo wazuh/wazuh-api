@@ -3110,7 +3110,7 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'message']);
-                res.body.error.should.equal(1750);
+                res.body.error.should.equal(1751);
                 done();
             });
         });
@@ -3125,7 +3125,7 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'message']);
-                res.body.error.should.equal(1750);
+                res.body.error.should.equal(1751);
                 done();
             });
         });
