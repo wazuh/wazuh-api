@@ -1864,7 +1864,7 @@ describe('Manager', function() {
                 }
 
                 // list of modules which should be present in the request
-                module_list = ['cis-cat', 'database', 'open-scap', 'osquery', 'sca', 'syscollector', 'vulnerability-detector', 'wazuh_download']
+                module_list = ['cis-cat', 'database', 'open-scap', 'osquery', 'sca', 'syscollector', 'vulnerability-detector', 'wazuh_control', 'wazuh_download']
 
                 // check modules
                 should((JSON.stringify(module_list.sort()))).be.eql(JSON.stringify(modules.sort()))
