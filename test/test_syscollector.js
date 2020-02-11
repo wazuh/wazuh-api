@@ -2620,7 +2620,7 @@ describe('Syscollector', function () {
 
         it('Query', function (done) {
             request(common.url)
-                .get("/experimental/syscollector/netproto?q=type=ipv6,dhcp=enabled")
+                .get("/experimental/syscollector/netproto?q=type=ipv4,iface=eth0")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
@@ -2698,7 +2698,7 @@ describe('Syscollector', function () {
                 .end(function (err, res) {
                     if (err) return done(err);
 
-                    res.body.should.have.properties(['error', 'data']);
+                    res.body.should.have.properties(['er    ror', 'data']);
 
                     res.body.error.should.equal(0);
                     res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
