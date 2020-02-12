@@ -2698,7 +2698,7 @@ describe('Syscollector', function () {
                 .end(function (err, res) {
                     if (err) return done(err);
 
-                    res.body.should.have.properties(['er    ror', 'data']);
+                    res.body.should.have.properties(['error', 'data']);
 
                     res.body.error.should.equal(0);
                     res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
