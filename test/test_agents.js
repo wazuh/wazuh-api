@@ -3095,7 +3095,9 @@ describe('Agents', function() {
                 res.body.data.should.be.type('object');
                 res.body.data.should.have.properties(['msg', 'affected_agents']);
                 res.body.data.affected_agents.sort().should.be.eql(['001', '002'].sort());
-                res.body.data.msg.should.equal('All selected agents were restarted');
+                res.body.data.msg.should.equal('Some agents were not restarted');
+                res.body.data.failed_ids[0].id.should.equal('003');
+                res.body.data.failed_ids[0].error.code.should.equal(1735);
                 done();
             });
         });
@@ -3110,7 +3112,7 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'message']);
-                res.body.error.should.equal(1750);
+                res.body.error.should.equal(1751);
                 done();
             });
         });
@@ -3125,7 +3127,7 @@ describe('Agents', function() {
                 if (err) return done(err);
 
                 res.body.should.have.properties(['error', 'message']);
-                res.body.error.should.equal(1750);
+                res.body.error.should.equal(1751);
                 done();
             });
         });
