@@ -349,7 +349,7 @@ router.get('/:node_id/stats/weekly', cache(), function(req, res) {
 
 /**
  * @api {get} /cluster/:node_id/stats/analysisd Get node node_id's analysisd stats
- * @apiName GetManagerStatsCluster
+ * @apiName GetManagerStatsAnalysisdCluster
  * @apiGroup Stats
  * 
  * 
@@ -371,7 +371,7 @@ router.get('/:node_id/stats/analysisd', cache(), function(req, res) {
 
 /**
  * @api {get} /cluster/:node_id/stats/remoted Get node node_id's remoted stats
- * @apiName GetManagerStatsCluster
+ * @apiName GetManagerStatsRemotedCluster
  * @apiGroup Stats
  *
  * 
