@@ -2620,7 +2620,7 @@ describe('Syscollector', function () {
 
         it('Query', function (done) {
             request(common.url)
-                .get("/experimental/syscollector/netproto?q=type=ipv6,dhcp=enabled")
+                .get("/experimental/syscollector/netproto?q=type=ipv4,iface=eth0")
                 .auth(common.credentials.user, common.credentials.password)
                 .expect("Content-type", /json/)
                 .expect(200)
