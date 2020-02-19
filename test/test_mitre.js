@@ -512,6 +512,43 @@ describe('Mitre', function() {
             });
         });
 
+        it('Search', function(done) {
+            request(common.url)
+            .get("/mitre?search=points%to%explorer.exe")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.be.string;
+                done();
+            });
+        });
+
+        it('Search (returns 0 items)', function(done) {
+            request(common.url)
+            .get("/mitre?search=test_test_test")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.equal(0);
+                res.body.data.items.should.be.instanceof(Array);
+                done();
+            });
+        });
+
     });  // GET /mitre
 
 });  // Mitre
