@@ -53,3 +53,4 @@ node /var/ossec/api/app.js &
 /usr/sbin/sshd -D &
 
 tail -f /var/ossec/logs/ossec.log
+

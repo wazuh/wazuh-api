@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - Improvements in the security of the API. `HTTPS` is enabled by default ([#442](https://github.com/wazuh/wazuh-api/pull/442)).
+- Added distinct parameter ([#475](https://github.com/wazuh/wazuh-api/pull/475)).
 
 ### Changed
 - Now endpoint `GET /sca/:agent_id/checks/:policy_id` shows `condition` fields and can be used to filter by ([#4012](https://github.com/wazuh/wazuh/issues/4012))

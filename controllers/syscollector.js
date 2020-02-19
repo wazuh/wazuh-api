@@ -74,7 +74,7 @@ router.get('/:agent_id/hardware', function(req, res) {
  *
  */
 router.get('/:agent_id/packages', function(req, res) {
-    var filters = {'vendor': 'alphanumeric_param', 'name': 'alphanumeric_param',
+    var filters = {'vendor': 'encoded_uri', 'name': 'alphanumeric_param',
                    'architecture': 'alphanumeric_param', 'format': 'alphanumeric_param', 
                    'version' : 'alphanumeric_param'};
     templates.array_request("/syscollector/:agent_id/packages", req, res, "syscollector", {'agent_id': 'numbers'}, filters);
