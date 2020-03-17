@@ -366,7 +366,7 @@ describe('Cluster', function () {
                 });
         });
 
-        it('Analysisd stats', function (done) {
+        it('Analysisd stats (worker-2)', function (done) {
             request(common.url)
                 .get("/cluster/worker-2/stats/analysisd")
                 .auth(common.credentials.user, common.credentials.password)
