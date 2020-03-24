@@ -349,7 +349,7 @@ router.get('/:node_id/stats/weekly', cache(), function(req, res) {
 
 /**
  * @api {get} /cluster/:node_id/stats/analysisd Get node node_id's analysisd stats
- * @apiName GetManagerStatsCluster
+ * @apiName GetManagerStatsAnalysisdCluster
  * @apiGroup Stats
  * 
  * 
@@ -365,16 +365,21 @@ router.get('/:node_id/stats/analysisd', cache(), function(req, res) {
     req.apicacheGroup = "cluster";
 
     var data_request = {'function': '/cluster/:node_id/stats/analysisd', 'arguments': {}};
-    
+
+    if (!filter.check(req.params, {'node_id':'names'}, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['node_id'] = req.params.node_id;
+
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 
 /**
  * @api {get} /cluster/:node_id/stats/remoted Get node node_id's remoted stats
- * @apiName GetManagerStatsCluster
+ * @apiName GetManagerStatsRemotedCluster
  * @apiGroup Stats
  *
- * 
+ *
  * @apiDescription Returns a summary of the current remoted stats on the node.
  *
  * @apiExample {curl} Example usage*:
@@ -387,6 +392,12 @@ router.get('/:node_id/stats/remoted', cache(), function(req, res) {
     req.apicacheGroup = "cluster";
 
     var data_request = {'function': '/cluster/:node_id/stats/remoted', 'arguments': {}};
+
+    if (!filter.check(req.params, {'node_id':'names'}, req, res))  // Filter with error
+        return;
+
+    data_request['arguments']['node_id'] = req.params.node_id;
+
     execute.exec(python_bin, [wazuh_control], data_request, function (data) { res_h.send(req, res, data); });
 })
 

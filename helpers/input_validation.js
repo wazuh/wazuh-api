@@ -24,7 +24,7 @@ exports.array_numbers = function(n) {
 }
 
 exports.names = function(name) {
-    return input_val(name, /^[a-zA-Z0-9_\-\.]+$/);
+    return input_val(name, /^[a-zA-Z0-9_\-.%]+$/);
 }
 
 exports.array_names = function(names) {
@@ -89,7 +89,7 @@ exports.boolean = function(b) {
 }
 
 exports.query_param = function(q) {
-    return input_val(q, /^(?:\(*[\w\.\-]+(?:=|!=|<|>|~)[\w\.\- ]+\)*)(?:(?:;|,)\(*[\w\.\-]+(?:=|!=|<|>|~)[\w\.\- ]+\)*)*$/);
+    return input_val(q, /^(?:\(*[\w\.\-]+(?:=|!=|<|>|~)[\w\.\-\:\%\/\s]+\)*)(?:(?:;|,)\(*[\w\.\-]+(?:=|!=|<|>|~)[\w\.\-\:\%\/\s]+\)*)*$/);
 }
 
 exports.format = function(q) {
@@ -97,5 +97,5 @@ exports.format = function(q) {
 }
 
 exports.encoded_uri = function(e) {
-    return input_val(e, /^[a-zA-Z0-9_,\-\.\+\s\:@<>]+$/)
+    return input_val(e, /^[a-zA-Z0-9_,\-\.\+\s\:@<>\/]+$/)
 }

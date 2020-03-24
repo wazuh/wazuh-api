@@ -22,7 +22,7 @@ errors['100'] = "Unauthorized request. Cluster privileges required";
 // 600 - 699 Requests
 errors['600'] = "Param not valid. Integer expected";  // Integer
 errors['numbers'] = 600;
-errors['601'] = "Param not valid. Valid characters: a-z, A-Z, 0-9, ., _, -";  // Names
+errors['601'] = "Param not valid. Valid characters: a-z, A-Z, 0-9, ., _, -, %";  // Names
 errors['names'] = 601;
 errors['603'] = "The requested URL was not found on this server";  // Default error
 errors['604'] = "Filter error";  // Filter
@@ -60,7 +60,8 @@ errors['array_names'] = 621;
 errors['621'] = "Invalid character in parameters";
 errors['query_param'] = 622;
 errors['622'] = 'Param not valid. Review queries documentation: https://documentation.wazuh.com/current/user-manual/api/queries.html'
-
+errors['empty_boolean'] = 623;
+errors['623'] = 'Param not valid. Valid values: true,false or empty(true)';
 errors['700'] = "File not found";
 errors['701'] = "Size of XML file is too long";
 errors['702'] = "Could not write XML temporary file";
