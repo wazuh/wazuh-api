@@ -35,7 +35,7 @@ var router = require('express').Router();
  *
  */
 router.get('/syscollector/packages', function (req, res) {
-    var filters = {'vendor': 'alphanumeric_param', 'name': 'alphanumeric_param',
+    var filters = {'vendor': 'encoded_uri', 'name': 'alphanumeric_param',
                    'architecture': 'alphanumeric_param', 'format': 'alphanumeric_param', 
                    'version' : 'alphanumeric_param'};
     templates.array_request("/experimental/syscollector/packages", req, res, "syscollector", {}, filters);

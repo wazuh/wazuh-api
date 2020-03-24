@@ -41,7 +41,7 @@ exports.single_field_array_request = function(entrypoint_name, req, res, apicach
         var filters = {}
     else
         var filters = {'offset': 'numbers', 'limit': 'numbers', 'sort':'sort_param', 
-                       'search':'search_param', 'q':'query_param'};
+                       'search':'search_param', 'distinct': 'empty_boolean', 'q':'query_param'};
 
     if (!filter.check(req.query, Object.assign({}, filters, query_checks), req, res))  // Filter with error
         return;
@@ -57,6 +57,8 @@ exports.single_field_array_request = function(entrypoint_name, req, res, apicach
         data_request['arguments']['sort'] = filter.sort_param_to_json(req.query.sort);
     if ('search' in req.query)
         data_request['arguments']['search'] = filter.search_param_to_json(req.query.search);
+    if ('distinct' in req.query)
+        data_request['arguments']['distinct'] = req.query.distinct !== 'false';
     if ('q' in req.query)
         data_request['arguments']['q'] = req.query.q;
 
