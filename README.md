@@ -25,7 +25,7 @@ Wazuh API capabilities:
 
 #### How to install
 
-[Installation guide](https://documentation.wazuh.com/current/installation-guide/installing-wazuh-server/index.html)
+[Installation guide](https://documentation.wazuh.com/current/installation-guide/installing-wazuh-manager/index.html)
 
 #### Request reference
 
