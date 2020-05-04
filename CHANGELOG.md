@@ -1,10 +1,24 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [v3.12.1]
+## [v3.13.0]
+
+- New API request to add SOC complicance support: [commit](https://github.com/wazuh/wazuh-api/commit/719563a6e18581a2c062ba0f6a950730ac74222d).
+    * `GET/rules/tsc` 
+- New filters in request `GET/rules`:
+    - `tsc`: Filters the rules by tsc requirement
+
+## [v3.12.3]
 
 There are no changes for Wazuh API in this version.
 
+## [v3.12.2]
+
+There are no changes for Wazuh API in this version.
+
+## [v3.12.1]
+
+There are no changes for Wazuh API in this version.
 
 ## [v3.12.0]
 
