@@ -1,6 +1,25 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.13.0]
+
+- New API request to add SOC complicance support: [commit](https://github.com/wazuh/wazuh-api/commit/719563a6e18581a2c062ba0f6a950730ac74222d).
+    * `GET/rules/tsc` 
+- New filters in request `GET/rules`:
+    - `tsc`: Filters the rules by tsc requirement
+
+## [v3.12.3]
+
+There are no changes for Wazuh API in this version.
+
+## [v3.12.2]
+
+There are no changes for Wazuh API in this version.
+
+## [v3.12.1]
+
+There are no changes for Wazuh API in this version.
+
 ## [v3.12.0]
 
 ### Added
@@ -10,6 +29,11 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Now endpoint `GET /sca/:agent_id/checks/:policy_id` shows `condition` fields and can be used to filter by ([#4012](https://github.com/wazuh/wazuh/issues/4012))
+
+### Fixed
+- Fixed bug with API requests not being properly distributed to the selected node_id: ([#479](https://github.com/wazuh/wazuh-api/pull/479)).
+    * `GET /cluster/{node_id}/stats/analysisd` 
+    * `GET /cluster/{node_id}/stats/remoted`
 
 
 ## [v3.11.0]
