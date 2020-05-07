@@ -3,9 +3,14 @@ All notable changes to this project will be documented in this file.
 
 ## [v3.13.0]
 
-- New API request to add SOC complicance support: [commit](https://github.com/wazuh/wazuh-api/commit/719563a6e18581a2c062ba0f6a950730ac74222d).
-    * `GET/rules/tsc` 
+### Added
+
+- New API requests:
+    * `GET/mitre` ([#452](https://github.com/wazuh/wazuh-api/pull/452))
+    * `GET/rules/tsc` (Add SOC complicance support: [commit](https://github.com/wazuh/wazuh-api/commit/719563a6e18581a2c062ba0f6a950730ac74222d).)
+
 - New filters in request `GET/rules`:
+    - `mitre`: Filters the rules by mitre requirement
     - `tsc`: Filters the rules by tsc requirement
 
 ## [v3.12.3]
