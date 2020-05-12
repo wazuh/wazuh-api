@@ -13,6 +13,14 @@ All notable changes to this project will be documented in this file.
     - `mitre`: Filters the rules by mitre requirement
     - `tsc`: Filters the rules by tsc requirement
 
+## [v3.13.0]
+
+- Increase the maximum allowed size of the files to be uploaded from 1MB to 10MB. This change applies to:
+    * `POST /manager/files` 
+    * `POST /cluster/:node_id/files` 
+    * `POST /agents/groups/:group_id/configuration` 
+    * `POST /agents/groups/:group_id/files/:file_name` 
+
 ## [v3.12.3]
 
 There are no changes for Wazuh API in this version.
