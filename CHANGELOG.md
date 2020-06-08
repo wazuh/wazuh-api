@@ -7,10 +7,12 @@ All notable changes to this project will be documented in this file.
 
 - New API requests:
     * `GET/mitre` ([#452](https://github.com/wazuh/wazuh-api/pull/452))
+    * `GET/rules/mitre`
+    * `GET/rules/tsc` ([commit](https://github.com/wazuh/wazuh-api/commit/719563a6e18581a2c062ba0f6a950730ac74222d))
 
 - New filters in request `GET/rules`:
     - `mitre`: Filters the rules by mitre requirement
-    - `tsc`: Filters the rules by tsc requirement (Add SOC complicance support: [commit](https://github.com/wazuh/wazuh-api/commit/719563a6e18581a2c062ba0f6a950730ac74222d).)
+    - `tsc`: Filters the rules by tsc requirement 
 
 ### Changed
 
