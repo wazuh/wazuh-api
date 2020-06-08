@@ -7,13 +7,12 @@ All notable changes to this project will be documented in this file.
 
 - New API requests:
     * `GET/mitre` ([#452](https://github.com/wazuh/wazuh-api/pull/452))
-    * `GET/rules/tsc` (Add SOC complicance support: [commit](https://github.com/wazuh/wazuh-api/commit/719563a6e18581a2c062ba0f6a950730ac74222d).)
 
 - New filters in request `GET/rules`:
     - `mitre`: Filters the rules by mitre requirement
-    - `tsc`: Filters the rules by tsc requirement
+    - `tsc`: Filters the rules by tsc requirement (Add SOC complicance support: [commit](https://github.com/wazuh/wazuh-api/commit/719563a6e18581a2c062ba0f6a950730ac74222d).)
 
-## [v3.13.0]
+### Changed
 
 - Increase the maximum allowed size of the files to be uploaded from 1MB to 10MB ([#487](https://github.com/wazuh/wazuh-api/pull/487)). This change applies to:
     * `POST /manager/files` 
