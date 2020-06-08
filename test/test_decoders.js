@@ -339,7 +339,7 @@ describe('Decoders', function() {
             });
         });
 
-    });  // GET/decoders/file
+    });  // GET/decoders/files
 
     describe('GET/decoders/parents', function() {
         it('Request', function(done) {
