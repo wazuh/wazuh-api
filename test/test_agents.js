@@ -1092,7 +1092,7 @@ describe('Agents', function() {
 
         it('TooBigXML', function(done) {
 
-            big_xml = agent_xml.repeat(600)
+            big_xml = agent_xml.repeat(6000)
             request(common.url)
             .post("/agents/groups/testsagentconf/files/agent.conf")
             .auth(common.credentials.user, common.credentials.password)
@@ -1881,7 +1881,7 @@ describe('Agents', function() {
 
         it('TooBigXML', function(done) {
 
-            big_xml = agent_xml.repeat(600)
+            big_xml = agent_xml.repeat(6000)
             request(common.url)
             .post("/agents/groups/testsagentconf2/configuration")
             .auth(common.credentials.user, common.credentials.password)

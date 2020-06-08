@@ -11,7 +11,7 @@ mocha ${TEST_PATH}/test_active_response.js ${ARGS}${REPORT_NAME}
 
 REPORT_NAME=agents
 mocha ${TEST_PATH}/test_agents.js ${ARGS}${REPORT_NAME}
-sleep 10
+sleep 20
 
 REPORT_NAME=agents2
 mocha ${TEST_PATH}/test_agents_2.js ${ARGS}${REPORT_NAME}
@@ -21,7 +21,7 @@ mocha ${TEST_PATH}/test_app.js ${ARGS}${REPORT_NAME}
 
 REPORT_NAME=cluster
 mocha ${TEST_PATH}/test_cluster.js ${ARGS}${REPORT_NAME}
-sleep 10
+sleep 20
 
 REPORT_NAME=decoders
 mocha ${TEST_PATH}/test_decoders.js ${ARGS}${REPORT_NAME}
@@ -31,7 +31,7 @@ mocha ${TEST_PATH}/test_lists.js ${ARGS}${REPORT_NAME}
 
 REPORT_NAME=manager
 mocha ${TEST_PATH}/test_manager.js ${ARGS}${REPORT_NAME}
-sleep 10
+sleep 20
 
 REPORT_NAME=rootcheck
 mocha ${TEST_PATH}/test_rootcheck.js ${ARGS}${REPORT_NAME}

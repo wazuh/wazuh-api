@@ -1,0 +1,1132 @@
+
+
+  Active Response
+    PUT/active-response/:agent_id
+      ✓ Request (297ms)
+      ✓ Command not found (239ms)
+      ✓ Agent does not exist (236ms)
+      ✓ Agent ID not valid (79ms)
+
+
+  4 passing (857ms)
+
+[mochawesome] Report JSON saved to /share/active_response.json
+
+[mochawesome] Report HTML saved to /share/active_response.html
+
+
+
+  Agents
+    GET/agents
+      ✓ Request (236ms)
+      ✓ Pagination (260ms)
+      ✓ Retrieve all elements with limit=0 (236ms)
+      ✓ Sort (234ms)
+      ✓ Wrong Sort (235ms)
+      ✓ Search (242ms)
+      ✓ Selector (240ms)
+      ✓ Not allowed selector (239ms)
+      ✓ Version (240ms)
+      ✓ Os.platform (243ms)
+      ✓ Os.version (240ms)
+      ✓ ManagerHost (238ms)
+      ✓ Filters: status (240ms)
+      ✓ Filters: status 2 (244ms)
+      ✓ Filters: Invalid filter (77ms)
+      ✓ Filters: Invalid filter - Extra field (78ms)
+      ✓ Filters: older_than (237ms)
+      ✓ Filters: group (239ms)
+      ✓ Select: single field (236ms)
+      ✓ Select: multiple fields (240ms)
+      ✓ Select: wrong field (236ms)
+      ✓ Select: invalid character (75ms)
+      ✓ Filters: query (240ms)
+    GET/agents/summary
+      ✓ Request (238ms)
+    GET/agents/summary/os
+      ✓ Request (239ms)
+    GET/agents/outdated
+      ✓ Request (237ms)
+    GET/agents/:agent_id
+      ✓ Request (manager) (242ms)
+      ✓ Request (agent) (246ms)
+      ✓ Selector (240ms)
+      ✓ Not allowed selector (236ms)
+      ✓ Params: Bad agent id (79ms)
+      ✓ Errors: No agent (237ms)
+      ✓ Select (240ms)
+      ✓ Select: wrong field (241ms)
+    GET/agents/name/:agent_name
+      ✓ Request (242ms)
+      ✓ Wrong name (248ms)
+      ✓ Selector (245ms)
+      ✓ Not allowed selector (240ms)
+    GET/agents/:agent_id/key
+      ✓ Request (240ms)
+      ✓ Params: Bad agent id (76ms)
+      ✓ Errors: No key (241ms)
+    PUT/agents/groups/:group_id
+      ✓ Request (249ms)
+      ✓ Params: Bad group name (76ms)
+      ✓ Params: Group already exists (246ms)
+    PUT/agents/:agent_id/group/:group_id
+      ✓ Request (272ms)
+      ✓ Params: Bad agent name (80ms)
+      ✓ Params: Agent does not exist (245ms)
+      ✓ Params: Replace parameter (243ms)
+    POST/agents/groups/:group_id/files/:file_name
+      ✓ Request (259ms)
+      ✓ ErrorOnBadGroup (255ms)
+      ✓ ErrorOnEmptyConf (79ms)
+      ✓ OnlyAgentConfAllowed (240ms)
+      ✓ InvalidConfDetected (80ms)
+      ✓ WrongConfDetected (248ms)
+      ✓ TooBigXML (83ms)
+    GET/agents/no_group
+      ✓ Request (278ms)
+      ✓ Pagination (242ms)
+      ✓ Retrieve all elements with limit=0 (239ms)
+      ✓ Sort (238ms)
+      ✓ Search (238ms)
+      ✓ Select (260ms)
+      ✓ Wrong select (245ms)
+      ✓ Filter: status (239ms)
+    GET/agents/groups
+      ✓ Request (245ms)
+      ✓ Retrieve all elements with limit=0 (259ms)
+      ✓ Hash algorithm (253ms)
+      ✓ Wrong Hash algorithm (252ms)
+      ✓ Filters: query 1 (256ms)
+      ✓ Filters: query 2 (249ms)
+      ✓ Filters: query 3 (245ms)
+    GET/agents/groups/:group_id
+      ✓ Request (238ms)
+      ✓ Params: Bad group name (83ms)
+      ✓ Retrieve all elements with limit=0 (288ms)
+      ✓ Select (269ms)
+      ✓ Filter: status (242ms)
+    GET/agents/groups/:group_id/configuration
+      ✓ Request (268ms)
+      ✓ Params: Bad group name (87ms)
+      ✓ Retrieve all elements with limit=0 (277ms)
+    GET/agents/groups/:group_id/files
+      ✓ Request (240ms)
+      ✓ Params: Bad group name (77ms)
+      ✓ Retrieve all elements with limit=0 (236ms)
+      ✓ Hash algorithm (247ms)
+      ✓ Wrong Hash algorithm (237ms)
+    GET/agents/groups/:group_id/files/:filename
+      ✓ Request (239ms)
+      ✓ UsingFormatAgentConfXML (238ms)
+      ✓ UsingFormatAgentConfJSON (242ms)
+      ✓ UsingFormatRootcheckXML (270ms)
+      ✓ UsingFormatRootcheckJSON (247ms)
+      ✓ Params: Bad group name (87ms)
+    POST/agents/groups/:group_id/configuration
+      ✓ Request (260ms)
+      ✓ ErrorOnBadGroup (241ms)
+      ✓ ErrorOnEmptyConf (76ms)
+      ✓ InvalidConfDetected (76ms)
+      ✓ WrongConfDetected (243ms)
+      ✓ TooBigXML (85ms)
+    DELETE/agents/:agent_id/group
+      ✓ Request (252ms)
+      ✓ Errors: ID is not present (248ms)
+      ✓ Params: Bad agent id (77ms)
+    DELETE/agents/:agent_id/group/:group_id
+      ✓ Request (270ms)
+      ✓ Errors: ID is not present (281ms)
+      ✓ Errors: Group is not present (267ms)
+      ✓ Params: Bad agent id (82ms)
+      ✓ Params: Bad group id (284ms)
+    DELETE/agents/groups/:group_id
+      ✓ Request (275ms)
+      ✓ Params: Bad group id (83ms)
+    DELETE/agents
+      ✓ Request (78ms)
+      ✓ Filter: older_than, status and ids (3786ms)
+      ✓ Errors: Get deleted agent (287ms)
+      ✓ Filter: older_than (245ms)
+    GET/agents/stats/distinct
+      ✓ Request (248ms)
+      ✓ Pagination (239ms)
+      ✓ Retrieve all elements with limit=0 (256ms)
+      ✓ Sort (242ms)
+      ✓ Search (238ms)
+      ✓ Select (240ms)
+      ✓ Wrong select (249ms)
+    GET/agents/:agent/config/:component/:configuration
+      ✓ Request-Agent-Client (260ms)
+      ✓ Request-Agent-Buffer (251ms)
+      ✓ Request-Agent-Labels (251ms)
+      ✓ Request-Agent-Internal (248ms)
+      ✓ Request-Agentless-Agentless (239ms)
+      ✓ Request-Analysis-Global (243ms)
+      ✓ Request-Analysis-Active-response (241ms)
+      ✓ Request-Analysis-Alerts (242ms)
+      ✓ Request-Analysis-Command (241ms)
+      ✓ Request-Analysis-Internal (236ms)
+      ✓ Request-Auth-Auth (242ms)
+      ✓ Request-Com-Active-response (243ms)
+      ✓ Request-Com-Internal (250ms)
+      ✓ Request-Csyslog-Csyslog (252ms)
+      ✓ Request-Integrator-Integration (251ms)
+      ✓ Request-Logcollector-Localfile (259ms)
+      ✓ Request-Logcollector-Socket (257ms)
+      ✓ Request-Logcollector-Internal (256ms)
+      ✓ Request-Mail-Global (242ms)
+      ✓ Request-Mail-Alerts (242ms)
+      ✓ Request-Mail-Internal (242ms)
+      ✓ Request-Monitor-Internal (238ms)
+      ✓ Request-Request-Remote (248ms)
+      ✓ Request-Request-Internal (257ms)
+      ✓ Request-Syscheck-Syscheck (271ms)
+      ✓ Request-Syscheck-Rootcheck (335ms)
+      ✓ Request-Syscheck-Internal (263ms)
+      ✓ Request-Wmodules-Wmodules (263ms)
+    PUT/agents/restart
+      ✓ Request (278ms)
+    PUT/agents/:agent_id/restart
+      ✓ Request (256ms)
+      ✓ Params: Bad agent id (79ms)
+      ✓ Request (246ms)
+    POST/agents/restart
+      ✓ Request (2025ms)
+      ✓ Params: A good id and a bad one (292ms)
+      ✓ Params: Bad agent id (79ms)
+      ✓ Request (270ms)
+    PUT/agents/groups/:group_id/restart
+      ✓ Request (283ms)
+      ✓ Params: Bad group id (268ms)
+      ✓ Group without agents (252ms)
+
+
+  155 passing (43s)
+
+[mochawesome] Report JSON saved to /share/agents.json
+
+[mochawesome] Report HTML saved to /share/agents.html
+
+
+
+  Agents
+    PUT/agents/:agent_name
+      ✓ Request (248ms)
+      ✓ Errors: Name already present (252ms)
+      ✓ Params: Bad agent name (83ms)
+      ✓ Params: New character (%) in agent name (252ms)
+    DELETE/agents/:agent_id
+      ✓ Request (250ms)
+      ✓ Errors: ID is not present (245ms)
+      ✓ Params: Bad agent id (79ms)
+    POST/agents
+      Any
+        ✓ Request (277ms)
+        ✓ Check key (276ms)
+        ✓ Errors: Name already present (235ms)
+        ✓ Filters: Missing field name (75ms)
+        ✓ Filters: Invalid field (75ms)
+      IP Automatic
+        ✓ Request: Automatic IP (272ms)
+        ✓ Errors: Duplicated IP (284ms)
+      IP
+        ✓ Request (240ms)
+        ✓ Filters: Bad IP (78ms)
+        ✓ Filters: Bad IP 2 (74ms)
+    POST/agents/insert
+      Any
+        ✓ Request (271ms)
+        ✓ Insert agent with force parameter (ID and name already presents) (270ms)
+        ✓ Errors: Name already present (235ms)
+        ✓ Errors: ID already present (237ms)
+        ✓ Errors: Invalid key (239ms)
+        ✓ Filters: Missing fields (76ms)
+        ✓ Filters: Invalid field (76ms)
+      IP Automatic
+        ✓ Request: Automatic IP (246ms)
+        ✓ Errors: Duplicated IP (239ms)
+      IP
+        ✓ Request (242ms)
+        ✓ Filters: Bad IP (78ms)
+        ✓ Filters: Bad IP 2 (77ms)
+
+
+  29 passing (9s)
+
+[mochawesome] Report JSON saved to /share/agents2.json
+
+[mochawesome] Report HTML saved to /share/agents2.html
+
+
+
+  App
+    Authentication
+      ✓ Wrong USER
+      ✓ Wrong password (76ms)
+      ✓ Home (79ms)
+    Requests
+      ✓ Inexistent request (79ms)
+      ✓ API version (77ms)
+
+
+  5 passing (345ms)
+
+[mochawesome] Report JSON saved to /share/app.json
+
+[mochawesome] Report HTML saved to /share/app.html
+
+
+
+  Cluster
+    GET/cluster/nodes
+      ✓ Request (271ms)
+      ✓ Pagination (265ms)
+      ✓ Retrieve all elements with limit=0 (250ms)
+      ✓ Sort (252ms)
+      ✓ Search (256ms)
+      ✓ Select (245ms)
+      ✓ Select 2 (245ms)
+      ✓ Wrong select (247ms)
+      ✓ Filters: type (245ms)
+      ✓ Filters: query 1 (243ms)
+      ✓ Filters: query 2 (243ms)
+      ✓ Filters: invalid type (245ms)
+    GET/cluster/:node_id/stats
+      1) Cluster stats
+      ✓ Unexisting node stats (241ms)
+      ✓ Analysisd stats (253ms)
+      ✓ Remoted stats (255ms)
+    GET/cluster/:node_id/logs
+      ✓ Request (master) (255ms)
+      ✓ Request (worker-1) (299ms)
+      ✓ Request (worker-2) (272ms)
+      ✓ Pagination (256ms)
+      ✓ Sort (249ms)
+      ✓ Search (253ms)
+      ✓ Filters: type_log (256ms)
+      ✓ Filters: category (247ms)
+      ✓ Filters: query 1 (254ms)
+      ✓ Filters: query 2 (253ms)
+      ✓ Filters: query 3 (252ms)
+      ✓ Filters: wrong query (76ms)
+    GET/cluster/nodes/:node_name
+      ✓ Request (257ms)
+      ✓ Request wrong name (256ms)
+    GET/cluster/status
+      ✓ Request (259ms)
+    GET/cluster/config
+      ✓ Request (249ms)
+    GET/cluster/healthcheck
+      ✓ Request (259ms)
+      ✓ Filter: node name (254ms)
+    POST/cluster/:node_id/files
+      ✓ Upload ossec.conf (master) (259ms)
+      ✓ Upload ossec.conf (worker) (289ms)
+      ✓ Upload new rules (253ms)
+      ✓ Upload rules (overwrite=true) (249ms)
+      ✓ Upload rules (overwrite=false) (243ms)
+      ✓ Upload new decoder (248ms)
+      ✓ Upload decoder (overwrite=true) (239ms)
+      ✓ Upload decoder (without overwrite parameter) (244ms)
+      ✓ Upload new list (246ms)
+      ✓ Upload list (overwrite=true) (248ms)
+      ✓ Upload list (overwrite=false) (239ms)
+      ✓ Upload corrupted ossec.conf (master) (76ms)
+      ✓ Upload corrupted ossec.conf (worker) (92ms)
+      ✓ Upload malformed rules (78ms)
+      ✓ Upload rules to unexisting node (244ms)
+      ✓ Upload malformed decoder (81ms)
+      ✓ Upload decoder to unexisting node (257ms)
+      ✓ Upload malformed list (77ms)
+      ✓ Upload list to unexisting node (246ms)
+      ✓ Upload list with empty path (79ms)
+      ✓ Upload a file with a wrong content type (78ms)
+    GET/cluster/:node_id/files
+      ✓ Request ossec.conf (master) (243ms)
+      ✓ Request ossec.conf (worker) (256ms)
+      ✓ Request rules (local) (238ms)
+      ✓ Request rules (global) (251ms)
+      ✓ Request decoders (local) (238ms)
+      ✓ Request decoders (global) (250ms)
+      ✓ Request lists (241ms)
+      ✓ Request wrong path 1 (78ms)
+      ✓ Request wrong path 2 (81ms)
+      ✓ Request wrong path 3 (77ms)
+      ✓ Request unexisting file (239ms)
+      ✓ Request file from unexisting node (247ms)
+      ✓ Request file with empty path (81ms)
+      ✓ Request file with validation parameter (true) (254ms)
+    GET/cluster/:node_id/configuration/validation (manager and worker OK)
+      ✓ Request validation (master) (701ms)
+      ✓ Request validation (worker) (692ms)
+      ✓ Request validation (all nodes) (747ms)
+    GET/cluster/:node_id/configuration/validation (manager KO, worker OK)
+      ✓ Request validation (master) (247ms)
+      ✓ Request validation (worker) (681ms)
+      ✓ Request validation (all nodes) (679ms)
+    GET/cluster/:node_id/configuration/validation (manager OK, worker KO)
+      ✓ Request validation (master) (663ms)
+      ✓ Request validation (worker) (259ms)
+      ✓ Request validation (all nodes) (699ms)
+    GET/cluster/:node_id/configuration/validation (manager and worker KO)
+      ✓ Request validation (master) (253ms)
+      ✓ Request validation (worker) (250ms)
+      ✓ Request validation (all nodes) (270ms)
+    DELETE/cluster/:node_id/files
+      ✓ Delete rules (master) (248ms)
+      ✓ Delete decoders (master) (252ms)
+      ✓ Delete CDB list (master) (247ms)
+      ✓ Delete file with empty path (78ms)
+    GET/cluster/master/config/:component/:configuration
+      ✓ Request-Agentless-Agentless (251ms)
+      ✓ Request-Analysis-Global (245ms)
+      ✓ Request-Analysis-Active-response (244ms)
+      ✓ Request-Analysis-Alerts (245ms)
+      ✓ Request-Analysis-Command (247ms)
+      ✓ Request-Analysis-Internal (252ms)
+      ✓ Request-Auth-Auth (241ms)
+      ✓ Request-Com-Active-response (253ms)
+      ✓ Request-Com-Internal (255ms)
+      ✓ Request-Csyslog-Csyslog (242ms)
+      ✓ Request-Integrator-Integration (243ms)
+      ✓ Request-Logcollector-Localfile (249ms)
+      ✓ Request-Logcollector-Socket (240ms)
+      ✓ Request-Logcollector-Internal (249ms)
+      ✓ Request-Mail-Global (247ms)
+      ✓ Request-Mail-Alerts (283ms)
+      ✓ Request-Mail-Internal (410ms)
+      ✓ Request-Monitor-Internal (478ms)
+      ✓ Request-Request-Remote (527ms)
+      ✓ Request-Request-Internal (574ms)
+      ✓ Request-Syscheck-Syscheck (517ms)
+      ✓ Request-Syscheck-Rootcheck (446ms)
+      ✓ Request-Syscheck-Internal (574ms)
+      ✓ Request-Wmodules-Wmodules (618ms)
+    PUT/cluster/:node_id/restart
+      ✓ Request (worker) (605ms)
+      ✓ Request (master) (466ms)
+
+
+  110 passing (35s)
+  1 failing
+
+  1) Cluster
+       GET/cluster/:node_id/stats
+         Cluster stats:
+     Uncaught AssertionError: expected Object { error: 1308, message: 'Stats file has not been created yet' } to have property data
+      at Assertion.fail (node_modules/should/cjs/should.js:258:17)
+      at Assertion.value [as properties] (node_modules/should/cjs/should.js:335:19)
+      at Test.<anonymous> (test/test_cluster.js:285:42)
+      at Test.assert (node_modules/supertest/lib/test.js:181:6)
+      at localAssert (node_modules/supertest/lib/test.js:131:12)
+      at /wazuh-api/node_modules/supertest/lib/test.js:128:5
+      at Test.Request.callback (node_modules/superagent/lib/node/index.js:716:12)
+      at /wazuh-api/node_modules/superagent/lib/node/index.js:916:18
+      at IncomingMessage.<anonymous> (node_modules/superagent/lib/node/parsers/json.js:19:7)
+      at endReadableNT (_stream_readable.js:1185:12)
+      at processTicksAndRejections (internal/process/task_queues.js:81:21)
+
+
+
+[mochawesome] Report JSON saved to /share/cluster.json
+
+[mochawesome] Report HTML saved to /share/cluster.html
+
+
+
+  Decoders
+    GET/decoders
+      ✓ Request (460ms)
+      ✓ Pagination (372ms)
+      ✓ Retrieve all elements with limit=0 (301ms)
+      ✓ Sort (280ms)
+      ✓ Search (353ms)
+      ✓ Filters: File (293ms)
+      ✓ Filters: Path (272ms)
+      ✓ Filters: query 1 (275ms)
+      ✓ Filters: query 2 (270ms)
+      ✓ Filters: query 3 (273ms)
+      ✓ Filters: Invalid filter (80ms)
+      ✓ Filters: Invalid filter - Extra field (76ms)
+    GET/decoders/files
+      ✓ Request (254ms)
+      ✓ Pagination (243ms)
+      ✓ Retrieve all elements with limit=0 (254ms)
+      ✓ Sort (289ms)
+      ✓ Search (266ms)
+    GET/decoders/parents
+      ✓ Request (353ms)
+      ✓ Pagination (290ms)
+      ✓ Retrieve all elements with limit=0 (281ms)
+      ✓ Sort (276ms)
+      ✓ Search (274ms)
+    GET/decoders/:decoder_name
+      ✓ Request (274ms)
+      ✓ Pagination (283ms)
+      ✓ Retrieve all elements with limit=0 (272ms)
+      ✓ Sort (278ms)
+      ✓ Search (286ms)
+
+
+  27 passing (8s)
+
+[mochawesome] Report JSON saved to /share/decoders.json
+
+[mochawesome] Report HTML saved to /share/decoders.html
+
+
+
+  Lists
+    GET/lists
+      ✓ Request (336ms)
+      ✓ Pagination (366ms)
+      ✓ Retrieve all elements with limit=0 (418ms)
+      ✓ Sort (278ms)
+      ✓ Search (246ms)
+      ✓ Filters: Path (248ms)
+      ✓ Filters: Invalid filter (77ms)
+      ✓ Filters: Invalid filter - Extra field (76ms)
+    GET/lists/files
+      ✓ Request (248ms)
+      ✓ Pagination (252ms)
+      ✓ Retrieve all elements with limit=0 (252ms)
+      ✓ Sort (282ms)
+      ✓ Search (278ms)
+      ✓ Filters: Invalid filter (79ms)
+      ✓ Filters: Invalid filter - Extra field (90ms)
+
+
+  15 passing (4s)
+
+[mochawesome] Report JSON saved to /share/lists.json
+
+[mochawesome] Report HTML saved to /share/lists.html
+
+
+
+  Manager
+    GET/manager/status
+      ✓ Request (297ms)
+    GET/manager/info
+      ✓ Request (278ms)
+    GET/manager/configuration
+      ✓ Request (262ms)
+      ✓ Filters: Missing field section (82ms)
+      ✓ Filters: Section (273ms)
+      ✓ Errors: Invalid Section (246ms)
+      ✓ Filters: Section - field (240ms)
+      ✓ Errors: Invalid field (251ms)
+      ✓ Filters: Invalid filter (78ms)
+      ✓ Filters: Invalid filter - Extra field (78ms)
+    GET/manager/stats
+      1) Request
+      2) Filters: date
+      ✓ Filters: Invalid date (81ms)
+      ✓ Filters: Invalid filter (78ms)
+      ✓ Filters: Invalid filter - Extra field (87ms)
+    GET/manager/stats/hourly
+      ✓ Request (242ms)
+    GET/manager/stats/weekly
+      ✓ Request (240ms)
+    GET/manager/stats/analysisd
+      ✓ Request (245ms)
+    GET/manager/stats/remoted
+      ✓ Request (251ms)
+    GET/manager/logs
+      ✓ Request (263ms)
+      ✓ Pagination (254ms)
+      ✓ Retrieve all elements with limit=0 (266ms)
+      ✓ Sort (259ms)
+      ✓ SortField (268ms)
+      ✓ Search (273ms)
+      ✓ Filters: type_log (262ms)
+      ✓ Filters: category (254ms)
+      ✓ Filters: type_log and category (264ms)
+      ✓ Filters: Invalid filter (77ms)
+      ✓ Filters: Invalid filter - Extra field (78ms)
+      ✓ Filters: query 1 (260ms)
+      ✓ Filters: query 2 (256ms)
+      ✓ Filters: query 3 (269ms)
+      ✓ Filters: wrong query (78ms)
+    GET/manager/logs/summary
+      ✓ Request (277ms)
+    POST/manager/files
+      ✓ Upload ossec.conf (247ms)
+      ✓ Upload ossec.conf (overwrite=false) (255ms)
+      ✓ Upload rules (new rule) (255ms)
+      ✓ Upload rules (overwrite=true) (245ms)
+      ✓ Upload rules (overwrite=false) (240ms)
+      ✓ Upload decoder (overwrite=true) (245ms)
+      ✓ Upload decoder (without overwrite parameter) (246ms)
+      ✓ Upload list (overwrite=true) (241ms)
+      ✓ Upload list (without overwrite parameter) (241ms)
+      ✓ Upload malformed rule (81ms)
+      ✓ Upload malformed decoder (77ms)
+      ✓ Upload malformed list (77ms)
+      ✓ Upload list with empty path (77ms)
+      ✓ Upload a file with a wrong content type (81ms)
+    GET/manager/files
+      ✓ Request ossec.conf (247ms)
+      ✓ Request rules (local) (246ms)
+      ✓ Request rules (global) (250ms)
+      ✓ Request decoders (local) (240ms)
+      ✓ Request decoders (global) (256ms)
+      ✓ Request lists (250ms)
+      ✓ Request wrong path 1 (78ms)
+      ✓ Request wrong path 2 (78ms)
+      ✓ Request wrong path 3 (83ms)
+      ✓ Request unexisting file (240ms)
+      ✓ Request file with empty path (77ms)
+      ✓ Request file with validation parameter (true) (275ms)
+    DELETE/manager/files
+      ✓ Delete rules (243ms)
+      ✓ Delete decoders (246ms)
+      ✓ Delete CDB list (248ms)
+      ✓ Delete file with empty path (78ms)
+    GET/manager/configuration/validation (OK)
+      ✓ Request validation  (744ms)
+    GET/manager/configuration/validation (KO)
+      ✓ Request validation (254ms)
+    GET/manager/config/:component/:configuration
+      ✓ Request-Agentless-Agentless (240ms)
+      ✓ Request-Analysis-Global (240ms)
+      ✓ Request-Analysis-Active-response (248ms)
+      ✓ Request-Analysis-Alerts (238ms)
+      ✓ Request-Analysis-Command (242ms)
+      ✓ Request-Analysis-Internal (240ms)
+      ✓ Request-Auth-Auth (260ms)
+      ✓ Request-Com-Active-response (237ms)
+      ✓ Request-Com-Internal (242ms)
+      ✓ Request-Csyslog-Csyslog (241ms)
+      ✓ Request-Integrator-Integration (241ms)
+      ✓ Request-Logcollector-Localfile (242ms)
+      ✓ Request-Logcollector-Socket (246ms)
+      ✓ Request-Logcollector-Internal (244ms)
+      ✓ Request-Mail-Global (240ms)
+      ✓ Request-Mail-Alerts (246ms)
+      ✓ Request-Mail-Internal (237ms)
+      ✓ Request-Monitor-Internal (234ms)
+      ✓ Request-Request-Remote (253ms)
+      ✓ Request-Request-Internal (243ms)
+      ✓ Request-Syscheck-Syscheck (242ms)
+      ✓ Request-Syscheck-Rootcheck (235ms)
+      ✓ Request-Syscheck-Internal (260ms)
+      ✓ Request-Wmodules-Wmodules (249ms)
+    PUT/manager/restart
+      ✓ Request (256ms)
+
+
+  90 passing (22s)
+  2 failing
+
+  1) Manager
+       GET/manager/stats
+         Request:
+     Uncaught AssertionError: expected Object { error: 1308, message: 'Stats file has not been created yet' } to have property data
+      at Assertion.fail (node_modules/should/cjs/should.js:258:17)
+      at Assertion.value [as properties] (node_modules/should/cjs/should.js:335:19)
+      at Test.<anonymous> (test/test_manager.js:226:38)
+      at Test.assert (node_modules/supertest/lib/test.js:181:6)
+      at localAssert (node_modules/supertest/lib/test.js:131:12)
+      at /wazuh-api/node_modules/supertest/lib/test.js:128:5
+      at Test.Request.callback (node_modules/superagent/lib/node/index.js:716:12)
+      at /wazuh-api/node_modules/superagent/lib/node/index.js:916:18
+      at IncomingMessage.<anonymous> (node_modules/superagent/lib/node/parsers/json.js:19:7)
+      at endReadableNT (_stream_readable.js:1185:12)
+      at processTicksAndRejections (internal/process/task_queues.js:81:21)
+
+  2) Manager
+       GET/manager/stats
+         Filters: date:
+     Uncaught AssertionError: expected Object { error: 1308, message: 'Stats file has not been created yet' } to have property data
+      at Assertion.fail (node_modules/should/cjs/should.js:258:17)
+      at Assertion.value [as properties] (node_modules/should/cjs/should.js:335:19)
+      at Test.<anonymous> (test/test_manager.js:246:38)
+      at Test.assert (node_modules/supertest/lib/test.js:181:6)
+      at localAssert (node_modules/supertest/lib/test.js:131:12)
+      at /wazuh-api/node_modules/supertest/lib/test.js:128:5
+      at Test.Request.callback (node_modules/superagent/lib/node/index.js:716:12)
+      at /wazuh-api/node_modules/superagent/lib/node/index.js:916:18
+      at IncomingMessage.<anonymous> (node_modules/superagent/lib/node/parsers/json.js:19:7)
+      at endReadableNT (_stream_readable.js:1185:12)
+      at processTicksAndRejections (internal/process/task_queues.js:81:21)
+
+
+
+[mochawesome] Report JSON saved to /share/manager.json
+
+[mochawesome] Report HTML saved to /share/manager.html
+
+
+
+  Rootcheck
+    GET/rootcheck/:agent_id/last_scan
+      ✓ Request (273ms)
+      ✓ Params: Bad agent id (77ms)
+      ✓ Errors: No agent (232ms)
+    DELETE/rootcheck/:agent_id
+      ✓ Request (281ms)
+      ✓ Params: Bad agent id (78ms)
+      ✓ Errors: No agent (237ms)
+    DELETE/rootcheck
+      ✓ Request (700ms)
+    PUT/rootcheck/:agent_id
+      ✓ Request (256ms)
+      ✓ Params: Bad agent id (78ms)
+      ✓ Errors: No agent (234ms)
+    PUT/rootcheck
+      ✓ Request (262ms)
+
+
+  11 passing (3s)
+
+[mochawesome] Report JSON saved to /share/rootcheck.json
+
+[mochawesome] Report HTML saved to /share/rootcheck.html
+
+
+
+  Rules
+    GET/rules
+      ✓ Request (392ms)
+      ✓ Pagination (360ms)
+      ✓ Retrieve all elements with limit=0 (376ms)
+      ✓ Sort (373ms)
+      ✓ Search (462ms)
+      ✓ Filters: Invalid filter (81ms)
+      ✓ Filters: Invalid filter - Extra field (76ms)
+      ✓ Filters: status (372ms)
+      ✓ Filters: group (392ms)
+      ✓ Filters: level (1) (375ms)
+      ✓ Filters: level (2) (494ms)
+      ✓ Filters: path (369ms)
+      ✓ Filters: file (366ms)
+      ✓ Filters: pci (449ms)
+      ✓ Filters: gdpr (366ms)
+      ✓ Filters: hipaa (582ms)
+      ✓ Filters: nist-800-53 (537ms)
+      ✓ Filters: gpg13 (369ms)
+      ✓ Filters: query 1 (373ms)
+      ✓ Filters: query 2 (373ms)
+    GET/rules/groups
+      ✓ Request (361ms)
+      ✓ Pagination (378ms)
+      ✓ Retrieve all elements with limit=0 (371ms)
+      ✓ Sort (373ms)
+      ✓ Search (376ms)
+      ✓ Filters: Invalid filter (77ms)
+    GET/rules/pci
+      ✓ Request (368ms)
+      ✓ Pagination (378ms)
+      ✓ Retrieve all elements with limit=0 (374ms)
+      ✓ Sort (371ms)
+      ✓ Search (392ms)
+      ✓ Filters: Invalid filter (77ms)
+    GET/rules/gdpr
+      ✓ Request (371ms)
+      ✓ Pagination (407ms)
+      ✓ Retrieve all elements with limit=0 (395ms)
+      ✓ Sort (374ms)
+      ✓ Search (389ms)
+      ✓ Filters: Invalid filter (79ms)
+    GET/rules/gpg13
+      ✓ Request (367ms)
+      ✓ Pagination (380ms)
+      ✓ Retrieve all elements with limit=0 (378ms)
+      ✓ Sort (367ms)
+      ✓ Search (381ms)
+      ✓ Filters: Invalid filter (81ms)
+    GET/rules/hipaa
+      ✓ Request (370ms)
+      ✓ Pagination (377ms)
+      ✓ Retrieve all elements with limit=0 (372ms)
+      ✓ Sort (369ms)
+      ✓ Search (376ms)
+      ✓ Filters: Invalid filter (76ms)
+    GET/rules/nist-800-53
+      ✓ Request (377ms)
+      ✓ Pagination (374ms)
+      ✓ Retrieve all elements with limit=0 (370ms)
+      ✓ Sort (375ms)
+      ✓ Search (377ms)
+      ✓ Filters: Invalid filter (77ms)
+    GET/rules/files
+      ✓ Request (243ms)
+      ✓ Pagination (242ms)
+      ✓ Retrieve all elements with limit=0 (254ms)
+      ✓ Sort (251ms)
+      ✓ Search (267ms)
+      ✓ Filters: Invalid filter (76ms)
+      ✓ Filters: Invalid filter - Extra field (76ms)
+      ✓ Filters: status (248ms)
+      ✓ Filters: download (257ms)
+    GET/rules/:rule_id
+      ✓ Request (356ms)
+      ✓ Pagination (354ms)
+      ✓ Retrieve all elements with limit=0 (382ms)
+      ✓ Sort (368ms)
+      ✓ Search (369ms)
+      ✓ Filters: Invalid filter (77ms)
+      ✓ Params: Bad rule id (78ms)
+      ✓ Params: No rule (386ms)
+
+
+  73 passing (24s)
+
+[mochawesome] Report JSON saved to /share/rules.json
+
+[mochawesome] Report HTML saved to /share/rules.html
+
+
+
+  SecurityConfigurationAssessment
+    GET/sca/:agent_id
+      ✓ Request (271ms)
+      ✓ Pagination (251ms)
+      ✓ Retrieve all elements with limit=0 (244ms)
+      ✓ Sort (255ms)
+      ✓ Search (251ms)
+      ✓ Params: Bad agent id (76ms)
+      ✓ Errors: No agent (235ms)
+      ✓ Filters: Invalid filter (76ms)
+      ✓ Filters: Invalid filter - Extra field (76ms)
+      ✓ Filters: query (281ms)
+      ✓ Filters: name (270ms)
+      ✓ Filters: references (254ms)
+      ✓ Retrieve all elements with limit=0 (243ms)
+    GET/sca/:agent_id/checks/:policy_id
+      ✓ Request (252ms)
+      ✓ Pagination (250ms)
+      ✓ Retrieve all elements with limit=0 (242ms)
+      ✓ Sort (271ms)
+      ✓ Search (260ms)
+      ✓ Params: Bad agent id (77ms)
+      ✓ Errors: No agent (233ms)
+      ✓ Check not found (246ms)
+      ✓ Retrieve all elements with limit=0 (246ms)
+      ✓ Filters: description (253ms)
+      ✓ Filters: remediation (250ms)
+      ✓ Filters: file (246ms)
+      ✓ Filters: references (246ms)
+      ✓ Filters: result (243ms)
+      ✓ Filters: condition (247ms)
+
+
+  28 passing (6s)
+
+[mochawesome] Report JSON saved to /share/sca.json
+
+[mochawesome] Report HTML saved to /share/sca.html
+
+
+
+  Syscheck
+    GET/syscheck/:agent_id
+      ✓ Request (332ms)
+      ✓ Pagination (248ms)
+      ✓ Retrieve all elements with limit=0 (240ms)
+      ✓ Sort (249ms)
+      ✓ Search (250ms)
+      ✓ Params: Bad agent id (76ms)
+      ✓ Errors: No agent (245ms)
+      ✓ Filters: Invalid filter (77ms)
+      ✓ Filters: Invalid filter - Extra field (76ms)
+      ✓ Filters: file (241ms)
+      ✓ Filters: type (244ms)
+      ✓ Filters: summary (241ms)
+      ✓ Filters: md5 (248ms)
+      ✓ Filters: sha1 (249ms)
+      ✓ Filters: sha256 (250ms)
+      ✓ Filters: hash (255ms)
+      ✓ Filters: distinct (253ms)
+    GET/syscheck/:agent_id/last_scan
+      ✓ Request (248ms)
+      ✓ Params: Bad agent id (75ms)
+      ✓ Errors: No agent (229ms)
+    DELETE/syscheck/:agent_id
+      ✓ Request (242ms)
+      ✓ Params: Bad agent id (77ms)
+      ✓ Errors: No agent (232ms)
+    DELETE/experimental/syscheck
+      ✓ Request (1814ms)
+    PUT/syscheck/:agent_id
+      ✓ Request (246ms)
+      ✓ Params: Bad agent id (78ms)
+      ✓ Errors: No agent (237ms)
+    PUT/syscheck
+      ✓ Request (260ms)
+
+
+  28 passing (8s)
+
+[mochawesome] Report JSON saved to /share/test_syscheck.json
+
+[mochawesome] Report HTML saved to /share/test_syscheck.html
+
+
+
+  Syscollector
+    GET/syscollector/:agent_id/os
+      ✓ Request (270ms)
+      ✓ Selector (256ms)
+      ✓ Not allowed selector (243ms)
+    GET/syscollector/:agent_id/hardware
+      ✓ Request (248ms)
+      ✓ Selector (252ms)
+      ✓ Not allowed selector (268ms)
+    GET/syscollector/:agent_id/packages
+      ✓ Request (286ms)
+      ✓ Selector (255ms)
+      ✓ Not allowed selector (245ms)
+      ✓ Pagination (253ms)
+      ✓ Wrong limit (80ms)
+      ✓ Sort - (250ms)
+      ✓ Sort + (245ms)
+      ✓ Wrong Sort (242ms)
+      ✓ Search (265ms)
+      ✓ Filter: vendor (268ms)
+      ✓ Filter: name (247ms)
+      ✓ Filter: architecture (264ms)
+      ✓ Filter: format (271ms)
+      ✓ Wrong filter (77ms)
+      ✓ Query (269ms)
+    GET/experimental/syscollector/packages
+      ✓ Request (483ms)
+      ✓ Selector (511ms)
+      ✓ Not allowed selector (267ms)
+      ✓ Pagination (277ms)
+      ✓ Wrong limit (78ms)
+      ✓ Sort - (275ms)
+      ✓ Sort + (278ms)
+      ✓ Wrong Sort (276ms)
+      ✓ Search (366ms)
+      ✓ Filter: vendor (294ms)
+      ✓ Filter: name (297ms)
+      ✓ Filter: architecture (485ms)
+      ✓ Filter: format (575ms)
+      ✓ Wrong filter (108ms)
+      ✓ Query (653ms)
+    GET/experimental/syscollector/os
+      ✓ Request (287ms)
+      ✓ Selector (297ms)
+      ✓ Not allowed selector (270ms)
+      ✓ Pagination (281ms)
+      ✓ Wrong limit (77ms)
+      ✓ Search (315ms)
+      ✓ Wrong filter (79ms)
+      ✓ Filter: architecture (299ms)
+      ✓ Filter: os_name (300ms)
+      ✓ Filter: release (296ms)
+      ✓ Query (305ms)
+    GET/experimental/syscollector/hardware
+      ✓ Request (282ms)
+      ✓ Selector (282ms)
+      ✓ Not allowed selector (269ms)
+      ✓ Pagination (279ms)
+      ✓ Wrong limit (78ms)
+      ✓ Search (295ms)
+      ✓ Wrong filter (78ms)
+      ✓ Wrong Sort (271ms)
+      ✓ Filter: ram_total (299ms)
+      ✓ Filter: cpu_cores (303ms)
+      ✓ Filter: cpu_mhz (288ms)
+      ✓ Filter: board_serial (297ms)
+      ✓ Query (296ms)
+    GET/experimental/syscollector/processes
+      ✓ Request (439ms)
+      ✓ Selector (351ms)
+      ✓ Not allowed selector (688ms)
+      ✓ Pagination (672ms)
+      ✓ Wrong limit (165ms)
+      ✓ Search (859ms)
+      ✓ Wrong filter (150ms)
+      ✓ Wrong Sort (494ms)
+      ✓ Filter: state (344ms)
+      ✓ Filter: ppid (293ms)
+      ✓ Filter: egroup (290ms)
+      ✓ Filter: euser (320ms)
+      ✓ Filter: fgroup (301ms)
+      ✓ Filter: name (310ms)
+      ✓ Filter: nlwp (283ms)
+      ✓ Filter: pgrp (299ms)
+      ✓ Filter: priority (280ms)
+      ✓ Filter: rgroup (275ms)
+      ✓ Filter: ruser (290ms)
+      ✓ Filter: sgroup (288ms)
+      ✓ Filter: suser (275ms)
+      ✓ Query (275ms)
+    GET/experimental/syscollector/ports
+      ✓ Request (304ms)
+      ✓ Selector (278ms)
+      ✓ Not allowed selector (273ms)
+      ✓ Pagination (272ms)
+      ✓ Wrong limit (77ms)
+      ✓ Search (333ms)
+      ✓ Wrong filter (86ms)
+      ✓ Wrong Sort (265ms)
+      ✓ Filter: protocol (288ms)
+      ✓ Filter: local_ip (285ms)
+      ✓ Filter: local_port (286ms)
+      ✓ Filter: remote_ip (276ms)
+      ✓ Filter: tx_queue (286ms)
+      ✓ Filter: state (283ms)
+      ✓ Query (280ms)
+    GET/syscollector/netaddr
+      ✓ Request (276ms)
+      ✓ Selector (278ms)
+      ✓ Not allowed selector (262ms)
+      ✓ Pagination (268ms)
+      ✓ Wrong limit (75ms)
+      ✓ Search (278ms)
+      ✓ Wrong filter (77ms)
+      ✓ Wrong Sort (261ms)
+      ✓ Filter: iface (276ms)
+      ✓ Filter: proto (282ms)
+      ✓ Filter: address (362ms)
+      ✓ Filter: broadcast (289ms)
+      ✓ Filter: netmask (280ms)
+      ✓ Query (279ms)
+    GET/experimental/syscollector/netproto
+      ✓ Request (276ms)
+      ✓ Selector (277ms)
+      ✓ Not allowed selector (264ms)
+      ✓ Pagination (268ms)
+      ✓ Wrong limit (76ms)
+      ✓ Search (283ms)
+      ✓ Wrong filter (76ms)
+      ✓ Wrong Sort (261ms)
+      ✓ Filter: iface (276ms)
+      ✓ Filter: type (278ms)
+      ✓ Filter: gateway (274ms)
+      ✓ Filter: dhcp (277ms)
+      ✓ Query (284ms)
+    GET/experimental/syscollector/netiface
+      ✓ Request (286ms)
+      ✓ Selector (277ms)
+      ✓ Not allowed selector (265ms)
+      ✓ Pagination (270ms)
+      ✓ Wrong limit (76ms)
+      ✓ Search (301ms)
+      ✓ Wrong filter (80ms)
+      ✓ Wrong Sort (262ms)
+      ✓ Filter: name (276ms)
+      ✓ Filter: type (280ms)
+      ✓ Filter: state (290ms)
+      ✓ Filter: mtu (282ms)
+      ✓ Filter: tx_packets (280ms)
+      ✓ Filter: rx_packets (283ms)
+      ✓ Filter: tx_bytes (285ms)
+      ✓ Filter: rx_bytes (283ms)
+      ✓ Filter: tx_errors (283ms)
+      ✓ Filter: rx_errors (301ms)
+      ✓ Filter: tx_dropped (304ms)
+      ✓ Filter: rx_dropped (284ms)
+      ✓ Query (296ms)
+    GET/syscollector/000/processes
+      ✓ Request (442ms)
+      ✓ Selector (590ms)
+      ✓ Not allowed selector (543ms)
+      ✓ Pagination (377ms)
+      ✓ Wrong limit (99ms)
+      ✓ Search (305ms)
+      ✓ Wrong filter (88ms)
+      ✓ Wrong Sort (297ms)
+      ✓ Filter: state (256ms)
+      ✓ Filter: ppid (243ms)
+      ✓ Filter: egroup (244ms)
+      ✓ Filter: euser (238ms)
+      ✓ Filter: fgroup (243ms)
+      ✓ Filter: name (243ms)
+      ✓ Filter: nlwp (243ms)
+      ✓ Filter: pgrp (300ms)
+      ✓ Filter: priority (248ms)
+      ✓ Filter: rgroup (240ms)
+      ✓ Filter: ruser (247ms)
+      ✓ Filter: sgroup (244ms)
+      ✓ Filter: suser (244ms)
+      ✓ Query (242ms)
+    GET/syscollector/000/ports
+      ✓ Request (249ms)
+      ✓ Selector (251ms)
+      ✓ Not allowed selector (237ms)
+      ✓ Pagination (256ms)
+      ✓ Wrong limit (76ms)
+      ✓ Search (246ms)
+      ✓ Wrong filter (76ms)
+      ✓ Wrong Sort (241ms)
+      ✓ Filter: protocol (246ms)
+      ✓ Filter: local_ip (247ms)
+      ✓ Filter: local_port (244ms)
+      ✓ Filter: remote_ip (246ms)
+      ✓ Filter: tx_queue (246ms)
+      ✓ Filter: state (246ms)
+      ✓ Query (244ms)
+    GET/syscollector/000/netaddr
+      ✓ Request (249ms)
+      ✓ Selector (246ms)
+      ✓ Not allowed selector (241ms)
+      ✓ Pagination (242ms)
+      ✓ Wrong limit (76ms)
+      ✓ Search (247ms)
+      ✓ Wrong filter (75ms)
+      ✓ Wrong Sort (236ms)
+      ✓ Filter: iface (247ms)
+      ✓ Filter: proto (239ms)
+      ✓ Filter: address (248ms)
+      ✓ Filter: broadcast (243ms)
+      ✓ Filter: netmask (244ms)
+      ✓ Query (240ms)
+    GET/syscollector/000/netproto
+      ✓ Request (241ms)
+      ✓ Selector (243ms)
+      ✓ Not allowed selector (239ms)
+      ✓ Pagination (245ms)
+      ✓ Wrong limit (77ms)
+      ✓ Search (240ms)
+      ✓ Wrong filter (78ms)
+      ✓ Wrong Sort (241ms)
+      ✓ Filter: iface (242ms)
+      ✓ Filter: type (246ms)
+      ✓ Filter: gateway (245ms)
+      ✓ Filter: dhcp (245ms)
+      ✓ Query (262ms)
+    GET/syscollector/000/netiface
+      ✓ Request (248ms)
+      ✓ Selector (256ms)
+      ✓ Not allowed selector (244ms)
+      ✓ Pagination (249ms)
+      ✓ Wrong limit (80ms)
+      ✓ Search (253ms)
+      ✓ Wrong filter (78ms)
+      ✓ Wrong Sort (267ms)
+      ✓ Filter: name (250ms)
+      ✓ Filter: type (249ms)
+      ✓ Filter: state (253ms)
+      ✓ Filter: mtu (266ms)
+      ✓ Filter: tx_packets (261ms)
+      ✓ Filter: rx_packets (254ms)
+      ✓ Filter: tx_bytes (257ms)
+      ✓ Filter: rx_bytes (246ms)
+      ✓ Filter: tx_errors (250ms)
+      ✓ Filter: rx_errors (246ms)
+      ✓ Filter: tx_dropped (249ms)
+      ✓ Filter: rx_dropped (266ms)
+      ✓ Query (273ms)
+    GET/syscollector/:agent_id/hotfixes
+      ✓ Request (283ms)
+      ✓ Selector (245ms)
+      ✓ Not allowed selector (243ms)
+      ✓ Pagination (258ms)
+      ✓ Wrong limit (245ms)
+      ✓ Sort - (262ms)
+      ✓ Sort + (278ms)
+      ✓ Search (268ms)
+      ✓ Filter: hotfix (270ms)
+
+
+  239 passing (1m)
+
+[mochawesome] Report JSON saved to /share/syscollector.json
+
+[mochawesome] Report HTML saved to /share/syscollector.html
+
