@@ -33,6 +33,9 @@ REPORT_NAME=manager
 mocha ${TEST_PATH}/test_manager.js ${ARGS}${REPORT_NAME}
 sleep 20
 
+REPORT_NAME=mitre
+mocha ${TEST_PATH}/test_mitre.js ${ARGS}${REPORT_NAME}
+
 REPORT_NAME=rootcheck
 mocha ${TEST_PATH}/test_rootcheck.js ${ARGS}${REPORT_NAME}
 
@@ -42,7 +45,11 @@ mocha ${TEST_PATH}/test_rules.js ${ARGS}${REPORT_NAME}
 REPORT_NAME=sca
 mocha ${TEST_PATH}/test_sca.js ${ARGS}${REPORT_NAME}
 
-REPORT_NAME=test_syscheck
+REPORT_NAME=summary
+ARGS=$ARGS
+mocha ${TEST_PATH}/test_summary.js ${ARGS}${REPORT_NAME}
+
+REPORT_NAME=syscheck
 ARGS=$ARGS
 mocha ${TEST_PATH}/test_syscheck.js ${ARGS}${REPORT_NAME}
 
