@@ -11,7 +11,7 @@ mocha ${TEST_PATH}/test_active_response.js ${ARGS}${REPORT_NAME}
 
 REPORT_NAME=agents
 mocha ${TEST_PATH}/test_agents.js ${ARGS}${REPORT_NAME}
-sleep 10
+sleep 20
 
 REPORT_NAME=agents2
 mocha ${TEST_PATH}/test_agents_2.js ${ARGS}${REPORT_NAME}
@@ -21,7 +21,7 @@ mocha ${TEST_PATH}/test_app.js ${ARGS}${REPORT_NAME}
 
 REPORT_NAME=cluster
 mocha ${TEST_PATH}/test_cluster.js ${ARGS}${REPORT_NAME}
-sleep 10
+sleep 20
 
 REPORT_NAME=decoders
 mocha ${TEST_PATH}/test_decoders.js ${ARGS}${REPORT_NAME}
@@ -31,7 +31,10 @@ mocha ${TEST_PATH}/test_lists.js ${ARGS}${REPORT_NAME}
 
 REPORT_NAME=manager
 mocha ${TEST_PATH}/test_manager.js ${ARGS}${REPORT_NAME}
-sleep 10
+sleep 20
+
+REPORT_NAME=mitre
+mocha ${TEST_PATH}/test_mitre.js ${ARGS}${REPORT_NAME}
 
 REPORT_NAME=rootcheck
 mocha ${TEST_PATH}/test_rootcheck.js ${ARGS}${REPORT_NAME}
@@ -42,7 +45,11 @@ mocha ${TEST_PATH}/test_rules.js ${ARGS}${REPORT_NAME}
 REPORT_NAME=sca
 mocha ${TEST_PATH}/test_sca.js ${ARGS}${REPORT_NAME}
 
-REPORT_NAME=test_syscheck
+REPORT_NAME=summary
+ARGS=$ARGS
+mocha ${TEST_PATH}/test_summary.js ${ARGS}${REPORT_NAME}
+
+REPORT_NAME=syscheck
 ARGS=$ARGS
 mocha ${TEST_PATH}/test_syscheck.js ${ARGS}${REPORT_NAME}
 
