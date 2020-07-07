@@ -408,9 +408,71 @@ describe('SecurityConfigurationAssessment', function() {
             });
         });
 
+        it('Filters: title', function(done) {
+            request(common.url)
+            .get("/sca/000/checks/cis_debian9_L2?&title=Ensure%20events%20that%20modify%20the%20system%27s%20Mandatory%20Access%20Controls%20are%20collected%20%28SELinux%29&limit=1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.have.properties(sca_check_fields);
+
+                done();
+            });
+
+        });
+
+        it('Filters: incomplete title', function(done) {
+            request(common.url)
+            .get("/sca/000/checks/cis_debian9_L2?title=Ensure%20events%20that&limit=1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.equal(0);
+                res.body.data.items.should.be.instanceof(Array);
+
+                done();
+            });
+
+        });
+
         it('Filters: description', function(done) {
             request(common.url)
             .get("/sca/000/checks/unix_audit?description=Turn%20on%20the%20auditd%20daemon%20to%20record%20system%20events.&limit=1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.have.properties(sca_check_fields);
+
+                done();
+            });
+
+        });
+
+        it('Filters: rationale', function(done) {
+            request(common.url)
+            .get("/sca/000/checks/cis_debian9_L2?rationale=In%20high%20security%20contexts%2C%20the%20risk%20of%20detecting%20unauthorized%20access%20or%20nonrepudiation%20exceeds%20the%20benefit%20of%20the%20system%27s%20availability.&limit=1")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -495,6 +557,69 @@ describe('SecurityConfigurationAssessment', function() {
         it('Filters: result', function(done) {
             request(common.url)
             .get("/sca/000/checks/unix_audit?result=failed&limit=1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.have.properties(sca_check_fields);
+
+                done();
+            });
+
+        });
+
+        it('Filters: command', function(done) {
+            request(common.url)
+            .get("/sca/000/checks/unix_audit?command=systemctl%20is-enabled%20auditd&limit=1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.have.properties(sca_check_fields);
+
+                done();
+            });
+
+        });
+
+        it('Filters: status', function(done) {
+            request(common.url)
+            .get("/sca/000/checks/unix_audit?status=Not%20applicable&limit=1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.have.properties(sca_check_fields);
+
+                done();
+            });
+
+        });
+
+        it('Filters: reason', function(done) {
+            request(common.url)
+            .get("/sca/000/checks/cis_debian9_L2?reason=Could%20not%20open%20file%20%27%2Fetc%2Fdefault%2Fgrub%27&limit=1")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)

@@ -61,6 +61,9 @@ router.get('/:agent_id', cache(), function(req, res) {
  * @apiParam {Number} [limit=500] Maximum number of elements to return.
  * @apiParam {String} [sort] Sorts the collection by a field or fields (separated by comma). Use +/- at the beginning to list in ascending or descending order.
  * @apiParam {String} [search] Looks for elements with the specified string.
+ * @apiParam {String} [command] Looks for elements with the specified command.
+ * @apiParam {String} [status] Looks for elements with the specified status.
+ * @apiParam {String} [reason] Looks for elements with the specified reason.
  *
  * @apiDescription Returns the sca checks of an agent.
  *
@@ -69,11 +72,12 @@ router.get('/:agent_id', cache(), function(req, res) {
  *
  */
 router.get('/:agent_id/checks/:policy_id', cache(), function(req, res) {
-    query_checks = {'title': 'alphanumeric_param', 'description': 'alphanumeric_param',
-        'rationale': 'alphanumeric_param', 'remediation': 'alphanumeric_param',
+    query_checks = {'title': 'symbols_alphanumeric_param', 'description': 'symbols_alphanumeric_param',
+        'rationale': 'symbols_alphanumeric_param', 'remediation': 'symbols_alphanumeric_param',
         'file': 'paths', 'process': 'alphanumeric_param', 'directory': 'paths',
         'registry': 'alphanumeric_param', 'references': 'encoded_uri',
-        'result': 'alphanumeric_param', 'condition': 'alphanumeric_param'
+        'result': 'alphanumeric_param', 'condition': 'alphanumeric_param', 'command': 'alphanumeric_param',
+        'status': 'alphanumeric_param', 'reason': 'symbols_alphanumeric_param'
     };
     templates.array_request("/sca/:agent_id/checks/:policy_id", req, res,
                "sca",
