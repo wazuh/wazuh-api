@@ -47,6 +47,10 @@ exports.alphanumeric_param = function(param) {
     return input_val(param, /^[a-zA-Z0-9_,\-\.\+\s\:]+$/);
 }
 
+exports.symbols_alphanumeric_param = function(param) {
+    return input_val(param, /^[a-zA-Z0-9_,<>!\-.+\s:\/()'"|=]+$/);
+}
+
 exports.sort_param = function(param) {
     return input_val(param, /^[a-zA-Z0-9_\-\,\s\+\.]+$/); // + is translated as \s
 }
@@ -89,7 +93,7 @@ exports.boolean = function(b) {
 }
 
 exports.query_param = function(q) {
-    return input_val(q, /^(?:\(*[\w\.\-]+(?:=|!=|<|>|~)[\w\.\-\:\%\/\s]+\)*)(?:(?:;|,)\(*[\w\.\-]+(?:=|!=|<|>|~)[\w\.\-\:\%\/\s]+\)*)*$/);
+    return input_val(q, /^(?:\(*[\w\.\-]+(?:=|!=|<|>|~)[\[\]\{\}\\\w\.\-\:\%\/\s]+\)*)(?:(?:;|,)\(*[\w\.\-]+(?:=|!=|<|>|~)[\[\]\{\}\\\w\.\-\:\%\/\s]+\)*)*$/);
 }
 
 exports.format = function(q) {

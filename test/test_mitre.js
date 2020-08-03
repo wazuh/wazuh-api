@@ -1,6 +1,6 @@
 /**
  * API RESTful for OSSEC
- * Copyright (C) 2015-2016 Wazuh, Inc.All rights reserved.
+ * Copyright (C) 2015-2019 Wazuh, Inc.All rights reserved.
  * Wazuh.com
  *
  * This program is a free software; you can redistribute it
@@ -17,16 +17,15 @@ var common = require('./common.js');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 
-describe('SecurityConfigurationAssessment', function() {
+describe('Mitre', function() {
 
-    ca_fields = ['score', 'policy_id', 'references', 'name',
-                 'description', 'pass', 'fail', 'start_scan', 'end_scan'];
+    keys = ['id', 'json', 'platform_name', 'phase_name']
 
     describe('GET/sca/:agent_id', function() {
 
         it('Request', function(done) {
             request(common.url)
-            .get("/sca/000")
+            .get("/mitre")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -37,14 +36,14 @@ describe('SecurityConfigurationAssessment', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items[0].should.have.properties(ca_fields);
+                res.body.data.items[0].should.have.properties(keys);
                 done();
             });
         });
 
-        it('Pagination', function(done) {
+        it('Pagination: limit = 1', function(done) {
             request(common.url)
-            .get("/sca/000?offset=0&limit=1")
+            .get("/mitre?offset=4&limit=1")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -55,14 +54,68 @@ describe('SecurityConfigurationAssessment', function() {
 
                 res.body.error.should.equal(0);
                 res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
-                res.body.data.items[0].should.have.properties(ca_fields);
+                res.body.data.items[0].should.have.properties(keys);
+                done();
+            });
+        });
+
+        it('Pagination: limit = 5', function(done) {
+            request(common.url)
+            .get("/mitre?offset=10&limit=5")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(5);
+                res.body.data.items[0].should.have.properties(keys);
+                done();
+            });
+        });
+
+        it('Pagination: limit = 10', function(done) {
+            request(common.url)
+            .get("/mitre?offset=10&limit=10")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(10);
+                res.body.data.items[0].should.have.properties(keys);
+                done();
+            });
+        });
+
+        it('Pagination: limit > 10', function(done) {
+            request(common.url)
+            .get("/mitre?offset=10&limit=15")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(10);
+                res.body.data.items[0].should.have.properties(keys);
                 done();
             });
         });
 
         it('Retrieve all elements with limit=0', function(done) {
             request(common.url)
-            .get("/sca/000?limit=0")
+            .get("/mitre?limit=0")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -75,9 +128,88 @@ describe('SecurityConfigurationAssessment', function() {
             });
         });
 
-        it('Sort', function(done) {
+        let test_sort_id = 0;
+
+        it('Sort: +id', function(done) {
             request(common.url)
-            .get("/sca/000?sort=-score")
+            .get("/mitre?sort=+id")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(10);
+                res.body.data.items[0].should.have.properties(keys);
+
+                test_sort_id = res.body.data.items[0].id
+
+                done();
+            });
+        });
+
+        it('Sort: -id', function(done) {
+            request(common.url)
+            .get("/mitre?sort=-id")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(10);
+                res.body.data.items[0].should.have.properties(keys);
+
+                res.body.data.items[0].id.should.be.above(test_sort_id)
+
+                done();
+            });
+        });
+
+        it('Filters: id', function(done) {
+            request(common.url)
+            .get("/mitre?id=T1101")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
+                res.body.data.items[0].should.have.properties(keys);
+                done();
+            });
+        });
+
+        it('Filters: id (request returns 0 items)', function(done) {
+            request(common.url)
+            .get("/mitre?id=T99")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(0);
+                done();
+            });
+        });
+
+        it('Filters: phase_name=initial access', function(done) {
+            request(common.url)
+            .get("/mitre?phase_name=initial%20access")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -89,173 +221,354 @@ describe('SecurityConfigurationAssessment', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.above(0);
                 res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items[0].should.have.properties(ca_fields);
+                res.body.data.items[0].should.have.properties(keys);
+                done();
+            });
+        });
+
+        it('Filters: phase_name=persistence', function(done) {
+            request(common.url)
+            .get("/mitre?phase_name=persistence")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.have.properties(keys);
+                done();
+            });
+        });
+
+        it('Filters: phase_name (request returns 0 items)', function(done) {
+            request(common.url)
+            .get("/mitre?phase_name=wrong%20phase")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(0);
+                done();
+            });
+        });
+
+        it('Filters: platform_name=linux', function(done) {
+            request(common.url)
+            .get("/mitre?platform_name=linux")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.have.properties(keys);
+                done();
+            });
+        });
+
+        it('Filters: platform_name=macos', function(done) {
+            request(common.url)
+            .get("/mitre?platform_name=macos")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.have.properties(keys);
+                done();
+            });
+        });
+
+        it('Filters: platform_name=windows', function(done) {
+            request(common.url)
+            .get("/mitre?platform_name=windows")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.have.properties(keys);
+                done();
+            });
+        });
+
+        it('Filters: platform_name=windows,phase_name=persistence', function(done) {
+            request(common.url)
+            .get("/mitre?platform_name=windows&phase_name=persistence")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.have.properties(keys);
+                done();
+            });
+        });
+
+        it('Filters: platform_name=linux,phase_name=execution', function(done) {
+            request(common.url)
+            .get("/mitre?platform_name=linux&phase_name=execution")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.have.properties(keys);
+                done();
+            });
+        });
+
+        it('Filters: platform_name=macos,phase_name=impact', function(done) {
+            request(common.url)
+            .get("/mitre?platform_name=linux&phase_name=impact")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.have.properties(keys);
+                done();
+            });
+        });
+
+        it('Filters: platform_name (request returns 0 items)', function(done) {
+            request(common.url)
+            .get("/mitre?platform_name=hpux")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(0);
+                done();
+            });
+        });
+
+        it('Filters: q=id=T1015', function(done) {
+            request(common.url)
+            .get("/mitre?q=id=T1015")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
+                res.body.data.items[0].should.have.properties(keys);
+                done();
+            });
+        });
+
+        it('Filters: q=platform_name=linux', function(done) {
+            request(common.url)
+            .get("/mitre?q=platform_name=linux&limit=1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
+                res.body.data.items[0].should.have.properties(keys);
+                done();
+            });
+        });
+
+        it('Filters: q=phase_name=execution', function(done) {
+            request(common.url)
+            .get("/mitre?q=phase_name=execution&limit=1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(1);
+                res.body.data.items[0].should.have.properties(keys);
+                done();
+            });
+        });
+
+        it('Filters: q (request returns 0 items)', function(done) {
+            request(common.url)
+            .get("/mitre?q=id=T1")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.items.should.be.instanceof(Array).and.have.lengthOf(0);
+                done();
+            });
+        });
+
+        it('Filters: q (wrong query 1)', function(done) {
+            request(common.url)
+            .get("/mitre?q=phase_names=impact")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1408);
+                done();
+            });
+        });
+
+        it('Filters: q (wrong query 2)', function(done) {
+            request(common.url)
+            .get("/mitre?q=system=linux")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1408);
+                done();
+            });
+        });
+
+        it('Filters: q (wrong query 3)', function(done) {
+            request(common.url)
+            .get("/mitre?q=attack_id=T1100")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1408);
+                done();
+            });
+        });
+
+        it('Filters: select=id,phase_name,platform_name', function(done) {
+            request(common.url)
+            .get("/mitre?select=id,phase_name,platform_name")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.have.properties(['id', 'phase_name', 'platform_name'])
+                done();
+            });
+        });
+
+        it('Filters: select=id,json,platform_name', function(done) {
+            request(common.url)
+            .get("/mitre?select=id,json,platform_name")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'data']);
+
+                res.body.error.should.equal(0);
+                res.body.data.totalItems.should.be.above(0);
+                res.body.data.items.length.should.be.belowOrEqual(10);
+                res.body.data.items.should.be.instanceof(Array);
+                res.body.data.items[0].should.have.properties(['id', 'json', 'platform_name'])
+                done();
+            });
+        });
+
+        it('Filters: select=platform (wrong field)', function(done) {
+            request(common.url)
+            .get("/mitre?select=platform")
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+                res.body.error.should.equal(1724);
                 done();
             });
         });
 
         it('Search', function(done) {
             request(common.url)
-            .get("/sca/000?search=ssh")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.totalItems.should.be.above(0);
-                res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items[0].should.have.properties(ca_fields);
-                done();
-            });
-        });
-
-        it('Params: Bad agent id', function(done) {
-            request(common.url)
-            .get("/sca/abc")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(400)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'message']);
-                res.body.error.should.equal(600);
-                done();
-            });
-        });
-
-        it('Errors: No agent', function(done) {
-            request(common.url)
-            .get("/sca/9999999")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'message']);
-                res.body.error.should.equal(1701);
-                done();
-            });
-        });
-
-        it('Filters: Invalid filter', function(done) {
-            request(common.url)
-            .get("/sca/000?random")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(400)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'message']);
-
-                res.body.error.should.equal(604);
-                done();
-            });
-        });
-
-        it('Filters: Invalid filter - Extra field', function(done) {
-            request(common.url)
-            .get("/sca/000?random&name=CIS")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(400)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'message']);
-
-                res.body.error.should.equal(604);
-                done();
-            });
-        });
-
-        it('Filters: query', function(done) {
-            request(common.url)
-            .get("/sca/000?q=pass>0;fail<1000")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.totalItems.should.be.integer;
-                res.body.data.items.should.be.instanceof(Array);
-                done();
-            });
-        });
-
-        it('Filters: name', function(done) {
-            request(common.url)
-            .get("/sca/000?name=System%20audit%20for%20Unix%20based%20systems&limit=1")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.totalItems.should.be.integer;
-                res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items[0].should.have.properties(ca_fields);
-                done();
-            });
-        });
-
-        it('Filters: references', function(done) {
-            request(common.url)
-            .get("/sca/000?references=https://www.ssh.com/ssh/&limit=1")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.totalItems.should.be.integer;
-                res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items[0].should.have.properties(ca_fields);
-                done();
-            });
-        });
-    
-        it('Retrieve all elements with limit=0', function(done) {
-            request(common.url)
-            .get("/sca/000?limit=0")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'message']);
-                res.body.error.should.equal(1406);
-                done();
-            });
-        });
-    });  // GET/sca/:agent_id
-
-    describe('GET/sca/:agent_id/checks/:policy_id', function() {
-
-        sca_check_fields = ['condition', 'status', 'remediation', 'result',
-                            'rationale', 'policy_id', 'title', 'id',
-                            'reason', 'description', 'compliance', 'rules']
-
-        it('Request', function(done) {
-            request(common.url)
-            .get("/sca/000/checks/unix_audit")
+            .get("/mitre?search=points%to%explorer.exe")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -272,166 +585,9 @@ describe('SecurityConfigurationAssessment', function() {
             });
         });
 
-        it('Pagination', function(done) {
+        it('Search (returns 0 items)', function(done) {
             request(common.url)
-            .get("/sca/000/checks/unix_audit?offset=0&limit=1")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.totalItems.should.be.above(0);
-                res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items[0].should.be.string;
-                done();
-            });
-        });
-
-        it('Retrieve all elements with limit=0', function(done) {
-            request(common.url)
-            .get("/sca/000/checks/unix_audit?limit=0")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'message']);
-                res.body.error.should.equal(1406);
-                done();
-            });
-        });
-
-        it('Sort', function(done) {
-            request(common.url)
-            .get("/sca/000/checks/unix_audit?sort=-")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.totalItems.should.be.above(0);
-                res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items[0].should.be.string;
-                done();
-            });
-        });
-
-        it('Search', function(done) {
-            request(common.url)
-            .get("/sca/000/checks/unix_audit?search=2")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.totalItems.should.be.above(0);
-                res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items[0].should.be.string;
-                done();
-            });
-        });
-
-        it('Params: Bad agent id', function(done) {
-            request(common.url)
-            .get("/sca/abc/checks/unix_audit")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(400)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'message']);
-                res.body.error.should.equal(600);
-                done();
-            });
-        });
-
-        it('Errors: No agent', function(done) {
-            request(common.url)
-            .get("/sca/9999999/checks/unix_audit")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'message']);
-                res.body.error.should.equal(1701);
-                done();
-            });
-        });
-
-        it('Check not found', function(done) {
-            request(common.url)
-            .get("/sca/000/checks/not_exists")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.totalItems.should.equal(0);
-                res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items.should.have.length(0);
-                done();
-            });
-        });
-
-        it('Retrieve all elements with limit=0', function(done) {
-            request(common.url)
-            .get("/sca/000/checks/unix_audit?limit=0")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'message']);
-                res.body.error.should.equal(1406);
-                done();
-            });
-        });
-
-        it('Filters: title', function(done) {
-            request(common.url)
-            .get("/sca/000/checks/cis_debian9_L2?&title=Ensure%20events%20that%20modify%20the%20system%27s%20Mandatory%20Access%20Controls%20are%20collected%20%28SELinux%29&limit=1")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.totalItems.should.be.above(0);
-                res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items[0].should.have.properties(sca_check_fields);
-
-                done();
-            });
-
-        });
-
-        it('Filters: incomplete title', function(done) {
-            request(common.url)
-            .get("/sca/000/checks/cis_debian9_L2?title=Ensure%20events%20that&limit=1")
+            .get("/mitre?search=test_test_test")
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(200)
@@ -443,222 +599,10 @@ describe('SecurityConfigurationAssessment', function() {
                 res.body.error.should.equal(0);
                 res.body.data.totalItems.should.be.equal(0);
                 res.body.data.items.should.be.instanceof(Array);
-
                 done();
             });
-
         });
 
-        it('Filters: description', function(done) {
-            request(common.url)
-            .get("/sca/000/checks/unix_audit?description=Turn%20on%20the%20auditd%20daemon%20to%20record%20system%20events.&limit=1")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
+    });  // GET /mitre
 
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.totalItems.should.be.above(0);
-                res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items[0].should.have.properties(sca_check_fields);
-
-                done();
-            });
-
-        });
-
-        it('Filters: rationale', function(done) {
-            request(common.url)
-            .get("/sca/000/checks/cis_debian9_L2?rationale=In%20high%20security%20contexts%2C%20the%20risk%20of%20detecting%20unauthorized%20access%20or%20nonrepudiation%20exceeds%20the%20benefit%20of%20the%20system%27s%20availability.&limit=1")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.totalItems.should.be.above(0);
-                res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items[0].should.have.properties(sca_check_fields);
-
-                done();
-            });
-
-        });
-
-        it('Filters: remediation', function(done) {
-            request(common.url)
-            .get("/sca/000/checks/unix_audit?remediation=Change%20the%20Port%20option%20value%20in%20the%20sshd_config%20file.&limit=1")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.totalItems.should.be.above(0);
-                res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items[0].should.have.properties(sca_check_fields);
-
-                done();
-            });
-
-        });
-
-        it('Filters: file', function(done) {
-            request(common.url)
-            .get("/sca/000/checks/unix_audit?file=/etc/ssh/sshd_config&limit=1")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.totalItems.should.be.above(0);
-                res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items[0].should.have.properties(sca_check_fields);
-
-                done();
-            });
-
-        });
-
-        it('Filters: references', function(done) {
-            request(common.url)
-            .get("/sca/000/checks/unix_audit?references=https://www.thegeekdiary.com/understanding-etclogin-defs-file&limit=1")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.totalItems.should.be.above(0);
-                res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items[0].should.have.properties(sca_check_fields);
-
-                done();
-            });
-
-        });
-
-        it('Filters: result', function(done) {
-            request(common.url)
-            .get("/sca/000/checks/unix_audit?result=failed&limit=1")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.totalItems.should.be.above(0);
-                res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items[0].should.have.properties(sca_check_fields);
-
-                done();
-            });
-
-        });
-
-        it('Filters: command', function(done) {
-            request(common.url)
-            .get("/sca/000/checks/unix_audit?command=systemctl%20is-enabled%20auditd&limit=1")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.totalItems.should.be.above(0);
-                res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items[0].should.have.properties(sca_check_fields);
-
-                done();
-            });
-
-        });
-
-        it('Filters: status', function(done) {
-            request(common.url)
-            .get("/sca/000/checks/unix_audit?status=Not%20applicable&limit=1")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.totalItems.should.be.above(0);
-                res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items[0].should.have.properties(sca_check_fields);
-
-                done();
-            });
-
-        });
-
-        it('Filters: reason', function(done) {
-            request(common.url)
-            .get("/sca/000/checks/cis_debian9_L2?reason=Could%20not%20open%20file%20%27%2Fetc%2Fdefault%2Fgrub%27&limit=1")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.totalItems.should.be.above(0);
-                res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items[0].should.have.properties(sca_check_fields);
-
-                done();
-            });
-
-        });
-
-        it('Filters: condition', function(done) {
-            request(common.url)
-            .get("/sca/000/checks/unix_audit?condition=all&limit=1")
-            .auth(common.credentials.user, common.credentials.password)
-            .expect("Content-type",/json/)
-            .expect(200)
-            .end(function(err,res){
-                if (err) return done(err);
-
-                res.body.should.have.properties(['error', 'data']);
-
-                res.body.error.should.equal(0);
-                res.body.data.totalItems.should.be.above(0);
-                res.body.data.items.should.be.instanceof(Array);
-                res.body.data.items[0].should.have.properties(sca_check_fields);
-
-                done();
-            });
-
-        });
-
-    });  // GET/sca/:agent_id/pci
-
-});  // Security Configuration Assessment
+});  // Mitre

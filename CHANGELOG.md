@@ -1,6 +1,37 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.13.1]
+
+### Added
+
+- New filters in request `GET /sca/:agent_id/checks/:policy_id`:
+    * `reason`: Filters the SCA checks by 'reason' field ([#492](https://github.com/wazuh/wazuh-api/issues/492)).
+    * `status`: Filters the SCA checks by 'status' field ([#492](https://github.com/wazuh/wazuh-api/issues/492)).
+    * `command`: Filters the SCA checks by 'command' field ([#492](https://github.com/wazuh/wazuh-api/issues/492)).
+
+
+## [v3.13.0]
+
+### Added
+
+- New API requests:
+    * `GET/mitre` ([#452](https://github.com/wazuh/wazuh-api/pull/452))
+    * `GET/rules/mitre`
+    * `GET/rules/tsc` ([commit](https://github.com/wazuh/wazuh-api/commit/719563a6e18581a2c062ba0f6a950730ac74222d))
+
+- New filters in request `GET/rules`:
+    - `mitre`: Filters the rules by mitre requirement
+    - `tsc`: Filters the rules by tsc requirement 
+
+### Changed
+
+- Increase the maximum allowed size of the files to be uploaded from 1MB to 10MB ([#487](https://github.com/wazuh/wazuh-api/pull/487)). This change applies to:
+    * `POST /manager/files` 
+    * `POST /cluster/:node_id/files` 
+    * `POST /agents/groups/:group_id/configuration` 
+    * `POST /agents/groups/:group_id/files/:file_name` 
+
 ## [v3.12.3]
 
 There are no changes for Wazuh API in this version.
