@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.13.3]
+
+There are no changes for Wazuh API in this version.
+
 ## [v3.13.2]
 
 There are no changes for Wazuh API in this version.
