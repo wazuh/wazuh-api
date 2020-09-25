@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.13.2]
+
+There are no changes for Wazuh API in this version.
+
 ## [v3.13.1]
 
 ### Added
@@ -9,7 +13,6 @@ All notable changes to this project will be documented in this file.
     * `reason`: Filters the SCA checks by 'reason' field ([#492](https://github.com/wazuh/wazuh-api/issues/492)).
     * `status`: Filters the SCA checks by 'status' field ([#492](https://github.com/wazuh/wazuh-api/issues/492)).
     * `command`: Filters the SCA checks by 'command' field ([#492](https://github.com/wazuh/wazuh-api/issues/492)).
-
 
 ## [v3.13.0]
 
