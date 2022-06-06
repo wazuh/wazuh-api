@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.13.5]
+
+### Changed
+
+- Upgrade moment dependency to 2.29.3 ([#503](https://github.com/wazuh/wazuh-api/pull/503)).
+
 ## [v3.13.4]
 
 There are no changes for Wazuh API in this version.
@@ -33,15 +39,15 @@ There are no changes for Wazuh API in this version.
 
 - New filters in request `GET/rules`:
     - `mitre`: Filters the rules by mitre requirement
-    - `tsc`: Filters the rules by tsc requirement 
+    - `tsc`: Filters the rules by tsc requirement
 
 ### Changed
 
 - Increase the maximum allowed size of the files to be uploaded from 1MB to 10MB ([#487](https://github.com/wazuh/wazuh-api/pull/487)). This change applies to:
-    * `POST /manager/files` 
-    * `POST /cluster/:node_id/files` 
-    * `POST /agents/groups/:group_id/configuration` 
-    * `POST /agents/groups/:group_id/files/:file_name` 
+    * `POST /manager/files`
+    * `POST /cluster/:node_id/files`
+    * `POST /agents/groups/:group_id/configuration`
+    * `POST /agents/groups/:group_id/files/:file_name`
 
 ## [v3.12.3]
 
@@ -67,7 +73,7 @@ There are no changes for Wazuh API in this version.
 
 ### Fixed
 - Fixed bug with API requests not being properly distributed to the selected node_id: ([#479](https://github.com/wazuh/wazuh-api/pull/479)).
-    * `GET /cluster/{node_id}/stats/analysisd` 
+    * `GET /cluster/{node_id}/stats/analysisd`
     * `GET /cluster/{node_id}/stats/remoted`
 
 
@@ -106,8 +112,8 @@ There are no changes for Wazuh API in this version.
 
 ### Fixed
 - Fixed bug inserting duplicated agent without any errors ([#318](https://github.com/wazuh/wazuh-api/issues/318))
-- Fixed exception handling for `DELETE/agents` ([#441](https://github.com/wazuh/wazuh-api/pull/441)) 
-- Fixed API installation in Docker CentOS 7 containers ([#408](https://github.com/wazuh/wazuh-api/pull/408)) 
+- Fixed exception handling for `DELETE/agents` ([#441](https://github.com/wazuh/wazuh-api/pull/441))
+- Fixed API installation in Docker CentOS 7 containers ([#408](https://github.com/wazuh/wazuh-api/pull/408))
 - Deleted cache usage  in `POST/agents` ([#403](https://github.com/wazuh/wazuh-api/pull/403))
 
 ## [v3.9.0]
