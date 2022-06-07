@@ -1,7 +1,7 @@
 {
   "name": "wazuh_api",
-  "version": "3.13.4",
-  "revision": "31304",
+  "version": "3.13.5",
+  "revision": "31305",
   "description": "Wazuh API.",
   "main": "app.js",
   "author": "Wazuh",
@@ -14,7 +14,7 @@
     "fast-xml-parser": "~3.12.11",
     "htpasswd": "~2.4.0",
     "http-auth": "~3.2.4",
-    "moment": "~2.24.0",
+    "moment": "~2.29.3",
     "rotating-file-stream": "~1.4.6",
     "uid-number": "~0.0.6"
   },
