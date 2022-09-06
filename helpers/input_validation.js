@@ -17,7 +17,6 @@ function input_val (val, regex) {
 
 function is_safe_path(path){
     return !(path.includes("../") || path.includes("..\\"));
-
 }
 
 exports.active_response_command = function(command) {
@@ -25,7 +24,7 @@ exports.active_response_command = function(command) {
 }
 
 exports.array = function(array) {
-    return typeof array === "object"
+    return typeof array === "object";
 }
 
 exports.numbers = function(n) {
