@@ -15,8 +15,13 @@ function input_val (val, regex) {
         return false;
 }
 
+function is_safe_path(path){
+    return !(path.includes("../") || path.includes("..\\"));
+
+}
+
 exports.active_response_command = function(command) {
-    return input_val(command, /^!?[\w\-.\\/:]+$/);
+    return input_val(command, /^!?[\w\-.\\/:]+$/) && is_safe_path(command);
 }
 
 exports.array = function(array) {
