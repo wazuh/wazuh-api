@@ -16,7 +16,7 @@ function input_val (val, regex) {
 }
 
 function is_safe_path(path){
-    return !(path.includes("../") || path.includes("..\\"));
+    return !(path.includes("../") || path.includes("..\\") || path.includes("/..") || path.includes("\\.."));
 }
 
 exports.active_response_command = function(command) {

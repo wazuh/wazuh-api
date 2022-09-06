@@ -157,10 +157,10 @@ describe('Active Response', function() {
             });
         });
 
-        it('Wrong command (unsafe path - Windows)', function(done) {
+        it('Wrong command (unsafe path - Ubuntu)', function(done) {
             request(common.url)
             .put("/active-response/000")
-            .send({'command':'..\\..\\..\\test.ps1', 'arguments':[], 'custom': true})
+            .send({'command':'./..', 'arguments':[], 'custom': true})
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(400)
@@ -178,6 +178,40 @@ describe('Active Response', function() {
             request(common.url)
             .put("/active-response/000")
             .send({'command':'!../../../test.sh', 'arguments':[]})
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(602);
+                done();
+            });
+        });
+
+        it('Wrong command (unsafe path - Windows)', function(done) {
+            request(common.url)
+            .put("/active-response/000")
+            .send({'command':'..\\..\\..\\test.ps1', 'arguments':[], 'custom': true})
+            .auth(common.credentials.user, common.credentials.password)
+            .expect("Content-type",/json/)
+            .expect(400)
+            .end(function(err,res){
+                if (err) return done(err);
+
+                res.body.should.have.properties(['error', 'message']);
+
+                res.body.error.should.equal(602);
+                done();
+            });
+        });
+
+        it('Wrong command (unsafe path - Windows)', function(done) {
+            request(common.url)
+            .put("/active-response/000")
+            .send({'command':'.\\..', 'arguments':[], 'custom': true})
             .auth(common.credentials.user, common.credentials.password)
             .expect("Content-type",/json/)
             .expect(400)
