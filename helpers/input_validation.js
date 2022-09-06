@@ -15,6 +15,14 @@ function input_val (val, regex) {
         return false;
 }
 
+exports.active_response_command = function(command) {
+    return input_val(command, /^!?[\w\-.\\/:]+$/);
+}
+
+exports.array = function(array) {
+    return typeof array === "object"
+}
+
 exports.numbers = function(n) {
     return input_val(n, /^\d+$/);
 }
