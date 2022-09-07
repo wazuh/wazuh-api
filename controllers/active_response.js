@@ -33,8 +33,11 @@ router.put('/:agent_id', function(req, res) {
 
     var data_request = {'function': '/PUT/active-response/:agent_id', 'arguments': {}};
 
-    // ToDo: Add argments
     if (!filter.check(req.params, {'agent_id':'numbers'}, req, res))  // Filter with error
+        return;
+
+    var filters = {'command':'active_response_command', 'custom':'boolean', 'arguments': 'array'};
+    if (!filter.check(req.body, filters, req, res))  // Filter with error
         return;
 
     data_request['arguments']['agent_id'] = req.params.agent_id;
