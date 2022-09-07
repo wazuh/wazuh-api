@@ -1,7 +1,7 @@
 {
   "name": "wazuh_api",
-  "version": "3.13.5",
-  "revision": "31305",
+  "version": "3.13.6",
+  "revision": "31306",
   "description": "Wazuh API.",
   "main": "app.js",
   "author": "Wazuh",

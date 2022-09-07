@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.13.6]
+
+### Changed
+
+- Improved parameters validation for `PUT /active-response` endpoint ([#504](https://github.com/wazuh/wazuh-api/pull/504)).
+
 ## [v3.13.5]
 
 ### Changed
